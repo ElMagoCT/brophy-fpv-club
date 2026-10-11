@@ -95,8 +95,8 @@
     var r = row(p);
     var stats = r
       ? '<div class="mstats">' +
-          '<div><b>' + (r.weekMs != null ? hm(r.weekMs) : '&ndash;') + '</b><span>this week</span></div>' +
-          '<div><b>' + hm(r.totalMs) + '</b><span>all-time</span></div>' +
+          '<div><b>' + (r.weekMs != null ? hm(r.weekMs) : '&ndash;') + '</b><span>last 7 days</span></div>' +
+          '<div><b>' + (rank(r) ? '#' + rank(r) : '&ndash;') + '</b><span>rank</span></div>' +
           '<div><b>' + countBadges(r) + '</b><span>badges</span></div>' +
         '</div>'
       : '<div class="mhint">No kiosk time under this name yet. Fly at the kiosk with the same name and it shows up here.</div>';
@@ -106,6 +106,11 @@
       '<a class="mgo" href="' + BASE + 'pilot-path/">My Pilot Path &rarr;</a>' +
       '<div class="mrow"><button type="button" class="mlink" data-act="switch">Switch profile</button>' +
       '<button type="button" class="mlink" data-act="out">Sign out</button></div>';
+  }
+  /* rank over the last 7 days, 0 = did not fly in them */
+  function rank(r) {
+    if (!DATA || r.weekMs == null || !(r.weekMs > 30000)) return 0;
+    return 1 + DATA.pilots.filter(function (x) { return (x.weekMs || 0) > r.weekMs; }).length;
   }
   function countBadges(r) {
     var bonus = { editing: 1, tuning: 1, 'fleet-steward': 1, mentor: 1 };
