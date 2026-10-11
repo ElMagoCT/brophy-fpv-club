@@ -100,7 +100,7 @@ def card_html(b, label, fs, pin):
                % (len(steps), seq, note))
     elif t == 'witnessed':
         prep = b.get('prep') or []
-        pp = ('<div class="ft">Practise first in Ground School: %s</div>'
+        pp = ('<div class="ft">Practise first on the Pilot Path: %s</div>'
               % esc(' · '.join(fs['LESSON_TITLES'].get(p, p) for p in prep))) if prep else ''
         how = '<div class="how"><b>The standard</b><div class="seq">%s</div>%s</div>' % (esc(b.get('standard')), pp)
     else:
