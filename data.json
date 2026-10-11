@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791693595385,
-    "generatedIso":  "2026-10-10T21:39:55-07:00",
+    "generated":  1791693657329,
+    "generatedIso":  "2026-10-10T21:40:57-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -172,7 +172,9 @@
                                       "spotter",
                                       "safe-flight",
                                       "battery-care",
-                                      "building"
+                                      "building",
+                                      "betaflight",
+                                      "line-of-sight"
                                   ],
                        "tier":  0
                    },
