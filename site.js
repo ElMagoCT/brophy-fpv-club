@@ -133,6 +133,10 @@
 
   btn.addEventListener('click', function () { if (panelOpen) { close(); picking = false; } else open(); });
   panel.addEventListener('click', function (e) {
+    /* Clicks inside the panel never reach the outside-click closer below:
+       Switch / Back redraw the panel, which detaches the button that was
+       clicked, and the closer then took it for a click outside (2026-10-10). */
+    e.stopPropagation();
     var t = e.target.closest('button');
     if (!t) return;
     if (t.hasAttribute('data-n')) return set(t.getAttribute('data-n'));
@@ -141,7 +145,7 @@
     else if (act === 'back') { picking = false; drawPanel(); }
     else if (act === 'out') set(null);
   });
-  document.addEventListener('click', function (e) { if (panelOpen && !bar.querySelector('.sitme').contains(e.target)) { close(); picking = false; } });
+  document.addEventListener('click', function (e) { if (panelOpen && e.target.isConnected && !bar.querySelector('.sitme').contains(e.target)) { close(); picking = false; } });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && panelOpen) { close(); picking = false; btn.focus(); } });
   /* another tab picked a name */
   window.addEventListener('storage', function (e) {
