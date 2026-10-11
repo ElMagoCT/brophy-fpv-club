@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791699107012,
-    "generatedIso":  "2026-10-10T23:11:47-07:00",
+    "generated":  1791702008308,
+    "generatedIso":  "2026-10-11T00:00:08-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -781,17 +781,6 @@
                      "source":  "imported 2026-08-31 09:01",
                      "days":  [
                                   {
-                                      "date":  "2026-10-10",
-                                      "dow":  "Sat",
-                                      "dowFull":  "Saturday",
-                                      "label":  "Oct 10",
-                                      "open":  false,
-                                      "note":  "",
-                                      "windows":  [
-
-                                                  ]
-                                  },
-                                  {
                                       "date":  "2026-10-11",
                                       "dow":  "Sun",
                                       "dowFull":  "Sunday",
@@ -1536,6 +1525,17 @@
                                                           "startIso":  "2026-11-06T14:30:00-07:00",
                                                           "endIso":  "2026-11-06T16:00:00-07:00"
                                                       }
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-07",
+                                      "dow":  "Sat",
+                                      "dowFull":  "Saturday",
+                                      "label":  "Nov 7",
+                                      "open":  false,
+                                      "note":  "",
+                                      "windows":  [
+
                                                   ]
                                   }
                               ]
