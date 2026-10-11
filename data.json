@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791693657329,
-    "generatedIso":  "2026-10-10T21:40:57-07:00",
+    "generated":  1791693717355,
+    "generatedIso":  "2026-10-10T21:41:57-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -174,9 +174,10 @@
                                       "battery-care",
                                       "building",
                                       "betaflight",
-                                      "line-of-sight"
+                                      "line-of-sight",
+                                      "tiny-whoop"
                                   ],
-                       "tier":  0
+                       "tier":  1
                    },
                    {
                        "name":  "Colton O.",
