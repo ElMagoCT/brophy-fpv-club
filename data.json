@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791691761669,
-    "generatedIso":  "2026-10-10T21:09:21-07:00",
+    "generated":  1791691821686,
+    "generatedIso":  "2026-10-10T21:10:21-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -145,7 +145,9 @@
                                       "pavo-flight",
                                       "faa-trust",
                                       "event-ops",
+                                      "cinematography",
                                       "indoor-proximity",
+                                      "racing",
                                       "fleet-steward",
                                       "mentor"
                                   ],
