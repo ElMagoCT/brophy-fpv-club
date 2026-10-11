@@ -521,6 +521,10 @@ var GSApp = (function(){
 
   function colBoard(c){
     var vs = c.tone === 'vs';
+    /* 2026-10-10: a 'vs' board pairs its rows (You may / Only once,
+       Recreational / Part 107), so it is a real table - a long line on one
+       side used to push the other side's rows out of line. */
+    if(vs) return colTable(c);
     var row = h('div','board2');
     var a = h('div','b2 ' + (vs ? 'va' : 'ok'));
     a.appendChild(h('div','b2h', c.ha || 'Do'));
@@ -534,6 +538,58 @@ var GSApp = (function(){
     b.appendChild(ul2);
     row.appendChild(a); row.appendChild(b);
     return row;
+  }
+
+  function colTable(c){
+    var t = h('table','vstable'), a = c.a || [], b = c.b || [];
+    var hr = h('tr');
+    hr.appendChild(h('th','va', c.ha || '')); hr.appendChild(h('th','vb', c.hb || ''));
+    t.appendChild(hr);
+    for(var i = 0; i < Math.max(a.length, b.length); i++){
+      var r = h('tr');
+      r.appendChild(h('td','', a[i] || '')); r.appendChild(h('td','', b[i] || ''));
+      t.appendChild(r);
+    }
+    return t;
+  }
+
+  /* exceptions: a bulleted box under the rule they bend (2026-10-10) */
+  function exceptBox(list){
+    var box = h('div','exceptions');
+    box.appendChild(h('div','exh','Exceptions'));
+    var ul = h('ul');
+    list.forEach(function(t){ ul.appendChild(h('li','', t)); });
+    box.appendChild(ul);
+    return box;
+  }
+
+  /* Sketch labels are drawn in the handwriting face, which runs wider than
+     the art was laid out for - some lines ran off the edge and were cut off.
+     After the fonts load, any label that would leave the viewBox is shrunk
+     until it fits (2026-10-10). */
+  function fitArt(root){
+    var svg = root && root.querySelector('svg');
+    if(!svg || !svg.viewBox || !svg.viewBox.baseVal || !svg.viewBox.baseVal.width) return;
+    function run(){
+      var vb = svg.viewBox.baseVal, lo = vb.x + 2, hi = vb.x + vb.width - 2, S = svg.getCTM();
+      if(!S) return;
+      var inv = S.inverse();
+      [].forEach.call(svg.querySelectorAll('text'), function(t){
+        var b, m;
+        try{ b = t.getBBox(); m = t.getCTM(); }catch(e){ return; }
+        if(!b || !b.width || !m) return;
+        var M = inv.multiply(m), x1 = M.a * b.x + M.e, x2 = M.a * (b.x + b.width) + M.e, w = x2 - x1;
+        if(x1 >= lo && x2 <= hi) return;
+        var anchor = window.getComputedStyle(t).textAnchor, avail;
+        if(anchor === 'middle'){ var cx = (x1 + x2) / 2; avail = 2 * Math.min(cx - lo, hi - cx); }
+        else if(anchor === 'end') avail = x2 - lo;
+        else avail = hi - x1;
+        if(avail <= 0) return;
+        var fs = parseFloat(window.getComputedStyle(t).fontSize) || 12;
+        t.style.fontSize = (fs * Math.min(1, avail / w) * 0.97).toFixed(2) + 'px';
+      });
+    }
+    if(document.fonts && document.fonts.ready) document.fonts.ready.then(run); else setTimeout(run, 300);
   }
 
   function tipBox(text){
@@ -584,6 +640,7 @@ var GSApp = (function(){
     if(c.facts) col.appendChild(factRow(c.facts));
     if(c.steps) col.appendChild(stepStrip(c.steps));
     if(c.cols)  col.appendChild(colBoard(c.cols));
+    if(c.exceptions) col.appendChild(exceptBox(c.exceptions));
     if(c.tip)   col.appendChild(tipBox(c.tip));
     if(c.note)  col.appendChild(h('div','marginnote', c.note));
     (c.videos || []).forEach(function(v){ col.appendChild(videoBox(v)); });
@@ -594,6 +651,7 @@ var GSApp = (function(){
       card.appendChild(art);
     }
     body.appendChild(card);
+    fitArt(card);
     el('lHint').textContent = (c.videos && c.videos.length) ? 'Watch' : 'Reading';
   }
 

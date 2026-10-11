@@ -888,3 +888,15 @@ input[type=range]::-webkit-slider-thumb{
 .drill.bw .sortbtns .minibtn.go[disabled],.drill.bw .sortbtns .minibtn.go[disabled]:hover{background:#111;color:#fff;border-color:#111}
 .drill.bw .sortbtns .minibtn.danger[disabled],.drill.bw .sortbtns .minibtn.danger[disabled]:hover{background:#fff;color:#111;border-color:#111;text-decoration:line-through}
 .drill.bw .why{background:#fff;border-color:#111;color:#111}
+
+/* 2026-10-10: paired comparisons are tables (rows line up); exceptions are a
+   bulleted box under the rule they bend */
+.vstable{width:100%;border-collapse:collapse;margin:14px 0 4px;background:#fff;border:2px solid var(--ink);font-size:17px;line-height:1.35}
+.vstable th{font-family:var(--font-mono);font-weight:400;font-size:14px;letter-spacing:2.4px;text-transform:uppercase;text-align:left;padding:10px 14px;border-bottom:2px solid var(--ink)}
+.vstable th.va{color:var(--sky)} .vstable th.vb{color:var(--violet)}
+.vstable td{padding:9px 14px;border-top:1px dashed var(--line-hard);vertical-align:top;width:50%}
+.vstable td + td, .vstable th + th{border-left:1px solid var(--line-hard)}
+.exceptions{margin:14px 0 4px;border:1.5px dashed var(--ink);background:#fff;padding:10px 16px 8px}
+.exceptions .exh{font-family:var(--font-mono);font-size:14px;letter-spacing:2.4px;text-transform:uppercase;color:var(--rust)}
+.exceptions ul{margin:6px 0 2px;padding-left:20px}
+.exceptions li{margin:3px 0;font-size:17px;line-height:1.4}

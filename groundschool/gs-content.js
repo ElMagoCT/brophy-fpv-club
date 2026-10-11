@@ -96,7 +96,7 @@ var GS_ART = {
     '<g stroke="var(--ink)" stroke-width="1.5" fill="none" opacity=".7">' +
       '<path d="M30 70 L8 70 M30 80 L8 80 M30 90 L8 90 M30 100 L8 100 M30 110 L8 110"/>' +
     '</g>' +
-    '<text x="14" y="132" font-family="var(--font-hand)" font-size="13" fill="var(--ink-soft)">balance</text>' +
+    '<text x="2" y="42" font-family="var(--font-hand)" font-size="12" fill="var(--ink-soft)">balance</text>' +
     '<text x="136" y="34" text-anchor="middle" font-family="var(--font-mono)" font-size="13" fill="var(--ink)" letter-spacing="2.4">4S = 14.8 V NOMINAL</text>' +
     '<text x="136" y="180" text-anchor="middle" font-family="var(--font-hand)" font-size="16" fill="var(--rust)">four cells, in series</text>' +
     '</svg>',
@@ -259,7 +259,7 @@ var GS_ART = {
       '<text x="300" y="106" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="var(--ink-soft)">before you descend</text>' +
       '<rect x="16" y="122" width="288" height="26" fill="var(--green)" stroke="var(--green)" stroke-width="1.8"/>' +
       '<text x="26" y="140" fill="#fff">DISARMED</text>' +
-      '<text x="300" y="140" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="#fff">props stopped. now you may walk.</text>' +
+      '<text x="300" y="140" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="#fff">props stopped. walk.</text>' +
     '</g>' +
     '</svg>',
 
@@ -516,7 +516,7 @@ var GS_ART = {
     '</g>' +
     '<path d="M16 134 L304 134" stroke="var(--ink)" stroke-width="1.4"/>' +
     '<path d="M246 30 L246 142" stroke="var(--green)" stroke-width="2.4"/>' +
-    '<text x="252" y="152" font-family="var(--font-mono)" font-size="11" fill="var(--green)" letter-spacing="1.4">80 = PASS</text>' +
+    '<text x="252" y="88" font-family="var(--font-mono)" font-size="11" fill="var(--green)" letter-spacing="1.4">80 = PASS</text>' +
     '<text x="16" y="152" font-family="var(--font-hand)" font-size="14" fill="var(--rust)">you cannot pass this on reading alone</text>' +
     '</svg>',
 
@@ -756,16 +756,16 @@ var GS_ART = {
       '<text x="258" y="81"  fill="var(--ink)">3 THE SPOT</text>' +
     '</g>' +
     '<g font-family="var(--font-hand)" font-size="13" fill="var(--ink-soft)" text-anchor="middle">' +
-      '<text x="62"  y="178">crash for free</text>' +
-      '<text x="160" y="136">three mistakes high</text>' +
-      '<text x="258" y="98">only once it is boring</text>' +
+      '<text x="62"  y="176" font-size="12">crash for free</text>' +
+      '<text x="160" y="136" font-size="12"><tspan x="160">three</tspan><tspan x="160" dy="13">mistakes high</tspan></text>' +
+      '<text x="258" y="98" font-size="12"><tspan x="258">only once</tspan><tspan x="258" dy="13">it is boring</tspan></text>' +
     '</g>' +
     '<g stroke="var(--green)" stroke-width="2" fill="none">' +
       '<path d="M104 132 L118 122"/><path d="M108 122 L119 121 L114 132" opacity="0"/>' +
       '<path d="M202 94 L216 84"/>' +
     '</g>' +
     '<text x="160" y="30" text-anchor="middle" font-family="var(--font-mono)" font-size="11.5" fill="var(--ink)" letter-spacing="2.2">TEN CLEAN IN A ROW, THEN MOVE UP</text>' +
-    '<text x="160" y="192" text-anchor="middle" font-family="var(--font-hand)" font-size="15" fill="var(--rust)">the sim is not the warm-up. it is the classroom.</text>' +
+    '<text x="160" y="196" text-anchor="middle" font-family="var(--font-hand)" font-size="15" fill="var(--rust)">the sim is not the warm-up. it is the classroom.</text>' +
     '</svg>'
 };
 
@@ -824,14 +824,14 @@ var GS_COURSE = [
       cols:{ tone:'dd', ha:'Props come off when', hb:'Not an excuse',
         a:['The battery is plugged in','Arming inside','Spinning motors in Betaflight'],
         b:['"I\'ll be quick"','"It\'s only a setting"','"It isn\'t armed"'] },
-      note:'<b>Exceptions.</b> A tiny whoop can keep its props on as long as you are holding it down. Anything bigger can too if someone with the Mentor badge is supervising and the drone is held or strapped down.',
+      exceptions:['A tiny whoop can keep its props on as long as you are holding it down','Anything bigger can too, if someone with the Mentor badge is supervising and the drone is held or strapped down'],
       art:'propsOff', cap:'off the aircraft, not just idle' },
     { h:'Where the people are',
       p:['<b>Default flight rules.</b> If somebody walks into the flying area, you <b>land</b>. You do not fly around them, and you do not hover and wait to see what they do.'],
       cols:{ tone:'dd', ha:'Always', hb:'Never',
         a:['Where your spotter can see it','Within a one-minute walk','Land the moment someone wanders in'],
         b:['Over people','Over a road','Over 400 ft'] },
-      note:'<b>Exceptions.</b> The people have given their consent, or a mentor has given you special permission.',
+      exceptions:['The people have given their consent','A mentor has given you special permission'],
       art:'ceiling', cap:'400 ft, in sight, and out of everybody\'s way' },
     { h:'The battery lives on the ground', tab:'Battery on the ground',
       p:['Packs travel in a fire-resistant bag, charge on a hard surface with nothing stacked on top, and are <b>never</b> left charging unattended.'],
@@ -1333,16 +1333,16 @@ var GS_COURSE = [
       art:'propsOff', cap:'the sheet by the sims' },
     { h:'Who may fly what', tab:'Tiers',
       p:['The badges are not decoration. They are the club\'s answer to <b>who may touch which drone</b>, and that answer is checked before gear comes out of the case. Tiers 1, 2 and 3 each open with a <b>checkpoint</b>: a flight a mentor watches once every one of its <b>prerequisite</b> badges is ticked. Pass it and you are on that tier.'],
-      cols:{ tone:'vs', ha:'You may', hb:'Only once',
-        a:['Fly any sim, any day','Fly the Meteor 75 for your Tiny Whoop checkpoint','Fly the Meteor 75 with the club, and the Pavo for your checkpoint','Fly the Pavo with the club, or any FPV drone at school','Fly at a school event or a race'],
-        b:['you have a name at the kiosk','all seven of its prerequisites are ticked, with a mentor','you passed Tiny Whoop: you are Tier 1','you passed the Pavo 20 Pro Flight: you are Tier 2','for your Event Pilot checkpoint: five prerequisites ticked, a spotter and a mentor'] },
+      cols:{ tone:'vs', ha:'You may', hb:'Once',
+        a:['Fly any sim, any day','Fly the Meteor 75 for your Tiny Whoop checkpoint','Fly the Meteor 75 with the club','Fly the Pavo for your Pavo checkpoint','Fly the Pavo with the club, or any FPV drone at school','Fly at a school event or a race'],
+        b:['You have a name at the kiosk','Its seven prerequisites are ticked - a mentor watches','You passed Tiny Whoop: you are Tier 1','Its five prerequisites are ticked - a mentor watches','You passed the Pavo 20 Pro Flight: you are Tier 2','Your five Event Pilot prerequisites are ticked - with a spotter and a mentor'] },
       tip:'Ask before you assume. A mentor can look you up on the kiosk in ten seconds.' },
-    { h:'What breaks the rule', tab:'Edge cases',
-      p:['Most rule breaks are not rebellion, they are shortcuts. The three below are the ones the club actually sees.'],
+    { h:'Fine, and not fine', tab:'Edge cases',
+      p:['Most rule breaks are shortcuts, not rebellion. These are the ones the club actually sees.'],
       cols:{ tone:'dd', ha:'Fine', hb:'Not fine',
-        a:['Hover check with props on, on the pad, after the call','Bench test with props off','Handing the goggles to a spotter to look at the feed'],
-        b:['"Quick motor test" on the bench with props on','Arming to walk it to the pad','Flying in goggles with nobody watching the aircraft'] },
-      note:'If you are not sure whether something is allowed, that uncertainty is the answer. Ask first.' }
+        a:['Calling ARMING, then a hover check on the pad','Spinning a tiny whoop\'s motors with props on, held down','Props on at the bench with a mentor supervising and the drone held or strapped down'],
+        b:['Props on, battery in, nobody holding it','Arming without calling it out','Flying in goggles with nobody watching the aircraft'] },
+      note:'Not sure whether something is allowed? Ask a mentor first.' }
   ]
 },
 {
