@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791691821686,
-    "generatedIso":  "2026-10-10T21:10:21-07:00",
+    "generated":  1791691883649,
+    "generatedIso":  "2026-10-10T21:11:23-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -148,10 +148,11 @@
                                       "cinematography",
                                       "indoor-proximity",
                                       "racing",
+                                      "event-pilot",
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  2
+                       "tier":  3
                    },
                    {
                        "name":  "Zane R.",
