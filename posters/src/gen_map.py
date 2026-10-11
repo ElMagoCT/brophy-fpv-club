@@ -92,12 +92,17 @@ def card_html(b, label, fs, pin):
                '<div class="ft">10 questions · %d %% passes · no sign-off needed · retake any time</div></div>'
                % (len(ls), items, fs['PASS']))
     elif t == 'bench':
-        steps = [short_step(s) for s in (b.get('steps') or []) if not s.startswith('DM a photo') and not s.startswith('Take a photo')]
+        steps = [short_step(s if isinstance(s, str) else s.get('t', '')) for s in (b.get('steps') or [])]
+        steps = [x for x in steps if not x.startswith('DM a photo') and not x.startswith('Take a photo') and not x.startswith('Submit a photo')]
         seq = ' <i>›</i> '.join(esc(s) for s in steps)
         note = '<div class="nt">%s</div>' % esc(b['note']) if b.get('note') else ''
         how = ('<div class="how"><b>At the bench · %d steps</b><div class="seq">%s</div>%s'
                '<div class="ft">Then a photo, submitted on the website · a mentor passes or fails it</div></div>'
                % (len(steps), seq, note))
+    elif t == 'witnessed' and b.get('reqs'):
+        items = ''.join('<li>%s%s</li>' % (esc(r['t']), (' - %s' % esc(r['d'])) if r.get('d') else '') for r in b['reqs'])
+        rule = '<div class="ft"><b style="display:inline;color:inherit;font-family:inherit;letter-spacing:0;text-transform:none">%s</b></div>' % esc(b['rule']) if b.get('rule') else ''
+        how = '<div class="how"><b>Requirements</b><ol>%s</ol>%s<div class="ft">Lessons and videos for each: scan for the Pilot Path</div></div>' % (items, rule)
     elif t == 'witnessed':
         prep = b.get('prep') or []
         pp = ('<div class="ft">Practise first on the Pilot Path: %s</div>'
@@ -116,12 +121,12 @@ def checkpoint_html(cp, mates, tier_n, at, d):
     lis = ''.join('<li><span class="bx"></span>%s</li>' % esc(m['name']) for m in mates)
     return ('<div class="cpbox cp-%s" data-at="%s"><div class="cpl">'
             '<div class="lab">Tier %d checkpoint · %s</div><div class="nm">%s</div><div class="ds">%s</div>'
-            '<div class="how"><b>The standard</b><div class="seq">%s</div></div></div>'
+            '<div class="how"><b>Requirements</b><div class="seq">%s</div></div></div>'
             '<div class="cpr"><div class="ph">Prerequisites · %d badges</div><ul>%s</ul>'
             '<div class="ck"><span class="bigck">&#10003;</span><span>All ticked? That is the big check: '
             'attempt the checkpoint with a mentor watching.</span></div></div></div>'
             % ('top' if (at == 'start') == (d == 'down') else 'bottom', at, tier_n, TYPE_NAME[cp['type']],
-               esc(cp['name']), esc(cp['do']), esc(cp.get('standard')) + (' <b style="display:inline;color:var(--rust);font-family:inherit;letter-spacing:0;text-transform:none;font-size:1em">' + esc(cp['rule']) + '</b>' if cp.get('rule') else ''), len(mates), lis))
+               esc(cp['name']), esc(cp['do']), (esc(cp.get('standard')) if cp.get('standard') else esc(' · '.join(r['t'] for r in cp.get('reqs', [])))) + (' <b style="display:inline;color:var(--rust);font-family:inherit;letter-spacing:0;text-transform:none;font-size:1em">' + esc(cp['rule']) + '</b>' if cp.get('rule') else ''), len(mates), lis))
 
 # ----------------------------------------------------------------- render
 def render(s, fs, prev_count):

@@ -168,6 +168,17 @@ section{margin-top:30px}
 .badge.checkpoint.won .nm .st.earned{background:#f2ece0}
 
 /* ---------- lessons inside the badge cards (2026-10-10: Ground School folded in) ---------- */
+.badge .reqh{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-top:8px}
+.badge li.req{align-items:center;border-radius:5px;padding:2px 3px;margin:0 -3px}
+.badge li.req.step:hover{background:var(--paper-2)}
+.badge li.req .rt{flex:1;min-width:0}
+.badge li.req .rt small{display:block;color:var(--ink-soft);font-size:12.5px;line-height:1.25}
+.badge li.req.on .rt{color:var(--ink-soft)}
+.badge .rls{display:flex;gap:10px;flex:none;margin-left:8px}
+.badge a.rl,.badge span.rl{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap}
+.badge a.rl:hover{text-decoration:underline}
+.badge span.rl.k{color:var(--ink-soft)}
+.badge .rule1{margin-top:6px;font-size:13.5px;font-weight:600;color:var(--rust)}
 .badge li.les{cursor:pointer;border-radius:5px;padding:1px 3px;margin:0 -3px}
 .badge li.les:hover{background:var(--paper-2)}
 .badge li.les .go{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
@@ -234,7 +245,7 @@ footer a{color:var(--ink)}
     <div class="how">
       <div class="card h"><div class="k">Quiz badges</div><div class="v">Short lessons, then a 10-question quiz - all opened right here from the badge card, with <b>Proceed to next</b> when each one ends. <b>80 % passes.</b> Retake as often as you like; your best score counts. The kiosk awards these by itself.</div></div>
       <div class="card h"><div class="k">Bench badges</div><div class="v">Step-by-step instructions on the kiosk or here. Tick the boxes as you go, then <b>submit a photo</b> of your work right from the card &mdash; a mentor reviews it and passes or fails it.</div></div>
-      <div class="card h"><div class="k">Witnessed badges</div><div class="v">A mentor who holds the badge watches you do it against <b>the standard</b> written on the card. Prep drills open right from the card. <b>Spotter</b> and <b>Event Ops</b> are both: a short course and quiz first, then a mentor signs them off. Every card has optional resources.</div></div>
+      <div class="card h"><div class="k">Witnessed badges</div><div class="v">Each card lists its <b>requirements</b> as boxes, with a lesson and a video where there is one. Practise until you can tick them all, then a mentor who holds the badge watches you. <b>Spotter</b> and <b>Event Ops</b> start with a short quiz.</div></div>
       <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. Its card lists the prerequisite badges and ticks each one as you earn it; when they are all done it gets a <b>big green &#10003;</b> and you may attempt it with a mentor watching. Pass it and <b>you are on that tier.</b> Bonus badges are extra, any time, and don&rsquo;t count toward your total &mdash; <b>Mentor</b> is for Tier 2 pilots.</div></div>
     </div>
   </details>
@@ -434,23 +445,43 @@ function rawStatus(b) {
     out.detail = ticked + ' of ' + steps.length + ' steps ticked';
     return out;
   }
-  if (FS.both(b)) {         // 2026-10-10: lessons + quiz, then a mentor signs it off
-    var bl = (b.lessons || []).map(function (l) { return l.id; }), bd = 0;
-    bl.forEach(function (id) { var r = gp && gp.groundSchool && gp.groundSchool.lessons[id]; if (r && r.status === 'complete') bd++; });
-    var qb = quizBest(b, gp);
-    out.quizPassed = qb >= FS.PASS;
-    out.pct = out.quizPassed ? 60 : Math.round((bd + (qb > 0 ? 0.5 : 0)) / (bl.length + 1) * 55);
-    out.detail = out.quizPassed ? 'quiz ' + qb + ' · now a mentor watches you and signs it off' : (bd + ' of ' + (bl.length + 1) + ' parts' + (qb > 0 ? ' · best quiz ' + qb : '') + ' · quiz first, then a mentor');
+  if (b.type === 'witnessed' && b.reqs) {   // 2026-10-11: requirement boxes
+    var kh = kp ? (kp.totalMs || 0) / 3600000 : 0, dn = 0;
+    b.reqs.forEach(function (r, i) { if (reqDone(b, r, i, gp, pr, kh)) dn++; });
+    out.pct = Math.round(dn / b.reqs.length * 90);
+    if (FS.both(b)) out.quizPassed = quizBest(b, gp) >= FS.PASS;
+    out.detail = dn + ' of ' + b.reqs.length + ' requirements' + (FS.both(b) ? (out.quizPassed ? ' · quiz passed' : ' · quiz first') : '') + ' · then a mentor signs it off';
     return out;
   }
-  if (b.type === 'witnessed') {
-    var prep = b.prep || [], pd = 0;
-    prep.forEach(function (id) { var r = gp && gp.groundSchool && gp.groundSchool.lessons[id]; if (r && r.status === 'complete') pd++; });
-    out.pct = prep.length ? Math.round(pd / prep.length * 90) : 0;
-    out.detail = prep.length ? (pd + ' of ' + prep.length + ' prep drills') : 'waiting for a mentor';
-    return out;
-  }
+  if (b.type === 'witnessed') { out.detail = 'waiting for a mentor'; return out; }
   return out;
+}
+/* a requirement box is done when: its hours are logged, its lessons are
+   complete (a quiz lesson: passed), or - with neither - the pilot ticked it */
+function reqDone(b, r, i, gp, pr, kh) {
+  if (r.hours) return kh >= r.hours;
+  if (r.lessons && r.lessons.length) return r.lessons.every(function (id) { return lesDoneFor(b, id, gp); });
+  return !!(pr && pr.steps && pr.steps[i]);
+}
+function lesDoneFor(b, id, gp) {
+  if (id === b.quiz) return quizBest(b, gp) >= FS.PASS;
+  var r = gp && gp.groundSchool && gp.groundSchool.lessons[id];
+  return !!(r && r.status === 'complete');
+}
+function vidLink(v) {
+  return v ? '<a class="rl" href="https://www.youtube.com/watch?v=' + esc(v.yt) + '" target="_blank" rel="noopener" title="' + esc(v.t + ' · ' + v.by) + '">&#9654; video</a>' : '';
+}
+function reqRow(b, r, i, gp, pr, kh) {
+  var auto = !!(r.hours || (r.lessons && r.lessons.length)), done = reqDone(b, r, i, gp, pr, kh), links = '';
+  if (r.lessons && r.lessons.length) {
+    var nx = r.lessons.filter(function (id) { return !lesDoneFor(b, id, gp); })[0] || r.lessons[0];
+    links += '<a href="#" class="rl" data-lesson="' + esc(nx) + '">' + (r.lessons.length > 1 ? r.lessons.length + ' lessons' : (nx === b.quiz ? 'quiz' : 'lesson')) + ' &rsaquo;</a>';
+  }
+  if (r.hours) links += '<span class="rl k">' + kh.toFixed(1) + ' / ' + r.hours + ' h</span>';
+  links += vidLink(r.v);
+  return '<li class="req' + (auto ? '' : ' step') + (done ? ' on' : '') + '"' + (auto ? '' : ' data-step="' + i + '"') + '>' +
+    '<span class="tick' + (done ? ' on' : '') + '">' + (done ? '✓' : '') + '</span>' +
+    '<span class="rt">' + esc(r.t) + (r.d ? '<small>' + esc(r.d) + '</small>' : '') + '</span><span class="rls">' + links + '</span></li>';
 }
 function quizBest(b, gp) {
   var q = gp && gp.groundSchool && b.quiz && gp.groundSchool.lessons[b.quiz];
@@ -581,7 +612,7 @@ function more(b, s) {
     h += '<ul>';
     (b.lessons || []).forEach(function (l) {
       var r = gp && gp.groundSchool && gp.groundSchool.lessons[l.id], on = r && r.status === 'complete';
-      h += lesRow(l.id, on, esc(l.t) + (l.drill ? ' <span class="soon">drill</span>' : ''));
+      h += lesRow(l.id, on, esc(l.t) + (l.drill ? ' <span class="soon">drill</span>' : '') + (l.v ? ' ' + vidLink(l.v) : ''));
     });
     var qrec = gp && gp.groundSchool && b.quiz && gp.groundSchool.lessons[b.quiz], qbest = Math.max(qrec ? (qrec.score || 0) : 0, quizBest(b, gp));
     h += lesRow(b.quiz, qbest >= FS.PASS, 'Quiz · 10 questions · ' + FS.PASS + ' % to pass' + (qbest > 0 ? ' · best ' + qbest : '')) + '</ul>';
@@ -591,31 +622,17 @@ function more(b, s) {
     h += '<ul>';
     (b.steps || []).forEach(function (t, i) {
       var on = pr.steps && pr.steps[i];
-      h += '<li class="step" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + esc(t) + '</span></li>';
+      h += '<li class="req step" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(FS.stepText(t)) + '</span><span class="rls">' + vidLink(t && t.v) + '</span></li>';
     });
     h += '</ul>';
     h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done — passed by a mentor.' : 'submit a photo of your work below; a mentor reviews it and passes or fails it. A pass shows here within a minute.') + '</div>';
   } else if (b.type === 'witnessed') {
-    if (FS.both(b)) {
-      h += '<ul>';
-      (b.lessons || []).forEach(function (l) {
-        var r = gp && gp.groundSchool && gp.groundSchool.lessons[l.id], on = r && r.status === 'complete';
-        h += lesRow(l.id, on, esc(l.t));
-      });
-      var qb2 = quizBest(b, gp);
-      h += lesRow(b.quiz, qb2 >= FS.PASS, 'Quiz · 10 questions · ' + FS.PASS + ' % to pass' + (qb2 > 0 ? ' · best ' + qb2 : ''));
-      h += '<li><span class="tick' + (s.earned ? ' on' : '') + '">' + (s.earned ? '✓' : '') + '</span><span>A mentor watches you and signs it off</span></li></ul>';
-      h += startBtn(b);
+    if (b.reqs) {
+      var kp2 = kioskPilot(), kh2 = kp2 ? (kp2.totalMs || 0) / 3600000 : 0;
+      h += '<div class="reqh">Requirements</div><ul>' + b.reqs.map(function (r, i) { return reqRow(b, r, i, gp, pr, kh2); }).join('') + '</ul>';
+      if (b.rule) h += '<div class="rule1">' + esc(b.rule) + '</div>';
+      if (badgeItems(b).length) h += startBtn(b);
     }
-    if (b.prep && b.prep.length) {
-      h += '<ul>';
-      b.prep.forEach(function (id) {
-        var r = gp && gp.groundSchool && gp.groundSchool.lessons[id], on = r && r.status === 'complete';
-        h += lesRow(id, on, 'Prep: ' + esc(lesTitle(id)));
-      });
-      h += '</ul>' + startBtn(b);
-    }
-    h += '<div class="std"><b>The standard</b>' + esc(b.standard || '') + (b.rule ? '<span class="rule1">' + esc(b.rule) + '</span>' : '') + '</div>';
     h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + 'a mentor who holds this badge watches you, then signs it off in the instructor console.') + '</div>';
   }
   if (b.res && b.res.length) {
@@ -648,7 +665,11 @@ function lessonDone(id) {
 function lesRow(id, on, label) {
   return '<li class="les' + (on ? ' on' : '') + '" data-lesson="' + esc(id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + label + '</span><span class="go">' + (on ? 'review' : 'start &rsaquo;') + '</span></li>';
 }
-function badgeItems(b) { return (b.lessons || []).map(function (l) { return l.id; }).concat(b.quiz ? [b.quiz] : [], b.prep || []); }
+function badgeItems(b) {
+  var out = (b.lessons || []).map(function (l) { return l.id; }).concat(b.quiz ? [b.quiz] : [], b.prep || []);
+  (b.reqs || []).forEach(function (r) { (r.lessons || []).forEach(function (id) { if (out.indexOf(id) < 0) out.push(id); }); });
+  return out;
+}
 function startBtn(b) {
   var items = badgeItems(b), next = items.filter(function (id) { return !lessonDone(id); })[0];
   if (!items.length) return '';
@@ -730,7 +751,8 @@ $('lpBtns').addEventListener('click', function (e) {
 $('tiers').addEventListener('click', function (e) {
   var step = e.target.closest ? e.target.closest('li.step') : null;
   var les = e.target.closest ? e.target.closest('[data-lesson]') : null;
-  if (les) { openLesson(les.getAttribute('data-lesson')); return; }
+  if (les) { e.preventDefault(); openLesson(les.getAttribute('data-lesson')); return; }
+  if (e.target.closest && e.target.closest('a[target="_blank"]')) return;   // a video / resource link, not a tick
   var go = e.target.closest ? e.target.closest('[data-goto]') : null;
   if (go) {
     var to = document.querySelector('.badge[data-id="' + go.getAttribute('data-goto') + '"]');

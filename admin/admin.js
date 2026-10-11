@@ -383,6 +383,15 @@
       var ticks = (pr.steps && pr.steps[b.id]) || {};
       st.bits.push('steps ' + b.steps.filter(function (x, i) { return ticks[i]; }).length + '/' + b.steps.length);
     }
+    if (Array.isArray(b.reqs) && b.reqs.length) {   // 2026-10-11: requirement boxes (lessons, hours or the pilot's own tick)
+      var rt = (pr.steps && pr.steps[b.id]) || {};
+      var rd = b.reqs.filter(function (r, i) {
+        if (r.hours) return st.hours >= r.hours;
+        if (r.lessons && r.lessons.length) return r.lessons.every(function (id) { return lessons[id] && (lessons[id].status === 'complete' || (id === b.quiz && (+lessons[id].score || 0) >= FS.PASS)); });
+        return !!rt[i];
+      }).length;
+      st.bits.push('requirements ' + rd + '/' + b.reqs.length);
+    }
     if (Array.isArray(b.prep) && b.prep.length)
       st.bits.push('prep drills ' + b.prep.filter(function (id) { return lessons[id] && lessons[id].status === 'complete'; }).length + '/' + b.prep.length);
     if (b.minHours) st.bits.push(st.hours.toFixed(1) + ' of ' + b.minHours + ' h in the sim');
