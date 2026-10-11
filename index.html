@@ -448,6 +448,7 @@ header.title .side .btn{text-align:center;justify-content:center}
 <div class="wrap">
 
   <nav class="crumbs" aria-label="Site"></nav>
+  <script src="pilots.js"></script>
   <script src="site.js"></script>
 
   <header class="title">
@@ -1092,6 +1093,7 @@ function load(refresh){
       return r.json();
     })
     .then(function(json){
+      if (window.mergePilots) window.mergePilots(json);   // one row per pilot (pilots.js)
       var first = !DATA;
       DATA = json;
       /* The minute refresh redraws the numbers but not the reel: rebuilding

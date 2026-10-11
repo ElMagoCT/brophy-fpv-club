@@ -213,6 +213,7 @@ footer a{color:var(--ink)}
 <div class="wrap">
 
   <nav class="crumbs" aria-label="Site"></nav>
+  <script src="../pilots.js"></script>
   <script src="../site.js"></script>
 
   <header class="title">
@@ -911,7 +912,7 @@ render(); pullServer(); pullAwards(); pullSubs();
    while the tab is hidden; the picker list is left alone while it is open. */
 function pullData(first) {
   fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
-    DATA = d; render();
+    DATA = window.mergePilots ? window.mergePilots(d) : d; render();
   }).catch(function () {});
 }
 pullData(true);

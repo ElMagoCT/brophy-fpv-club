@@ -354,7 +354,7 @@
     Promise.all([
       api('GET', '/api/award?pilot=' + q).then(function (j) { return j.awards || null; }),
       api('GET', '/api/progress?pilot=' + q).then(function (j) { return j.progress || null; }),
-      ROSTER ? Promise.resolve() : fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { ROSTER = ROSTER || d; })
+      ROSTER ? Promise.resolve() : fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { ROSTER = ROSTER || (window.mergePilots ? window.mergePilots(d) : d); })
     ]).then(function (r) {
       if (PP.slug !== s) return;
       PP.awards = r[0]; PP.prog = r[1]; PP.loaded = true; el('ppMsg').textContent = ''; drawProgress();
@@ -629,7 +629,8 @@
   }
   function loadRoster() {
     fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
-      ROSTER = d;
+      ROSTER = window.mergePilots ? window.mergePilots(d) : d;
+      setTimeout(drawBulkSim, 0);
       var dl = el('apPilots'); dl.textContent = '';
       (d.pilots || []).forEach(function (p) { var o = document.createElement('option'); o.value = p.name; dl.appendChild(o); });
       var box = el('apRoster'); box.textContent = '';
@@ -652,6 +653,37 @@
         : 'The kiosk is not publishing badges yet (Flight School v2, Phase 3).') + ' Pick a name above (or click one here) to see their whole path and edit it.';
     }).catch(function (e) { el('apRosterNote').textContent = 'Could not load data.json: ' + e.message; });
   }
+
+  // ------------------------------------------- bulk: Sim Flight at 5+ h
+  // 2026-10-10 (Micah): everyone with 5+ sim hours gets Sim Flight. One signed
+  // award each, through fileAward like every other decision.
+  var BULK = [];
+  function drawBulkSim() {
+    var box = el('bulkSimList'); if (!box || !ROSTER) return;
+    var held = {};
+    BULK = (ROSTER.pilots || []).filter(function (p) {
+      return (p.totalMs || 0) >= 5 * 3600000 && (p.badges || []).indexOf('proficient-flight') < 0;
+    }).sort(function (a, b) { return (b.totalMs || 0) - (a.totalMs || 0); });
+    box.textContent = BULK.length ? BULK.map(function (p) { return p.name + ' (' + ((p.totalMs || 0) / 3600000).toFixed(1) + ' h)'; }).join(' · ')
+                                  : 'Everyone with 5+ hours already holds Sim Flight.';
+    el('bulkSimGo').disabled = !BULK.length;
+  }
+  el('bulkSimGo').onclick = function () {
+    if (!S.key) { el('bulkSimMsg').textContent = 'Sign in with the instructor password first.'; return; }
+    if (!BULK.length) return;
+    if (!window.confirm('Approve Sim Flight for ' + BULK.length + ' pilot' + (BULK.length === 1 ? '' : 's') + '?\n\n' + BULK.map(function (p) { return p.name; }).join(', '))) return;
+    var btn = this, done = [], failed = [];
+    btn.disabled = true; el('bulkSimMsg').textContent = 'Filing…';
+    BULK.reduce(function (chain, p) {
+      return chain.then(function () {
+        return fileAward(p.name, 'proficient-flight', 'earned', '5+ sim hours (bulk approval)', ['console'])
+          .then(function () { done.push(p.name); }, function (e) { failed.push(p.name + ' (' + ((e && e.message) || 'error') + ')'); })
+          .then(function () { el('bulkSimMsg').textContent = 'Filed ' + done.length + ' of ' + BULK.length + '…'; });
+      });
+    }, Promise.resolve()).then(function () {
+      el('bulkSimMsg').textContent = 'Approved: ' + (done.join(', ') || 'none') + (failed.length ? ' · Failed: ' + failed.join(', ') : '') + '. The kiosks apply them on their next sync.';
+    });
+  };
 
   // ---------------------------------------------------------------- boot
   el('app').hidden = false;

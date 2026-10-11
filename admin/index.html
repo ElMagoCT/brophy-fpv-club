@@ -105,6 +105,13 @@
         <div class="muted small" id="ppMsg"></div>
         <div id="ppList"></div>
       </div>
+      <div class="card" id="bulkSim">
+        <h2>Sim Flight for everyone at 5+ hours</h2>
+        <p class="muted small">Pilots the kiosk shows with 5 or more sim hours who do not hold Sim Flight yet. One click files a signed approval for each (note: "5+ sim hours"); both kiosks apply them on their next sync. Revoke any one from their progress list.</p>
+        <div id="bulkSimList" class="muted small">Loading…</div>
+        <div class="row" style="margin-top:10px"><button class="btn primary" type="button" id="bulkSimGo" disabled>Approve Sim Flight for these pilots</button></div>
+        <div class="muted small" id="bulkSimMsg"></div>
+      </div>
       <div class="card">
         <h2>Who holds what</h2>
         <p class="muted small" id="apRosterNote">Kiosk snapshot plus instructor decisions on file.</p>
@@ -150,6 +157,7 @@
 </div>
 <noscript>This console needs JavaScript.</noscript>
 <script src="../flightschool/badges.js"></script>
+<script src="../pilots.js"></script>
 <script src="admin.js"></script>
 </body>
 </html>

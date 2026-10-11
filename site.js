@@ -151,7 +151,7 @@
   });
 
   fetch(BASE + 'data.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
-    .then(function (d) { DATA = d; draw(); }).catch(function () {});
+    .then(function (d) { DATA = window.mergePilots ? window.mergePilots(d) : d; draw(); }).catch(function () {});
 
   draw();
   window.SiteNav = { pilot: get, set: set, open: function () { picking = false; open(); window.scrollTo({ top: 0, behavior: 'smooth' }); }, row: row, slug: slug };
