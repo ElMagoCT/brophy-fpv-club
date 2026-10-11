@@ -102,7 +102,8 @@ def card_html(b, label, fs, pin):
         prep = b.get('prep') or []
         pp = ('<div class="ft">Practise first on the Pilot Path: %s</div>'
               % esc(' · '.join(fs['LESSON_TITLES'].get(p, p) for p in prep))) if prep else ''
-        how = '<div class="how"><b>The standard</b><div class="seq">%s</div>%s</div>' % (esc(b.get('standard')), pp)
+        rule = '<div class="ft"><b style="display:inline;color:inherit;font-family:inherit;letter-spacing:0;text-transform:none">%s</b></div>' % esc(b['rule']) if b.get('rule') else ''
+        how = '<div class="how"><b>The standard</b><div class="seq">%s</div>%s%s</div>' % (esc(b.get('standard')), rule, pp)
     else:
         how = '<div class="how"><b>Automatic</b><div class="seq">%s</div></div>' % esc(b.get('standard'))
     why = '<div class="why"><b>Why</b> %s</div>' % esc(b['why'])
@@ -120,7 +121,7 @@ def checkpoint_html(cp, mates, tier_n, at, d):
             '<div class="ck"><span class="bigck">&#10003;</span><span>All ticked? That is the big check: '
             'attempt the checkpoint with a mentor watching.</span></div></div></div>'
             % ('top' if (at == 'start') == (d == 'down') else 'bottom', at, tier_n, TYPE_NAME[cp['type']],
-               esc(cp['name']), esc(cp['do']), esc(cp.get('standard')), len(mates), lis))
+               esc(cp['name']), esc(cp['do']), esc(cp.get('standard')) + (' <b style="display:inline;color:var(--rust);font-family:inherit;letter-spacing:0;text-transform:none;font-size:1em">' + esc(cp['rule']) + '</b>' if cp.get('rule') else ''), len(mates), lis))
 
 # ----------------------------------------------------------------- render
 def render(s, fs, prev_count):

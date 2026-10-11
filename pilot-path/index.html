@@ -124,6 +124,7 @@ section{margin-top:30px}
 .badge li.step:hover .tick{border-color:var(--green)}
 .badge li .soon{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper-2);border:1px dashed var(--line-hard);border-radius:5px;padding:1px 6px;margin-left:6px}
 .badge .std{background-color:var(--glass);border:1px solid var(--line);border-radius:7px;padding:8px 10px;margin-top:6px}
+.badge .std .rule1{display:block;margin-top:5px;font-weight:600;color:var(--rust)}
 .badge .std b{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--rust);display:block;margin-bottom:2px}
 .badge .act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
 .btn{font-family:var(--font-mono);font-size:13.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--glass-2);color:var(--ink);text-decoration:none;border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
@@ -614,7 +615,7 @@ function more(b, s) {
       });
       h += '</ul>' + startBtn(b);
     }
-    h += '<div class="std"><b>The standard</b>' + esc(b.standard || '') + '</div>';
+    h += '<div class="std"><b>The standard</b>' + esc(b.standard || '') + (b.rule ? '<span class="rule1">' + esc(b.rule) + '</span>' : '') + '</div>';
     h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + 'a mentor who holds this badge watches you, then signs it off in the instructor console.') + '</div>';
   }
   if (b.res && b.res.length) {
