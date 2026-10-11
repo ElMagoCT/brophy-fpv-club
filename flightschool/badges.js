@@ -104,9 +104,9 @@
       standard: 'With a spotter and a mentor watching: take-off, a figure-eight, an orbit, a pass through a gate and a clean landing on the pad - no contact.' },
 
     // ---------------- Tier 2 · Full-size -> checkpoint Event Pilot
-    { id: 'faa-trust', tier: 't2', track: 'know', type: 'witnessed', name: 'FAA TRUST', est: 'about 30 min',
-      do: 'Complete the free FAA TRUST certificate online (~20 min, cannot be failed).', why: 'Federal requirement for recreational flyers. Official.',
-      standard: 'Submit a photo of your TRUST certificate below (or show the PDF to a mentor).' },
+    { id: 'faa-trust', tier: 't2', track: 'know', type: 'bench', name: 'FAA TRUST', est: 'about 30 min',
+      do: 'Take the free FAA TRUST test online (~20 min, cannot be failed), then submit a photo of your certificate.', why: 'Federal requirement for recreational flyers. Official.',
+      steps: ['Take the free TRUST test (Pilot Institute link under Optional resources - about 20 minutes, it cannot be failed)', 'Save your certificate (PDF or screenshot) - keep a copy on your phone', 'Submit a photo of the certificate with your name readable - a mentor reviews it and passes or fails it.'] },
     { id: 'event-ops', quiz: 'gs-evt-quiz', tier: 't2', track: 'know', type: 'witnessed', name: 'Event Ops', est: 'about 1.5 h',
       do: 'Pass the Event Ops quiz, then show a mentor at a real setup: set up a flight zone, brief bystanders, keep flights away from crowds; demonstrate failsafe setup, flyaway response, LiPo fire procedure and incident reporting.',
       standard: 'Quiz passed first (80 %). Then at a real setup a mentor watches you mark and brief the zone, set and test failsafe, and talk through a flyaway and a LiPo fire. The mentor checks the airspace and permission.', why: 'Ground work before flying at a game or rally - starting with whether you may fly there at all (Brophy is just outside Sky Harbor’s Class B; a few blocks south is inside it) - and a plan for when something goes wrong.',
