@@ -44,7 +44,7 @@
   var TIERS = [
     { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: Tiny Whoop · unlocks the Meteor 75 Pro' },
     { id: 't1', n: 1, name: 'Tiny Whoop',  gear: 'Meteor 75 Pro · sub-250 g',                       color: 'var(--violet)', gate: 'Checkpoint: Pavo 20 Pro Flight · unlocks full-size' },
-    { id: 't2', n: 2, name: 'Full-size',   gear: 'Pavo 20 Pro · Cinebot 35 · 5-inch',               color: 'var(--rust)',   gate: 'Checkpoint: Event Pilot' },
+    { id: 't2', n: 2, name: 'Full-size',   gear: 'Pavo 20 Pro · larger drones at Brophy',          color: 'var(--rust)',   gate: 'Checkpoint: Event Pilot' },
     { id: 't3', n: 3, name: 'Event Pilot', gear: 'Any Tier 2 airframe at a school event, with a spotter', color: 'var(--green)', gate: 'The top' },
     { id: 'el', n: -1, name: 'Bonus badges', gear: 'Any order, any time · not counted toward your total', color: 'var(--amber)', gate: '' }
   ];

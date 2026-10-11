@@ -1512,7 +1512,7 @@ var GS_COURSE = [
         b:['2207 motor · ~1800 KV · 6S','127 mm prop, 3 blades','45-60 A ESC','1300 mAh · flies 4 min','600 g+'] },
       art:'quadTop', cap:'the prop decides the rest' },
     { h:'The cinewhoop in the middle', tab:'Cinewhoop',
-      p:['The Pavo 20 Pro and Cinebot 35 sit between the two: 2-3.5 inch ducted props, 3S-6S, 20-35 A, built to carry a camera smoothly rather than to race. Ducts protect people and props; they also cost efficiency, which is why cinewhoops fly short.'],
+      p:['The Pavo 20 Pro and the larger cinewhoops at Brophy sit between the two: ducted props, built to carry a camera smoothly rather than to race. Ducts protect people and props; they also cost efficiency, which is why cinewhoops fly short.'],
       tip:'When you are asked to pick parts for a frame, start from the prop size. It fixes the motor size, which fixes the current, which fixes the ESC and the battery.' }
   ]
 },
@@ -1617,7 +1617,7 @@ var GS_COURSE = [
       p:['Phoenix Sky Harbor is Class B. On B4UFLY its surface area is the <b>orange grid</b>, and its edge runs a few blocks south of campus. Brophy itself is <b>outside</b> it, in uncontrolled airspace: the ceiling is the normal <b>400 ft</b> and no LAANC authorization is needed. Cross into the orange grid and the rules change - there the grid ceiling applies and you need LAANC. Indoors (the gym, the IC) the FAA rules do not apply.'],
       tip:'Check anyway, every time - the edge is close, and temporary flight restrictions appear for games and VIP visits. At club flights a mentor does this check.' },
     { h:'Registration and Remote ID', tab:'Paperwork',
-      p:['Anything over <b>250 g</b> takes off must be registered (five dollars, three years) and broadcast Remote ID. The Meteor 75 and the Pavo 20 are under 250 g and need neither. The 5-inch and the Cinebot 35 are over, and the club registers them.'],
+      p:['Anything over <b>250 g</b> takes off must be registered (five dollars, three years) and broadcast Remote ID. The Meteor 75 and the Pavo 20 are under 250 g and need neither. Any larger drone at Brophy that is over 250 g is registered by the club.'],
       cols:{ tone:'vs', ha:'Under 250 g', hb:'Over 250 g',
         a:['No registration','No Remote ID','TRUST still required'],
         b:['Registered, number on the frame','Remote ID module or built in','TRUST still required'] } }
@@ -1817,7 +1817,7 @@ var GS_QUIZ = [
 { mod:'SAF', q:'When may somebody walk downrange?',
   opts:['When the aircraft looks like it has landed','After they hear the "Disarmed" call','When the pilot takes their goggles off','As soon as it touches the ground'], a:1,
   why:'The "Disarmed" call means props stopped. Anything you infer by looking is a guess, and props are still turning for a while after touchdown.' },
-{ mod:'SAF', q:'You need to change a Betaflight setting on a 5-inch at the Brophy bench, battery plugged in. What comes off first?',
+{ mod:'SAF', q:'You need to change a Betaflight setting on a larger drone at the Brophy bench, battery plugged in. What comes off first?',
   opts:['The battery','The props','The antenna','Nothing, it is only a setting'], a:1,
   why:'Props come off whenever the battery is plugged in on the bench. One wrong click in Betaflight and somebody gets hurt.' },
 { mod:'EVT', q:'Your aircraft weighs 620 g with the battery in. What does the FAA need?',
@@ -1922,7 +1922,7 @@ var GS_QUIZ = [
 { mod:'FLY', q:'Why practise nose-in deliberately instead of avoiding it?',
   opts:['It looks better','It is the only way it stops being a calculation','It uses less battery','It is required for Part 107'], a:1,
   why:'The trick of imagining yourself in the aircraft works, slowly. Slowly is no use at speed. Repetition is what makes it instant.' },
-{ mod:'SAF', q:'You want to check that a 5-inch\'s motors spin the right way, and no mentor is around. Where do the props go?',
+{ mod:'SAF', q:'You want to check that a larger drone\'s motors spin the right way, and no mentor is around. Where do the props go?',
   opts:['On, but on low throttle','Off','On, if you are quick','On, if the quad is not armed'], a:1,
   why:'Spinning motors in Betaflight is a props-off job. The exceptions are a tiny whoop held down, or a bigger quad held or strapped down with a mentor supervising.' },
 { mod:'SAF', q:'You want to spin the motors on a tiny whoop in Betaflight. Can the props stay on?',

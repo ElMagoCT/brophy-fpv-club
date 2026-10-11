@@ -60,7 +60,7 @@ SHEETS = [
        checkpoint='t0',
        gate=('NEXT', 'Tier 2 checkpoint', 'Pavo 20 Pro Flight · sheet 3')),
   dict(file='05-map-tier2', sheet=3, tier='t2', name='FULL-SIZE', color='var(--rust)', dir='down',
-       gear='Pavo 20 Pro · Cinebot 35 · 5-inch',
+       gear='Pavo 20 Pro · larger drones at Brophy',
        checkpoint='t1',
        gate=('NEXT', 'Tier 3 checkpoint', 'Event Pilot · sheet 4')),
   dict(file='06-map-tier3', sheet=4, tier='el', name='EVENT PILOT', color='var(--green)', dir='up',
