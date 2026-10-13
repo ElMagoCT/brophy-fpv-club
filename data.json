@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791913314318,
-    "generatedIso":  "2026-10-13T10:41:54-07:00",
+    "generated":  1791913374626,
+    "generatedIso":  "2026-10-13T10:42:54-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -71,6 +71,7 @@
                                       "proficient-flight",
                                       "safe-flight",
                                       "battery-care",
+                                      "building",
                                       "line-of-sight",
                                       "soldering",
                                       "electrical-components",
@@ -179,6 +180,7 @@
                                       "tiny-whoop",
                                       "electrical-components",
                                       "radio-protocol",
+                                      "faa-trust",
                                       "event-ops"
                                   ],
                        "tier":  1
