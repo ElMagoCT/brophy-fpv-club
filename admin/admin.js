@@ -1,4 +1,4 @@
-/* Brophy UAV instructor console - see C:\BrophyUAV\remote\REMOTE.md.
+/* Brophy FPV Club instructor console - see C:\BrophyUAV\remote\REMOTE.md.
 
    Talks ONLY to api.github.com, to the private repo below. It holds no secret
    of its own: the admin brings a GitHub token (kept in sessionStorage, this tab
@@ -11,10 +11,10 @@
   'use strict';
   if (window.top !== window.self) { document.body.textContent = ''; return; }   // no framing / clickjacking
 
-  // The club API (brophy-uav-api, Netlify Functions) holds the GitHub token for
+  // The club API (brophy-fpv-club-api, Netlify Functions) holds the GitHub token for
   // the private control repo. This page only ever sends signed commands to it
   // and reads signed answers back; the instructor password never leaves here.
-  var API = 'https://brophy-uav-api.netlify.app';
+  var API = 'https://brophy-fpv-club-api.netlify.app';
   var MACHINES = ['KIOSK-A', 'KIOSK-B'];
 
   var ACTIONS = [
@@ -517,7 +517,7 @@
         sha256Hex(S.keyHex).then(function (h) {
           var box = el('rvSetup'); box.hidden = false; box.textContent = '';
           var p1 = document.createElement('div');
-          p1.textContent = 'Photo review is not set up yet. On the brophy-uav-api Netlify site, add the environment variable REVIEW_KEY_HASH with this value, then redeploy (it is a hash of a hash of the instructor password - safe to paste):';
+          p1.textContent = 'Photo review is not set up yet. On the brophy-fpv-club-api Netlify site, add the environment variable REVIEW_KEY_HASH with this value, then redeploy (it is a hash of a hash of the instructor password - safe to paste):';
           var c = document.createElement('code'); c.textContent = h;
           box.appendChild(p1); box.appendChild(c);
         });

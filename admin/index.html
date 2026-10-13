@@ -7,8 +7,8 @@
 <meta name="referrer" content="no-referrer">
 <!-- Everything this page may load or talk to. Nothing inline, no third-party
      script, and the only network destination is GitHub's API. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://brophy-uav-api.netlify.app; base-uri 'none'; form-action 'none'">
-<title>Instructor Console · Brophy UAV</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://brophy-fpv-club-api.netlify.app; base-uri 'none'; form-action 'none'">
+<title>Instructor Console · Brophy FPV Club</title>
 <link rel="stylesheet" href="../groundschool/fonts.css">
 <link rel="stylesheet" href="admin.css">
 </head>
@@ -18,7 +18,7 @@
   <header class="top">
     <div>
       <h1>Instructor console</h1>
-      <div class="sub">Brophy UAV · flight simulator lab</div>
+      <div class="sub">Brophy FPV Club · flight simulator lab</div>
     </div>
     <div class="row">
       <a class="btn-link" href="../">&larr; Home page</a>
@@ -32,7 +32,7 @@
     <h2>Sign in</h2>
     <p class="muted">The instructor password signs every command, and each kiosk refuses anything it
       can't verify. The password never leaves this page. The GitHub side is handled by the club's API
-      (<code>brophy-uav-api.netlify.app</code>), which holds the repo token so this page doesn't have to.</p>
+      (<code>brophy-fpv-club-api.netlify.app</code>), which holds the repo token so this page doesn't have to.</p>
     <label>Instructor password
       <input id="pw" type="password" autocomplete="current-password" spellcheck="false" autocapitalize="off">
     </label>

@@ -267,7 +267,7 @@
   function slug(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 
   window.FS = { TIERS: TIERS, TRACK: TRACK, BADGES: B, LESSON_TITLES: LESSON_TITLES, slug: slug, PASS: 80, SIM_HOURS: 5,
-    API: 'https://brophy-uav-api.netlify.app',
+    API: 'https://brophy-fpv-club-api.netlify.app',
     counted: function (b) { return b.tier !== 'el'; },
     /* the other badges of a checkpoint's tier */
     mates: function (b) { return B.filter(function (x) { return x !== b && x.tier === b.tier && !x.checkpoint; }); },

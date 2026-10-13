@@ -18,7 +18,7 @@
    publishes; nothing flows back). Instructors approve badges in ../admin/. */
 (function(){
   var KEY_PILOT = 'fs.pilot.v1', KEY_ALL = 'gsWeb.profiles.v2', KEY_OLD = 'gsWebProfile.v1';
-  var API = 'https://brophy-uav-api.netlify.app';   // the club API: progress is mirrored there, monotonically, per pilot name
+  var API = 'https://brophy-fpv-club-api.netlify.app';   // the club API: progress is mirrored there, monotonically, per pilot name
   var realFetch = window.fetch.bind(window);
 
   function slug(n){ return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }

@@ -1,4 +1,4 @@
-# Brophy UAV — public dashboard
+# Brophy FPV Club — public dashboard
 
 A one-page public site showing the club sim lab's **opening hours**, the **pilot
 leaderboard**, the **YouTube playlist** and three **randomly picked videos** from
@@ -49,14 +49,14 @@ account, which is why it is not done.
 As of 2026-08-23 Chrome on this machine is **not signed in to GitHub** — that is
 the actual blocker, and it is the one step nobody can do for you.
 
-Then make a **new, empty** repo called `brophy-uav-dashboard` (no README, no
+Then make a **new, empty** repo called `brophy-fpv-club` (no README, no
 .gitignore — this folder already has both). Public or private both work; Netlify
 can build from either.
 
 Then, from PowerShell:
 
 ```powershell
-git -C C:\BrophyUAV-web remote add origin https://github.com/YOUR-USER/brophy-uav-dashboard.git
+git -C C:\BrophyUAV-web remote add origin https://github.com/YOUR-USER/brophy-fpv-club.git
 ```
 
 ### 2. Push once, by hand
@@ -86,7 +86,7 @@ Deploy. You get a `something-something.netlify.app` URL; rename it under
 
 ```powershell
 C:\BrophyUAV\Install-DashboardTask.ps1
-Start-ScheduledTask -TaskName 'Brophy UAV Dashboard Publish'
+Start-ScheduledTask -TaskName 'Brophy FPV Club Dashboard Publish'
 Get-Content C:\BrophyUAV-web\publish.log -Tail 20
 ```
 

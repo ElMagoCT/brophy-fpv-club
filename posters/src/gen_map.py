@@ -192,7 +192,7 @@ def render(s, fs, prev_count):
 <body>
 <div class="bg"><div class="grid"></div><div class="fine"></div><div class="vig"></div></div>
 <div class="sheet{' electives' if electives else ''}" style="--tier:{s['color']}" data-dir="{s['dir']}" data-sheet="{s['sheet']}">
-  <div class="stamp"><b>BROPHY</b>UAV PROGRAM<br>FPV CLUB</div>
+  <div class="stamp"><b>BROPHY</b>FPV CLUB<br>PILOT PATH</div>
   <div class="eyebrow"><h2>The pilot path &middot; sheet {s['sheet']} of 4 &middot; badges unlock the gear</h2><span class="rule"></span></div>
   <div class="tierhead"><div class="tn">TIER {tier_n}</div><div class="tname">{s['name']}</div></div>
   <div class="facts">
@@ -209,7 +209,7 @@ def render(s, fs, prev_count):
 
   <div class="legend">{legend}<span class="how"><b>Quiz</b> badges: pass at {fs['PASS']} %, no sign-off &middot; <b>Bench</b> and <b>witnessed</b> badges: a mentor who holds the badge signs it off &middot; demonstration, not attendance</span></div>
   <div class="qrmini qr"><svg viewBox="0 0 370 370"><use href="qr-path.svg#q"/></svg><div class="say"><b>Full badge list</b>scan</div></div>
-  <div class="foot"><span><b>Brophy UAV Program</b> &middot; FPV Club pilot path &middot; Tier {tier_n} of 3</span><span>mtucker27@ for questions</span></div>
+  <div class="foot"><span><b>Brophy FPV Club</b> &middot; Pilot Path &middot; Tier {tier_n} of 3</span><span>mtucker27@ for questions</span></div>
 </div>
 <script>
 /* Organic layout, done in the page so it uses real card heights.

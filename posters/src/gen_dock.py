@@ -135,7 +135,7 @@ h1 small{{display:block;font-family:'Share Tech Mono',monospace;font-size:11.5px
   <div class="top">
     <div class="head">
       <h1>DRONE DOCK<small>{c['sub']}</small></h1>
-      <div class="tag"><b>{c['name']}</b>Brophy UAV</div>
+      <div class="tag"><b>{c['name']}</b>Brophy FPV Club</div>
     </div>
     <div class="names">
       <div class="name"><span>Pilot</span></div>
