@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791820469751,
-    "generatedIso":  "2026-10-12T08:54:30-07:00",
+    "generated":  1791874826215,
+    "generatedIso":  "2026-10-13T00:00:26-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -782,17 +782,6 @@
                      "source":  "imported 2026-08-31 09:01",
                      "days":  [
                                   {
-                                      "date":  "2026-10-12",
-                                      "dow":  "Mon",
-                                      "dowFull":  "Monday",
-                                      "label":  "Oct 12",
-                                      "open":  false,
-                                      "note":  "Fall break",
-                                      "windows":  [
-
-                                                  ]
-                                  },
-                                  {
                                       "date":  "2026-10-13",
                                       "dow":  "Tue",
                                       "dowFull":  "Tuesday",
@@ -1537,6 +1526,40 @@
                                       "note":  "",
                                       "windows":  [
 
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-09",
+                                      "dow":  "Mon",
+                                      "dowFull":  "Monday",
+                                      "label":  "Nov 9",
+                                      "open":  true,
+                                      "note":  "",
+                                      "windows":  [
+                                                      {
+                                                          "from":  "07:00",
+                                                          "to":  "08:00",
+                                                          "startIso":  "2026-11-09T07:00:00-07:00",
+                                                          "endIso":  "2026-11-09T08:00:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "09:20",
+                                                          "to":  "11:40",
+                                                          "startIso":  "2026-11-09T09:20:00-07:00",
+                                                          "endIso":  "2026-11-09T11:40:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "13:00",
+                                                          "to":  "13:10",
+                                                          "startIso":  "2026-11-09T13:00:00-07:00",
+                                                          "endIso":  "2026-11-09T13:10:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "14:30",
+                                                          "to":  "16:00",
+                                                          "startIso":  "2026-11-09T14:30:00-07:00",
+                                                          "endIso":  "2026-11-09T16:00:00-07:00"
+                                                      }
                                                   ]
                                   }
                               ]
