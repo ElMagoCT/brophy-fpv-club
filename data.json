@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1791912759771,
-    "generatedIso":  "2026-10-13T10:32:40-07:00",
+    "generated":  1791913314318,
+    "generatedIso":  "2026-10-13T10:41:54-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -75,6 +75,7 @@
                                       "soldering",
                                       "electrical-components",
                                       "radio-protocol",
+                                      "freestyle-flight",
                                       "event-ops"
                                   ],
                        "tier":  0
