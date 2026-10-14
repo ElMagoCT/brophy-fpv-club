@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792003178987,
-    "generatedIso":  "2026-10-14T11:39:39-07:00",
+    "generated":  1792003240943,
+    "generatedIso":  "2026-10-14T11:40:41-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,12 +9,12 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  382953185,
+                   "clubMs":  383013228,
                    "pilots":  39,
                    "activePilots7":  9,
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  267751567.86289966,
+                                    "liftoff":  267811611.34049967,
                                     "microdrones":  111409561.5562003,
                                     "skydive":  2660747.560299987,
                                     "fpvlabs":  316778.85469998,
@@ -188,9 +188,9 @@
                    },
                    {
                        "name":  "Bryson E.",
-                       "totalMs":  25081409,
+                       "totalMs":  25141452,
                        "perSimMs":  {
-                                        "liftoff":  12652166,
+                                        "liftoff":  12712209,
                                         "microdrones":  12429243,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -198,7 +198,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1792003161653,
+                       "lastSeen":  1792003221698,
                        "badges":  [
 
                                   ],
@@ -236,6 +236,10 @@
                        "gsLessons":  0,
                        "lastSeen":  1791439161968,
                        "badges":  [
+                                      "proficient-flight",
+                                      "spotter",
+                                      "safe-flight",
+                                      "battery-care",
                                       "building",
                                       "soldering"
                                   ],
