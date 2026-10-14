@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792001409849,
-    "generatedIso":  "2026-10-14T11:10:10-07:00",
+    "generated":  1792001471060,
+    "generatedIso":  "2026-10-14T11:11:11-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,13 +9,13 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  381193988,
-                   "pilots":  38,
-                   "activePilots7":  10,
+                   "clubMs":  381254059,
+                   "pilots":  39,
+                   "activePilots7":  11,
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  267120895.83009967,
-                                    "microdrones":  110281036.55270031,
+                                    "microdrones":  110341107.38690031,
                                     "skydive":  2660747.560299987,
                                     "fpvlabs":  316778.85469998,
                                     "picasim":  814526.99810002092
@@ -205,17 +205,17 @@
                    },
                    {
                        "name":  "Bryson E.",
-                       "totalMs":  23322212,
+                       "totalMs":  23382283,
                        "perSimMs":  {
                                         "liftoff":  12021494,
-                                        "microdrones":  11300718,
+                                        "microdrones":  11360789,
                                         "skydive":  0,
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1792001387260,
+                       "lastSeen":  1792001447335,
                        "badges":  [
 
                                   ],
@@ -774,6 +774,24 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1787697781215,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
+                       "name":  "jo",
+                       "totalMs":  0,
+                       "perSimMs":  {
+                                        "liftoff":  0,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1792001440350,
                        "badges":  [
 
                                   ],
