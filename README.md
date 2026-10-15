@@ -102,7 +102,8 @@ change, Netlify rebuilds in a few seconds, and the site is current.
 | `flightschool/` | redirect to `pilot-path/` for old links; **`flightschool/badges.js` stays here** - it is still the badge catalogue |
 | `progression/` | redirect to `pilot-path/` — kept because the printed posters' QR codes point here |
 | `posters/` | the seven 11×17 posters above the simulators, as PDFs with PNG previews, plus a printing page. **Sources in `posters/src/`** — see below |
-| `admin/` | the instructor console (signed commands to the kiosks). `admin/#approvals` is the Flight School sign-off view: pick pilot + badge, Approve sends a signed `badge.award` to a kiosk |
+| `fly/` | **Request to fly** (2026-10-15) - the 24-hour flight permission form, Pete Burr's condition on the grant: *passing the Tiny Whoop test never grants permission; every campus flight is filed here at least 24 h ahead and approved by him.* Recreational mode for any Tier 1+ pilot (Tier 2 for anything but the Meteor); "Event or meeting" mode behind the instructor password adds event type, crowd and start/end and emails extra people per type. Everything is checked again by the club API (`POST /api/fly-request`), which files it in the private control repo and emails the school with Approve / Deny links. Linked from the home page, the site bar and every checkpoint card on the Pilot Path |
+| `admin/` | the instructor console (signed commands to the kiosks). `admin/#approvals` is the Flight School sign-off view: pick pilot + badge, Approve sends a signed `badge.award` to a kiosk. `admin/#fly` holds the **flight-request recipients** (Always = Mr. Burr + Mr. Reasy, plus extras per event type; saved to `settings/fly-recipients.json` in the control repo, never in this repo) and the requests on file, with Approve / Deny for a decision Pete gave by reply |
 
 ### Rebuilding the posters
 

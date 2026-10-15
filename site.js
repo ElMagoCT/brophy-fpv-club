@@ -1,5 +1,5 @@
-/* Site bar (2026-10-10): the same top bar on every page - Home / Progression /
-   Resources, and the profile button in the top-right corner.
+/* Site bar (2026-10-10): the same top bar on every page - Home / Pilot Path /
+   Request to fly (2026-10-15) / Resources, and the profile button top right.
 
    The profile is the pilot NAME, saved in localStorage under fs.pilot.v1 -
    the key Flight School has always used, so picking a name on any page is
@@ -41,6 +41,7 @@
   }
 
   var page = /\/(pilot-path|progression|flightschool)\//.test(location.pathname) ? 'prog'
+           : /\/fly\//.test(location.pathname) ? 'fly'
            : /\/posters\//.test(location.pathname) ? 'res' : 'home';
 
   var bar = document.createElement('header');
@@ -49,6 +50,7 @@
     '<nav class="sitenav" aria-label="Site">' +
       '<a href="' + BASE + '"' + (page === 'home' ? ' aria-current="page"' : '') + '>Home</a>' +
       '<a href="' + BASE + 'pilot-path/"' + (page === 'prog' ? ' aria-current="page"' : '') + '>Pilot Path</a>' +
+      '<a href="' + BASE + 'fly/"' + (page === 'fly' ? ' aria-current="page"' : '') + '>Request to fly</a>' +
       '<a href="' + BASE + 'posters/"' + (page === 'res' ? ' aria-current="page"' : '') + '>Resources</a>' +
     '</nav>' +
     '<div class="sitme">' +

@@ -168,6 +168,12 @@ section{margin-top:30px}
 .badge.checkpoint.won .more .why,.badge.checkpoint.won .more .why b,.badge.checkpoint.won .approve,.badge.checkpoint.won .approve b{color:#f2ece0}
 .badge.checkpoint.won .std{color:var(--ink)}
 .badge.checkpoint.won .nm .st.earned{background:#f2ece0}
+/* 2026-10-15 (the grant's condition): every checkpoint card says passing is not permission */
+.permit{margin-top:10px;border:1.5px solid var(--rust);border-radius:7px;padding:8px 11px;font-size:14px;line-height:1.4;background-color:rgba(176,83,42,.06);color:var(--ink)}
+.permit b{color:var(--rust);font-weight:600}
+.permit a{color:var(--rust);font-weight:600}
+.badge.checkpoint.won .permit{background-color:rgba(242,236,224,.16);border-color:#f2ece0;color:#f2ece0}
+.badge.checkpoint.won .permit b,.badge.checkpoint.won .permit a{color:#f2ece0}
 
 /* ---------- lessons inside the badge cards (2026-10-10: Ground School folded in) ---------- */
 .badge .reqh{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-top:8px}
@@ -248,7 +254,7 @@ footer a{color:var(--ink)}
       <div class="card h"><div class="k">Quiz badges</div><div class="v">Short lessons, then a 10-question quiz - all opened right here from the badge card, with <b>Proceed to next</b> when each one ends. <b>80 % passes.</b> Retake as often as you like; your best score counts. The kiosk awards these by itself.</div></div>
       <div class="card h"><div class="k">Bench badges</div><div class="v">Step-by-step instructions on the kiosk or here. Tick the boxes as you go, then <b>submit a photo</b> of your work right from the card &mdash; a mentor reviews it and passes or fails it.</div></div>
       <div class="card h"><div class="k">Witnessed badges</div><div class="v">Each card lists its <b>requirements</b> as boxes, with a lesson and a video where there is one. Practise until you can tick them all, then a mentor who holds the badge watches you. <b>Event Ops</b> starts with a short quiz.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is short on purpose: six quick parts, doable in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it; when they are all done it gets a <b>big green &#10003;</b> and you may attempt it with a mentor watching. Pass it and <b>you are on that tier.</b> Bonus badges are extra, any time, and don&rsquo;t count toward your total &mdash; <b>Mentor</b> is for Tier 2 pilots.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is short on purpose: six quick parts, doable in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it; when they are all done it gets a <b>big green &#10003;</b> and you may attempt it with a mentor watching. Pass it and <b>you are on that tier.</b> Passing <b>never grants permission to fly</b>: every campus flight is filed on <a href="../fly/">Request to fly</a> at least 24 h ahead and approved by Mr. Burr. Bonus badges are extra, any time, and don&rsquo;t count toward your total &mdash; <b>Mentor</b> is for Tier 2 pilots.</div></div>
     </div>
   </details>
 
@@ -591,8 +597,16 @@ function card(b, open) {
     (b.est ? '<div class="est">Time: ' + esc(b.est) + '</div>' : '') +
     (pilot ? '<div class="meter"><i style="width:' + (s.earned ? 100 : s.pct) + '%"></i></div>' : '') +
     '<div class="more">' + more(b, s) + '</div>';
-  if (b.checkpoint) main = '<div class="cpwrap"><div class="cpmain">' + main + '</div>' + prereqPanel(b) + '</div>';
+  if (b.checkpoint) main = '<div class="cpwrap"><div class="cpmain">' + main + permitLine(b) + '</div>' + prereqPanel(b) + '</div>';
   return '<div class="card badge' + cp + (open[b.id] ? ' open' : '') + '" data-id="' + b.id + '" style="--t:' + col + '">' + main + '</div>';
+}
+/* 2026-10-15: Pete Burr's condition on the grant. Passing a checkpoint is a
+   licence to ASK, never permission to fly: every campus flight is requested
+   on ../fly/ at least 24 h ahead and approved by him. Said on every
+   checkpoint card, closed or open. */
+function permitLine(b) {
+  var what = b.id === 'tiny-whoop' ? 'Passing this test <b>never grants permission to fly</b>.' : 'Passing this <b>never grants permission to fly</b>.';
+  return '<div class="permit">' + what + ' Before <b>every</b> flight on campus, file a <a href="../fly/">Request to fly</a> at least <b>24 hours ahead</b>; Mr. Burr approves it. Fly only after a yes.</div>';
 }
 /* the checkpoint's prerequisites: a box per badge, ticked once earned (tap one
    to jump to it), and the big check once every box is ticked */

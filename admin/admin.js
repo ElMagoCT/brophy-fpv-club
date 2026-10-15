@@ -100,7 +100,7 @@
         el('who').textContent = ok ? 'Signed in · password checked · kept in this tab only'
                                    : 'Signed in · password NOT checked (photo review not set up and no signed kiosk status to check it against) · kept in this tab only';
         el('signout').hidden = false;
-        drawTabs(); drawActions(); loadStatus(); showView(); loadReview(true);
+        drawTabs(); drawActions(); loadStatus(); showView(); loadReview(true); loadFly(true);
       });
     }).catch(function (e) { el('signMsg').textContent = e.message; }).then(function () { el('go').disabled = false; });
   }
@@ -204,11 +204,12 @@
   // Review photos is the first view (2026-10-10): no hash, or one we do not
   // know, opens it. #approvals and #kiosks still deep-link.
   function showView() {
-    var ap = location.hash === '#approvals', ki = location.hash === '#kiosks', rv = !ap && !ki;
-    el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki;
-    el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : '';
+    var ap = location.hash === '#approvals', ki = location.hash === '#kiosks', fl = location.hash === '#fly', rv = !ap && !ki && !fl;
+    el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki; el('fly').hidden = !fl;
+    el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : ''; el('vFly').className = fl ? 'on' : '';
     if ((ap || rv) && !ROSTER) loadRoster();
     if (rv && S.key) loadReview();
+    if (fl && S.keyHex) { loadRecipients(); loadFly(); }
   }
   window.addEventListener('hashchange', showView);
   function drawApprovals() {
@@ -693,6 +694,85 @@
       el('bulkSimMsg').textContent = 'Approved: ' + (done.join(', ') || 'none') + (failed.length ? ' · Failed: ' + failed.join(', ') : '') + '. The kiosks apply them on their next sync.';
     });
   };
+
+  // ---------------------------------------------------------------- fly requests (2026-10-15)
+  // The 24 h permission form (../fly/). Recipients live in the control repo at
+  // settings/fly-recipients.json and are edited here; reading the list of
+  // requests, saving recipients and recording a decision all send the review
+  // key (hex SHA-256 of the password) like photo review does.
+  var FLY_TYPES = ['meeting', 'race', 'filming', 'pep-rally', 'other'];
+  function loadRecipients() {
+    el('rcMsg').textContent = 'Loading…';
+    api('GET', '/api/fly-request?recipients=1', null, reviewHeaders()).then(function (j) {
+      var r = j.recipients || {};
+      el('rcAlways').value = (r.always || []).join(', ');
+      FLY_TYPES.forEach(function (t) { el('rc-' + t).value = ((r.byEvent || {})[t] || []).join(', '); });
+      el('rcReply').value = r.replyTo || '';
+      var setup = el('flySetup'); setup.textContent = '';
+      var warn = [];
+      if (!j.mail) warn.push('Email is not set up on the API yet: requests are filed but nothing is sent. See mail/README.md in brophy-fpv-club-api (a Google Apps Script, authorised once by a human).');
+      if (!j.links) warn.push('FLY_SECRET is not set on the API: the emails say "reply with your decision" instead of carrying Approve / Deny buttons.');
+      if (!(r.always || []).length) warn.push('No "Always" recipients yet - until there are, requests go nowhere.');
+      setup.hidden = !warn.length; warn.forEach(function (w) { var d = document.createElement('div'); d.textContent = w; setup.appendChild(d); });
+      el('rcMsg').textContent = r.updated ? 'Saved ' + when(r.updated) + '.' : 'Nothing saved yet.';
+    }).catch(function (e) { el('rcMsg').textContent = 'Could not load: ' + e.message; });
+  }
+  el('rcSave').onclick = function () {
+    var rc = { always: el('rcAlways').value, byEvent: {}, replyTo: el('rcReply').value.trim() };
+    FLY_TYPES.forEach(function (t) { rc.byEvent[t] = el('rc-' + t).value; });
+    el('rcSave').disabled = true; el('rcMsg').textContent = 'Saving…';
+    api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
+      var r = j.recipients || {}, n = (r.always || []).length;
+      el('rcMsg').textContent = 'Saved: ' + n + ' always' + FLY_TYPES.map(function (t) { var k = (r.byEvent[t] || []).length; return k ? ', ' + k + ' for ' + t : ''; }).join('') + '. Addresses that did not look like emails were dropped.';
+      loadRecipients();
+    }).catch(function (e) { el('rcMsg').textContent = 'Could not save: ' + e.message; }).then(function () { el('rcSave').disabled = false; });
+  };
+  el('flyRcRefresh').onclick = loadRecipients;
+  el('flyRefresh').onclick = function () { loadFly(); };
+  function loadFly(countOnly) {
+    if (!S.keyHex) return;
+    if (!countOnly) el('flyMsg').textContent = 'Loading…';
+    api('GET', '/api/fly-request?list=1', null, reviewHeaders()).then(function (j) {
+      var items = j.items || [], pending = items.filter(function (r) { return r.status === 'pending' && r.whenMs > Date.now() - 3600000; }).length;
+      el('flyCount').textContent = pending ? String(pending) : '';
+      if (countOnly) return;
+      el('flyMsg').textContent = items.length ? items.length + ' on file · ' + pending + ' waiting for a decision.' : 'No requests filed yet.';
+      var box = el('flyList'); box.textContent = '';
+      items.forEach(function (r) { box.appendChild(flyRow(r)); });
+    }).catch(function (e) { if (!countOnly) el('flyMsg').textContent = 'Could not load: ' + e.message; });
+  }
+  function flyRow(r) {
+    var d = document.createElement('div'); d.className = 'fr';
+    var h = document.createElement('div'); h.className = 'fh';
+    var b = document.createElement('b'); b.textContent = r.pilot + (r.tier != null ? ' (T' + r.tier + ')' : ''); h.appendChild(b);
+    h.appendChild(document.createTextNode(' · ' + r.whenText + ' · ' + r.location + ' · ' + r.aircraft));
+    var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting' : r.status; h.appendChild(chip);
+    if (r.mode === 'event') { var ec = document.createElement('span'); ec.className = 'pchip src'; ec.textContent = 'event · ' + (r.event ? r.event.type : ''); h.appendChild(ec); }
+    var fd = document.createElement('div'); fd.className = 'fd';
+    var bits = ['spotter ' + r.spotter, 'filed ' + when(r.at)];
+    if (r.email) bits.push(r.email);
+    if (r.mode === 'event' && r.event) bits.push('crowd ' + r.event.crowd + ' · ' + r.event.start + '–' + r.event.end);
+    if (r.notes) bits.push('"' + r.notes + '"');
+    bits.push(r.mailed ? 'emailed' : 'NOT emailed' + (r.mailError ? ' (' + r.mailError + ')' : ''));
+    if (r.status !== 'pending') bits.push(r.status + ' ' + when(r.decidedAt) + (r.decidedBy ? ' via ' + r.decidedBy : '') + (r.decisionNote ? ': ' + r.decisionNote : ''));
+    fd.textContent = bits.join(' · ');
+    var fa = document.createElement('div'); fa.className = 'fa';
+    var ok = document.createElement('button'); ok.className = 'ok'; ok.textContent = 'Approve';
+    var no = document.createElement('button'); no.className = 'danger'; no.textContent = 'Deny';
+    ok.onclick = function () { decideFly(r, 'approve', d); }; no.onclick = function () { decideFly(r, 'deny', d); };
+    fa.appendChild(ok); fa.appendChild(no);
+    d.appendChild(h); d.appendChild(fa); d.appendChild(fd);
+    return d;
+  }
+  function decideFly(r, decision, row) {
+    var note = window.prompt((decision === 'approve' ? 'Approve' : 'Deny') + ' ' + r.pilot + ' · ' + r.whenText + ' · ' + r.location + '?\n\nThis records a decision Mr. Burr gave another way (reply, in person). Note to the pilot (optional):', r.status !== 'pending' ? 'changed from ' + r.status : 'per Mr. Burr');
+    if (note === null) return;
+    Array.prototype.forEach.call(row.querySelectorAll('button'), function (b) { b.disabled = true; });
+    api('POST', '/api/fly-request', { action: 'decide', id: r.id, decision: decision, note: note }, reviewHeaders()).then(function (j) {
+      el('flyMsg').textContent = (j.item.status === 'approved' ? 'Approved' : 'Denied') + ' ' + r.pilot + ' · ' + r.whenText + (j.mailed ? ' · pilot emailed.' : (r.email ? ' · could not email the pilot: ' + j.mailError : ' · the pilot gave no email, tell them.'));
+      loadFly();
+    }).catch(function (e) { el('flyMsg').textContent = 'Could not record it: ' + e.message; Array.prototype.forEach.call(row.querySelectorAll('button'), function (b) { b.disabled = false; }); });
+  }
 
   // ---------------------------------------------------------------- boot
   el('app').hidden = false;
