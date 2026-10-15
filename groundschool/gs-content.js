@@ -776,19 +776,19 @@ var GS_MODULES = [
   /* One module per knowledge badge (Flight School v2, 2026-10-04). code is the
      lesson-id stem; badge is the catalogue id in config.json / badges.js.
      FLY has no badge: it holds the drills the witnessed flight badges use. */
-  { code:'SAF', badge:'safe-flight',           tier:0, name:'Safe Flight',           mins:16,
+  { code:'SAF', badge:'safe-flight',           tier:0, name:'Safe Flight',           mins:10,
     blurb:'Who flies, who watches, the four calls, the rules sheet by the sims, and the go / no-go call. Pass the quiz, earn the badge.' },
-  { code:'SPT', badge:'spotter',               tier:0, name:'Spotter',               mins:10, signoff:true,
-    blurb:'The spotter\'s job, the check before the battery goes in, and what to call. Pass the quiz, then spot a real flight for a mentor.' },
-  { code:'BAT', badge:'battery-care',          tier:0, name:'Battery Care',          mins:14,
+  { code:'SPT', badge:'spotter',               tier:2, name:'Spotter',               mins:5,
+    blurb:'The spotter\'s job, the check before the battery goes in, and what to call. Pass the quiz, earn the badge.' },
+  { code:'BAT', badge:'battery-care',          tier:0, name:'Battery Care',          mins:12,
     blurb:'The part that hurts people: voltages, the math, charging and storage, and what to do when a pack goes bad.' },
-  { code:'ELC', badge:'electrical-components', tier:1, name:'Electrical Components', mins:14,
+  { code:'ELC', badge:'electrical-components', tier:1, name:'Electrical Components', mins:12,
     blurb:'Six parts, how thrust and yaw happen, and how to pick a motor, ESC, prop and pack that agree with each other.' },
-  { code:'RAD', badge:'radio-protocol',        tier:1, name:'Radio Protocol',        mins:29,
+  { code:'RAD', badge:'radio-protocol',        tier:1, name:'Radio Protocol',        mins:16,
     blurb:'Radio is light you cannot see; why analog turns to snow and digital falls off a cliff, Raceband, antennas, the control link, failsafe, a gym full of phones, and setting up a digital video system to record.' },
-  { code:'EVT', badge:'event-ops',             tier:2, name:'Event Ops',             mins:39, signoff:true,
+  { code:'EVT', badge:'event-ops',             tier:2, name:'Event Ops',             mins:24, signoff:true,
     blurb:'What the mentor checks before an outdoor flight - where Sky Harbor\'s Class B starts (Brophy is just outside it), B4UFLY, LAANC and TRUST - then the flight zone, the brief, the calls and the handover, then what to do when it goes wrong. Pass the quiz, then show a mentor at a real setup.' },
-  { code:'FLY', badge:null,                    tier:0, name:'Flight prep',           mins:41,
+  { code:'FLY', badge:null,                    tier:0, name:'Flight prep',           mins:22,
     blurb:'Sticks, hover, orientation and the tricks: the drills mentors expect you to have done before Sim Flight, Line of Sight and Freestyle Flight. No quiz - those badges are watched, not tested.' }
 ];
 
@@ -800,7 +800,7 @@ var GS_COURSE = [
 
 /* ============================ M1 - GROUND RULES ========================== */
 {
-  id:'gs-saf-01', mod:'SAF', ord:10, title:"Who's flying, who's watching", mins:3, kind:'read',
+  id:'gs-saf-01', mod:'SAF', ord:10, title:"Who's flying, who's watching", mins:2, kind:'read',
   cards:[
     { h:'Two jobs, every flight', tab:'Two jobs',
       p:['On this kiosk you practise the pilot\'s job. In the club you will spot far more often than you fly - and a good spotter is the reason nothing goes wrong.'],
@@ -840,7 +840,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-asp-01', mod:'EVT', ord:3, title:'Class B, 400 ft and Sky Harbor', mins:3, kind:'read',
+  id:'gs-asp-01', mod:'EVT', ord:3, title:'Class B, 400 ft and Sky Harbor', mins:2, kind:'read',
   cards:[
     { h:'Two ways to be legal',
       p:['Money is not what decides which one you are. <b>Purpose</b> is - a video for the club or a shot for a class project counts, paid or not.'],
@@ -893,7 +893,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-saf-03', mod:'SAF', ord:30, title:'Go / No-Go', mins:3, kind:'drill', drill:'goNoGo',
+  id:'gs-saf-03', mod:'SAF', ord:30, title:'Go / No-Go', mins:2, kind:'drill', drill:'goNoGo',
   cards:[
     { h:'Two answers: fly, or not yet', tab:'Two piles',
       p:['NOT YET is the pile people get wrong, because it is not only about broken parts. Swapping a nicked prop is "not yet". So is waiting for somebody to walk off the field. Any wind is "not yet". None of these has to end your session; they stop you launching this second.'],
@@ -906,7 +906,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-elc-01', mod:'ELC', ord:10, title:'The six parts', mins:3, kind:'read',
+  id:'gs-elc-01', mod:'ELC', ord:10, title:'The six parts', mins:2, kind:'read',
   cards:[
     { h:'Six parts. That is the whole aircraft.', tab:'Six parts',
       p:['A racing quad has fewer parts than a bicycle. Learn what each one does and what it looks like when it fails, and you can diagnose most problems on the bench without a laptop.'],
@@ -933,7 +933,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-elc-02', mod:'ELC', ord:20, title:'Motors, props and thrust', mins:3, kind:'drill', drill:'motors',
+  id:'gs-elc-02', mod:'ELC', ord:20, title:'Motors, props and thrust', mins:2, kind:'drill', drill:'motors',
   cards:[
     { h:'Diagonals spin together',
       p:['Look down at the aircraft. The two motors on <b>one diagonal</b> spin one way; the two on the other diagonal spin the opposite way.',
@@ -947,7 +947,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-bat-01', mod:'BAT', ord:10, title:'LiPo basics', mins:4, kind:'read', extra:'voltage',
+  id:'gs-bat-01', mod:'BAT', ord:10, title:'LiPo basics', mins:2, kind:'read', extra:'voltage',
   cards:[
     { h:'S is how many cells',
       p:['Four numbers, <b>per cell</b>, are the whole of battery safety. The S number is how many cells are in series - a 4S pack is four of them, so <b>always divide by S</b> before you judge a pack.'],
@@ -996,7 +996,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-bat-02', mod:'BAT', ord:20, title:'Battery math', mins:3, kind:'drill', drill:'batteryMath',
+  id:'gs-bat-02', mod:'BAT', ord:20, title:'Battery math', mins:2, kind:'drill', drill:'batteryMath',
   cards:[
     { h:'Three sums you will do forever', tab:'Three sums', art:'batteryMath', cap:'work them, do not memorise them',
       p:['<b>How long will this fly?</b> Usable capacity is about 80% of the pack - you land with a reserve, you do not run it flat. Divide that by the average current and turn hours into minutes.',
@@ -1005,7 +1005,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-rad-01', mod:'RAD', ord:10, title:'Analog against digital', mins:4, kind:'read', extra:'signal',
+  id:'gs-rad-01', mod:'RAD', ord:10, title:'Analog against digital', mins:2, kind:'read', extra:'signal',
   cards:[
     { h:'Radio is light you cannot see', tab:'It is light',
       p:['Your control link, your video and the light from the sun are the same thing: <b>electromagnetic waves</b>, all moving at the speed of light. The only difference is the <b>frequency</b> - how many waves pass each second - and the wavelength that comes with it.',
@@ -1037,7 +1037,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-rad-02', mod:'RAD', ord:20, title:'Bands, channels and racing', mins:4, kind:'drill', drill:'channels',
+  id:'gs-rad-02', mod:'RAD', ord:20, title:'Bands, channels and racing', mins:2, kind:'drill', drill:'channels',
   cards:[
     { h:'Five bands, eight channels each', tab:'Bands and channels',
       p:['Your transmitter and your goggles must be on the same channel or you see nothing at all. Forty combinations sounds like plenty - it is not, because they are not all far enough apart to be used at once.'],
@@ -1060,7 +1060,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-rad-03', mod:'RAD', ord:30, title:'Antennas and diversity', mins:3, kind:'read', extra:'patch',
+  id:'gs-rad-03', mod:'RAD', ord:30, title:'Antennas and diversity', mins:2, kind:'read', extra:'patch',
   cards:[
     { h:'Circular, and it has a handedness', tab:'Handedness', art:'polarity', cap:'match both ends or lose most of it',
       p:['FPV antennas are <b>circularly polarised</b> - the signal corkscrews rather than waving flat. That is what makes them shrug off reflections off the ground and buildings.',
@@ -1096,7 +1096,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-fly-01', mod:'FLY', ord:10, title:'Four channels, two sticks', mins:3, kind:'drill', drill:'sticks',
+  id:'gs-fly-01', mod:'FLY', ord:10, title:'Four channels, two sticks', mins:2, kind:'drill', drill:'sticks',
   cards:[
     { h:'Mode 2',
       p:['<b>Left stick:</b> up and down is <b>throttle</b>, left and right is <b>yaw</b> - spinning in place.',
@@ -1109,7 +1109,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-fly-02', mod:'FLY', ord:20, title:'Rate mode against angle mode', mins:3, kind:'drill', drill:'rateAngle',
+  id:'gs-fly-02', mod:'FLY', ord:20, title:'Rate mode against angle mode', mins:2, kind:'drill', drill:'rateAngle',
   cards:[
     { h:'One toggle, two aircraft', tab:'Two modes',
       p:['The stick asks for an <b>angle</b>, or for a <b>speed</b>. That is the whole difference - and it decides everything about how the aircraft behaves when you let go.'],
@@ -1123,7 +1123,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-fly-03', mod:'FLY', ord:30, title:'Hover Trainer', mins:5, kind:'drill', drill:'hover',
+  id:'gs-fly-03', mod:'FLY', ord:30, title:'Hover Trainer', mins:2, kind:'drill', drill:'hover',
   cards:[
     { h:'The whole skill is small corrections', tab:'Small corrections', art:'hoverBox', cap:'hold the box, not a number',
       p:['A hover is not a thing you set, it is a thing you keep. The aircraft is always falling out of it and you are always putting it back, in inputs too small for anyone watching to see.'],
@@ -1136,7 +1136,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-fly-04', mod:'FLY', ord:40, title:'Throttle discipline', mins:4, kind:'drill', drill:'throttle',
+  id:'gs-fly-04', mod:'FLY', ord:40, title:'Throttle discipline', mins:2, kind:'drill', drill:'throttle',
   cards:[
     { h:'Stop using throttle like a switch', tab:'The sawtooth',
       p:['The beginner signature is full throttle, nothing, full throttle - a rising and falling sawtooth that never settles. It burns the pack, it makes the aircraft unpredictable, and it is exhausting to watch.',
@@ -1145,7 +1145,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-los-01', mod:'FLY', ord:50, title:'Which way is left?', mins:3, kind:'drill', drill:'orient',
+  id:'gs-los-01', mod:'FLY', ord:50, title:'Which way is left?', mins:2, kind:'drill', drill:'orient',
   cards:[
     { h:'The aircraft does not know where you are', tab:'Its left, not yours',
       p:['Roll right means "lean toward your own right side" - the <b>aircraft\'s</b> right, not yours.',
@@ -1157,7 +1157,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-los-02', mod:'FLY', ord:60, title:'Gate Run', mins:5, kind:'drill', drill:'gates',
+  id:'gs-los-02', mod:'FLY', ord:60, title:'Gate Run', mins:2, kind:'drill', drill:'gates',
   cards:[
     { h:'A course that will not let you cheat', tab:'The course', art:'gateCourse', cap:'gate 6 has the nose back at you',
       p:['Six gates, laid out so you cannot fly the whole lap nose-away. Some you take side-on. At least one you take with the nose pointed straight back at yourself.',
@@ -1166,7 +1166,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-los-03', mod:'FLY', ord:70, title:'Lost orientation recovery', mins:4, kind:'drill', drill:'recover',
+  id:'gs-los-03', mod:'FLY', ord:70, title:'Lost orientation recovery', mins:2, kind:'drill', drill:'recover',
   cards:[
     { h:'It happens to everybody',
       p:['Not "if you are bad at this". Everybody, usually when the aircraft is far away and small and you glanced down for a second.',
@@ -1189,7 +1189,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-trk-01', mod:'FLY', ord:80, title:'Your first flip and roll', mins:4, kind:'read',
+  id:'gs-trk-01', mod:'FLY', ord:80, title:'Your first flip and roll', mins:2, kind:'read',
   cards:[
     { h:'Every trick is the same three beats', tab:'Three beats',
       p:['A <b>roll</b> spins you around the nose (right stick, left-right). A <b>flip</b> tumbles you over the top (right stick, up-down). Same trick, different stick - and both are rate mode only.'],
@@ -1224,7 +1224,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-trk-02', mod:'FLY', ord:90, title:'The Split-S', mins:3, kind:'read',
+  id:'gs-trk-02', mod:'FLY', ord:90, title:'The Split-S', mins:2, kind:'read',
   cards:[
     { h:'A U-turn that spends height', tab:'The move',
       p:['Half-roll to inverted, pull through a half loop, and leave the other way - lower, faster, and without the wide flat turn everyone can see from the ground.'],
@@ -1257,7 +1257,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-trk-03', mod:'FLY', ord:100, title:'The Power Loop', mins:4, kind:'read',
+  id:'gs-trk-03', mod:'FLY', ord:100, title:'The Power Loop', mins:2, kind:'read',
   cards:[
     { h:'Four beats round the clock', tab:'The move',
       p:['The signature FPV trick: a full loop, usually over something, with the world coming back the right way up exactly where you left it.'],
@@ -1290,7 +1290,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-trk-04', mod:'FLY', ord:110, title:'The Matty Flip', mins:3, kind:'read',
+  id:'gs-trk-04', mod:'FLY', ord:110, title:'The Matty Flip', mins:2, kind:'read',
   cards:[
     { h:'A power loop, flown backwards', tab:'The move',
       p:['Named for Matty Stuntz. Dive at the gap, pitch <b>back</b> and punch, and loop over the top in reverse - with the camera holding the object the whole way round. It films better than anything else you will learn this year.'],
@@ -1318,7 +1318,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-saf-02', mod:'SAF', ord:20, title:'The Brophy FPV rules sheet', mins:4, kind:'read',
+  id:'gs-saf-02', mod:'SAF', ord:20, title:'The Brophy FPV rules sheet', mins:2, kind:'read',
   cards:[
     { h:'Six flight rules. Know them. Follow them.', tab:'The sheet',
       p:['This is the sheet on the wall by the simulators. Safe Flight is the badge that says you know it and you follow it - at all times you are with the Brophy FPV Club.'],
@@ -1346,7 +1346,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-saf-quiz', mod:'SAF', ord:90, title:'Safe Flight quiz', mins:6, kind:'quiz', pool:'SAF',
+  id:'gs-saf-quiz', mod:'SAF', ord:90, title:'Safe Flight quiz', mins:4, kind:'quiz', pool:'SAF',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
       p:['Ten questions drawn from the Safe Flight pool - the rules, the calls and the go / no-go - reshuffled every time. <b>80 to pass</b> earns the badge on the spot - no sign-off needed. Unlimited retakes; your best score is kept.'] }
@@ -1357,7 +1357,7 @@ var GS_COURSE = [
    spotted for a mentor is the badge. The mentor checks airspace law; the
    spotter checks the field. */
 {
-  id:'gs-spt-01', mod:'SPT', ord:10, title:'The spotter\'s job', mins:3, kind:'read',
+  id:'gs-spt-01', mod:'SPT', ord:10, title:'The spotter\'s job', mins:1, kind:'read',
   cards:[
     { h:'Your eyes are the pilot\'s eyes', tab:'The job',
       p:['In goggles the pilot sees only what the camera sees. You watch the <b>aircraft itself</b>, the whole battery, and say what the pilot cannot see. You will spot far more often than you fly.'],
@@ -1379,7 +1379,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-spt-02', mod:'SPT', ord:20, title:'What to call', mins:3, kind:'read',
+  id:'gs-spt-02', mod:'SPT', ord:20, title:'What to call', mins:1, kind:'read',
   cards:[
     { h:'The four calls', tab:'The four calls',
       p:['The pilot says them; you listen for them and repeat them if anyone nearby did not hear. Nobody walks out to the aircraft until they have heard DISARMED.'],
@@ -1407,14 +1407,14 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-spt-quiz', mod:'SPT', ord:90, title:'Spotter quiz', mins:5, kind:'quiz', pool:'SPT',
+  id:'gs-spt-quiz', mod:'SPT', ord:90, title:'Spotter quiz', mins:3, kind:'quiz', pool:'SPT',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
       p:['Ten questions on the job, the check and the calls, reshuffled every time. <b>80 to pass</b> - then a mentor watches you spot a real flight and signs the badge off. Unlimited retakes; your best score is kept.'] }
   ]
 },
 {
-  id:'gs-bat-03', mod:'BAT', ord:30, title:'Charging, storage and disposal', mins:4, kind:'read',
+  id:'gs-bat-03', mod:'BAT', ord:30, title:'Charging, storage and disposal', mins:2, kind:'read',
   cards:[
     { h:'Charge at 1C, balanced, watched', tab:'Charging',
       p:['The charge current is the pack capacity in amps: a <b>1300 mAh</b> pack charges at <b>1.3 A</b>, a 300 mAh whoop pack at 0.3 A. Always on the balance lead, so the charger can hold every cell within a few millivolts of the others.'],
@@ -1442,7 +1442,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-bat-04', mod:'BAT', ord:40, title:'When a pack goes bad', mins:3, kind:'read',
+  id:'gs-bat-04', mod:'BAT', ord:40, title:'When a pack goes bad', mins:2, kind:'read',
   cards:[
     { h:'Puffed means retired', tab:'Puffing',
       p:['Gas inside the cell pushes the pouch out. A puffed pack is not "a bit tired" - the chemistry has started breaking down and it can go from warm to on fire with no warning. It does not get charged again. Ever.'],
@@ -1468,14 +1468,14 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-bat-quiz', mod:'BAT', ord:90, title:'Battery Care quiz', mins:6, kind:'quiz', pool:'BAT',
+  id:'gs-bat-quiz', mod:'BAT', ord:90, title:'Battery Care quiz', mins:4, kind:'quiz', pool:'BAT',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
       p:['Voltages, charge rates, storage, crashes and fire. <b>80 to pass</b> earns Battery Care on the spot. Unlimited retakes; best score kept.'] }
   ]
 },
 {
-  id:'gs-elc-03', mod:'ELC', ord:30, title:'Matching motor, ESC, prop and battery', mins:5, kind:'read',
+  id:'gs-elc-03', mod:'ELC', ord:30, title:'Matching motor, ESC, prop and battery', mins:2, kind:'read',
   cards:[
     { h:'Four numbers that have to agree', tab:'The four',
       p:['A drone flies well when the <b>motor</b>, the <b>prop</b>, the <b>battery</b> and the <b>ESC</b> were chosen for each other. Get one wrong and the symptom is heat, sag, or a motor that cannot do what the prop asks of it.'],
@@ -1503,7 +1503,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-elc-04', mod:'ELC', ord:40, title:'Why a 3-inch and a 5-inch differ', mins:3, kind:'read',
+  id:'gs-elc-04', mod:'ELC', ord:40, title:'Why a 3-inch and a 5-inch differ', mins:2, kind:'read',
   cards:[
     { h:'Same parts list, different numbers', tab:'Three sizes',
       p:['Every quad in the club has the same six parts. What changes with size is how much air each prop moves per turn - and so how big, how fast and how hungry everything else has to be.'],
@@ -1517,14 +1517,14 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-elc-quiz', mod:'ELC', ord:90, title:'Electrical Components quiz', mins:6, kind:'quiz', pool:'ELC',
+  id:'gs-elc-quiz', mod:'ELC', ord:90, title:'Electrical Components quiz', mins:4, kind:'quiz', pool:'ELC',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
       p:['Parts, thrust, KV, current and which numbers go with which frame. <b>80 to pass</b> earns the badge. Unlimited retakes; best score kept.'] }
   ]
 },
 {
-  id:'gs-rad-04', mod:'RAD', ord:40, title:'Control links: ELRS, Crossfire, binding, failsafe', mins:5, kind:'read',
+  id:'gs-rad-04', mod:'RAD', ord:40, title:'Control links: ELRS, Crossfire, binding, failsafe', mins:2, kind:'read',
   cards:[
     { h:'Two radios on every quad', tab:'Two links',
       p:['Video comes <b>down</b> from the aircraft on 5.8 GHz. Control goes <b>up</b> on a different band: <b>2.4 GHz</b> or <b>900 MHz</b>. They are separate systems with separate antennas, and losing one does not mean losing the other.'],
@@ -1551,7 +1551,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-rad-05', mod:'RAD', ord:50, title:'Interference at an event', mins:3, kind:'read',
+  id:'gs-rad-05', mod:'RAD', ord:50, title:'Interference at an event', mins:2, kind:'read',
   cards:[
     { h:'A gym full of phones', tab:'Crowds',
       p:['2.4 GHz is also Wi-Fi and Bluetooth. A stadium or gym with a thousand phones is the noisiest place a 2.4 GHz link will ever fly. Range that was easy at the field drops, and the link quality number on your OSD is the warning.'],
@@ -1572,7 +1572,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-rad-06', mod:'RAD', ord:60, title:'Digital video: goggles, recording and D-log', mins:4, kind:'read',
+  id:'gs-rad-06', mod:'RAD', ord:60, title:'Digital video: goggles, recording and D-log', mins:2, kind:'read',
   cards:[
     { h:'Bind once, fly all day', tab:'Binding',
       p:['A digital video unit (the O4 on the Meteor and the Pavo) pairs to one set of goggles like a phone to headphones. Power the quad, put the goggles in pairing mode, press the bind button on the air unit, wait for the picture. It stays bound until you bind something else - so if your picture is gone, ask who flew the goggles last.'],
@@ -1596,14 +1596,14 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-rad-quiz', mod:'RAD', ord:90, title:'Radio Protocol quiz', mins:6, kind:'quiz', pool:'RAD',
+  id:'gs-rad-quiz', mod:'RAD', ord:90, title:'Radio Protocol quiz', mins:4, kind:'quiz', pool:'RAD',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
       p:['Analog against digital, channels, antennas, control links, failsafe, and setting up a digital video system. <b>80 to pass</b> earns the badge. Unlimited retakes; best score kept.'] }
   ]
 },
 {
-  id:'gs-asp-02', mod:'EVT', ord:6, title:'B4UFLY, LAANC and TRUST', mins:4, kind:'read',
+  id:'gs-asp-02', mod:'EVT', ord:6, title:'B4UFLY, LAANC and TRUST', mins:2, kind:'read',
   cards:[
     { h:'Three letters you need', tab:'The three',
       p:['Recreational flying in the United States comes with three things every club pilot carries: a <b>TRUST</b> certificate, a <b>B4UFLY</b> check of where you are standing, and - inside controlled airspace - a <b>LAANC</b> authorization before take-off.'],
@@ -1624,7 +1624,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-emg-01', mod:'EVT', ord:40, title:'Failsafe: set it, test it', mins:3, kind:'read',
+  id:'gs-emg-01', mod:'EVT', ord:40, title:'Failsafe: set it, test it', mins:2, kind:'read',
   cards:[
     { h:'Know what your drone does', tab:'Set',
       p:['Failsafe is what the aircraft does the moment it stops hearing you. It is <b>set per drone</b> in Betaflight, so the procedure and the timing can differ from one quad to the next. Before an event, find out what each quad you will fly is set to.'],
@@ -1646,7 +1646,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-emg-02', mod:'EVT', ord:50, title:'Flyaway and lost video', mins:4, kind:'read',
+  id:'gs-emg-02', mod:'EVT', ord:50, title:'Flyaway and lost video', mins:2, kind:'read',
   cards:[
     { h:'Video gone, control still there', tab:'Lost video',
       p:['The most common emergency. Your goggles go black or to snow, but the aircraft is still listening. You are now a line-of-sight pilot whose spotter can see the quad and you cannot.'],
@@ -1666,7 +1666,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-emg-03', mod:'EVT', ord:60, title:'LiPo fire and injury', mins:3, kind:'read',
+  id:'gs-emg-03', mod:'EVT', ord:60, title:'LiPo fire and injury', mins:2, kind:'read',
   cards:[
     { h:'Fire: contain, do not fight', tab:'Fire',
       p:['Battery Care covers the chemistry. Here is the drill, because in the moment you will not have time to remember the chemistry.'],
@@ -1706,7 +1706,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-emg-05', mod:'EVT', ord:80, title:'Scenario drill', mins:4, kind:'read',
+  id:'gs-emg-05', mod:'EVT', ord:80, title:'Scenario drill', mins:2, kind:'read',
   cards:[
     { h:'Three scenarios, pick the response', tab:'Drill',
       p:['Read each one as if it is happening. Then answer the three checks below - they are the drill.'],
@@ -1727,7 +1727,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-evt-01', mod:'EVT', ord:10, title:'The flight zone', mins:4, kind:'read',
+  id:'gs-evt-01', mod:'EVT', ord:10, title:'The flight zone', mins:2, kind:'read',
   cards:[
     { h:'Draw the box before the battery goes in', tab:'The box',
       p:['At a game, a dance or a rally the club does not fly "around". It flies inside a <b>zone</b> that was agreed, marked and briefed before anyone powered up - and nobody is in the zone unless they are crew or have agreed to be in the shot.'],
@@ -1747,7 +1747,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-evt-02', mod:'EVT', ord:20, title:'Briefing bystanders', mins:3, kind:'read',
+  id:'gs-evt-02', mod:'EVT', ord:20, title:'Briefing bystanders', mins:2, kind:'read',
   cards:[
     { h:'Thirty seconds, out loud', tab:'The brief',
       p:['Before the first flight, the spotter briefs whoever is near the line: organisers, the nearest spectators, the photographer. It is short, friendly and specific.'],
@@ -1764,7 +1764,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-evt-03', mod:'EVT', ord:30, title:'Pilot and spotter call-outs', mins:3, kind:'read',
+  id:'gs-evt-03', mod:'EVT', ord:30, title:'Pilot and spotter call-outs', mins:2, kind:'read',
   cards:[
     { h:'The same four calls, louder', tab:'Calls',
       p:['ARMING, TAKEOFF, LANDING, DISARMED - the four calls from Safe Flight - at an event, said loudly enough for the crew table to hear over a crowd. Plus three the spotter owns.'],
@@ -1781,7 +1781,7 @@ var GS_COURSE = [
   ]
 },
 {
-  id:'gs-evt-quiz', mod:'EVT', ord:90, title:'Event Ops quiz', mins:6, kind:'quiz', pool:'EVT',
+  id:'gs-evt-quiz', mod:'EVT', ord:90, title:'Event Ops quiz', mins:4, kind:'quiz', pool:'EVT',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
       p:['The airspace check, the zone, the brief, the calls and the handover, plus failsafe, flyaway, fire and the incident report. <b>80 to pass</b>, then a mentor watches you set up and run a real flight zone to sign the badge off. Unlimited retakes; best score kept.'] }
