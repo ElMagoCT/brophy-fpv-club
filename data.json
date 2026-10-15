@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792087724658,
-    "generatedIso":  "2026-10-15T11:08:44-07:00",
+    "generated":  1792087786262,
+    "generatedIso":  "2026-10-15T11:09:46-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,13 +9,13 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  384962359,
+                   "clubMs":  385016761,
                    "pilots":  39,
                    "activePilots7":  7,
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  268606176.11699963,
-                                    "microdrones":  112564128.3137003,
+                                    "microdrones":  112618530.2767003,
                                     "skydive":  2660747.560299987,
                                     "fpvlabs":  316778.85469998,
                                     "picasim":  814526.99810002092
@@ -56,17 +56,17 @@
     "pilots":  [
                    {
                        "name":  "Josiah T.",
-                       "totalMs":  55065978,
+                       "totalMs":  55120380,
                        "perSimMs":  {
                                         "liftoff":  41296471,
-                                        "microdrones":  13707477,
+                                        "microdrones":  13761879,
                                         "skydive":  0,
                                         "fpvlabs":  62030,
                                         "picasim":  0
                                     },
                        "gsPct":  16,
                        "gsLessons":  9,
-                       "lastSeen":  1792087708878,
+                       "lastSeen":  1792087763281,
                        "badges":  [
                                       "proficient-flight",
                                       "spotter",
