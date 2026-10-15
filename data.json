@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792043977210,
-    "generatedIso":  "2026-10-14T22:59:37-07:00",
+    "generated":  1792047621564,
+    "generatedIso":  "2026-10-15T00:00:21-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -809,22 +809,6 @@
                      "source":  "imported 2026-08-31 09:01",
                      "days":  [
                                   {
-                                      "date":  "2026-10-14",
-                                      "dow":  "Wed",
-                                      "dowFull":  "Wednesday",
-                                      "label":  "Oct 14",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-14T07:00:00-07:00",
-                                                          "endIso":  "2026-10-14T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
                                       "date":  "2026-10-15",
                                       "dow":  "Thu",
                                       "dowFull":  "Thursday",
@@ -1615,6 +1599,40 @@
                                                           "to":  "16:00",
                                                           "startIso":  "2026-11-10T14:30:00-07:00",
                                                           "endIso":  "2026-11-10T16:00:00-07:00"
+                                                      }
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-11",
+                                      "dow":  "Wed",
+                                      "dowFull":  "Wednesday",
+                                      "label":  "Nov 11",
+                                      "open":  true,
+                                      "note":  "",
+                                      "windows":  [
+                                                      {
+                                                          "from":  "07:00",
+                                                          "to":  "08:00",
+                                                          "startIso":  "2026-11-11T07:00:00-07:00",
+                                                          "endIso":  "2026-11-11T08:00:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "09:20",
+                                                          "to":  "11:40",
+                                                          "startIso":  "2026-11-11T09:20:00-07:00",
+                                                          "endIso":  "2026-11-11T11:40:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "13:00",
+                                                          "to":  "13:10",
+                                                          "startIso":  "2026-11-11T13:00:00-07:00",
+                                                          "endIso":  "2026-11-11T13:10:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "14:30",
+                                                          "to":  "16:00",
+                                                          "startIso":  "2026-11-11T14:30:00-07:00",
+                                                          "endIso":  "2026-11-11T16:00:00-07:00"
                                                       }
                                                   ]
                                   }
