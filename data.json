@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792103826519,
-    "generatedIso":  "2026-10-15T15:37:06-07:00",
+    "generated":  1792103887814,
+    "generatedIso":  "2026-10-15T15:38:08-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -11,7 +11,7 @@
     "totals":  {
                    "clubMs":  394356072,
                    "pilots":  39,
-                   "activePilots7":  7,
+                   "activePilots7":  8,
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  269770539.01669967,
@@ -725,7 +725,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1787697776532,
+                       "lastSeen":  1792103829067,
                        "badges":  [
 
                                   ],
