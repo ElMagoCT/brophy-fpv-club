@@ -143,3 +143,26 @@ textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--
 .fr .fa button.ok{color:var(--ok);border-color:var(--ok)}
 .pchip.pending{color:var(--warn)} .pchip.approved{background:var(--ok);color:#fff} .pchip.denied{background:var(--bad);color:#fff}
 @media (max-width:560px){ .fr{grid-template-columns:1fr} .fr .fa{grid-row:auto} }
+.h3{margin:16px 0 4px;font-size:16px;font-weight:600}
+.rct{display:grid;grid-template-columns:1fr 2fr auto auto;gap:8px 12px;align-items:start;padding:10px 0;border-top:1px dashed var(--line)}
+.rct:first-child{border-top:0}
+.rct input,.rct textarea{margin-top:0;width:100%}
+.rct label.inline{margin:6px 0 0;white-space:nowrap}
+.rct .id{font:12px "Share Tech Mono",ui-monospace,monospace;color:var(--muted);margin-top:4px}
+.rct button{padding:5px 10px;font-size:14px;margin-top:0}
+@media (max-width:640px){ .rct{grid-template-columns:1fr 1fr} }
+.nextcard{border-left:4px solid var(--accent)}
+.nextcard .big{font-size:20px;font-weight:600}
+.nextcard .nv{color:var(--muted);font-size:14.5px;margin-top:2px}
+.cal{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-top:8px}
+.cal .dow{font:12px "Share Tech Mono",ui-monospace,monospace;color:var(--muted);text-align:center;letter-spacing:.5px;padding:2px 0}
+.cal .day{min-height:64px;border:1px solid var(--line);border-radius:6px;padding:4px 5px;font-size:12.5px;background:var(--bg);cursor:pointer}
+.cal .day.out{opacity:.4}
+.cal .day.today{border-color:var(--accent)}
+.cal .day.sel{box-shadow:0 0 0 2px var(--accent)}
+.cal .day .n{font:12px "Share Tech Mono",ui-monospace,monospace;color:var(--muted)}
+.cal .ev{display:block;border-radius:4px;padding:1px 4px;margin-top:2px;color:#fff;background:var(--warn);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cal .ev.approved{background:var(--ok)} .cal .ev.denied{background:var(--bad)}
+.cal .ev.event{outline:2px solid var(--ink);outline-offset:-2px}
+#calTitle{min-width:120px;text-align:center}
+@media (max-width:640px){ .cal .day{min-height:44px;padding:3px} .cal .ev{font-size:0;height:6px;padding:0;margin-top:3px} }

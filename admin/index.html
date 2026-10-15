@@ -54,39 +54,42 @@
 
     <!-- ---- fly requests: the 24 h permission form's recipients + what is on file (2026-10-15) ---- -->
     <div id="fly" hidden>
+      <div class="card nextcard" id="flyNext"><div class="muted small">Loading the next event…</div></div>
+      <div class="card">
+        <div class="row between">
+          <h2>Calendar</h2>
+          <div class="row"><button id="calPrev" title="Previous month">&larr;</button><b id="calTitle"></b><button id="calNext" title="Next month">&rarr;</button><button id="flyRefresh">Refresh</button></div>
+        </div>
+        <p class="muted small">Every request on file, on the day of the flight. Green = approved, amber = waiting, red = denied; events are outlined. Click a day to see it below.</p>
+        <div class="cal" id="cal"></div>
+      </div>
+      <div class="card">
+        <h2>Requests on file</h2>
+        <p class="muted small">Newest flight first. Mr. Burr decides from the Approve / Deny buttons in his email; if he answers
+          another way (a reply, in person), record it here and the pilot is emailed the same as if he had clicked.</p>
+        <div class="muted small" id="flyMsg"></div>
+        <div id="flyList"></div>
+      </div>
       <div class="card">
         <div class="row between">
           <h2>Who gets the flight requests</h2>
           <button id="flyRcRefresh">Refresh</button>
         </div>
         <p class="muted small">The <a href="../fly/">Request to fly</a> form emails these people. <b>Always</b> gets every request
-          (Mr. Burr and Mr. Reasy); each event type adds its own extras on top. Addresses live in the private control repo
-          (<code>settings/fly-recipients.json</code>) and are read when each request is sent - never in the website's code.
-          Comma or newline separated.</p>
+          (Mr. Burr and Mr. Reasy). Each <b>event type</b> is a choice on the form; it adds its own extra people, and
+          <b>Locked</b> means only someone with the instructor password can file it (unlocked = any cleared pilot).
+          Addresses live in the private control repo (<code>settings/fly-recipients.json</code>) and are read when each
+          request is sent - never in the website's code. Comma or newline separated.</p>
         <div class="setup" id="flySetup" hidden></div>
         <label>Always (every request) <textarea id="rcAlways" rows="2" placeholder="pburr@…, treasy@…"></textarea></label>
-        <div class="rcgrid">
-          <label>Club meeting <textarea id="rc-meeting" rows="2"></textarea></label>
-          <label>Race <textarea id="rc-race" rows="2"></textarea></label>
-          <label>Filming <textarea id="rc-filming" rows="2"></textarea></label>
-          <label>Pep rally <textarea id="rc-pep-rally" rows="2"></textarea></label>
-          <label>Other event <textarea id="rc-other" rows="2"></textarea></label>
-          <label>Reply-to when the pilot gave no email <input id="rcReply" type="email" placeholder="a mentor's address (optional)"></label>
-        </div>
+        <label>Reply-to when the pilot gave no email <input id="rcReply" type="email" placeholder="a mentor's address (optional)"></label>
+        <h3 class="h3">Event types</h3>
+        <div id="rcTypes"></div>
         <div class="row wrapline gap-top">
-          <button id="rcSave" class="primary flush">Save recipients</button>
+          <button id="rcAdd">+ Add an event type</button>
+          <button id="rcSave" class="primary flush">Save</button>
           <span class="muted small" id="rcMsg"></span>
         </div>
-      </div>
-      <div class="card">
-        <div class="row between">
-          <h2>Requests on file</h2>
-          <button id="flyRefresh">Refresh</button>
-        </div>
-        <p class="muted small">Newest flight first. Mr. Burr decides from the Approve / Deny buttons in his email; if he answers
-          another way (a reply, in person), record it here and the pilot is emailed the same as if he had clicked.</p>
-        <div class="muted small" id="flyMsg"></div>
-        <div id="flyList"></div>
       </div>
     </div>
 

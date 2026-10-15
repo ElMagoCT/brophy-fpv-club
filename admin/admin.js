@@ -700,45 +700,112 @@
   // settings/fly-recipients.json and are edited here; reading the list of
   // requests, saving recipients and recording a decision all send the review
   // key (hex SHA-256 of the password) like photo review does.
-  var FLY_TYPES = ['meeting', 'race', 'filming', 'pep-rally', 'other'];
+  var RC = null;   // the recipients record as loaded / being edited
   function loadRecipients() {
     el('rcMsg').textContent = 'Loading…';
     api('GET', '/api/fly-request?recipients=1', null, reviewHeaders()).then(function (j) {
-      var r = j.recipients || {};
+      var r = j.recipients || {}; RC = r;
       el('rcAlways').value = (r.always || []).join(', ');
-      FLY_TYPES.forEach(function (t) { el('rc-' + t).value = ((r.byEvent || {})[t] || []).join(', '); });
       el('rcReply').value = r.replyTo || '';
+      drawTypes(r.types || []);
       var setup = el('flySetup'); setup.textContent = '';
       var warn = [];
       if (!j.mail) warn.push('Email is not set up on the API yet: requests are filed but nothing is sent. See mail/README.md in brophy-fpv-club-api (a Google Apps Script, authorised once by a human).');
       if (!j.links) warn.push('FLY_SECRET is not set on the API: the emails say "reply with your decision" instead of carrying Approve / Deny buttons.');
       if (!(r.always || []).length) warn.push('No "Always" recipients yet - until there are, requests go nowhere.');
       setup.hidden = !warn.length; warn.forEach(function (w) { var d = document.createElement('div'); d.textContent = w; setup.appendChild(d); });
-      el('rcMsg').textContent = r.updated ? 'Saved ' + when(r.updated) + '.' : 'Nothing saved yet.';
+      el('rcMsg').textContent = r.updated ? 'Saved ' + when(r.updated) + '.' : 'Nothing saved yet (showing the starting set of types).';
     }).catch(function (e) { el('rcMsg').textContent = 'Could not load: ' + e.message; });
   }
+  function drawTypes(types) {
+    var box = el('rcTypes'); box.textContent = '';
+    types.forEach(function (t) { box.appendChild(typeRow(t)); });
+    if (!types.length) { var d = document.createElement('div'); d.className = 'muted small'; d.textContent = 'No event types: the form only offers recreational flights.'; box.appendChild(d); }
+  }
+  function typeRow(t) {
+    var d = document.createElement('div'); d.className = 'rct';
+    var c1 = document.createElement('div');
+    var lab = document.createElement('input'); lab.placeholder = 'Name on the form (Race)'; lab.value = t.label || ''; lab.maxLength = 40; lab.className = 'lab';
+    var id = document.createElement('div'); id.className = 'id'; id.textContent = t.id ? 'id ' + t.id : 'new';
+    c1.appendChild(lab); c1.appendChild(id);
+    var to = document.createElement('textarea'); to.rows = 2; to.placeholder = 'extra people for this type (optional)'; to.value = (t.to || []).join(', '); to.className = 'to';
+    var lk = document.createElement('label'); lk.className = 'inline'; var cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = t.locked !== false; cb.className = 'lk';
+    lk.appendChild(cb); lk.appendChild(document.createTextNode(' Locked')); lk.title = 'Needs the instructor password to file';
+    var rm = document.createElement('button'); rm.textContent = 'Remove'; rm.className = 'danger'; rm.onclick = function () { if (window.confirm('Remove "' + (lab.value || 'this type') + '" from the form?')) d.remove(); };
+    d.appendChild(c1); d.appendChild(to); d.appendChild(lk); d.appendChild(rm);
+    d.rcType = function () { return { id: t.id || '', label: lab.value.trim(), to: to.value, locked: cb.checked }; };
+    return d;
+  }
+  el('rcAdd').onclick = function () { var r = typeRow({ label: '', to: [], locked: true }); el('rcTypes').appendChild(r); r.querySelector('.lab').focus(); };
   el('rcSave').onclick = function () {
-    var rc = { always: el('rcAlways').value, byEvent: {}, replyTo: el('rcReply').value.trim() };
-    FLY_TYPES.forEach(function (t) { rc.byEvent[t] = el('rc-' + t).value; });
+    var types = Array.prototype.map.call(el('rcTypes').querySelectorAll('.rct'), function (d) { return d.rcType(); }).filter(function (t) { return t.label.length >= 2; });
+    var rc = { always: el('rcAlways').value, replyTo: el('rcReply').value.trim(), types: types };
     el('rcSave').disabled = true; el('rcMsg').textContent = 'Saving…';
     api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
-      var r = j.recipients || {}, n = (r.always || []).length;
-      el('rcMsg').textContent = 'Saved: ' + n + ' always' + FLY_TYPES.map(function (t) { var k = (r.byEvent[t] || []).length; return k ? ', ' + k + ' for ' + t : ''; }).join('') + '. Addresses that did not look like emails were dropped.';
+      var r = j.recipients || {};
+      el('rcMsg').textContent = 'Saved: ' + (r.always || []).length + ' always · ' + (r.types || []).length + ' event type' + ((r.types || []).length === 1 ? '' : 's') + '. Addresses that did not look like emails were dropped.';
       loadRecipients();
     }).catch(function (e) { el('rcMsg').textContent = 'Could not save: ' + e.message; }).then(function () { el('rcSave').disabled = false; });
   };
   el('flyRcRefresh').onclick = loadRecipients;
   el('flyRefresh').onclick = function () { loadFly(); };
+
+  // ---- next event + calendar
+  var FLY = [], CAL = { y: 0, m: 0, sel: '' };
+  function ymdPhx(ms) { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Phoenix', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms)); }
+  function drawNext() {
+    var now = Date.now(), ev = FLY.filter(function (r) { return r.mode === 'event' && r.whenMs > now - 3 * 3600000; }).sort(function (a, b) { return a.whenMs - b.whenMs; });
+    var box = el('flyNext'); box.textContent = '';
+    var h = document.createElement('div'); h.className = 'muted small'; h.textContent = 'Next event'; box.appendChild(h);
+    if (!ev.length) { var n = document.createElement('div'); n.className = 'nv'; n.textContent = 'Nothing on the calendar. File a meeting or event from the form (a locked type needs your password).'; box.appendChild(n); return; }
+    var r = ev[0], b = document.createElement('div'); b.className = 'big';
+    b.textContent = ((r.event && r.event.label) || 'Event') + ' · ' + r.whenText + ' · ' + r.location;
+    var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting for approval' : r.status; chip.style.marginLeft = '8px'; b.appendChild(chip);
+    var v = document.createElement('div'); v.className = 'nv';
+    v.textContent = 'Pilot in charge ' + r.pilot + ' · ' + (r.event ? r.event.start + '–' + r.event.end + ' · crowd ' + r.event.crowd : '') + (r.status !== 'pending' ? ' · decided ' + when(r.decidedAt) : (r.mailed ? ' · emailed, no answer yet' : ' · NOT emailed'));
+    box.appendChild(b); box.appendChild(v);
+    if (ev.length > 1) { var m = document.createElement('div'); m.className = 'nv'; m.textContent = 'Then: ' + ev.slice(1, 4).map(function (x) { return ((x.event && x.event.label) || 'event') + ' ' + x.whenText + ' (' + (x.status === 'pending' ? 'waiting' : x.status) + ')'; }).join(' · '); box.appendChild(m); }
+  }
+  function drawCal() {
+    if (!CAL.y) { var t = ymdPhx(Date.now()).split('-'); CAL.y = +t[0]; CAL.m = +t[1] - 1; }
+    el('calTitle').textContent = new Date(Date.UTC(CAL.y, CAL.m, 1)).toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
+    var box = el('cal'); box.textContent = '';
+    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(function (d) { var x = document.createElement('div'); x.className = 'dow'; x.textContent = d; box.appendChild(x); });
+    var by = {}; FLY.forEach(function (r) { var k = ymdPhx(r.whenMs); (by[k] = by[k] || []).push(r); });
+    var first = new Date(Date.UTC(CAL.y, CAL.m, 1)), start = first.getUTCDay(), today = ymdPhx(Date.now());
+    for (var i = 0; i < 42; i++) {
+      var d = new Date(Date.UTC(CAL.y, CAL.m, 1 - start + i)), k = d.toISOString().slice(0, 10), out = d.getUTCMonth() !== CAL.m;
+      if (i >= 35 && out) break;
+      var cell = document.createElement('div'); cell.className = 'day' + (out ? ' out' : '') + (k === today ? ' today' : '') + (k === CAL.sel ? ' sel' : '');
+      var n = document.createElement('div'); n.className = 'n'; n.textContent = d.getUTCDate(); cell.appendChild(n);
+      (by[k] || []).sort(function (a, b) { return a.whenMs - b.whenMs; }).forEach(function (r) {
+        var e = document.createElement('span'); e.className = 'ev ' + r.status + (r.mode === 'event' ? ' event' : '');
+        e.textContent = new Date(r.whenMs).toLocaleTimeString('en-US', { timeZone: 'America/Phoenix', hour: 'numeric', minute: '2-digit' }).replace(' ', '') + ' ' + (r.mode === 'event' && r.event ? r.event.label : r.pilot);
+        e.title = r.pilot + ' · ' + r.whenText + ' · ' + r.location + ' · ' + r.status; cell.appendChild(e);
+      });
+      cell.onclick = (function (k) { return function () { CAL.sel = CAL.sel === k ? '' : k; drawCal(); drawList(); }; })(k);
+      box.appendChild(cell);
+    }
+  }
+  el('calPrev').onclick = function () { CAL.m--; if (CAL.m < 0) { CAL.m = 11; CAL.y--; } drawCal(); };
+  el('calNext').onclick = function () { CAL.m++; if (CAL.m > 11) { CAL.m = 0; CAL.y++; } drawCal(); };
+  function drawList() {
+    var items = CAL.sel ? FLY.filter(function (r) { return ymdPhx(r.whenMs) === CAL.sel; }) : FLY;
+    var pending = FLY.filter(function (r) { return r.status === 'pending' && r.whenMs > Date.now() - 3600000; }).length;
+    el('flyMsg').textContent = (CAL.sel ? items.length + ' on ' + CAL.sel + ' (click the day again for all) · ' : '') + FLY.length + ' on file · ' + pending + ' waiting for a decision.';
+    var box = el('flyList'); box.textContent = '';
+    items.forEach(function (r) { box.appendChild(flyRow(r)); });
+    if (!items.length) { var d = document.createElement('div'); d.className = 'muted small'; d.textContent = 'Nothing here.'; box.appendChild(d); }
+  }
   function loadFly(countOnly) {
     if (!S.keyHex) return;
     if (!countOnly) el('flyMsg').textContent = 'Loading…';
     api('GET', '/api/fly-request?list=1', null, reviewHeaders()).then(function (j) {
-      var items = j.items || [], pending = items.filter(function (r) { return r.status === 'pending' && r.whenMs > Date.now() - 3600000; }).length;
+      FLY = j.items || [];
+      var pending = FLY.filter(function (r) { return r.status === 'pending' && r.whenMs > Date.now() - 3600000; }).length;
       el('flyCount').textContent = pending ? String(pending) : '';
       if (countOnly) return;
-      el('flyMsg').textContent = items.length ? items.length + ' on file · ' + pending + ' waiting for a decision.' : 'No requests filed yet.';
-      var box = el('flyList'); box.textContent = '';
-      items.forEach(function (r) { box.appendChild(flyRow(r)); });
+      drawNext(); drawCal(); drawList();
     }).catch(function (e) { if (!countOnly) el('flyMsg').textContent = 'Could not load: ' + e.message; });
   }
   function flyRow(r) {
@@ -747,7 +814,7 @@
     var b = document.createElement('b'); b.textContent = r.pilot + (r.tier != null ? ' (T' + r.tier + ')' : ''); h.appendChild(b);
     h.appendChild(document.createTextNode(' · ' + r.whenText + ' · ' + r.location + ' · ' + r.aircraft));
     var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting' : r.status; h.appendChild(chip);
-    if (r.mode === 'event') { var ec = document.createElement('span'); ec.className = 'pchip src'; ec.textContent = 'event · ' + (r.event ? r.event.type : ''); h.appendChild(ec); }
+    if (r.mode === 'event') { var ec = document.createElement('span'); ec.className = 'pchip src'; ec.textContent = 'event · ' + (r.event ? (r.event.label || r.event.type) : ''); h.appendChild(ec); }
     var fd = document.createElement('div'); fd.className = 'fd';
     var bits = ['spotter ' + r.spotter, 'filed ' + when(r.at)];
     if (r.email) bits.push(r.email);

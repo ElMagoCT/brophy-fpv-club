@@ -47,7 +47,16 @@ section{margin-top:26px}
 .card{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:20px 22px}
 
 /* ---------- mode toggle ---------- */
-.modes{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:18px}
+.modes{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:18px}
+.modes .lk{position:absolute;right:10px;top:9px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
+/* next event on the calendar (2026-10-15 pm) */
+.nextev{margin-top:18px;background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 18px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.nextev .k{font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);flex-basis:100%}
+.nextev .nm{font-family:var(--font-sketch);font-weight:700;font-size:26px;line-height:1.05}
+.nextev .nv{font-size:15px;color:var(--ink-soft);line-height:1.35}
+.nextev .nv b{color:var(--ink);font-weight:600}
+.nextev .chip{margin-left:auto}
+.nextev .more{flex-basis:100%;font-size:13.5px;color:var(--ink-soft)}
 .modes label{display:block;cursor:pointer;border:1.5px solid var(--line-hard);border-radius:var(--r);padding:12px 14px;background-color:var(--glass);position:relative}
 .modes label:has(input:checked){border-color:var(--ink);background-color:var(--ink);color:#f2ece0}
 .modes label input{position:absolute;opacity:0;pointer-events:none}
@@ -68,7 +77,7 @@ section{margin-top:26px}
 .f .clr.ok{color:var(--green)} .f .clr.bad{color:var(--rust)}
 .f .clr b{font-weight:600}
 #eventBox{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;border:1.5px dashed var(--violet);border-radius:var(--r);padding:14px 16px;background-color:rgba(100,80,171,.05)}
-#eventBox[hidden],.filed[hidden]{display:none}
+#eventBox[hidden],.filed[hidden],.f label[hidden]{display:none}
 #eventBox .k{color:var(--violet)}
 #eventBox .eh{grid-column:1 / -1;font-size:14px;color:var(--ink-soft);line-height:1.35;margin:-2px 0 -4px}
 .act{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:6px}
@@ -142,12 +151,13 @@ footer a{color:var(--ink)}
     </div>
   </header>
 
+  <div class="nextev" id="nextev" hidden></div>
+
   <section aria-labelledby="formHead">
     <div class="eyebrow"><h2 id="formHead">The request</h2><span class="line"></span><span class="hint">Phoenix time &middot; one flight per request</span></div>
     <div class="card">
-      <div class="modes" role="radiogroup" aria-label="Kind of flight">
+      <div class="modes" role="radiogroup" aria-label="Kind of flight" id="modes">
         <label><input type="radio" name="mode" value="rec" checked><div class="mn">Recreational flight</div><div class="md">Any Tier 1+ pilot. You, your aircraft, a spotter.</div></label>
-        <label><input type="radio" name="mode" value="event"><div class="mn">Event or meeting</div><div class="md">Mentors only (instructor password). Extra people are told, by event type.</div></label>
       </div>
 
       <form class="f" id="form" novalidate>
@@ -158,16 +168,8 @@ footer a{color:var(--ink)}
         </label>
 
         <div id="eventBox" hidden>
-          <div class="eh">An event or meeting is filed by a mentor. The password is checked by the club API and never stored. Mr. Burr and Mr. Reasy are always told; extra people get a copy depending on the type.</div>
-          <label><span class="k">Instructor password</span><input id="pw" type="password" autocomplete="current-password" spellcheck="false" autocapitalize="off"></label>
-          <label><span class="k">Event type</span>
-            <select id="evType">
-              <option value="meeting">Club meeting</option>
-              <option value="race">Race</option>
-              <option value="filming">Filming</option>
-              <option value="pep-rally">Pep rally</option>
-              <option value="other">Other</option>
-            </select></label>
+          <div class="eh" id="evHint"></div>
+          <label id="pwBox"><span class="k">Instructor password</span><input id="pw" type="password" autocomplete="current-password" spellcheck="false" autocapitalize="off"></label>
           <label><span class="k">Expected crowd</span><input id="evCrowd" type="number" min="0" max="5000" step="1" placeholder="people nearby" inputmode="numeric"></label>
           <label><span class="k">Start &middot; end</span>
             <div style="display:flex;gap:8px"><input id="evStart" type="time" aria-label="Event start"><input id="evEnd" type="time" aria-label="Event end"></div></label>
@@ -241,11 +243,14 @@ footer a{color:var(--ink)}
 (function () {
   var API = 'https://brophy-fpv-club-api.netlify.app';
   var DAY = 24 * 3600000;
-  var DATA = null, AW = {}, cur = { name: '', slug: '', cl: null };
+  var DATA = null, AW = {}, cur = { name: '', slug: '', cl: null }, TYPES = [];
   function $(id) { return document.getElementById(id); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function slug(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-  function mode() { return document.querySelector('input[name=mode]:checked').value; }
+  function kind() { var r = document.querySelector('input[name=mode]:checked'); return r ? r.value : 'rec'; }
+  function typeOf(id) { for (var i = 0; i < TYPES.length; i++) if (TYPES[i].id === id) return TYPES[i]; return null; }
+  function mode() { return kind() === 'rec' ? 'rec' : 'event'; }
+  function locked() { var t = typeOf(kind()); return !!(t && t.locked); }
   function pad(n) { return (n < 10 ? '0' : '') + n; }
 
   /* ---------- Phoenix time: UTC-7 all year, so a local wall-clock string
@@ -291,7 +296,7 @@ footer a{color:var(--ink)}
     if (!s) { box.className = 'clr'; box.textContent = ev ? 'Who is the pilot in charge?' : 'Pick your name.'; acHint(); return; }
     if (!DATA) { box.className = 'clr'; box.textContent = 'Checking the roster…'; return; }
     var cl = clearance(s); cur.cl = cl;
-    if (ev) { box.className = 'clr ' + (cl.whoop ? 'ok' : ''); box.innerHTML = '<b>' + esc(cur.name) + '</b> · Tier ' + cl.tier + (cl.whoop ? ' · cleared' : ' · not cleared on their own; you vouch for this flight as the mentor filing it'); acHint(); return; }
+    if (ev && locked()) { box.className = 'clr ' + (cl.whoop ? 'ok' : ''); box.innerHTML = '<b>' + esc(cur.name) + '</b> · Tier ' + cl.tier + (cl.whoop ? ' · cleared' : ' · not cleared on their own; you vouch for this flight as the mentor filing it'); acHint(); return; }
     if (!cl.known) { box.className = 'clr bad'; box.innerHTML = 'No pilot called <b>' + esc(cur.name) + '</b> on the roster. Use the exact name you fly under at the kiosk.' + (AW[s] === undefined ? ' (still checking decisions on file…)' : ''); }
     else if (!cl.whoop) { box.className = 'clr bad'; box.innerHTML = '<b>' + esc(cur.name) + '</b> is <b>not cleared to fly yet</b> (Tier ' + cl.tier + '). Pass the Tier 1 checkpoint, the Tiny Whoop test, on the <a href="../pilot-path/#t1">Pilot Path</a> first - and remember, passing it only lets you file this form.'; }
     else { box.className = 'clr ok'; box.innerHTML = '<b>' + esc(cur.name) + '</b> · Tier ' + cl.tier + ' · cleared to request ' + (cl.big ? 'any club aircraft' : 'the Meteor 75 Pro') + '.'; }
@@ -300,7 +305,7 @@ footer a{color:var(--ink)}
   function acHint() {
     var ac = $('ac').value, h = $('acHint'), cl = cur.cl;
     $('acOther').hidden = ac !== 'other';
-    if (mode() === 'event') { h.className = 'hint'; h.textContent = 'Any club aircraft; the mentor filing is responsible.'; return; }
+    if (locked()) { h.className = 'hint'; h.textContent = 'Any club aircraft; the mentor filing is responsible.'; return; }
     if (ac !== 'whoop' && cl && cl.whoop && !cl.big) { h.className = 'hint bad'; h.textContent = 'Tier 1 pilots fly the Meteor 75 Pro only. This one needs Tier 2 (the Pavo checkpoint).'; return; }
     h.className = 'hint'; h.textContent = 'Tier 1 flies the Meteor only. Anything bigger needs Tier 2.';
   }
@@ -324,16 +329,41 @@ footer a{color:var(--ink)}
   $('pilot').addEventListener('change', function () { clearTimeout(t); setPilot(this.value, true); });
   document.addEventListener('site:pilot', function (e) { if (e.detail && e.detail.name) setPilot(e.detail.name); });
 
-  /* ---------- mode ---------- */
+  /* ---------- kind of flight: recreational, or an event type the console made ---------- */
   function modeChanged() {
-    var ev = mode() === 'event';
+    var ev = mode() === 'event', t = typeOf(kind()), lk = locked();
     $('eventBox').hidden = !ev;
+    $('pwBox').hidden = !lk;
     $('pilotK').textContent = ev ? 'Pilot in charge' : 'Pilot';
+    if (ev) $('evHint').textContent = (t ? t.label : 'Event') + (lk ? ': filed by a mentor with the instructor password (checked by the club API, never stored). ' : ': any cleared pilot may file it. ') + 'Mr. Burr and Mr. Reasy are always told; the people set for this type get a copy.';
     drawClearance();
   }
-  Array.prototype.forEach.call(document.querySelectorAll('input[name=mode]'), function (r) { r.addEventListener('change', modeChanged); });
-  if (location.hash === '#event') { document.querySelector('input[name=mode][value=event]').checked = true; }
-  modeChanged();
+  function drawModes() {
+    var box = $('modes'), keep = kind();
+    box.innerHTML = '<label><input type="radio" name="mode" value="rec"><div class="mn">Recreational flight</div><div class="md">Any Tier 1+ pilot. You, your aircraft, a spotter.</div></label>' +
+      TYPES.map(function (t) {
+        return '<label><input type="radio" name="mode" value="' + esc(t.id) + '"><div class="mn">' + esc(t.label) + '</div><div class="md">' + (t.locked ? 'Mentors only (instructor password).' : 'Any cleared pilot.') + ' Event details + who is told.</div>' + (t.locked ? '<span class="lk">&#128274; locked</span>' : '') + '</label>';
+      }).join('');
+    var want = (location.hash && location.hash.length > 1 && typeOf(location.hash.slice(1))) ? location.hash.slice(1) : keep;
+    var r = box.querySelector('input[value="' + want + '"]') || box.querySelector('input[value=rec]'); r.checked = true;
+    Array.prototype.forEach.call(box.querySelectorAll('input[name=mode]'), function (x) { x.addEventListener('change', modeChanged); });
+    modeChanged();
+  }
+  drawModes();
+  fetch(API + '/api/fly-request?types=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { TYPES = (j && j.types) || []; drawModes(); }).catch(function () {});
+
+  /* ---------- the next event on the calendar ---------- */
+  function drawNext(items) {
+    var box = $('nextev');
+    if (!items.length) { box.hidden = false; box.innerHTML = '<div class="k">Next event</div><div class="nv">Nothing on the calendar. A mentor files meetings and events here too.</div>'; return; }
+    var r = items[0], st = r.status || 'pending', ev = r.event || {};
+    box.hidden = false;
+    box.innerHTML = '<div class="k">Next event</div><div class="nm">' + esc(ev.label || ev.type || 'Event') + '</div>' +
+      '<div class="nv"><b>' + esc(r.whenText) + '</b> · ' + esc(r.location) + (ev.start ? ' · ' + esc(ev.start) + '–' + esc(ev.end) : '') + ' · pilot in charge ' + esc(r.pilot) + '</div>' +
+      '<span class="chip ' + st + '">' + (st === 'pending' ? 'waiting for approval' : st) + '</span>' +
+      (items.length > 1 ? '<div class="more">Then: ' + items.slice(1, 4).map(function (x) { return esc((x.event && x.event.label) || 'event') + ' ' + esc(x.whenText) + ' (' + esc(x.status === 'pending' ? 'waiting' : x.status) + ')'; }).join(' · ') + '</div>' : '');
+  }
+  fetch(API + '/api/fly-request?upcoming=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { drawNext((j && j.items) || []); }).catch(function () {});
 
   /* ---------- my requests ---------- */
   var mineFor = '';
@@ -351,7 +381,7 @@ footer a{color:var(--ink)}
     var st = r.status || 'pending';
     return '<div class="req"><div class="d">' + esc(r.whenText || fmt(r.whenMs)) + '<small>filed ' + esc(fmt(r.at)) + '</small></div>' +
       '<div class="w">' + esc(r.location) + ' · ' + esc(r.aircraft) + ' · spotter ' + esc(r.spotter) +
-      (r.mode === 'event' && r.event ? '<small>Event: ' + esc(r.event.type) + ' · crowd ' + esc(r.event.crowd) + ' · ' + esc(r.event.start) + '–' + esc(r.event.end) + '</small>' : '') +
+      (r.mode === 'event' && r.event ? '<small>Event: ' + esc(r.event.label || r.event.type) + ' · crowd ' + esc(r.event.crowd) + ' · ' + esc(r.event.start) + '–' + esc(r.event.end) + '</small>' : '') +
       (st !== 'pending' && r.decisionNote ? '<small>' + esc(r.decisionNote) + '</small>' : '') +
       (st === 'pending' && !r.mailed ? '<small class="bad" style="color:var(--rust)">Filed, but the email did not go out' + (r.mailError ? ': ' + esc(r.mailError) : '') + '. Tell a mentor.</small>' : '') +
       '</div><span class="chip ' + st + '">' + (st === 'pending' ? 'waiting' : st) + '</span></div>';
@@ -366,25 +396,25 @@ footer a{color:var(--ink)}
   function say(cls, text) { var m = $('msg'); m.className = 'msg ' + cls; m.textContent = text; }
   $('form').addEventListener('submit', function (e) {
     e.preventDefault();
-    var ev = mode() === 'event', ms = fromPhoenix($('when').value);
+    var ev = mode() === 'event', lk = locked(), ms = fromPhoenix($('when').value);
     $('filed').hidden = true;
     if (cur.slug.length < 2) return say('bad', ev ? 'Who is the pilot in charge?' : 'Pick your name first.');
-    if (!ev && cur.cl && !cur.cl.whoop) return say('bad', cur.cl.known ? 'Not cleared yet: pass the Tiny Whoop test first.' : 'That name is not on the roster.');
+    if (!lk && cur.cl && !cur.cl.whoop) return say('bad', cur.cl.known ? 'Not cleared yet: pass the Tiny Whoop test first.' : 'That name is not on the roster.');
     if (!whenChanged()) return say('bad', 'Pick a time at least 24 hours from now.');
     if ($('loc').value.trim().length < 3) return say('bad', 'Where on campus?');
     if ($('ac').value === 'other' && $('acOther').value.trim().length < 2) return say('bad', 'Which aircraft?');
-    if (!ev && $('ac').value !== 'whoop' && cur.cl && !cur.cl.big) return say('bad', 'Tier 1 pilots fly the Meteor 75 Pro only.');
+    if (!lk && $('ac').value !== 'whoop' && cur.cl && !cur.cl.big) return say('bad', 'Tier 1 pilots fly the Meteor 75 Pro only.');
     if ($('spotter').value.trim().length < 2) return say('bad', 'Every flight has a spotter - who is yours?');
     if (ev) {
-      if ($('pw').value.length < 4) return say('bad', 'Enter the instructor password.');
+      if (lk && $('pw').value.length < 4) return say('bad', 'Enter the instructor password.');
       if ($('evCrowd').value === '' || +$('evCrowd').value < 0) return say('bad', 'Expected crowd?');
       if (!$('evStart').value || !$('evEnd').value) return say('bad', 'Event start and end times?');
     }
-    var body = { mode: ev ? 'event' : 'rec', pilot: cur.name, email: $('email').value.trim(), whenLocal: $('when').value, location: $('loc').value.trim(),
+    var body = { type: kind(), pilot: cur.name, email: $('email').value.trim(), whenLocal: $('when').value, location: $('loc').value.trim(),
                  aircraft: $('ac').value, aircraftOther: $('acOther').value.trim(), spotter: $('spotter').value.trim(), notes: $('notes').value.trim() };
-    if (ev) body.event = { type: $('evType').value, crowd: +$('evCrowd').value, start: $('evStart').value, end: $('evEnd').value };
+    if (ev) body.event = { crowd: +$('evCrowd').value, start: $('evStart').value, end: $('evEnd').value };
     $('send').disabled = true; say('', 'Filing…');
-    (ev ? sha256Hex($('pw').value) : Promise.resolve('')).then(function (key) {
+    (lk ? sha256Hex($('pw').value) : Promise.resolve('')).then(function (key) {
       var h = { 'Content-Type': 'application/json' }; if (key) h['X-Review-Key'] = key;
       return fetch(API + '/api/fly-request', { method: 'POST', headers: h, body: JSON.stringify(body) });
     }).then(function (r) { return r.json().catch(function () { return { ok: false, error: 'HTTP ' + r.status }; }); }).then(function (j) {
@@ -398,6 +428,7 @@ footer a{color:var(--ink)}
         '<span class="warn">Do not fly until you have a yes.</span>' + (body.email ? ' The decision comes to ' + esc(body.email) + '.' : ' Give an email next time and the decision comes straight to you; otherwise ask a mentor.');
       $('pw').value = ''; $('notes').value = '';
       loadMine();
+      if (ev) fetch(API + '/api/fly-request?upcoming=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { drawNext((j && j.items) || []); }).catch(function () {});
     }).catch(function (e) { say('bad', e.message); }).then(function () { $('send').disabled = false; });
   });
 
