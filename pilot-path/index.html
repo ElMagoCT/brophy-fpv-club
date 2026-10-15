@@ -96,6 +96,8 @@ section{margin-top:30px}
 .tier .gear,.group .gear{font-size:14.5px;color:var(--ink-soft)}
 .tier .gate,.group .gate{font-family:var(--font-mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-left:auto}
 .group .tn{color:var(--ink-soft)}
+/* 2026-10-15: the Tier 1 path's bonus-challenge sticker (Micah's idea) */
+.group .sticker{font-family:var(--font-hand);font-size:17px;color:var(--rust);background:var(--glass-2);border:2.5px solid var(--rust);border-radius:6px;padding:2px 10px;transform:rotate(-2deg);display:inline-block;line-height:1.2}
 .tier .prog,.group .prog{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;background:var(--paper-2);border:1px solid var(--line-hard);border-radius:6px;padding:2px 8px}
 .tier .prog.done,.group .prog.done{background:rgba(31,82,48,.12);border-color:var(--green);color:var(--green)}
 .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
@@ -552,10 +554,11 @@ function render() {
 
   var open = {}; var cur = document.querySelectorAll('.badge.open'); for (var i = 0; i < cur.length; i++) open[cur[i].getAttribute('data-id')] = true;
   var html = '';
-  function head(cls, id, c, tn, nm, gear, d, gate) {
+  function head(cls, id, c, tn, nm, gear, d, gate, sticker) {
     return '<div class="' + cls + '" id="' + id + '" style="--c:' + c + '"><div class="th">' +
       (tn ? '<span class="tn">' + tn + '</span>' : '') + '<span class="nm">' + esc(nm) + '</span>' +
       '<span class="gear">' + esc(gear) + '</span>' +
+      (sticker ? '<span class="sticker">' + esc(sticker) + '</span>' : '') +
       (pilot && d ? '<span class="prog' + (d.n === d.of ? ' done' : '') + '">' + d.n + ' / ' + d.of + '</span>' : '') +
       (gate ? '<span class="gate">' + esc(gate) + '</span>' : '') + '</div>';
   }
@@ -566,7 +569,8 @@ function render() {
   for (var i = 0; i < 3; i++) {
     var T = FS.TIERS[i], N = FS.TIERS[i + 1], bs = prereqs(i), cp = checkpointOf(i);
     html += head('group', i === 0 ? 't0' : 'pre' + (i + 1), T.color, '',
-                 'Tier ' + (i + 1) + ' path', 'You fly: ' + T.gear, countDone(bs), 'Then the Tier ' + (i + 1) + ' checkpoint ↓') + grid(bs) + '</div>';
+                 'Tier ' + (i + 1) + ' path', 'You fly: ' + T.gear, countDone(bs), 'Then the Tier ' + (i + 1) + ' checkpoint ↓',
+                 i === 0 ? 'Bonus Challenge: do this all in one CP and get to fly!' : '') + grid(bs) + '</div>';
     if (cp) html += head('tier', 't' + (i + 1), N.color, 'Tier ' + (i + 1), N.name, N.gear, null, 'Checkpoint') + card(cp, open) + '</div>';
   }
   var el = FS.TIERS.filter(function (t) { return t.id === 'el'; })[0];

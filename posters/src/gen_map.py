@@ -54,6 +54,7 @@ SHEETS = [
   dict(file='03-map-tier0', sheet=1, tier='t0', name='SIMULATOR', color='var(--sky)', dir='down',
        gear='FPV sim rigs in the IC · Liftoff · Micro Drones · SkyDive · FPV Labs · PicaSim',
        start=('START', 'Add your name at the kiosk'),
+       sticker='Bonus Challenge: do this all in one CP and get to fly!',   # 2026-10-15, Micah
        gate=('NEXT', 'Tier 1 checkpoint', 'Tiny Whoop · sheet 2')),
   dict(file='04-map-tier1', sheet=2, tier='t1', name='TINY WHOOP', color='var(--violet)', dir='up',
        gear='Meteor 75 Pro · sub-250 g · safe indoors',
@@ -197,7 +198,7 @@ def render(s, fs, prev_count):
   <div class="tierhead"><div class="tn">TIER {tier_n}</div><div class="tname">{s['name']}</div></div>
   <div class="facts">
     <div class="f"><div class="k">You fly</div><div class="v">{esc(s['gear'])}</div></div>
-    <div class="f"><div class="k">To get here</div><div class="v">{esc(prereq)}</div></div>
+    <div class="f"><div class="k">To get here</div><div class="v">{esc(prereq)}</div>{'<div class="bonus">' + esc(s['sticker']) + '</div>' if s.get('sticker') else ''}</div>
     <div class="f"><div class="k">On this sheet</div><div class="v">{esc(onsheet)}<small>{esc(mix)}</small></div></div>
   </div>
 

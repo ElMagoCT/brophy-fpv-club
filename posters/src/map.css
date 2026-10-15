@@ -12,6 +12,8 @@
 .facts .f{background-color:var(--white);border:1.5px solid var(--line-hard);border-radius:8px;padding:10px 14px}
 .facts .k{font-family:var(--mono);font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft)}
 .facts .v{font-size:16.5px;font-weight:600;line-height:1.25;margin-top:4px}
+/* sheet 1's bonus-challenge sticker (2026-10-15) */
+.facts .bonus{display:inline-block;margin-top:8px;font-family:var(--hand);font-size:17px;color:var(--rust);border:2.5px solid var(--rust);border-radius:6px;padding:2px 10px;transform:rotate(-2deg);line-height:1.2}
 .facts .v small{display:block;font-family:var(--mono);font-weight:400;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft);margin-top:4px}
 
 /* the map: everything between the facts strip and the legend */
