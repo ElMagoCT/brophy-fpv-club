@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792076078735,
-    "generatedIso":  "2026-10-15T07:54:39-07:00",
+    "generated":  1792076140109,
+    "generatedIso":  "2026-10-15T07:55:40-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,13 +9,13 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  384690389,
+                   "clubMs":  384750461,
                    "pilots":  39,
                    "activePilots7":  8,
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  268606176.11699963,
-                                    "microdrones":  112292158.02790032,
+                                    "microdrones":  112352230.13990031,
                                     "skydive":  2660747.560299987,
                                     "fpvlabs":  316778.85469998,
                                     "picasim":  814526.99810002092
@@ -247,17 +247,17 @@
                    },
                    {
                        "name":  "Aeson T.",
-                       "totalMs":  20768376,
+                       "totalMs":  20828448,
                        "perSimMs":  {
                                         "liftoff":  9649576,
-                                        "microdrones":  10896653,
+                                        "microdrones":  10956725,
                                         "skydive":  222147,
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1792076056037,
+                       "lastSeen":  1792076116111,
                        "badges":  [
 
                                   ],
