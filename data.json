@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792076200712,
-    "generatedIso":  "2026-10-15T07:56:41-07:00",
+    "generated":  1792082729039,
+    "generatedIso":  "2026-10-15T09:45:29-07:00",
     "club":  {
                  "name":  "Brophy UAV",
                  "subtitle":  "Flight Simulator Lab",
@@ -11,7 +11,7 @@
     "totals":  {
                    "clubMs":  384829102,
                    "pilots":  39,
-                   "activePilots7":  8,
+                   "activePilots7":  7,
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  268606176.11699963,
