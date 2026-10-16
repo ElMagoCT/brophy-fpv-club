@@ -134,6 +134,9 @@ section{margin-top:26px}
 .wkdetail:empty{display:none}
 #apBox{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
 #apBox[hidden]{display:none}
+.fixed{font-size:14px;line-height:1.35;background:var(--glass);border:1.5px dashed var(--line-hard);border-radius:7px;padding:7px 10px;margin-bottom:6px;color:var(--ink)}
+.fixed b{font-weight:600}
+.fixed[hidden]{display:none}
 @media (max-width:700px){ .wk{grid-template-columns:repeat(2,1fr)} #apBox{grid-template-columns:1fr} }
 
 /* ---------- my requests ---------- */
@@ -223,13 +226,14 @@ footer a{color:var(--ink)}
           <label><span class="k">Expected crowd</span><input id="evCrowd" type="number" min="0" max="5000" step="1" placeholder="people nearby" inputmode="numeric"></label>
           <label><span class="k">Start &middot; end</span>
             <div style="display:flex;gap:8px"><input id="evStart" type="time" aria-label="Event start"><input id="evEnd" type="time" aria-label="Event end"></div></label>
-          <div id="apBox" hidden>
-            <label><span class="k">Who approves this one</span>
-              <textarea id="evApprovers" class="short" placeholder="emails, comma separated"></textarea>
-              <div class="hint">Prefilled from the console (Mr. Burr). Remove anyone who should not approve this request; every address left must say yes.</div></label>
-            <label><span class="k">Who is told</span>
-              <textarea id="evTold" class="short" placeholder="emails, comma separated"></textarea>
-              <div class="hint">Prefilled from the console and the preset. Add or remove freely; the "Also tell" box below is added too.</div></label>
+          <div id="apBox">
+            <label><span class="k">Approval emails</span>
+              <div class="fixed" id="fixedAp" hidden></div>
+              <textarea id="evApprovers" class="short" placeholder="type the instructor password above to prefill"></textarea>
+              <div class="hint" id="apHint">Use commas to separate emails. Every address here must say yes.</div></label>
+            <label><span class="k">Other emails</span>
+              <textarea id="evTold" class="short" placeholder="type the instructor password above to prefill"></textarea>
+              <div class="hint">Use commas to separate emails. Each gets the details now, who to contact if there is an issue, and the decision.</div></label>
           </div>
           <div class="eh" id="pwHint"></div>
         </div>
@@ -266,9 +270,9 @@ footer a{color:var(--ink)}
         <label><span class="k">Your email <em>*</em></span>
           <input id="email" type="email" placeholder="the decision is sent here" maxlength="120" autocomplete="email" spellcheck="false" required>
           <div class="hint">Required. Mr. Burr's yes or no lands here.</div></label>
-        <label class="full"><span class="k">Also tell (optional)</span>
-          <textarea id="cc" class="short" placeholder="other emails, comma separated: a teacher, a parent, your team…"></textarea>
-          <div class="hint">Each gets the details right away, who to email if there is an issue, and the decision when it is made.</div></label>
+        <label class="full" id="ccBox"><span class="k">Other emails (optional)</span>
+          <textarea id="cc" class="short" placeholder="a teacher, a parent, your team…"></textarea>
+          <div class="hint">Use commas to separate emails. Each gets the details right away, who to email if there is an issue, and the decision when it is made.</div></label>
         <label class="full"><span class="k">Notes (optional)</span>
           <textarea id="notes" maxlength="600" placeholder="anything Mr. Burr should know: what you are practising, who else is coming, a video plan…"></textarea></label>
 
@@ -465,24 +469,30 @@ footer a{color:var(--ink)}
   var pwT = null;
   $('pw').addEventListener('input', function () {
     clearTimeout(pwT); var v = $('pw').value;
-    if (v.length < 4) { KEY = ''; FORM = null; $('apBox').hidden = true; $('pwHint').textContent = ''; return; }
+    if (v.length < 4) { KEY = ''; FORM = null; $('pwHint').textContent = ''; fillLists(); return; }
     pwT = setTimeout(function () {
       sha256Hex(v).then(function (key) {
         return fetch(API + '/api/fly-request?form=1', { cache: 'no-store', headers: { 'X-Review-Key': key } }).then(function (r) { return r.json().then(function (j) { return { r: r, j: j }; }); }).then(function (x) {
-          if (!x.r.ok || !x.j.full) { KEY = ''; FORM = null; $('apBox').hidden = true; $('pwHint').textContent = x.r.status === 403 ? 'That is not the instructor password.' : (x.j.error || 'Could not check the password.'); return; }
+          if (!x.r.ok || !x.j.full) { KEY = ''; FORM = null; $('pwHint').textContent = x.r.status === 403 ? 'That is not the instructor password.' : (x.j.error || 'Could not check the password.'); fillLists(); return; }
           KEY = key; FORM = x.j; $('pwHint').textContent = 'Password OK.'; fillLists(true);
         });
       }).catch(function () { $('pwHint').textContent = 'Could not reach the club API.'; });
     }, 500);
   });
   function fillLists(force) {
-    if (!locked() || !FORM) { $('apBox').hidden = true; return; }
-    var k = kind(), pr = k === 'special' ? (FORM.presets || []).filter(function (p) { return p.id === $('evPreset').value; })[0] : null;
+    var k = kind(), lk = locked();
+    $('ccBox').hidden = lk;   // for events the "Other emails" box above replaces the recreational "Also tell"
+    if (!lk) return;
+    $('fixedAp').hidden = k !== 'meeting';
+    if (!FORM) { $('fixedAp').innerHTML = k === 'meeting' ? '<b>Always:</b> the console\'s approvers (Mr. Burr) - shown once the password is entered.' : ''; $('apHint').textContent = k === 'meeting' ? 'Use commas to separate emails. Extra approvers for this meeting; the always-approvers above cannot be removed.' : 'Use commas to separate emails. Prefilled with Mr. Burr and the preset\'s approvers; remove anyone who should not approve this one. Every address here must say yes.'; return; }
+    var pr = k === 'special' ? (FORM.presets || []).filter(function (p) { return p.id === $('evPreset').value; })[0] : null;
     var extra = k === 'meeting' ? (FORM.meeting || {}) : (pr || {});
-    var ap = uniqList((FORM.approvers || []).concat(extra.approvers || [])), told = uniqList((FORM.always || []).concat(extra.to || []));
+    var ap = k === 'meeting' ? uniqList(extra.approvers || []) : uniqList((FORM.approvers || []).concat(extra.approvers || []));
+    var told = uniqList((FORM.always || []).concat(extra.to || []));
+    if (k === 'meeting') $('fixedAp').innerHTML = '<b>Always:</b> ' + esc((FORM.approvers || []).join(', ') || 'nobody set in the console yet') + ' - cannot be removed for a club meeting.';
     if (force || !$('evApprovers').value) $('evApprovers').value = ap.join(', ');
     if (force || !$('evTold').value) $('evTold').value = told.join(', ');
-    $('apBox').hidden = false;
+    $('evApprovers').placeholder = 'emails, comma separated'; $('evTold').placeholder = 'emails, comma separated';
   }
   function uniqList(a) { var out = []; a.forEach(function (e) { e = String(e || '').trim().toLowerCase(); if (e && out.indexOf(e) < 0) out.push(e); }); return out; }
   Array.prototype.forEach.call(document.querySelectorAll('input[name=mode]'), function (r) { r.addEventListener('change', modeChanged); });
@@ -614,7 +624,7 @@ footer a{color:var(--ink)}
     if (needMentor) body.mentorEmail = $('mentorEmail').value.trim();
     if (lk) {
       body.event = { name: k === 'special' ? $('evName').value.trim() : '', preset: k === 'special' ? $('evPreset').value : '', crowd: +$('evCrowd').value, start: $('evStart').value, end: $('evEnd').value };
-      if (!$('apBox').hidden) { body.approvers = $('evApprovers').value.split(/[\s,;]+/).filter(Boolean); body.cc = body.cc.concat($('evTold').value.split(/[\s,;]+/).filter(Boolean)); }
+      body.approvers = $('evApprovers').value.split(/[\s,;]+/).filter(Boolean); body.cc = $('evTold').value.split(/[\s,;]+/).filter(Boolean);
     }
     $('send').disabled = true; say('', 'Filing…');
     (lk ? sha256Hex($('pw').value) : Promise.resolve('')).then(function (key) {
