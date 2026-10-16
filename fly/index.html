@@ -264,9 +264,12 @@ footer a{color:var(--ink)}
           <input id="spotter" list="mentorNames" placeholder="who watches the sky for you" maxlength="60" autocomplete="off">
           <datalist id="mentorNames"></datalist>
           <div class="hint" id="spotHint">Every flight has one. Name them.</div></label>
-        <label id="mentorBox" hidden><span class="k">Mentor's email <em>*</em></span>
+        <label id="mentorBox" hidden><span class="k">Mentor spotter's email <em>*</em></span>
           <input id="mentorEmail" type="email" placeholder="your mentor spotter's email" maxlength="120" spellcheck="false">
-          <div class="hint">You are not a mentor yet, so a mentor must spot you and approve this flight. Their yes is needed along with Mr. Burr's.</div></label>
+          <div class="hint" id="mentorHint">Your spotter is a mentor, so they approve this flight too and get the email every time. Prefilled when the club knows it.</div></label>
+        <label class="full" id="extraApBox"><span class="k">Extra approval emails (optional)</span>
+          <textarea id="extraAp" class="short" placeholder="a teacher whose class you would be flying during, for example"></textarea>
+          <div class="hint">Use commas to separate emails. Added on top of Mr. Burr; everyone listed must say yes.</div></label>
         <label><span class="k">Your email <em>*</em></span>
           <input id="email" type="email" placeholder="the decision is sent here" maxlength="120" autocomplete="email" spellcheck="false" required>
           <div class="hint">Required. Mr. Burr's yes or no lands here.</div></label>
@@ -407,14 +410,22 @@ footer a{color:var(--ink)}
   }
   function mentorNames() { return DATA && DATA.pilots ? DATA.pilots.filter(function (p) { return (p.badges || []).indexOf('mentor') >= 0; }).map(function (p) { return p.name; }) : []; }
   /* a pilot who is not a mentor must be spotted by one, and that mentor approves too */
+  var spotterLookup = '';
   function spotterRule() {
-    var need = !locked() && cur.cl && cur.cl.known && !cur.cl.mentor;
-    $('mentorBox').hidden = !need;
+    var lk = locked(), need = !lk && cur.cl && cur.cl.known && !cur.cl.mentor;
+    var sp = $('spotter').value.trim(), isMentor = !!sp && mentorNames().some(function (n) { return slug(n) === slug(sp); });
+    $('extraApBox').hidden = lk;
+    $('mentorBox').hidden = lk || !isMentor || slug(sp) === cur.slug;
     $('spotK').textContent = need ? 'Spotter (a mentor)' : 'Spotter';
-    if (!need) { $('spotHint').className = 'hint'; $('spotHint').textContent = 'Every flight has one. Name them.'; return; }
-    var sp = $('spotter').value.trim(), ok = sp && mentorNames().some(function (n) { return slug(n) === slug(sp); });
-    $('spotHint').className = 'hint ' + (sp ? (ok ? 'ok' : 'bad') : '');
-    $('spotHint').textContent = sp ? (ok ? sp + ' is a mentor - they get an approval email too.' : sp + ' is not a mentor. Mentors: ' + (mentorNames().join(', ') || 'none on the roster yet') + '.') : 'You are not a mentor, so your spotter must be one: ' + (mentorNames().join(', ') || 'none on the roster yet') + '.';
+    if (isMentor && slug(sp) !== spotterLookup && !lk) {   // prefill the mentor's email from the club directory
+      spotterLookup = slug(sp);
+      fetch(API + '/api/fly-request?pilot=' + encodeURIComponent(sp), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+        if (slug($('spotter').value) === spotterLookup && j && j.email && !$('mentorEmail').value) { $('mentorEmail').value = j.email; $('mentorHint').textContent = 'Prefilled from the club directory; change it if it is wrong.'; }
+      }).catch(function () {});
+    }
+    if (!need) { $('spotHint').className = 'hint ' + (isMentor ? 'ok' : ''); $('spotHint').textContent = isMentor ? sp + ' is a mentor - they approve too and get the email.' : 'Every flight has one. Name them.'; return; }
+    $('spotHint').className = 'hint ' + (sp ? (isMentor ? 'ok' : 'bad') : '');
+    $('spotHint').textContent = sp ? (isMentor ? sp + ' is a mentor - they get an approval email too.' : sp + ' is not a mentor. Mentors: ' + (mentorNames().join(', ') || 'none on the roster yet') + '.') : 'You are not a mentor, so your spotter must be one: ' + (mentorNames().join(', ') || 'none on the roster yet') + '.';
   }
   $('spotter').addEventListener('input', spotterRule);
   function drawClearance() {
@@ -481,7 +492,7 @@ footer a{color:var(--ink)}
   });
   function fillLists(force) {
     var k = kind(), lk = locked();
-    $('ccBox').hidden = lk;   // for events the "Other emails" box above replaces the recreational "Also tell"
+    $('ccBox').hidden = lk; $('extraApBox').hidden = lk;   // for events the boxes above replace these
     if (!lk) return;
     $('fixedAp').hidden = k !== 'meeting';
     if (!FORM) { $('fixedAp').innerHTML = k === 'meeting' ? '<b>Always:</b> the console\'s approvers (Mr. Burr) - shown once the password is entered.' : ''; $('apHint').textContent = k === 'meeting' ? 'Use commas to separate emails. Extra approvers for this meeting; the always-approvers above cannot be removed.' : 'Use commas to separate emails. Prefilled with Mr. Burr and the preset\'s approvers; remove anyone who should not approve this one. Every address here must say yes.'; return; }
@@ -536,6 +547,7 @@ footer a{color:var(--ink)}
     fetch(API + '/api/fly-request?pilot=' + encodeURIComponent(cur.name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
       if (mineFor !== s) return;
       var items = (j && j.items) || []; MINE = items;
+      if (j && j.email && !$('email').value) $('email').value = j.email;   // the club directory (console Emails tab / earlier requests)
       $('mineHint').textContent = items.length ? items.length + ' on file' : '';
       $('mine').innerHTML = items.length ? items.map(reqRow).join('') : '<div class="empty">Nothing filed under ' + esc(cur.name) + ' yet.</div>';
       if (!WK.start) { WK.start = weekStart(items.length ? Math.min.apply(null, items.map(function (r) { return r.whenMs; }).concat([Date.now()])) : Date.now()); WK.start = weekStart(Date.now()); }
@@ -606,9 +618,9 @@ footer a{color:var(--ink)}
     if ($('loc').value.trim().length < 3) return say('bad', 'Where on campus? Click the spot on the map and name it.');
     if (!lk && $('ac').value !== 'meteor' && cur.cl && !cur.cl.big) return say('bad', 'Tier 1 pilots fly the Meteor 75 Pro only.');
     if ($('spotter').value.trim().length < 2) return say('bad', 'Every flight has a spotter - who is yours?');
-    var needMentor = !lk && cur.cl && cur.cl.known && !cur.cl.mentor;
+    var needMentor = !lk && cur.cl && cur.cl.known && !cur.cl.mentor, mentorShown = !$('mentorBox').hidden;
     if (needMentor && !mentorNames().some(function (n) { return slug(n) === slug($('spotter').value); })) return say('bad', 'You are not a mentor, so your spotter must be one.');
-    if (needMentor && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test($('mentorEmail').value.trim())) return say('bad', "Your mentor's email is needed - they approve this flight too.");
+    if (mentorShown && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test($('mentorEmail').value.trim())) return say('bad', "Your mentor spotter's email is needed - they approve this flight too.");
     if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) return say('bad', 'Your email is required - the decision is sent there.');
     if (!confirmed && emails()[cur.slug] !== email.toLowerCase()) { askEmail(email); return; }   // first time for this pilot on this device
     confirmed = false;
@@ -621,7 +633,8 @@ footer a{color:var(--ink)}
     var body = { kind: k, pilot: cur.name, pilots: lk ? $('pilots').value.trim() : '', email: email, cc: $('cc').value.split(/[\s,;]+/).filter(Boolean), whenLocal: $('when').value,
                  location: { name: $('loc').value.trim(), lat: pin ? pin.lat : undefined, lng: pin ? pin.lng : undefined },
                  aircraft: $('ac').value, spotter: $('spotter').value.trim(), notes: $('notes').value.trim() };
-    if (needMentor) body.mentorEmail = $('mentorEmail').value.trim();
+    if (mentorShown) body.mentorEmail = $('mentorEmail').value.trim();
+    if (!lk) body.approvers = $('extraAp').value.split(/[\s,;]+/).filter(Boolean);
     if (lk) {
       body.event = { name: k === 'special' ? $('evName').value.trim() : '', preset: k === 'special' ? $('evPreset').value : '', crowd: +$('evCrowd').value, start: $('evStart').value, end: $('evEnd').value };
       body.approvers = $('evApprovers').value.split(/[\s,;]+/).filter(Boolean); body.cc = $('evTold').value.split(/[\s,;]+/).filter(Boolean);

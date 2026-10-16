@@ -204,12 +204,13 @@
   // Review photos is the first view (2026-10-10): no hash, or one we do not
   // know, opens it. #approvals and #kiosks still deep-link.
   function showView() {
-    var ap = location.hash === '#approvals', ki = location.hash === '#kiosks', fl = location.hash === '#fly', rv = !ap && !ki && !fl;
-    el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki; el('fly').hidden = !fl;
-    el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : ''; el('vFly').className = fl ? 'on' : '';
-    if ((ap || rv) && !ROSTER) loadRoster();
+    var ap = location.hash === '#approvals', ki = location.hash === '#kiosks', fl = location.hash === '#fly', em = location.hash === '#emails', rv = !ap && !ki && !fl && !em;
+    el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki; el('fly').hidden = !fl; el('emails').hidden = !em;
+    el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : ''; el('vFly').className = fl ? 'on' : ''; el('vEmails').className = em ? 'on' : '';
+    if ((ap || rv || em) && !ROSTER) loadRoster();
     if (rv && S.key) loadReview();
     if (fl && S.keyHex) { loadRecipients(); loadFly(); }
+    if (em && S.keyHex) loadEmails();
   }
   window.addEventListener('hashchange', showView);
   function drawApprovals() {
@@ -716,7 +717,7 @@
       el('rcReply').value = r.replyTo || '';
       el('rcMeetAp').value = ((r.meeting || {}).approvers || []).join(', ');
       el('rcMeetTo').value = ((r.meeting || {}).to || []).join(', ');
-      el('rcMentors').value = Object.keys(r.mentors || {}).map(function (k) { return k + ': ' + r.mentors[k]; }).join('\n');
+
       drawTypes(r.presets || []);
       var setup = el('flySetup'); setup.textContent = '';
       var warn = [];
@@ -749,7 +750,7 @@
   el('rcSave').onclick = function () {
     var presets = Array.prototype.map.call(el('rcTypes').querySelectorAll('.rct'), function (d) { return d.rcType(); }).filter(function (t) { return t.label.length >= 2; });
     var rc = { approvers: el('rcApprovers').value, always: el('rcAlways').value, replyTo: el('rcReply').value.trim(),
-               meeting: { approvers: el('rcMeetAp').value, to: el('rcMeetTo').value }, presets: presets, mentors: el('rcMentors').value };
+               meeting: { approvers: el('rcMeetAp').value, to: el('rcMeetTo').value }, presets: presets, pilots: (RC && RC.pilots) || {} };
     el('rcSave').disabled = true; el('rcMsg').textContent = 'Saving…';
     api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
       var r = j.recipients || {};
@@ -759,6 +760,41 @@
   };
   el('flyRcRefresh').onclick = loadRecipients;
   el('flyRefresh').onclick = function () { loadFly(); };
+
+  // ---- the pilot email directory (Emails tab)
+  function loadEmails() {
+    el('emMsg').textContent = 'Loading…';
+    var pr = api('GET', '/api/fly-request?recipients=1', null, reviewHeaders());
+    var rr = ROSTER ? Promise.resolve(ROSTER) : fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { ROSTER = window.mergePilots ? window.mergePilots(d) : d; return ROSTER; });
+    Promise.all([pr, rr]).then(function (x) {
+      RC = x[0].recipients || {}; var dir = RC.pilots || {}, roster = (x[1].pilots || []).slice().sort(function (a, b) { return a.name.localeCompare(b.name); });
+      var box = el('emList'); box.textContent = '';
+      var seen = {};
+      roster.forEach(function (p) { var sl = FS.slug(p.name); seen[sl] = 1; box.appendChild(emRow(p.name, sl, dir[sl] || '', (p.badges || []).indexOf('mentor') >= 0)); });
+      Object.keys(dir).forEach(function (sl) { if (!seen[sl]) box.appendChild(emRow(sl, sl, dir[sl], false)); });
+      var n = Object.keys(dir).length;
+      el('emMsg').textContent = roster.length + ' pilots on the roster · ' + n + ' with an email on file.';
+    }).catch(function (e) { el('emMsg').textContent = 'Could not load: ' + e.message; });
+  }
+  function emRow(name, sl, email, mentor) {
+    var d = document.createElement('div'); d.className = 'emrow'; d.setAttribute('data-slug', sl);
+    var b = document.createElement('b'); b.textContent = name; b.title = name;
+    if (mentor) { var m = document.createElement('span'); m.className = 'm'; m.textContent = 'MENTOR'; b.appendChild(m); }
+    var i = document.createElement('input'); i.type = 'email'; i.value = email; i.placeholder = 'email'; i.spellcheck = false;
+    d.appendChild(b); d.appendChild(i); return d;
+  }
+  el('emSave').onclick = function () {
+    if (!RC) return;
+    var pilots = {};
+    Array.prototype.forEach.call(el('emList').querySelectorAll('.emrow'), function (d) { var v = d.querySelector('input').value.trim().toLowerCase(); if (v) pilots[d.getAttribute('data-slug')] = v; });
+    var rc = { approvers: RC.approvers || [], always: RC.always || [], replyTo: RC.replyTo || '', meeting: RC.meeting || { to: [], approvers: [] }, presets: RC.presets || [], pilots: pilots };
+    el('emSave').disabled = true; el('emSaveMsg').textContent = 'Saving…';
+    api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
+      el('emSaveMsg').textContent = 'Saved ' + Object.keys((j.recipients || {}).pilots || {}).length + ' addresses. Ones that did not look like emails were dropped.';
+      loadEmails();
+    }).catch(function (e) { el('emSaveMsg').textContent = 'Could not save: ' + e.message; }).then(function () { el('emSave').disabled = false; });
+  };
+  el('emRefresh').onclick = loadEmails;
 
   // ---- next event + calendar
   var FLY = [], CAL = { y: 0, m: 0, sel: '' };
@@ -770,7 +806,7 @@
     if (!ev.length) { var n = document.createElement('div'); n.className = 'nv'; n.textContent = 'Nothing on the calendar. File a meeting or event from the form (a locked type needs your password).'; box.appendChild(n); return; }
     var r = ev[0], b = document.createElement('div'); b.className = 'big';
     b.textContent = (r.name || 'Event') + ' · ' + r.whenText + ' · ' + r.location;
-    var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting for approval' : r.status; chip.style.marginLeft = '8px'; b.appendChild(chip);
+    var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting for approval' : r.status; chip.classList.add('gapl'); b.appendChild(chip);
     var v = document.createElement('div'); v.className = 'nv';
     v.textContent = 'Pilot in charge ' + r.pilot + (r.pilots ? ' (+ ' + r.pilots + ')' : '') + ' · ' + (r.event ? r.event.start + '–' + r.event.end + ' · crowd ' + r.event.crowd : '') + (r.status !== 'pending' ? ' · decided ' + when(r.decidedAt) : ' · approvals ' + (r.approvals ? r.approvals.n + '/' + r.approvals.of : '?') + (r.mailed ? '' : ' · NOT fully emailed'));
     box.appendChild(b); box.appendChild(v);

@@ -167,3 +167,9 @@ textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--
 #calTitle{min-width:120px;text-align:center}
 @media (max-width:640px){ .cal .day{min-height:44px;padding:3px} .cal .ev{font-size:0;height:6px;padding:0;margin-top:3px} }
 .fap{font-size:13px;color:var(--muted)} .fap b{font-weight:600} .fap .approved{color:var(--ok)} .fap .denied{color:var(--bad)} .fap .pending{color:var(--warn)}
+.emlist{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:6px 18px;margin-top:8px}
+.emrow{display:grid;grid-template-columns:130px 1fr;gap:8px;align-items:center;padding:4px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.emrow b{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.emrow input{width:100%;margin:0;padding:6px 8px;font-size:14px}
+.emrow .m{font:11px "Share Tech Mono",ui-monospace,monospace;color:var(--accent);margin-left:4px}
+.gapl{margin-left:8px}

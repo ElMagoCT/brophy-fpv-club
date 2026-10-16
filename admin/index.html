@@ -50,7 +50,28 @@
       <a href="#approvals" id="vApprovals">Approvals</a>
       <a href="#kiosks" id="vKiosks">Kiosks</a>
       <a href="#fly" id="vFly">Fly requests <span id="flyCount"></span></a>
+      <a href="#emails" id="vEmails">Emails</a>
     </nav>
+
+    <!-- ---- emails: the pilot email directory (2026-10-15 night) ---- -->
+    <div id="emails" hidden>
+      <div class="card">
+        <div class="row between">
+          <h2>Pilot emails</h2>
+          <button id="emRefresh">Refresh</button>
+        </div>
+        <p class="muted small">One address per pilot, by roster name. The Request-to-fly form prefills the pilot's email from here, and a
+          mentor spotter's address too (they approve every flight they spot). The list also fills itself in from each request filed.
+          Saved to <code>settings/fly-recipients.json</code> in the private control repo. Anyone who types a roster name on the public
+          form sees that pilot's address prefilled - the price of prefilling.</p>
+        <div class="muted small" id="emMsg"></div>
+        <div id="emList" class="emlist"></div>
+        <div class="row wrapline gap-top">
+          <button id="emSave" class="primary flush">Save emails</button>
+          <span class="muted small" id="emSaveMsg"></span>
+        </div>
+      </div>
+    </div>
 
     <!-- ---- fly requests: the 24 h permission form's recipients + what is on file (2026-10-15) ---- -->
     <div id="fly" hidden>
@@ -86,9 +107,8 @@
           <label>Told, every request (Mr. Reasy) <textarea id="rcAlways" rows="2" placeholder="treasy@…"></textarea></label>
         </div>
         <label>Reply-to when the pilot gave no email <input id="rcReply" type="email" placeholder="a mentor's address (optional)"></label>
-        <label>Mentor directory - one per line, <code>Name: email</code> (the roster name) <textarea id="rcMentors" rows="3" placeholder="Micah T.: micah@…"></textarea></label>
-        <p class="muted small">A pilot who is not a mentor must name a mentor as the spotter; that mentor approves the flight too. The form asks the
-          pilot for the mentor's email, and this directory fills in when it is left blank. Fields above and below all take several addresses.</p>
+        <p class="muted small">Pilot and mentor addresses live on the <a href="#emails">Emails</a> tab. A pilot who is not a mentor must name a
+          mentor as the spotter; a mentor spotter always approves too. Fields above and below all take several addresses, comma or newline separated.</p>
         <h3 class="h3">Club meeting</h3>
         <div class="rcgrid">
           <label>Extra approvers for meetings <textarea id="rcMeetAp" rows="2"></textarea></label>
