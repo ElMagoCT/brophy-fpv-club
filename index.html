@@ -1109,7 +1109,7 @@ function load(refresh){
     box.hidden = false;
     box.innerHTML = items.map(function (r) {
       var st = r.status || 'pending';
-      return '<a href="fly/"><span class="k">' + (st === 'approved' ? 'Flight scheduled' : 'Flight requested') + '</span><span class="nm">' + esc(r.name || 'Event') + '</span>' +
+      return '<a href="fly/"><span class="k">' + (st === 'approved' ? 'Flight scheduled' : 'Flight requested') + '</span><span class="nm">' + esc(r.name || 'Flight') + (r.kind === 'rec' ? ' · ' + esc(r.pilot) : '') + '</span>' +
         '<span class="w"><b>' + esc(r.whenText) + '</b>' + (r.event && r.event.start ? ' · ' + esc(r.event.start) + '–' + esc(r.event.end) : '') + ' · ' + esc(r.location) + '</span>' +
         '<span class="chip ' + st + '">' + (st === 'pending' ? 'waiting for approval' : st) + '</span></a>';
     }).join('');

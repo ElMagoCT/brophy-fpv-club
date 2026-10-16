@@ -710,6 +710,7 @@
       el('rcReply').value = r.replyTo || '';
       el('rcMeetAp').value = ((r.meeting || {}).approvers || []).join(', ');
       el('rcMeetTo').value = ((r.meeting || {}).to || []).join(', ');
+      el('rcMentors').value = Object.keys(r.mentors || {}).map(function (k) { return k + ': ' + r.mentors[k]; }).join('\n');
       drawTypes(r.presets || []);
       var setup = el('flySetup'); setup.textContent = '';
       var warn = [];
@@ -742,7 +743,7 @@
   el('rcSave').onclick = function () {
     var presets = Array.prototype.map.call(el('rcTypes').querySelectorAll('.rct'), function (d) { return d.rcType(); }).filter(function (t) { return t.label.length >= 2; });
     var rc = { approvers: el('rcApprovers').value, always: el('rcAlways').value, replyTo: el('rcReply').value.trim(),
-               meeting: { approvers: el('rcMeetAp').value, to: el('rcMeetTo').value }, presets: presets };
+               meeting: { approvers: el('rcMeetAp').value, to: el('rcMeetTo').value }, presets: presets, mentors: el('rcMentors').value };
     el('rcSave').disabled = true; el('rcMsg').textContent = 'Saving…';
     api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
       var r = j.recipients || {};
@@ -820,7 +821,7 @@
     if (r.kind !== 'rec') { var ec = document.createElement('span'); ec.className = 'pchip src'; ec.textContent = (r.kind === 'meeting' ? 'meeting' : 'special · ' + (r.name || '')); h.appendChild(ec); }
     if (r.point) { var ml = document.createElement('a'); ml.href = 'https://www.google.com/maps?q=' + r.point.lat + ',' + r.point.lng; ml.target = '_blank'; ml.rel = 'noopener'; ml.textContent = 'map'; ml.className = 'pchip src'; h.appendChild(ml); }
     var fd = document.createElement('div'); fd.className = 'fd';
-    var bits = ['spotter ' + r.spotter, 'filed ' + when(r.at)];
+    var bits = ['spotter ' + r.spotter + (r.mentor ? ' (mentor' + (r.mentorEmail ? ' ' + r.mentorEmail : '') + ')' : ''), 'filed ' + when(r.at)];
     if (r.pilots) bits.push('also flying: ' + r.pilots);
     if (r.email) bits.push('pilot ' + r.email);
     if (r.event) bits.push('crowd ' + r.event.crowd + ' · ' + r.event.start + '–' + r.event.end);
