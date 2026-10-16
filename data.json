@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792127867917,
-    "generatedIso":  "2026-10-15T22:17:48-07:00",
+    "generated":  1792127989314,
+    "generatedIso":  "2026-10-15T22:19:49-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -328,9 +328,20 @@
                        "lastSeen":  1791328102415,
                        "badges":  [
                                       "proficient-flight",
-                                      "safe-flight"
+                                      "safe-flight",
+                                      "battery-care",
+                                      "building",
+                                      "betaflight",
+                                      "line-of-sight",
+                                      "tiny-whoop",
+                                      "soldering",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "field-repair",
+                                      "freestyle-flight",
+                                      "pavo-flight"
                                   ],
-                       "tier":  0
+                       "tier":  2
                    },
                    {
                        "name":  "Mr. Lewkowitz",
