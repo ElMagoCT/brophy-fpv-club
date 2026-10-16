@@ -10,7 +10,7 @@
    and can open the menu with SiteNav.open(). Load it with `defer` after the
    page's own <nav class="crumbs">, which it replaces. */
 (function () {
-  var KEY = 'fs.pilot.v1';
+  var KEY = 'fs.pilot.v1', EMAIL_KEY = 'fs.email.v1', API = 'https://brophy-fpv-club-api.netlify.app';
   var src = (document.currentScript && document.currentScript.src) || '';
   var BASE = src.replace(/site\.js(\?.*)?$/, '');
   var DATA = null, panelOpen = false, picking = false;
@@ -89,7 +89,12 @@
         (p ? '<button type="button" class="mlink" data-act="back">&larr; back to ' + esc(p.name) + '</button>' : '');
       var inp = panel.querySelector('#siteMeInput');
       inp.addEventListener('input', drawNames);
-      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && this.value.trim().length >= 2) set(this.value); });
+      inp.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter' || this.value.trim().length < 2) return;
+        var q = slug(this.value), exists = DATA && DATA.pilots && DATA.pilots.some(function (x) { return slug(x.name) === q; });
+        set(this.value);
+        if (!exists) { askNext = true; picking = false; open(); }
+      });
       drawNames();
       setTimeout(function () { inp.focus(); }, 0);
       return;
@@ -105,9 +110,47 @@
     panel.innerHTML =
       '<div class="mh">My profile</div>' +
       '<div class="mname">' + esc(p.name) + (r && r.tier != null ? ' <span class="mtier">Tier ' + r.tier + '</span>' : '') + '</div>' + stats +
+      '<div class="memail" id="siteMeEmail"><span class="mhint">Email: checking&hellip;</span></div>' +
       '<a class="mgo" href="' + BASE + 'pilot-path/">My Pilot Path &rarr;</a>' +
       '<div class="mrow"><button type="button" class="mlink" data-act="switch">Switch profile</button>' +
       '<button type="button" class="mlink" data-act="out">Sign out</button></div>';
+    drawEmail(p);
+  }
+  /* The pilot's email (2026-10-15 night, Micah): asked for when a profile is new, shown with a
+     "change" link otherwise. Kept in the club's directory (POST /api/fly-request {action:'email'}),
+     which is what the Request-to-fly form prefills from, and on this device under fs.email.v1. */
+  function emailMem() { try { return JSON.parse(localStorage.getItem(EMAIL_KEY)) || {}; } catch (e) { return {}; } }
+  function drawEmail(p, mode, known) {
+    var box = panel.querySelector('#siteMeEmail'); if (!box) return;
+    if (mode === 'edit' || mode === 'ask') {
+      box.innerHTML = '<div class="mh2">' + (mode === 'ask' ? 'What\'s your email?' : 'Change your email') + '</div>' +
+        '<input type="email" id="siteMeEmailIn" placeholder="you@school.org" autocomplete="email" spellcheck="false" maxlength="120" value="' + esc(known || '') + '">' +
+        '<div class="mhint">Flight permission decisions are emailed here. The Request-to-fly form fills it in for you.</div>' +
+        '<div class="mrow"><button type="button" class="mlink strong" data-act="email-save">Save</button><button type="button" class="mlink" data-act="email-skip">' + (mode === 'ask' ? 'Not now' : 'Cancel') + '</button></div>';
+      var inp = box.querySelector('#siteMeEmailIn');
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') saveEmail(p); });
+      setTimeout(function () { inp.focus(); }, 0);
+      return;
+    }
+    var local = emailMem()[p.slug];
+    if (known === undefined && local) known = local;
+    if (known === undefined) {
+      fetch(API + '/api/fly-request?pilot=' + encodeURIComponent(p.name), { cache: 'no-store' }).then(function (r) { return r.json(); })
+        .then(function (j) { if (get() && get().slug === p.slug) drawEmail(p, (j && j.email) ? 'show' : (askNext ? 'ask' : 'show'), (j && j.email) || ''); })
+        .catch(function () { if (get() && get().slug === p.slug) drawEmail(p, 'show', ''); });
+      return;
+    }
+    if (askNext && !known) { askNext = false; return drawEmail(p, 'ask', ''); }
+    askNext = false;
+    box.innerHTML = '<span class="mhint">Email: ' + (known ? '<b>' + esc(known) + '</b>' : 'none yet') + ' &middot; <button type="button" class="mlink inline" data-act="email-edit">' + (known ? 'change' : 'add') + '</button></span>';
+  }
+  var askNext = false;
+  function saveEmail(p) {
+    var inp = panel.querySelector('#siteMeEmailIn'), v = inp ? inp.value.trim().toLowerCase() : '';
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) { if (inp) { inp.focus(); inp.select(); } return; }
+    var all = emailMem(); all[p.slug] = v; try { localStorage.setItem(EMAIL_KEY, JSON.stringify(all)); } catch (e) {}
+    drawEmail(p, 'show', v);
+    fetch(API + '/api/fly-request', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'email', pilot: p.name, email: v }) }).catch(function () {});
   }
   /* rank over the last 7 days, 0 = did not fly in them */
   function rank(r) {
@@ -141,8 +184,16 @@
     e.stopPropagation();
     var t = e.target.closest('button');
     if (!t) return;
-    if (t.hasAttribute('data-n')) return set(t.getAttribute('data-n'));
-    var act = t.getAttribute('data-act');
+    if (t.hasAttribute('data-n')) {
+      var isNew = t.classList.contains('new');
+      set(t.getAttribute('data-n'));
+      if (isNew) { askNext = true; picking = false; open(); }   // a brand-new profile: ask for the email right away
+      return;
+    }
+    var act = t.getAttribute('data-act'), cur = get();
+    if (act === 'email-edit' && cur) return drawEmail(cur, 'edit', emailMem()[cur.slug] || (panel.querySelector('#siteMeEmail b') || {}).textContent || '');
+    if (act === 'email-save' && cur) return saveEmail(cur);
+    if (act === 'email-skip' && cur) return drawEmail(cur, 'show', emailMem()[cur.slug] || '');
     if (act === 'switch') { picking = true; drawPanel(); }
     else if (act === 'back') { picking = false; drawPanel(); }
     else if (act === 'out') set(null);

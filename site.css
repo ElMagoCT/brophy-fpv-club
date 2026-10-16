@@ -65,3 +65,11 @@ body{background-color:#f8f5ee}
   color:#fff;background:var(--ink);border-radius:4px;padding:1px 6px;margin-left:5px;vertical-align:1px}
 .mepanel .mtier{font-family:var(--font-mono);font-weight:400;font-size:14px;letter-spacing:.1em;text-transform:uppercase;
   color:#fff;background:var(--ink);border-radius:5px;padding:2px 8px;vertical-align:6px}
+
+/* profile email (2026-10-15 night) */
+.memail{margin:10px 0 12px;font-size:14px}
+.memail .mh2{font-family:var(--font-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--rust);margin-bottom:6px}
+.memail input{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 10px;margin-bottom:4px}
+.memail .mhint b{color:var(--ink);font-weight:600}
+.memail .mlink.inline{display:inline;padding:0;font-size:14px;color:var(--rust);text-decoration:underline;text-underline-offset:3px}
+.memail .mlink.strong{color:var(--ink);font-weight:600}
