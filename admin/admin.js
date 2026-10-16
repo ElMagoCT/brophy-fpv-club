@@ -705,45 +705,48 @@
     el('rcMsg').textContent = 'Loading…';
     api('GET', '/api/fly-request?recipients=1', null, reviewHeaders()).then(function (j) {
       var r = j.recipients || {}; RC = r;
+      el('rcApprovers').value = (r.approvers || []).join(', ');
       el('rcAlways').value = (r.always || []).join(', ');
       el('rcReply').value = r.replyTo || '';
-      drawTypes(r.types || []);
+      el('rcMeetAp').value = ((r.meeting || {}).approvers || []).join(', ');
+      el('rcMeetTo').value = ((r.meeting || {}).to || []).join(', ');
+      drawTypes(r.presets || []);
       var setup = el('flySetup'); setup.textContent = '';
       var warn = [];
-      if (!j.mail) warn.push('Email is not set up on the API yet: requests are filed but nothing is sent. See mail/README.md in brophy-fpv-club-api (a Google Apps Script, authorised once by a human).');
-      if (!j.links) warn.push('FLY_SECRET is not set on the API: the emails say "reply with your decision" instead of carrying Approve / Deny buttons.');
-      if (!(r.always || []).length) warn.push('No "Always" recipients yet - until there are, requests go nowhere.');
+      if (!j.mail) warn.push('Email is not set up on the API: requests are filed but nothing is sent. See mail/README.md in brophy-fpv-club-api.');
+      if (!j.links) warn.push('FLY_SECRET is not set on the API: the emails cannot carry Approve / Deny buttons.');
+      if (!(r.approvers || []).length) warn.push('No approvers yet - until there is one, requests go nowhere.');
       setup.hidden = !warn.length; warn.forEach(function (w) { var d = document.createElement('div'); d.textContent = w; setup.appendChild(d); });
-      el('rcMsg').textContent = r.updated ? 'Saved ' + when(r.updated) + '.' : 'Nothing saved yet (showing the starting set of types).';
+      el('rcMsg').textContent = r.updated ? 'Saved ' + when(r.updated) + '.' : 'Nothing saved yet.';
     }).catch(function (e) { el('rcMsg').textContent = 'Could not load: ' + e.message; });
   }
-  function drawTypes(types) {
+  function drawTypes(presets) {
     var box = el('rcTypes'); box.textContent = '';
-    types.forEach(function (t) { box.appendChild(typeRow(t)); });
-    if (!types.length) { var d = document.createElement('div'); d.className = 'muted small'; d.textContent = 'No event types: the form only offers recreational flights.'; box.appendChild(d); }
+    presets.forEach(function (t) { box.appendChild(typeRow(t)); });
+    if (!presets.length) { var d = document.createElement('div'); d.className = 'muted small'; d.textContent = 'No presets: a special event is named from scratch on the form.'; box.appendChild(d); }
   }
   function typeRow(t) {
     var d = document.createElement('div'); d.className = 'rct';
     var c1 = document.createElement('div');
-    var lab = document.createElement('input'); lab.placeholder = 'Name on the form (Race)'; lab.value = t.label || ''; lab.maxLength = 40; lab.className = 'lab';
+    var lab = document.createElement('input'); lab.placeholder = 'Preset name (Pep rally)'; lab.value = t.label || ''; lab.maxLength = 40; lab.className = 'lab';
     var id = document.createElement('div'); id.className = 'id'; id.textContent = t.id ? 'id ' + t.id : 'new';
     c1.appendChild(lab); c1.appendChild(id);
-    var to = document.createElement('textarea'); to.rows = 2; to.placeholder = 'extra people for this type (optional)'; to.value = (t.to || []).join(', '); to.className = 'to';
-    var lk = document.createElement('label'); lk.className = 'inline'; var cb = document.createElement('input'); cb.type = 'checkbox'; cb.checked = t.locked !== false; cb.className = 'lk';
-    lk.appendChild(cb); lk.appendChild(document.createTextNode(' Locked')); lk.title = 'Needs the instructor password to file';
-    var rm = document.createElement('button'); rm.textContent = 'Remove'; rm.className = 'danger'; rm.onclick = function () { if (window.confirm('Remove "' + (lab.value || 'this type') + '" from the form?')) d.remove(); };
-    d.appendChild(c1); d.appendChild(to); d.appendChild(lk); d.appendChild(rm);
-    d.rcType = function () { return { id: t.id || '', label: lab.value.trim(), to: to.value, locked: cb.checked }; };
+    var to = document.createElement('textarea'); to.rows = 2; to.placeholder = 'also told (emails)'; to.value = (t.to || []).join(', '); to.className = 'to';
+    var ap = document.createElement('textarea'); ap.rows = 2; ap.placeholder = 'extra approvers (emails)'; ap.value = (t.approvers || []).join(', '); ap.className = 'ap';
+    var rm = document.createElement('button'); rm.textContent = 'Remove'; rm.className = 'danger'; rm.onclick = function () { if (window.confirm('Remove the preset "' + (lab.value || 'this one') + '"?')) d.remove(); };
+    d.appendChild(c1); d.appendChild(to); d.appendChild(ap); d.appendChild(rm);
+    d.rcType = function () { return { id: t.id || '', label: lab.value.trim(), to: to.value, approvers: ap.value }; };
     return d;
   }
-  el('rcAdd').onclick = function () { var r = typeRow({ label: '', to: [], locked: true }); el('rcTypes').appendChild(r); r.querySelector('.lab').focus(); };
+  el('rcAdd').onclick = function () { var r = typeRow({ label: '', to: [], approvers: [] }); el('rcTypes').appendChild(r); r.querySelector('.lab').focus(); };
   el('rcSave').onclick = function () {
-    var types = Array.prototype.map.call(el('rcTypes').querySelectorAll('.rct'), function (d) { return d.rcType(); }).filter(function (t) { return t.label.length >= 2; });
-    var rc = { always: el('rcAlways').value, replyTo: el('rcReply').value.trim(), types: types };
+    var presets = Array.prototype.map.call(el('rcTypes').querySelectorAll('.rct'), function (d) { return d.rcType(); }).filter(function (t) { return t.label.length >= 2; });
+    var rc = { approvers: el('rcApprovers').value, always: el('rcAlways').value, replyTo: el('rcReply').value.trim(),
+               meeting: { approvers: el('rcMeetAp').value, to: el('rcMeetTo').value }, presets: presets };
     el('rcSave').disabled = true; el('rcMsg').textContent = 'Saving…';
     api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
       var r = j.recipients || {};
-      el('rcMsg').textContent = 'Saved: ' + (r.always || []).length + ' always · ' + (r.types || []).length + ' event type' + ((r.types || []).length === 1 ? '' : 's') + '. Addresses that did not look like emails were dropped.';
+      el('rcMsg').textContent = 'Saved: ' + (r.approvers || []).length + ' approver' + ((r.approvers || []).length === 1 ? '' : 's') + ', ' + (r.always || []).length + ' always told, ' + (r.presets || []).length + ' preset' + ((r.presets || []).length === 1 ? '' : 's') + '. Addresses that did not look like emails were dropped.';
       loadRecipients();
     }).catch(function (e) { el('rcMsg').textContent = 'Could not save: ' + e.message; }).then(function () { el('rcSave').disabled = false; });
   };
@@ -754,17 +757,17 @@
   var FLY = [], CAL = { y: 0, m: 0, sel: '' };
   function ymdPhx(ms) { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Phoenix', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms)); }
   function drawNext() {
-    var now = Date.now(), ev = FLY.filter(function (r) { return r.mode === 'event' && r.whenMs > now - 3 * 3600000; }).sort(function (a, b) { return a.whenMs - b.whenMs; });
+    var now = Date.now(), ev = FLY.filter(function (r) { return r.kind !== 'rec' && r.whenMs > now - 3 * 3600000; }).sort(function (a, b) { return a.whenMs - b.whenMs; });
     var box = el('flyNext'); box.textContent = '';
     var h = document.createElement('div'); h.className = 'muted small'; h.textContent = 'Next event'; box.appendChild(h);
     if (!ev.length) { var n = document.createElement('div'); n.className = 'nv'; n.textContent = 'Nothing on the calendar. File a meeting or event from the form (a locked type needs your password).'; box.appendChild(n); return; }
     var r = ev[0], b = document.createElement('div'); b.className = 'big';
-    b.textContent = ((r.event && r.event.label) || 'Event') + ' · ' + r.whenText + ' · ' + r.location;
+    b.textContent = (r.name || 'Event') + ' · ' + r.whenText + ' · ' + r.location;
     var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting for approval' : r.status; chip.style.marginLeft = '8px'; b.appendChild(chip);
     var v = document.createElement('div'); v.className = 'nv';
-    v.textContent = 'Pilot in charge ' + r.pilot + ' · ' + (r.event ? r.event.start + '–' + r.event.end + ' · crowd ' + r.event.crowd : '') + (r.status !== 'pending' ? ' · decided ' + when(r.decidedAt) : (r.mailed ? ' · emailed, no answer yet' : ' · NOT emailed'));
+    v.textContent = 'Pilot in charge ' + r.pilot + (r.pilots ? ' (+ ' + r.pilots + ')' : '') + ' · ' + (r.event ? r.event.start + '–' + r.event.end + ' · crowd ' + r.event.crowd : '') + (r.status !== 'pending' ? ' · decided ' + when(r.decidedAt) : ' · approvals ' + (r.approvals ? r.approvals.n + '/' + r.approvals.of : '?') + (r.mailed ? '' : ' · NOT fully emailed'));
     box.appendChild(b); box.appendChild(v);
-    if (ev.length > 1) { var m = document.createElement('div'); m.className = 'nv'; m.textContent = 'Then: ' + ev.slice(1, 4).map(function (x) { return ((x.event && x.event.label) || 'event') + ' ' + x.whenText + ' (' + (x.status === 'pending' ? 'waiting' : x.status) + ')'; }).join(' · '); box.appendChild(m); }
+    if (ev.length > 1) { var m = document.createElement('div'); m.className = 'nv'; m.textContent = 'Then: ' + ev.slice(1, 4).map(function (x) { return (x.name || 'event') + ' ' + x.whenText + ' (' + (x.status === 'pending' ? 'waiting' : x.status) + ')'; }).join(' · '); box.appendChild(m); }
   }
   function drawCal() {
     if (!CAL.y) { var t = ymdPhx(Date.now()).split('-'); CAL.y = +t[0]; CAL.m = +t[1] - 1; }
@@ -779,8 +782,8 @@
       var cell = document.createElement('div'); cell.className = 'day' + (out ? ' out' : '') + (k === today ? ' today' : '') + (k === CAL.sel ? ' sel' : '');
       var n = document.createElement('div'); n.className = 'n'; n.textContent = d.getUTCDate(); cell.appendChild(n);
       (by[k] || []).sort(function (a, b) { return a.whenMs - b.whenMs; }).forEach(function (r) {
-        var e = document.createElement('span'); e.className = 'ev ' + r.status + (r.mode === 'event' ? ' event' : '');
-        e.textContent = new Date(r.whenMs).toLocaleTimeString('en-US', { timeZone: 'America/Phoenix', hour: 'numeric', minute: '2-digit' }).replace(' ', '') + ' ' + (r.mode === 'event' && r.event ? r.event.label : r.pilot);
+        var e = document.createElement('span'); e.className = 'ev ' + r.status + (r.kind !== 'rec' ? ' event' : '');
+        e.textContent = new Date(r.whenMs).toLocaleTimeString('en-US', { timeZone: 'America/Phoenix', hour: 'numeric', minute: '2-digit' }).replace(' ', '') + ' ' + (r.kind !== 'rec' ? r.name : r.pilot);
         e.title = r.pilot + ' · ' + r.whenText + ' · ' + r.location + ' · ' + r.status; cell.appendChild(e);
       });
       cell.onclick = (function (k) { return function () { CAL.sel = CAL.sel === k ? '' : k; drawCal(); drawList(); }; })(k);
@@ -814,15 +817,25 @@
     var b = document.createElement('b'); b.textContent = r.pilot + (r.tier != null ? ' (T' + r.tier + ')' : ''); h.appendChild(b);
     h.appendChild(document.createTextNode(' · ' + r.whenText + ' · ' + r.location + ' · ' + r.aircraft));
     var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting' : r.status; h.appendChild(chip);
-    if (r.mode === 'event') { var ec = document.createElement('span'); ec.className = 'pchip src'; ec.textContent = 'event · ' + (r.event ? (r.event.label || r.event.type) : ''); h.appendChild(ec); }
+    if (r.kind !== 'rec') { var ec = document.createElement('span'); ec.className = 'pchip src'; ec.textContent = (r.kind === 'meeting' ? 'meeting' : 'special · ' + (r.name || '')); h.appendChild(ec); }
+    if (r.point) { var ml = document.createElement('a'); ml.href = 'https://www.google.com/maps?q=' + r.point.lat + ',' + r.point.lng; ml.target = '_blank'; ml.rel = 'noopener'; ml.textContent = 'map'; ml.className = 'pchip src'; h.appendChild(ml); }
     var fd = document.createElement('div'); fd.className = 'fd';
     var bits = ['spotter ' + r.spotter, 'filed ' + when(r.at)];
-    if (r.email) bits.push(r.email);
-    if (r.mode === 'event' && r.event) bits.push('crowd ' + r.event.crowd + ' · ' + r.event.start + '–' + r.event.end);
+    if (r.pilots) bits.push('also flying: ' + r.pilots);
+    if (r.email) bits.push('pilot ' + r.email);
+    if (r.event) bits.push('crowd ' + r.event.crowd + ' · ' + r.event.start + '–' + r.event.end);
+    if ((r.recipients || []).length) bits.push('told: ' + r.recipients.join(', '));
     if (r.notes) bits.push('"' + r.notes + '"');
-    bits.push(r.mailed ? 'emailed' : 'NOT emailed' + (r.mailError ? ' (' + r.mailError + ')' : ''));
+    bits.push(r.mailed ? 'emailed' : 'NOT fully emailed' + (r.mailError ? ' (' + r.mailError + ')' : ''));
     if (r.status !== 'pending') bits.push(r.status + ' ' + when(r.decidedAt) + (r.decidedBy ? ' via ' + r.decidedBy : '') + (r.decisionNote ? ': ' + r.decisionNote : ''));
     fd.textContent = bits.join(' · ');
+    var ap = document.createElement('div'); ap.className = 'fap';
+    (r.approvers || []).forEach(function (a, i) {
+      if (i) ap.appendChild(document.createTextNode(' · '));
+      var sp = document.createElement('span'); sp.className = a.status; sp.textContent = a.email + ': ' + a.status + (a.note && a.note !== 'console' ? ' ("' + a.note + '")' : ''); ap.appendChild(sp);
+    });
+    if (!(r.approvers || []).length) ap.textContent = 'no approvers were set when this was filed';
+    fd.appendChild(document.createElement('br')); fd.appendChild(ap);
     var fa = document.createElement('div'); fa.className = 'fa';
     var ok = document.createElement('button'); ok.className = 'ok'; ok.textContent = 'Approve';
     var no = document.createElement('button'); no.className = 'danger'; no.textContent = 'Deny';
@@ -832,11 +845,11 @@
     return d;
   }
   function decideFly(r, decision, row) {
-    var note = window.prompt((decision === 'approve' ? 'Approve' : 'Deny') + ' ' + r.pilot + ' · ' + r.whenText + ' · ' + r.location + '?\n\nThis records a decision Mr. Burr gave another way (reply, in person). Note to the pilot (optional):', r.status !== 'pending' ? 'changed from ' + r.status : 'per Mr. Burr');
+    var note = window.prompt((decision === 'approve' ? 'Approve' : 'Deny') + ' ' + r.pilot + ' · ' + r.whenText + ' · ' + r.location + '?\n\nThis records a decision an approver gave another way (reply, in person) and settles it for every approver. Note to the pilot (optional):', r.status !== 'pending' ? 'changed from ' + r.status : 'per Mr. Burr');
     if (note === null) return;
     Array.prototype.forEach.call(row.querySelectorAll('button'), function (b) { b.disabled = true; });
     api('POST', '/api/fly-request', { action: 'decide', id: r.id, decision: decision, note: note }, reviewHeaders()).then(function (j) {
-      el('flyMsg').textContent = (j.item.status === 'approved' ? 'Approved' : 'Denied') + ' ' + r.pilot + ' · ' + r.whenText + (j.mailed ? ' · pilot emailed.' : (r.email ? ' · could not email the pilot: ' + j.mailError : ' · the pilot gave no email, tell them.'));
+      el('flyMsg').textContent = (j.item.status === 'approved' ? 'Approved' : 'Denied') + ' ' + r.pilot + ' · ' + r.whenText + (j.mailed ? ' · ' + j.mailed + ' emailed.' : (j.mailError ? ' · could not email: ' + j.mailError : ' · nothing changed, so nobody was emailed.'));
       loadFly();
     }).catch(function (e) { el('flyMsg').textContent = 'Could not record it: ' + e.message; Array.prototype.forEach.call(row.querySelectorAll('button'), function (b) { b.disabled = false; }); });
   }

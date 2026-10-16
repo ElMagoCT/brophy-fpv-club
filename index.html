@@ -192,6 +192,17 @@ section{margin-top:30px}
 }
 
 /* ---------- stat strip ---------- */
+.upcoming{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.upcoming a{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;text-decoration:none;color:var(--ink);
+  background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:10px 16px}
+.upcoming a:hover{border-color:var(--rust)}
+.upcoming .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
+.upcoming .nm{font-family:var(--font-sketch);font-weight:700;font-size:21px;line-height:1}
+.upcoming .w{font-size:15px}
+.upcoming .w b{font-weight:600}
+.upcoming .chip{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1.5px solid var(--line-hard);color:var(--amber);border-color:var(--amber)}
+.upcoming .chip.approved{color:#fff;background:var(--green);border-color:var(--green)}
+.upcoming .chip.denied{color:#fff;background:var(--rust);border-color:var(--rust)}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .stat{padding:16px 18px}
 .stat .n{
@@ -463,9 +474,12 @@ header.title .side .btn{text-align:center;justify-content:center}
         <div class="detail" id="statusDetail">Reading the lab schedule&hellip;</div>
       </div>
       <a class="btn primary" href="pilot-path/">Pilot Path: badges &amp; lessons &rarr;</a>
-      <a class="btn" href="fly/" title="Every campus flight: file this at least 24 hours ahead">Request to fly &middot; 24 h ahead &rarr;</a>
     </div>
   </header>
+
+  <!-- 2026-10-15 (Micah): the next flights on the calendar - events filed on fly/ -
+       one line each, up to three, right under the title. Hidden when there are none. -->
+  <div class="upcoming" id="upcoming" hidden></div>
 
   <section aria-label="Club totals">
     <div class="stats" id="stats"></div>
@@ -1088,6 +1102,18 @@ document.addEventListener('site:pilot', function (){
 
 function load(refresh){
   /* cache-bust so a CDN edge cache can never pin an old leaderboard */
+  /* the next events (meetings / special events filed on fly/), from the club API */
+  fetch('https://brophy-fpv-club-api.netlify.app/api/fly-request?upcoming=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
+    var items = ((j && j.items) || []).slice(0, 3), box = $('upcoming');
+    if (!items.length) return;
+    box.hidden = false;
+    box.innerHTML = items.map(function (r) {
+      var st = r.status || 'pending';
+      return '<a href="fly/"><span class="k">' + (st === 'approved' ? 'Flight scheduled' : 'Flight requested') + '</span><span class="nm">' + esc(r.name || 'Event') + '</span>' +
+        '<span class="w"><b>' + esc(r.whenText) + '</b>' + (r.event && r.event.start ? ' · ' + esc(r.event.start) + '–' + esc(r.event.end) : '') + ' · ' + esc(r.location) + '</span>' +
+        '<span class="chip ' + st + '">' + (st === 'pending' ? 'waiting for approval' : st) + '</span></a>';
+    }).join('');
+  }).catch(function () {});
   fetch('data.json?t=' + Date.now(), { cache: 'no-store' })
     .then(function(r){
       if (!r.ok) throw new Error('data.json returned ' + r.status);

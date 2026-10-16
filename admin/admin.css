@@ -144,13 +144,13 @@ textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--
 .pchip.pending{color:var(--warn)} .pchip.approved{background:var(--ok);color:#fff} .pchip.denied{background:var(--bad);color:#fff}
 @media (max-width:560px){ .fr{grid-template-columns:1fr} .fr .fa{grid-row:auto} }
 .h3{margin:16px 0 4px;font-size:16px;font-weight:600}
-.rct{display:grid;grid-template-columns:1fr 2fr auto auto;gap:8px 12px;align-items:start;padding:10px 0;border-top:1px dashed var(--line)}
+.rct{display:grid;grid-template-columns:1fr 1.4fr 1.4fr auto;gap:8px 12px;align-items:start;padding:10px 0;border-top:1px dashed var(--line)}
 .rct:first-child{border-top:0}
 .rct input,.rct textarea{margin-top:0;width:100%}
 .rct label.inline{margin:6px 0 0;white-space:nowrap}
 .rct .id{font:12px "Share Tech Mono",ui-monospace,monospace;color:var(--muted);margin-top:4px}
 .rct button{padding:5px 10px;font-size:14px;margin-top:0}
-@media (max-width:640px){ .rct{grid-template-columns:1fr 1fr} }
+@media (max-width:640px){ .rct{grid-template-columns:1fr} }
 .nextcard{border-left:4px solid var(--accent)}
 .nextcard .big{font-size:20px;font-weight:600}
 .nextcard .nv{color:var(--muted);font-size:14.5px;margin-top:2px}
@@ -166,3 +166,4 @@ textarea{font:inherit;color:inherit;background:var(--bg);border:1px solid var(--
 .cal .ev.event{outline:2px solid var(--ink);outline-offset:-2px}
 #calTitle{min-width:120px;text-align:center}
 @media (max-width:640px){ .cal .day{min-height:44px;padding:3px} .cal .ev{font-size:0;height:6px;padding:0;margin-top:3px} }
+.fap{font-size:13px;color:var(--muted)} .fap b{font-weight:600} .fap .approved{color:var(--ok)} .fap .denied{color:var(--bad)} .fap .pending{color:var(--warn)}
