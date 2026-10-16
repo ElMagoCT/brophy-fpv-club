@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792127989314,
-    "generatedIso":  "2026-10-15T22:19:49-07:00",
+    "generated":  1792128169891,
+    "generatedIso":  "2026-10-15T22:22:50-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -339,7 +339,11 @@
                                       "radio-protocol",
                                       "field-repair",
                                       "freestyle-flight",
-                                      "pavo-flight"
+                                      "pavo-flight",
+                                      "spotter",
+                                      "event-ops",
+                                      "fleet-steward",
+                                      "mentor"
                                   ],
                        "tier":  2
                    },
