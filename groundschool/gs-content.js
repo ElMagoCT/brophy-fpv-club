@@ -1335,7 +1335,7 @@ var GS_COURSE = [
       p:['The badges are not decoration. They are the club\'s answer to <b>who may touch which drone</b>, and that answer is checked before gear comes out of the case. Tiers 1, 2 and 3 each open with a <b>checkpoint</b>: a flight a mentor watches once every one of its <b>prerequisite</b> badges is ticked. Pass it and you are on that tier.'],
       cols:{ tone:'vs', ha:'You may', hb:'Once',
         a:['Fly any sim, any day','Fly the Meteor 75 for your Tiny Whoop checkpoint','Fly the Meteor 75 with the club','Fly the Pavo for your Pavo checkpoint','Fly the Pavo with the club, or any FPV drone at school','Fly at a school event or a race'],
-        b:['You have a name at the kiosk','Its seven prerequisites are ticked - a mentor watches','You passed Tiny Whoop: you are Tier 1','Its five prerequisites are ticked - a mentor watches','You passed the Pavo 20 Pro Flight: you are Tier 2','Your five Event Pilot prerequisites are ticked - with a spotter and a mentor'] },
+        b:['You have a name at the kiosk','Its six prerequisites are ticked - a mentor watches','You passed Tiny Whoop: you are Tier 1','Its five prerequisites are ticked - a mentor watches','You passed the Pavo 20 Pro Flight: you are Tier 2','Your six Event Pilot prerequisites are ticked - with a spotter and a mentor'] },
       tip:'Ask before you assume. A mentor can look you up on the kiosk in ten seconds.' },
     { h:'Fine, and not fine', tab:'Edge cases',
       p:['Most rule breaks are shortcuts, not rebellion. These are the ones the club actually sees.'],
@@ -1410,7 +1410,7 @@ var GS_COURSE = [
   id:'gs-spt-quiz', mod:'SPT', ord:90, title:'Spotter quiz', mins:3, kind:'quiz', pool:'SPT',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
-      p:['Ten questions on the job, the check and the calls, reshuffled every time. <b>80 to pass</b> - then a mentor watches you spot a real flight and signs the badge off. Unlimited retakes; your best score is kept.'] }
+      p:['Ten questions on the job, the check and the calls, reshuffled every time. <b>80 to pass</b> earns the badge, no sign-off needed. Unlimited retakes; your best score is kept.'] }
   ]
 },
 {
