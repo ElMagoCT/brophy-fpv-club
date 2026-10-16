@@ -1320,9 +1320,10 @@ var GS_COURSE = [
 {
   id:'gs-saf-02', mod:'SAF', ord:20, title:'The Brophy FPV rules sheet', mins:2, kind:'read',
   cards:[
-    { h:'Six flight rules. Know them. Follow them.', tab:'The sheet',
+    { h:'Seven flight rules. Know them. Follow them.', tab:'The sheet',
       p:['This is the sheet on the wall by the simulators. Safe Flight is the badge that says you know it and you follow it - at all times you are with the Brophy FPV Club.'],
       steps:[
+        { t:'Permission before every campus flight', d:'a Request to fly on the website, 24 hours ahead, with a yes from Mr. Burr - a badge is never permission' },
         { t:'Spotter for every goggle flight', d:'eyes on the aircraft the whole battery - that is the law, not a club habit' },
         { t:'Never over people',           d:'and never between you and the aircraft' },
         { t:'Call out your arm',           d:'in the flight zone, facing away, after the ARMING call' },
@@ -1336,12 +1337,23 @@ var GS_COURSE = [
       cols:{ tone:'vs', ha:'You may', hb:'Once',
         a:['Fly any sim, any day','Fly the Meteor 75 for your Tiny Whoop checkpoint','Fly the Meteor 75 with the club','Fly the Pavo for your Pavo checkpoint','Fly the Pavo with the club, or any FPV drone at school','Fly at a school event or a race'],
         b:['You have a name at the kiosk','Its six prerequisites are ticked - a mentor watches','You passed Tiny Whoop: you are Tier 1','Its five prerequisites are ticked - a mentor watches','You passed the Pavo 20 Pro Flight: you are Tier 2','Your six Event Pilot prerequisites are ticked - with a spotter and a mentor'] },
-      tip:'Ask before you assume. A mentor can look you up on the kiosk in ten seconds.' },
+      tip:'Ask before you assume. A mentor can look you up on the kiosk in ten seconds. And every one of those real flights still needs a yes on the Request to fly form first.' },
+    { h:'Permission to fly', tab:'Permission',
+      p:['Passing a checkpoint says you <b>can</b> fly. It never says you <b>may</b>. Every flight on campus - whoop, Pavo, anything with props - is requested on the website first (<b>Request to fly</b>, on the home page) and happens only after the school says yes.'],
+      steps:[
+        { t:'File it 24 hours ahead',        d:'the form will not take a time sooner than that' },
+        { t:'Say exactly what you will do',   d:'when, where on campus, which aircraft, who spots' },
+        { t:'Mr. Burr says yes or no',        d:'by email - no answer is a no. You fly as filed: that time, that place, that aircraft' },
+        { t:'Not a mentor? Your spotter is one', d:'name them in the spotter box; they approve the flight too and get the email' },
+        { t:'Meetings and events are filed by a mentor', d:'the event option needs the mentor password and goes to more people' }
+      ],
+      note:'The simulators never need a form. Changing the plan - a different day, place or drone - is a new request.',
+      art:'propsOff', cap:'ask first, every time' },
     { h:'Fine, and not fine', tab:'Edge cases',
       p:['Most rule breaks are shortcuts, not rebellion. These are the ones the club actually sees.'],
       cols:{ tone:'dd', ha:'Fine', hb:'Not fine',
-        a:['Calling ARMING, then a hover check on the pad','Spinning a tiny whoop\'s motors with props on, held down','Props on at the bench with a mentor supervising and the drone held or strapped down'],
-        b:['Props on, battery in, nobody holding it','Arming without calling it out','Flying in goggles with nobody watching the aircraft'] },
+        a:['Calling ARMING, then a hover check on the pad','Spinning a tiny whoop\'s motors with props on, held down','Props on at the bench with a mentor supervising and the drone held or strapped down','A quick battery on the field, approved yesterday on the form for today'],
+        b:['Props on, battery in, nobody holding it','Arming without calling it out','Flying in goggles with nobody watching the aircraft','"Just one battery" with no request filed, or before the yes came back'] },
       note:'Not sure whether something is allowed? Ask a mentor first.' }
   ]
 },
@@ -1349,7 +1361,7 @@ var GS_COURSE = [
   id:'gs-saf-quiz', mod:'SAF', ord:90, title:'Safe Flight quiz', mins:4, kind:'quiz', pool:'SAF',
   cards:[
     { h:'Ten questions. Eight to pass.', tab:'How it works', art:'checkride', cap:'ten questions, eighty to pass',
-      p:['Ten questions drawn from the Safe Flight pool - the rules, the calls and the go / no-go - reshuffled every time. <b>80 to pass</b> earns the badge on the spot - no sign-off needed. Unlimited retakes; your best score is kept.'] }
+      p:['Ten questions drawn from the Safe Flight pool - the rules, the calls, permission to fly and the go / no-go - reshuffled every time. <b>80 to pass</b> earns the badge on the spot - no sign-off needed. Unlimited retakes; your best score is kept.'] }
   ]
 },
 /* ============================ SPOTTER (2026-10-10) ======================
@@ -1820,6 +1832,19 @@ var GS_QUIZ = [
 { mod:'SAF', q:'You need to change a Betaflight setting on a larger drone at the Brophy bench, battery plugged in. What comes off first?',
   opts:['The battery','The props','The antenna','Nothing, it is only a setting'], a:1,
   why:'Props come off whenever the battery is plugged in on the bench. One wrong click in Betaflight and somebody gets hurt.' },
+/* --- permission to fly (2026-10-16: the school's condition on the grant) --- */
+{ mod:'SAF', q:'You passed your Tiny Whoop checkpoint yesterday. May you fly the Meteor on the field after school today?',
+  opts:['Yes - the badge is your permission','Only if a mentor is standing next to you','Only if you filed a Request to fly 24 hours ahead and got a yes','Yes, anything under 250 g is fine'], a:2,
+  why:'A checkpoint says you can fly. Permission for each campus flight comes from the Request to fly form, filed a day ahead and answered with a yes.' },
+{ mod:'SAF', q:'How far ahead must a Request to fly be filed?',
+  opts:['Right before you arm','The same morning','At least 24 hours before the flight','A week before'], a:2,
+  why:'24 hours, so the school can answer. The form will not even take a sooner time.' },
+{ mod:'SAF', q:'You are not a mentor. Who has to be your spotter for a campus flight?',
+  opts:['Anyone with eyes','A friend who flies the sim','A mentor, who also approves the request','Mr. Burr in person'], a:2,
+  why:'Your spotter must be a mentor, named on the form. They get the email and approve the flight too.' },
+{ mod:'SAF', q:'Your request was approved for the whoop on the lower field at 3:30. It is pouring. Can you fly the hallway at 3:30 instead?',
+  opts:['Yes, the time is the same','Yes, a whoop is a whoop','No - that is a new request','Yes, if your spotter agrees'], a:2,
+  why:'Approval is for the flight as filed: time, place and aircraft. A different place is a new request, and 24 hours is 24 hours.' },
 { mod:'EVT', q:'Your aircraft weighs 620 g with the battery in. What does the FAA need?',
   opts:['Nothing, it is under 1 kg','It registered, with the number visible outside','A Part 107 certificate regardless of purpose','A LAANC authorisation for every flight'], a:1,
   why:'250 g and up gets registered, with the registration marked on the outside where you can read it without tools.' },
