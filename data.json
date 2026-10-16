@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792128169891,
-    "generatedIso":  "2026-10-15T22:22:50-07:00",
+    "generated":  1792128230353,
+    "generatedIso":  "2026-10-15T22:23:50-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -250,10 +250,13 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
+                                      "betaflight",
+                                      "line-of-sight",
+                                      "tiny-whoop",
                                       "soldering",
                                       "spotter"
                                   ],
-                       "tier":  0
+                       "tier":  1
                    },
                    {
                        "name":  "Aeson T.",
