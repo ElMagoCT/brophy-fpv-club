@@ -260,18 +260,18 @@
     if (!bd) return null;
     var rp = rosterPilot(FS.slug(pilot));
     if (bd.minTier != null) {
-      if (rp && rp.tier != null && rp.tier < bd.minTier) return { stop: bd.name + ' is for Tier ' + bd.minTier + ' pilots - ' + pilot + ' is on Tier ' + rp.tier + '. Not filed.' };
-      if (!rp || rp.tier == null) return { ask: 'The kiosk has not published ' + pilot + '’s tier. ' + bd.name + ' is for Tier ' + bd.minTier + ' pilots, and it will not count until they are one. File it anyway?' };
+      if (rp && rp.tier != null && rp.tier < bd.minTier) return { ask: 'Warning: ' + bd.name + ' is normally for Tier ' + bd.minTier + ' pilots - ' + pilot + ' is on Tier ' + rp.tier + '. Approve it anyway? It will count.' };
+      if (!rp || rp.tier == null) return { ask: 'Warning: the kiosk has not published ' + pilot + '’s tier. ' + bd.name + ' is normally for Tier ' + bd.minTier + ' pilots. Approve it anyway? It will count.' };
     }
     if (bd.minHours) {
       var hrs = rp ? (rp.totalMs || 0) / 3600000 : 0;
-      if (hrs < bd.minHours) return { stop: bd.name + ' needs ' + bd.minHours + ' h in the sim before it can be judged - ' + pilot + ' has ' + hrs.toFixed(1) + ' h at the kiosk. Not filed.' };
+      if (hrs < bd.minHours) return { ask: 'Warning: ' + bd.name + ' normally needs ' + bd.minHours + ' h in the sim - ' + pilot + ' has ' + hrs.toFixed(1) + ' h at the kiosk. Approve it anyway? It will count.' };
     }
     if (bd.checkpoint) {
       var held = (rp && rp.badges) || [];
       var missing = FS.mates(bd).filter(function (m) { return held.indexOf(m.id) < 0; });
-      if (missing.length) return { ask: bd.name + ' is the checkpoint for its tier. The kiosk snapshot shows ' + pilot + ' still needs: ' +
-        missing.map(function (m) { return m.name; }).join(', ') + '. It will not count until those are done. File it anyway?' };
+      if (missing.length) return { ask: 'Warning: ' + bd.name + ' is the checkpoint for its tier. The kiosk snapshot shows ' + pilot + ' still needs: ' +
+        missing.map(function (m) { return m.name; }).join(', ') + '. Approve it anyway? It will count.' };
     }
     return null;
   }
@@ -306,8 +306,8 @@
     return got.then(function (prog) {
       var best = quizBest(prog, bd);
       if (best >= FS.PASS) return null;
-      return bd.name + ' needs its quiz passed AND a mentor’s approval. ' + pilot + (best ? '’s best quiz is ' + best + ' %' : ' has not passed the quiz yet') +
-        ' (needs ' + FS.PASS + ' %). The approval is filed, but it will not count until the quiz is passed. File it anyway?';
+      return 'Warning: ' + bd.name + ' normally needs its quiz passed AND a mentor’s approval. ' + pilot + (best ? '’s best quiz is ' + best + ' %' : ' has not passed the quiz yet') +
+        ' (needs ' + FS.PASS + ' %). Approve it anyway? It will count.';
     });
   }
   function decideBadge(pilot, badge, status, msg, evidence) {
@@ -328,8 +328,16 @@
     msg.textContent = 'signing…';
     return fileAward(pilot, badge, status, note, evidence).then(function () {
       msg.textContent = (status === 'earned' ? 'Approved: ' : 'Revoked: ') + badgeName(badge) + ' for ' + pilot + ' · on file; the kiosks pick it up on their next sync.';
-      showHas(); ROSTER = null; loadRoster();
-      if (PP.slug === FS.slug(pilot)) { PP.slug = null; pickPilot(); }
+      /* update in place (2026-10-15): the old code reloaded the roster and the
+         whole progress list, so the page jumped back to the top every time. */
+      if (PP.slug === FS.slug(pilot)) {
+        PP.awards = PP.awards || {}; PP.awards.badges = PP.awards.badges || {};
+        PP.awards.badges[badge] = { status: status, at: Date.now(), note: note };
+        var y = window.scrollY; drawProgress(); window.scrollTo(0, y);
+        var row = el('ppList').querySelector('[data-badge="' + badge + '"] .pmsg');
+        if (row) row.textContent = msg.textContent;
+      }
+      showHas();
     }).catch(function (e) { msg.textContent = 'Could not file it: ' + e.message; });
   }
 
@@ -401,16 +409,14 @@
     st.both = !!(b.quiz && mentorType);              // quiz AND a mentor's approval
     if (st.kiosk) st.earned = true;
     else if (st.revoked) st.earned = false;
-    else if (st.approved) st.earned = st.both ? !!st.quizPass : true;
+    else if (st.approved) st.earned = true;            // 2026-10-15: an approval always counts
     else st.earned = b.type === 'knowledge' && !!st.quizPass;
-    if (st.earned && b.minHours && !st.kiosk && st.hours < b.minHours) { st.earned = false; st.held = 'approved · counts at ' + b.minHours + ' h'; }
-    if (!st.earned && st.approved && st.both && !st.quizPass) st.held = 'approved · quiz still needed';
     return st;
   }
   function chip(cls, text) { var c = document.createElement('span'); c.className = 'pchip ' + cls; c.textContent = text; return c; }
   function when(at) { return at ? new Date(at).toLocaleDateString(undefined, { month: 'numeric', day: 'numeric' }) : ''; }
   function progressRow(b, st, extra) {
-    var row = document.createElement('div'); row.className = 'prow' + (st.earned ? ' done' : '') + (b.checkpoint ? ' cp' : '');
+    var row = document.createElement('div'); row.className = 'prow' + (st.earned ? ' done' : '') + (b.checkpoint ? ' cp' : ''); row.setAttribute('data-badge', b.id);
     var main = document.createElement('div'); main.className = 'pmain';
     var nm = document.createElement('b'); nm.textContent = b.name;
     var ty = document.createElement('span'); ty.className = 'ptype';
@@ -444,7 +450,7 @@
     row.appendChild(main); row.appendChild(acts);
     if (st.both && !st.quizPass && !st.kiosk) {
       var w = document.createElement('div'); w.className = 'pwarn';
-      w.textContent = 'Quiz AND mentor approval: the quiz is not passed yet - you can still file an approval (you will be asked to confirm), but it will not count until it is.';
+      w.textContent = 'Quiz AND mentor approval: the quiz is not passed yet. You can still approve it (you will be asked to confirm) and it will count.';
       row.appendChild(w);
     }
     row.appendChild(det); row.appendChild(msg);
@@ -590,7 +596,7 @@
       var meta = document.createElement('div'); meta.className = 'meta';
       meta.textContent = new Date(it.at).toLocaleString() + (it.note ? ' · “' + it.note + '”' : '');
       var rule = checkRules(it.pilot, bd), warn = null;
-      if (rule) { warn = document.createElement('div'); warn.className = 'warn'; warn.textContent = rule.stop || rule.ask.replace(/ File it anyway\?$/, ''); }
+      if (rule) { warn = document.createElement('div'); warn.className = 'warn'; warn.textContent = rule.stop || rule.ask.replace(/ Approve it anyway\? It will count\.$/, ''); }
       var note = document.createElement('input'); note.placeholder = 'Note to the pilot (say why, if it fails)'; note.maxLength = 300;
       var row = document.createElement('div'); row.className = 'row';
       var pass = document.createElement('button'); pass.className = 'primary'; pass.textContent = 'Pass';

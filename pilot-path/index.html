@@ -388,11 +388,11 @@ function status(b) {
   if (!b.checkpoint || !pilot) return s;
   var mates = FS.mates(b), left = mates.filter(function (m) { return !rawStatus(m).earned; }).length;
   s.checkpoint = true; s.ready = left === 0;
+  if (s.earned) return s;          // approved: counts (2026-10-15)
   if (left > 0) {
-    var approved = s.earned;
-    s.earned = false; s.pct = Math.round((mates.length - left) / Math.max(1, mates.length) * 90);
-    s.detail = (approved ? 'approved · counts once every prerequisite is done · ' : '') + left + ' more prerequisite' + (left === 1 ? '' : 's') + ' before this checkpoint';
-  } else if (!s.earned) {
+    s.pct = Math.round((mates.length - left) / Math.max(1, mates.length) * 90);
+    s.detail = left + ' more prerequisite' + (left === 1 ? '' : 's') + ' before this checkpoint';
+  } else {
     s.pct = 95; s.detail = '✓ prerequisites done - ask a mentor to watch your checkpoint attempt';
   }
   return s;
@@ -400,6 +400,11 @@ function status(b) {
 function rawStatus(b) {
   var kp = kioskPilot(), gp = gsProfile(), pr = progress()[b.id] || {};
   var out = { earned: false, source: '', pct: 0, detail: '' };
+  /* 2026-10-15 (Micah): an approval on file always counts - the console warns
+     the mentor first when the tier, hours or prerequisites are not there yet. */
+  if (kp && kp.badges && kp.badges.indexOf(b.id) >= 0) { out.earned = true; out.source = 'kiosk'; out.pct = 100; return out; }
+  var aw0e = AWARDS && AWARDS.badges && AWARDS.badges[b.id];
+  if (aw0e && aw0e.status === 'earned') { out.earned = true; out.source = 'instructor'; out.pct = 100; return out; }
   /* minTier (2026-10-06, Mentor = Tier 2 pilots): below it the badge does not
      count, even if a mentor already approved it - say which, and stop. */
   if (b.minTier != null && pilot) {
