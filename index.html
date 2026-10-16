@@ -192,17 +192,16 @@ section{margin-top:30px}
 }
 
 /* ---------- stat strip ---------- */
-.upcoming{display:flex;flex-direction:column;gap:8px;margin-top:12px}
-.upcoming a{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;text-decoration:none;color:var(--ink);
-  background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:10px 16px}
+.upcoming{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
+.upcoming .k{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-right:4px}
+.upcoming a{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-size:14px;line-height:1.2;
+  background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:999px;padding:6px 12px 6px 9px}
 .upcoming a:hover{border-color:var(--rust)}
-.upcoming .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
-.upcoming .nm{font-family:var(--font-sketch);font-weight:700;font-size:21px;line-height:1}
-.upcoming .w{font-size:15px}
-.upcoming .w b{font-weight:600}
-.upcoming .chip{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;padding:3px 10px;border-radius:999px;border:1.5px solid var(--line-hard);color:var(--amber);border-color:var(--amber)}
-.upcoming .chip.approved{color:#fff;background:var(--green);border-color:var(--green)}
-.upcoming .chip.denied{color:#fff;background:var(--rust);border-color:var(--rust)}
+.upcoming .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);flex:none}
+.upcoming a.approved .dot{background:var(--green)}
+.upcoming a.denied .dot{background:var(--rust)}
+.upcoming a b{font-weight:600}
+.upcoming a small{color:var(--ink-soft);font-size:13px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .stat{padding:16px 18px}
 .stat .n{
@@ -1104,14 +1103,12 @@ function load(refresh){
   /* cache-bust so a CDN edge cache can never pin an old leaderboard */
   /* the next events (meetings / special events filed on fly/), from the club API */
   fetch('https://brophy-fpv-club-api.netlify.app/api/fly-request?upcoming=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-    var items = ((j && j.items) || []).slice(0, 3), box = $('upcoming');
+    var items = ((j && j.items) || []).slice(0, 6), box = $('upcoming');
     if (!items.length) return;
     box.hidden = false;
-    box.innerHTML = items.map(function (r) {
-      var st = r.status || 'pending';
-      return '<a href="fly/"><span class="k">' + (st === 'approved' ? 'Flight scheduled' : 'Flight requested') + '</span><span class="nm">' + esc(r.name || 'Flight') + (r.kind === 'rec' ? ' · ' + esc(r.pilot) : '') + '</span>' +
-        '<span class="w"><b>' + esc(r.whenText) + '</b>' + (r.event && r.event.start ? ' · ' + esc(r.event.start) + '–' + esc(r.event.end) : '') + ' · ' + esc(r.location) + '</span>' +
-        '<span class="chip ' + st + '">' + (st === 'pending' ? 'waiting for approval' : st) + '</span></a>';
+    box.innerHTML = '<span class="k">Upcoming flights</span>' + items.map(function (r) {
+      var st = r.status || 'pending', t = new Date(r.whenMs).toLocaleString('en-US', { timeZone: 'America/Phoenix', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      return '<a class="' + st + '" href="fly/#calendar" title="' + esc(r.location) + ' · ' + (st === 'pending' ? 'waiting for approval' : st) + '"><span class="dot"></span><b>' + esc(r.kind === 'rec' ? r.pilot : r.name) + '</b><small>' + esc(t) + '</small></a>';
     }).join('');
   }).catch(function () {});
   fetch('data.json?t=' + Date.now(), { cache: 'no-store' })
