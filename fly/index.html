@@ -63,6 +63,22 @@ section{margin-top:26px}
 .formbox{padding:10px;overflow:hidden}
 .formbox iframe{display:block;width:100%;height:min(1900px,calc(100vh - 40px));border:0;border-radius:6px;background:#fff}
 .fallback{font-size:14.5px;color:var(--ink-soft);line-height:1.4;margin:0 2px 10px}
+/* the gate (2026-10-19): the form shows only to a signed-in pilot who holds the
+   FPV Certification Test; anyone else gets a picker / a pointer and "Show form anyway" */
+.gate{padding:20px 22px}
+.gate .k{font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-bottom:6px}
+.gate h3{font-family:var(--font-sketch);font-weight:700;font-size:28px;line-height:1.05;margin:0 0 8px}
+.gate p{margin:0 0 12px;font-size:15px;line-height:1.45;max-width:620px}
+.gate p b{font-weight:600}
+.gate input{width:100%;max-width:420px;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line-hard);border-radius:7px;padding:9px 11px;display:block;margin-bottom:10px}
+.gate .row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font-family:var(--font-mono);font-size:14px;letter-spacing:.1em;text-transform:uppercase;background:var(--glass-2);color:var(--ink);text-decoration:none;border:1.5px solid var(--line-hard);border-radius:7px;padding:10px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow)}
+.btn:hover{background:var(--paper-2)}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.btn.primary:hover{background:#182740}
+.btn.quiet{background:none;border-color:transparent;box-shadow:none;color:var(--ink-soft);text-decoration:underline;text-underline-offset:3px;padding:10px 6px}
+.gate .hint{font-size:13.5px;color:var(--ink-soft);margin-top:8px}
+.gate[hidden],#formSec[hidden]{display:none}
 .fallback a{color:var(--rust);font-weight:600}
 footer{margin-top:40px;font-size:13.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
 footer a{color:var(--ink)}
@@ -110,7 +126,11 @@ footer a{color:var(--ink)}
     </div>
   </section>
 
-  <section aria-labelledby="formHead">
+  <section aria-label="Who is asking" id="gateSec">
+    <div class="card gate" id="gate"><div class="k">Who is asking?</div><p>Checking your profile&hellip;</p></div>
+  </section>
+
+  <section aria-labelledby="formHead" id="formSec" hidden>
     <div class="eyebrow"><h2 id="formHead">The form</h2><span class="line"></span><a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">Open the form in a new tab &nearr;</a></div>
     <p class="fallback">The form is Mr. Burr's Google Form and asks for a Brophy Google sign-in. If it does not appear below, or asks you to sign in,
       <a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">open it in a new tab</a>.</p>
@@ -124,5 +144,70 @@ footer a{color:var(--ink)}
     <span><a href="../pilot-path/">Pilot Path</a> &middot; <a href="../">Home</a></span>
   </footer>
 </div>
+
+<script>
+/* The gate (2026-10-19, Micah): the form is for signed-in pilots who hold the
+   FPV Certification Test (Tier 1+ in the kiosk snapshot, or the tiny-whoop badge
+   there or in a signed instructor decision). Anyone else sees why, and a
+   "Show form anyway" button, because the Google Form is still the real gate. */
+(function () {
+  var API = 'https://brophy-fpv-club-api.netlify.app';
+  var DATA = null, AW = {}, shown = false, cur = null;
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+  function slug(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+  function row(s) { if (!DATA || !DATA.pilots) return null; for (var i = 0; i < DATA.pilots.length; i++) if (slug(DATA.pilots[i].name) === s) return DATA.pilots[i]; return null; }
+  function cleared(s) {
+    var rp = row(s), aw = AW[s];
+    var tier = rp && rp.tier != null ? rp.tier : 0;
+    var badge = (rp && (rp.badges || []).indexOf('tiny-whoop') >= 0) || (aw && aw.badges && aw.badges['tiny-whoop'] && aw.badges['tiny-whoop'].status === 'earned');
+    return { known: !!rp || !!aw, tier: tier, ok: tier >= 1 || !!badge, pending: !DATA || AW[s] === undefined };
+  }
+  function pullAwards(s, name) {
+    if (s in AW) return;
+    AW[s] = undefined;
+    fetch(API + '/api/award?pilot=' + encodeURIComponent(name), { cache: 'no-store' }).then(function (r) { return r.json(); })
+      .then(function (j) { AW[s] = (j && j.awards) || null; draw(); }).catch(function () { AW[s] = null; draw(); });
+  }
+  function showForm(yes) { $('formSec').hidden = !yes; $('gateSec').hidden = yes; }
+  function draw() {
+    var g = $('gate');
+    if (shown) { showForm(true); return; }
+    if (!cur) {
+      var names = DATA && DATA.pilots ? DATA.pilots.map(function (p) { return p.name; }).sort() : [];
+      g.innerHTML = '<div class="k">Who is asking?</div><h3>Select your profile</h3>' +
+        '<p>The request form is for pilots who have passed the <b>FPV Certification Test</b>. Pick your name - the same one you use at the kiosk - and the page checks.</p>' +
+        '<input type="text" id="gateName" list="gateNames" placeholder="First name and last initial, e.g. Micah T." autocomplete="off" spellcheck="false" maxlength="28">' +
+        '<datalist id="gateNames">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
+        '<div class="row"><button type="button" class="btn primary" id="gateGo">That\'s me</button><button type="button" class="btn quiet" id="gateAnyway">Show form anyway</button></div>' +
+        '<div class="hint">No password: picking a name is signing in. ' + (DATA ? '' : 'Loading the roster&hellip;') + '</div>';
+      $('gateGo').onclick = function () { var v = $('gateName').value.trim(); if (v.length >= 2 && window.SiteNav) window.SiteNav.set(v); };
+      $('gateName').addEventListener('keydown', function (e) { if (e.key === 'Enter') $('gateGo').click(); });
+      $('gateAnyway').onclick = function () { shown = true; draw(); };
+      showForm(false); return;
+    }
+    var c = cleared(cur.slug);
+    if (c.pending) { g.innerHTML = '<div class="k">Who is asking?</div><p>Checking <b>' + esc(cur.name) + '</b>&hellip;</p>'; showForm(false); return; }
+    if (c.ok) { showForm(true); return; }
+    g.innerHTML = '<div class="k">Not yet</div><h3>' + esc(cur.name) + ', pass the FPV Certification Test first</h3>' +
+      '<p>' + (c.known ? 'You are on Tier ' + c.tier + '. ' : 'That name is not on the kiosk roster yet. ') +
+      'The request form is for pilots who have passed the <b>FPV Certification Test</b>, the Tier 1 checkpoint on the <a href="../pilot-path/#t1">Pilot Path</a>. Passing it still never grants permission; it only lets you ask.</p>' +
+      '<div class="row"><a class="btn primary" href="../pilot-path/#t1">My Pilot Path &rarr;</a><button type="button" class="btn quiet" id="gateAnyway">Show form anyway</button><button type="button" class="btn quiet" id="gateSwitch">Not you? Switch profile</button></div>';
+    $('gateAnyway').onclick = function () { shown = true; draw(); };
+    $('gateSwitch').onclick = function () { if (window.SiteNav) window.SiteNav.open(); };
+    showForm(false);
+  }
+  function setCur(p) {
+    cur = p && p.name ? { name: p.name, slug: slug(p.name) } : null;
+    if (cur) pullAwards(cur.slug, cur.name);
+    draw();
+  }
+  document.addEventListener('site:pilot', function (e) { setCur(e.detail); });
+  fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); })
+    .then(function (d) { DATA = window.mergePilots ? window.mergePilots(d) : d; draw(); }).catch(function () { DATA = { pilots: [] }; draw(); });
+  var p = null; try { p = JSON.parse(localStorage.getItem('fs.pilot.v1')); } catch (e) {}
+  setCur(p);
+})();
+</script>
 </body>
 </html>
