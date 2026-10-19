@@ -82,14 +82,16 @@
     wrap.setAttribute('aria-live', 'polite');
     wrap.style.cssText = 'position:fixed;inset:0;z-index:2147483645;display:flex;align-items:center;justify-content:center;' +
       'background:rgba(16,24,38,.35);padding:16px';
+    var dark = document.documentElement.getAttribute('data-theme') === 'dark';   // theme.js (2026-10-18)
+    var bg = dark ? '#222c3b' : '#fffdf7', fg = dark ? '#e2e8f1' : '#1f3350';
     wrap.innerHTML =
-      '<div style="background:#fffdf7;color:#1f3350;border:2px solid #1f3350;border-radius:14px;max-width:460px;width:100%;' +
+      '<div style="background:' + bg + ';color:' + fg + ';border:2px solid ' + fg + ';border-radius:14px;max-width:460px;width:100%;' +
       'padding:26px 26px 22px;box-shadow:0 18px 50px rgba(0,0,0,.3);text-align:center;font-family:Barlow,system-ui,sans-serif">' +
-      '<div style="font-family:\'Share Tech Mono\',monospace;letter-spacing:.18em;font-size:14px;color:#8f3d12;text-transform:uppercase">Badge earned</div>' +
+      '<div style="font-family:\'Share Tech Mono\',monospace;letter-spacing:.18em;font-size:14px;color:' + (dark ? '#e8865c' : '#8f3d12') + ';text-transform:uppercase">Badge earned</div>' +
       '<div style="font-size:28px;font-weight:700;line-height:1.15;margin:8px 0 10px">' + esc(title) + '</div>' +
       (lines || []).map(function(l){ return '<div style="font-size:17px;line-height:1.45;margin:4px 0">' + esc(l) + '</div>'; }).join('') +
       '<button type="button" style="margin-top:18px;font:600 17px Barlow,system-ui,sans-serif;padding:10px 26px;border-radius:999px;' +
-      'border:2px solid #1f3350;background:#f0a91a;color:#1f3350;cursor:pointer">Nice!</button></div>';
+      'border:2px solid ' + fg + ';background:#f0a91a;color:#1f3350;cursor:pointer">Nice!</button></div>';
     var done = false;
     function close(){
       if(done) return; done = true;

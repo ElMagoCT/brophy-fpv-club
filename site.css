@@ -73,3 +73,79 @@ body{background-color:#f8f5ee}
 .memail .mhint b{color:var(--ink);font-weight:600}
 .memail .mlink.inline{display:inline;padding:0;font-size:14px;color:var(--rust);text-decoration:underline;text-underline-offset:3px}
 .memail .mlink.strong{color:var(--ink);font-weight:600}
+
+/* ===========================================================================
+   DARK SCHEME (2026-10-18). theme.js resolves light/auto/dark and sets
+   <html data-theme="light|dark"> before first paint; the light values are the
+   pages' own :root blocks, so this is the only dark block there is.
+   Same idea in the dark: the grid is the desk, the boxes on it are the
+   "paper" you read - only now the desk is a night-blue drafting table and
+   the boxes are a step lighter than it, not darker.
+   =========================================================================== */
+:root{color-scheme:light}
+:root[data-theme=dark]{
+  color-scheme:dark;
+  --paper:#141a24;
+  --paper-2:#2a3444;
+  --ink:#e2e8f1;
+  --ink-soft:#a3b2c6;
+  --graphite:#2b313b;
+  --rust:#e8865c;
+  --amber:#d9ab45;
+  --green:#5fbd7d;
+  --green-soft:#78c892;
+  --sky:#6fb3e3;
+  --violet:#ab9ae8;
+  --gold:#f0b53a;
+  --silver:#98aabc;
+  --bronze:#d4934f;
+  --line:rgba(200,214,232,.17);
+  --line-hard:rgba(200,214,232,.36);
+  --glass:#1b2331;
+  --glass-2:#222c3b;
+  --shadow:0 1px 0 rgba(0,0,0,.45),0 6px 18px rgba(0,0,0,.35);
+}
+[data-theme=dark] body{background-color:var(--paper)}
+[data-theme=dark] #paper-bg .grid-fine{background-image:linear-gradient(rgba(200,214,232,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(200,214,232,.07) 1px,transparent 1px)}
+[data-theme=dark] #paper-bg .vignette{background:radial-gradient(ellipse at 45% 32%,rgba(120,150,200,.07) 0%,rgba(120,150,200,0) 50%),
+  radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(0,0,0,.42) 100%)}
+
+/* things the pages hard-coded as white / near-white / "ink on white" */
+[data-theme=dark] .sitenav a[aria-current],
+[data-theme=dark] .mebtn em.tier,[data-theme=dark] .mepanel .mtier{color:var(--paper)}
+[data-theme=dark] .mebtn:hover{background:var(--paper-2)}
+[data-theme=dark] .memail input,[data-theme=dark] .f input,[data-theme=dark] .f select,[data-theme=dark] .f textarea,
+[data-theme=dark] .wk .ev,[data-theme=dark] #lpDone .box,[data-theme=dark] #cam .box{background:var(--glass-2)}
+[data-theme=dark] #cam textarea{background:var(--glass-2);color:var(--ink)}
+[data-theme=dark] .btn.primary:hover{background:#fff}
+[data-theme=dark] .modes label:has(input:checked){color:var(--paper)}
+[data-theme=dark] .day.is-today{background-color:rgba(95,189,125,.08)}
+[data-theme=dark] .rung.mentor{background:rgba(217,171,69,.07)}
+[data-theme=dark] .row.me{background:rgba(232,134,92,.10)}
+[data-theme=dark] .veil{background:rgba(0,0,0,.55)}
+[data-theme=dark] #lpDone{background:rgba(20,26,36,.94)}
+[data-theme=dark] .pre .big.on,[data-theme=dark] .badge.checkpoint.won,[data-theme=dark] .badge.checkpoint.won .lab,
+[data-theme=dark] .badge.checkpoint.won .lab .type,[data-theme=dark] .badge.checkpoint.won .lab .type::before,
+[data-theme=dark] .badge.checkpoint.won .est,[data-theme=dark] .badge.checkpoint.won .more .why,
+[data-theme=dark] .badge.checkpoint.won .more .why b,[data-theme=dark] .badge.checkpoint.won .approve,
+[data-theme=dark] .badge.checkpoint.won .approve b,[data-theme=dark] .badge.checkpoint.won .permit,
+[data-theme=dark] .badge.checkpoint.won .permit b,[data-theme=dark] .badge.checkpoint.won .permit a{color:#10231a}
+[data-theme=dark] .badge.checkpoint.won .permit{border-color:#10231a;background-color:rgba(16,35,26,.14)}
+[data-theme=dark] .badge.checkpoint.won .nm .st.earned{background:#10231a;color:var(--green)}
+[data-theme=dark] .badge.checkpoint.won .std{color:var(--ink)}
+[data-theme=dark] #map{background:#1d2628}
+[data-theme=dark] .leaflet-tile-pane{filter:brightness(.82) saturate(.85)}
+
+/* ---------- the light / auto / dark switch, in the footer ---------- */
+.themeswitch{display:flex;align-items:center;gap:0;margin-left:auto;flex-wrap:wrap}
+.themeswitch .tk{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-right:10px}
+.themeswitch button{font:inherit;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;
+  display:inline-flex;align-items:center;gap:6px;color:var(--ink);background:var(--glass-2);border:1.5px solid var(--line-hard);
+  padding:5px 11px;margin-left:-1.5px}
+.themeswitch button:first-of-type{border-radius:999px 0 0 999px;margin-left:0;padding-left:13px}
+.themeswitch button:last-of-type{border-radius:0 999px 999px 0;padding-right:13px}
+.themeswitch button i{font-style:normal;font-size:13px;line-height:1}
+.themeswitch button:hover{color:var(--rust);border-color:var(--rust);position:relative;z-index:1}
+.themeswitch button[aria-checked=true]{background:var(--ink);border-color:var(--ink);color:var(--paper);position:relative;z-index:1}
+.themeswitch button:focus-visible{outline:2px solid var(--sky);outline-offset:2px;position:relative;z-index:2}
+@media (max-width:600px){ .themeswitch{flex-basis:100%;margin-left:0;margin-top:4px} }
