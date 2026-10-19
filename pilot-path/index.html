@@ -506,7 +506,7 @@ function countDone(bs) {
   return { n: n, of: bs.length };
 }
 /* 2026-10-07: a tier's badges are the PREREQUISITES of the next tier's
-   checkpoint (tier t0's badges build to the Tiny Whoop checkpoint = Tier 1). */
+   checkpoint (tier t0's badges build to the FPV Certification Test = Tier 1). */
 function prereqs(i) { return FS.BADGES.filter(function (b) { return b.tier === 't' + i && !b.checkpoint; }); }
 function checkpointOf(i) { return FS.BADGES.filter(function (b) { return b.tier === 't' + i && b.checkpoint; })[0]; }
 function nextStep() {
@@ -595,7 +595,7 @@ function card(b, open) {
   var s = status(b), col = { flight: 'var(--sky)', build: 'var(--amber)', know: 'var(--green)', crew: 'var(--violet)' }[b.track];
   var type = { knowledge: 'Quiz', bench: 'Bench', witnessed: 'Witnessed', auto: 'Automatic' }[b.type];
   if (FS.both(b)) type = 'Quiz + ' + type.toLowerCase();
-  var st = s.earned ? '<span class="st earned">earned' + (s.source === 'kiosk' ? ' · kiosk' : (s.source === 'web' ? ' · quiz passed' : (s.source === 'instructor' ? ' · signed off' : ''))) + '</span>' : (pilot && s.pct > 0 ? '<span class="st progress">' + s.pct + '%</span>' : '');
+  var st = s.earned ? '<span class="st earned">earned</span>' : (pilot && s.pct > 0 ? '<span class="st progress">' + s.pct + '%</span>' : '');
   var cp = b.checkpoint ? ' checkpoint' + (s.earned ? ' won' : (s.ready ? ' ready' : '')) : '';
   var main = '<div class="lab"><span class="type">' + type + '</span><span>' + esc(FS.TRACK[b.track]) + '</span></div>' +
     '<div class="nm">' + esc(b.name) + st + '</div>' +

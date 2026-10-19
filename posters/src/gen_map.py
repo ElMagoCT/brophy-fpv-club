@@ -55,7 +55,7 @@ SHEETS = [
        gear='FPV sim rigs in the IC · Liftoff · Micro Drones · SkyDive · FPV Labs · PicaSim',
        start=('START', 'Add your name at the kiosk'),
        sticker='Bonus Challenge: do this all in one CP and get to fly!',   # 2026-10-15, Micah
-       gate=('NEXT', 'Tier 1 checkpoint', 'Tiny Whoop · sheet 2')),
+       gate=('NEXT', 'Tier 1 checkpoint', 'FPV Certification Test · sheet 2')),
   dict(file='04-map-tier1', sheet=2, tier='t1', name='TINY WHOOP', color='var(--violet)', dir='up',
        gear='Meteor 75 Pro · sub-250 g · safe indoors',
        checkpoint='t0',

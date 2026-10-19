@@ -11,7 +11,8 @@
    electives became BONUS badges (tier 'el', never counted); est added.
    2026-10-08: 20 counted badges. Each tier's badges END IN A CHECKPOINT
    (checkpoint:true) - the "exam" that moves a pilot up a tier:
-     Tiny Whoop (first real Meteor flight)  closes Tier 0 -> Tier 1
+     FPV Certification Test (id tiny-whoop; first real Meteor flight)  closes Tier 0 -> Tier 1
+     (renamed from "Tiny Whoop" 2026-10-19 at Micah's request; the id is permanent)
      Pavo 20 Pro Flight (new)               closes Tier 1 -> Tier 2
      Event Pilot (new: fly at an event)     closes Tier 2 -> Tier 3
    A checkpoint counts only once every other badge of its tier is earned; it
@@ -53,7 +54,7 @@
    standard: what the mentor is watching for */
 (function () {
   var TIERS = [
-    { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: Tiny Whoop · unlocks the Meteor 75 Pro' },
+    { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: FPV Certification Test · unlocks the Meteor 75 Pro' },
     { id: 't1', n: 1, name: 'Tiny Whoop',  gear: 'Meteor 75 Pro · sub-250 g',                       color: 'var(--violet)', gate: 'Checkpoint: Pavo 20 Pro Flight · unlocks full-size' },
     { id: 't2', n: 2, name: 'Full-size',   gear: 'Pavo 20 Pro · larger drones at Brophy',          color: 'var(--rust)',   gate: 'Checkpoint: Event Pilot' },
     { id: 't3', n: 3, name: 'Event Pilot', gear: 'Any Tier 2 airframe at a school event, with a spotter', color: 'var(--green)', gate: 'The top' },
@@ -102,7 +103,7 @@
   };
 
   var B = [
-    // ---------------- Tier 0 · Simulator -> checkpoint Tiny Whoop
+    // ---------------- Tier 0 · Simulator -> checkpoint FPV Certification Test (id tiny-whoop)
     // Six short parts in one community period, plus Sim Flight (practice first, 5 h suggested).
     { id: 'proficient-flight', tier: 't0', track: 'flight', type: 'witnessed', name: 'Sim Flight', est: 'one flight · about 5 h of sim practice first is typical', rule: ONE_GO,
       do: 'Fly a short checkride in Liftoff: an orbit, a Split-S, three gaps.', why: 'Acro muscle memory where crashes are free.',
@@ -130,7 +131,7 @@
              { t: 'A 20-second steady hover', lessons: ['gs-fly-03'], v: VID.throttle },
              { t: 'A lap around a tree', lessons: ['gs-los-02'] },
              { t: 'A smooth landing', lessons: ['gs-los-03'] }] },
-    { id: 'tiny-whoop', tier: 't0', track: 'flight', type: 'witnessed', name: 'Tiny Whoop', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
+    { id: 'tiny-whoop', tier: 't0', track: 'flight', type: 'witnessed', name: 'FPV Certification Test', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
       do: 'Checkpoint into Tier 1: the Meteor 75 Pro in goggles.', why: 'Your first real flight. Pass it and you are Tier 1.',
       reqs: [{ t: 'A controlled take-off', v: VID.throttle },
              { t: 'A figure-eight through two gates', v: VID.turns },
