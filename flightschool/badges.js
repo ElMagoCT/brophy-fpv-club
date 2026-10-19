@@ -54,8 +54,8 @@
    standard: what the mentor is watching for */
 (function () {
   var TIERS = [
-    { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: FPV Certification Test · unlocks the Meteor 75 Pro' },
-    { id: 't1', n: 1, name: 'FPV Certification Test',  gear: 'Meteor 75 Pro · sub-250 g',                       color: 'var(--violet)', gate: 'Checkpoint: Pavo 20 Pro Flight · unlocks full-size' },
+    { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: FPV Certification Test (Meteor 75 Pro)' },
+    { id: 't1', n: 1, name: 'FPV Certification Test (Meteor 75 Pro)',  gear: 'sub-250 g tiny whoop',                       color: 'var(--violet)', gate: 'Checkpoint: Pavo 20 Pro Flight · unlocks full-size' },
     { id: 't2', n: 2, name: 'Full-size',   gear: 'Pavo 20 Pro · larger drones at Brophy',          color: 'var(--rust)',   gate: 'Checkpoint: Event Pilot' },
     { id: 't3', n: 3, name: 'Event Pilot', gear: 'Any Tier 2 airframe at a school event, with a spotter', color: 'var(--green)', gate: 'The top' },
     { id: 'el', n: -1, name: 'Bonus badges', gear: 'Any order, any time · not counted toward your total', color: 'var(--amber)', gate: '' }
@@ -131,7 +131,7 @@
              { t: 'A 20-second steady hover', lessons: ['gs-fly-03'], v: VID.throttle },
              { t: 'A lap around a tree', lessons: ['gs-los-02'] },
              { t: 'A smooth landing', lessons: ['gs-los-03'] }] },
-    { id: 'tiny-whoop', tier: 't0', track: 'flight', type: 'witnessed', name: 'FPV Certification Test', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
+    { id: 'tiny-whoop', tier: 't0', track: 'flight', type: 'witnessed', name: 'FPV Certification Test (Meteor 75 Pro)', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
       do: 'Checkpoint into Tier 1: the Meteor 75 Pro in goggles.', why: 'Your first real flight. Pass it and you are Tier 1.',
       reqs: [{ t: 'A controlled take-off', v: VID.throttle },
              { t: 'A figure-eight through two gates', v: VID.turns },
