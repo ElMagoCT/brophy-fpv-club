@@ -193,16 +193,6 @@ section{margin-top:30px}
 }
 
 /* ---------- stat strip ---------- */
-.upcoming{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px}
-.upcoming .k{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-right:4px}
-.upcoming a{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-size:14px;line-height:1.2;
-  background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:999px;padding:6px 12px 6px 9px}
-.upcoming a:hover{border-color:var(--rust)}
-.upcoming .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);flex:none}
-.upcoming a.approved .dot{background:var(--green)}
-.upcoming a.denied .dot{background:var(--rust)}
-.upcoming a b{font-weight:600}
-.upcoming a small{color:var(--ink-soft);font-size:13px}
 .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .stat{padding:16px 18px}
 .stat .n{
@@ -476,10 +466,6 @@ header.title .side .btn{text-align:center;justify-content:center}
       <a class="btn primary" href="pilot-path/">Pilot Path: badges &amp; lessons &rarr;</a>
     </div>
   </header>
-
-  <!-- 2026-10-15 (Micah): the next flights on the calendar - events filed on fly/ -
-       one line each, up to three, right under the title. Hidden when there are none. -->
-  <div class="upcoming" id="upcoming" hidden></div>
 
   <section aria-label="Club totals">
     <div class="stats" id="stats"></div>
@@ -1102,16 +1088,6 @@ document.addEventListener('site:pilot', function (){
 
 function load(refresh){
   /* cache-bust so a CDN edge cache can never pin an old leaderboard */
-  /* the next events (meetings / special events filed on fly/), from the club API */
-  fetch('https://brophy-fpv-club-api.netlify.app/api/fly-request?upcoming=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-    var items = ((j && j.items) || []).slice(0, 6), box = $('upcoming');
-    if (!items.length) return;
-    box.hidden = false;
-    box.innerHTML = '<span class="k">Upcoming flights</span>' + items.map(function (r) {
-      var st = r.status || 'pending', t = new Date(r.whenMs).toLocaleString('en-US', { timeZone: 'America/Phoenix', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-      return '<a class="' + st + '" href="fly/#calendar" title="' + esc(r.location) + ' · ' + (st === 'pending' ? 'waiting for approval' : st) + '"><span class="dot"></span><b>' + esc(r.kind === 'rec' ? r.pilot : r.name) + '</b><small>' + esc(t) + '</small></a>';
-    }).join('');
-  }).catch(function () {});
   fetch('data.json?t=' + Date.now(), { cache: 'no-store' })
     .then(function(r){
       if (!r.ok) throw new Error('data.json returned ' + r.status);

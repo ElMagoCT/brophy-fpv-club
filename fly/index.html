@@ -4,20 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Request to fly — Brophy FPV Club</title>
-<meta name="description" content="The Brophy FPV Club 24-hour flight permission form: every campus flight is requested at least a day ahead and approved by the school.">
-<meta name="color-scheme" content="light">
+<meta name="description" content="Brophy FPV Club flight permission: every campus flight is requested at least 24 hours ahead on Mr. Burr's form and approved before anyone flies.">
+<meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23f2ece0'/><g stroke='%231f3350' stroke-width='2.4' fill='none' stroke-linecap='round'><circle cx='16' cy='16' r='3.4'/><path d='M8 8 13 13M24 8 19 13M8 24 13 19M24 24 19 19'/><circle cx='7' cy='7' r='3.2'/><circle cx='25' cy='7' r='3.2'/><circle cx='7' cy='25' r='3.2'/><circle cx='25' cy='25' r='3.2'/></g></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Cabin+Sketch:wght@400;700&family=Architects+Daughter&family=Share+Tech+Mono&display=swap" rel="stylesheet">
-<!-- Leaflet (the map picker): pinned version, loaded from cdnjs -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" crossorigin="">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js" crossorigin="" defer></script>
 <script src="../theme.js"></script>
 <style>
 /* Same design system as ../index.html and ../pilot-path/: the grid is the
-   desk, the boxes on it are white, pencil faces for the wordmark only. */
+   desk, the boxes on it are white, pencil faces for the wordmark only.
+   2026-10-19: the custom request form is gone; this page is a short intro
+   plus Mr. Burr's Google Form, embedded. The dark palette comes from
+   ../site.css (one block keyed on <html data-theme>, set by ../theme.js). */
 :root{
   --paper:#f2ece0;--paper-2:#eae2d1;--ink:#2d4565;--ink-soft:#62768e;
   --rust:#b0532a;--amber:#98701c;--green:#2d7045;--sky:#2a72a0;--violet:#6450ab;--gold:#f0a91a;
@@ -37,136 +37,40 @@ body{margin:0;background-color:var(--paper);color:var(--ink);font-family:var(--f
 header.title{background-color:var(--glass);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px;display:flex;flex-wrap:wrap;gap:18px 24px;align-items:stretch;justify-content:space-between}
 .title>div:first-child{align-self:flex-end;margin-right:auto}
 .title h1{font-family:var(--font-sketch);font-weight:700;font-size:clamp(34px,7vw,56px);line-height:.95;margin:0;letter-spacing:.5px}
+.title h1 .a{color:var(--rust)}
 .title .sub{font-family:var(--font-mono);font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
 .stamp{font-family:var(--font-hand);font-size:19px;color:var(--rust);transform:rotate(-3deg);border:2.5px solid var(--rust);border-radius:6px;padding:3px 11px;display:inline-block;margin-top:12px;opacity:.9}
 .rule{background-color:var(--glass-2);border:1.5px solid var(--rust);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 18px;min-width:280px;flex:1;max-width:400px;font-size:15px;line-height:1.4}
 .rule .k{font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-bottom:4px}
 .rule b{font-weight:600}
 
-/* upcoming flights: one minimal row of chips, each a link to the calendar below */
-.nextev{margin-top:12px;display:flex;flex-wrap:wrap;align-items:center;gap:8px}
-.nextev .k{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-right:4px}
-.nextev a.up{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--ink);font-size:14px;line-height:1.2;
-  background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:999px;padding:6px 12px 6px 9px}
-.nextev a.up:hover{border-color:var(--rust)}
-.nextev a.up .dot{width:9px;height:9px;border-radius:50%;background:var(--amber);flex:none}
-.nextev a.up.approved .dot{background:var(--green)}
-.nextev a.up.denied .dot{background:var(--rust)}
-.nextev a.up b{font-weight:600}
-.nextev a.up small{color:var(--ink-soft);font-size:13px}
-.nextev .none{color:var(--ink-soft);font-size:14px}
-/* confirm-email dialog (first time an address is used for a pilot on this device) */
-.veil{position:fixed;inset:0;z-index:50;background:rgba(45,69,101,.35);display:flex;align-items:center;justify-content:center;padding:20px}
-.veil[hidden]{display:none}
-.dlg{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:20px 22px;max-width:440px;width:100%}
-.dlg h3{font-family:var(--font-sketch);font-weight:700;font-size:26px;margin:0 0 6px;line-height:1.05}
-.dlg p{margin:0 0 12px;font-size:15px;line-height:1.45}
-.dlg .em{font-family:var(--font-mono);font-size:15px;background:var(--glass);border:1.5px solid var(--line);border-radius:7px;padding:8px 10px;word-break:break-all;margin-bottom:14px}
-.dlg .row{display:flex;gap:10px;flex-wrap:wrap}
-
 section{margin-top:26px}
-.eyebrow{display:flex;align-items:baseline;gap:12px;margin:0 2px 12px}
+.eyebrow{display:flex;align-items:baseline;gap:12px;margin:0 2px 12px;flex-wrap:wrap}
 .eyebrow h2{font-family:var(--font-mono);font-size:15px;letter-spacing:.18em;text-transform:uppercase;font-weight:400;color:var(--ink);margin:0}
 .eyebrow .line{flex:1;height:1px;background:var(--line-hard);opacity:.75}
-.eyebrow .hint{font-size:13.5px;color:var(--ink-soft)}
-.card{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:20px 22px}
-
-/* ---------- kind of flight ---------- */
-.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px}
-.modes label{display:block;cursor:pointer;border:1.5px solid var(--line-hard);border-radius:var(--r);padding:12px 14px;background-color:var(--glass);position:relative}
-.modes label:has(input:checked){border-color:var(--ink);background-color:var(--ink);color:#f2ece0}
-.modes label input{position:absolute;opacity:0;pointer-events:none}
-.modes .mn{font-family:var(--font-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase}
-.modes .md{font-size:14px;margin-top:3px;opacity:.85}
-.modes .lk{position:absolute;right:10px;top:9px;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;opacity:.8}
-
-/* ---------- form ---------- */
-.f{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
-.f .full{grid-column:1 / -1}
-.f label{display:block}
-.f label[hidden],#eventBox[hidden],.filed[hidden]{display:none}
-.f .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);display:block;margin-bottom:4px}
-.f .k em{font-style:normal;color:var(--rust)}
-.f input,.f select,.f textarea{width:100%;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line-hard);border-radius:7px;padding:9px 11px}
-.f input:focus,.f select:focus,.f textarea:focus{outline:2px solid var(--sky);outline-offset:1px;border-color:var(--sky)}
-.f textarea{min-height:76px;resize:vertical}
-.f textarea.short{min-height:52px}
-.f .hint{font-size:13.5px;color:var(--ink-soft);margin-top:4px;line-height:1.35}
-.f .hint.ok{color:var(--green)} .f .hint.bad{color:var(--rust)} .f .hint b{color:var(--ink);font-weight:600}
-.f .clr{font-size:14.5px;margin-top:4px;line-height:1.35}
-.f .clr.ok{color:var(--green)} .f .clr.bad{color:var(--rust)}
-.f .clr b{font-weight:600}
-#eventBox{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;border:1.5px dashed var(--violet);border-radius:var(--r);padding:14px 16px;background-color:rgba(100,80,171,.05)}
-#eventBox .k{color:var(--violet)}
-#eventBox .eh{grid-column:1 / -1;font-size:14px;color:var(--ink-soft);line-height:1.35;margin:-2px 0 -4px}
-/* the map picker */
-.mapbox{grid-column:1 / -1}
-#map{height:340px;border:1.5px solid var(--line-hard);border-radius:var(--r);overflow:hidden;background:#dfe6dc;margin-top:4px}
-.maprow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-top:10px}
-.maprow .hint{grid-column:1 / -1;margin-top:0}
-.leaflet-container{font-family:var(--font-body)}
-.act{grid-column:1 / -1;display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:6px}
-.btn{font-family:var(--font-mono);font-size:14px;letter-spacing:.1em;text-transform:uppercase;background:var(--glass-2);color:var(--ink);text-decoration:none;border:1.5px solid var(--line-hard);border-radius:7px;padding:10px 18px;cursor:pointer;display:inline-flex;align-items:center;gap:8px;box-shadow:var(--shadow)}
-.btn:hover{background:var(--paper-2)}
-.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
-.btn.primary:hover{background:#182740}
-.btn:disabled{opacity:.55;cursor:default}
-.btn.small{padding:7px 12px;font-size:12.5px}
-.msg{font-size:15px;line-height:1.4}
-.msg.bad{color:var(--rust)} .msg.ok{color:var(--green)}
-.filed{grid-column:1 / -1;border:1.5px solid var(--green);background-color:rgba(45,112,69,.06);border-radius:var(--r);padding:14px 16px;line-height:1.45}
-.filed .big{font-family:var(--font-sketch);font-weight:700;font-size:26px;color:var(--green);line-height:1.1;margin-bottom:4px}
-.filed .warn{color:var(--rust);font-weight:600}
-
-/* ---------- my requests: week calendar ---------- */
-.wkhead{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
-.wkhead b{font-family:var(--font-mono);font-weight:400;font-size:14px;letter-spacing:.1em;text-transform:uppercase;min-width:200px;text-align:center}
-.wk{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
-.wk .day{min-height:88px;border:1.5px solid var(--line);border-radius:7px;padding:6px;background-color:var(--glass)}
-.wk .day.today{border-color:var(--rust)}
-.wk .dn{font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);display:flex;justify-content:space-between}
-.wk .ev{display:block;width:100%;text-align:left;font:inherit;font-size:13px;line-height:1.3;cursor:pointer;border:1.5px solid var(--line-hard);border-radius:6px;background:#fff;color:var(--ink);padding:5px 7px;margin-top:5px}
-.wk .ev b{display:block;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.wk .ev small{display:block;font-family:var(--font-mono);font-size:11.5px;letter-spacing:.06em;color:var(--ink-soft)}
-.wk .ev .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px;background:var(--amber);vertical-align:middle}
-.wk .ev.approved .dot{background:var(--green)} .wk .ev.denied .dot{background:var(--rust)}
-.wk .ev.on{border-color:var(--ink);box-shadow:0 0 0 2px rgba(45,69,101,.2)}
-.wkdetail{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
-.wkdetail:empty{display:none}
-#apBox{grid-column:1 / -1;display:grid;grid-template-columns:1fr 1fr;gap:14px 18px}
-#apBox[hidden]{display:none}
-.fixed{font-size:14px;line-height:1.35;background:var(--glass);border:1.5px dashed var(--line-hard);border-radius:7px;padding:7px 10px;margin-bottom:6px;color:var(--ink)}
-.fixed b{font-weight:600}
-.fixed[hidden]{display:none}
-@media (max-width:700px){ .wk{grid-template-columns:repeat(2,1fr)} #apBox{grid-template-columns:1fr} }
-
-/* ---------- my requests ---------- */
-.req{display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;padding:12px 0;border-top:1px solid var(--line);align-items:start}
-.req:first-child{border-top:0;padding-top:0}
-.req .d{font-family:var(--font-mono);font-size:14px;line-height:1.35;min-width:150px}
-.req .d small{display:block;color:var(--ink-soft);font-size:12.5px;letter-spacing:.06em}
-.req .w{font-size:15px;line-height:1.4}
-.req .w small{display:block;color:var(--ink-soft);font-size:13.5px}
-.chip{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:999px;border:1.5px solid var(--line-hard);white-space:nowrap}
-.chip.pending{color:var(--amber);border-color:var(--amber)}
-.chip.approved{color:#fff;background:var(--green);border-color:var(--green)}
-.chip.denied{color:#fff;background:var(--rust);border-color:var(--rust)}
-.empty{color:var(--ink-soft);font-size:15px}
+.eyebrow a{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);text-decoration:underline;text-underline-offset:3px}
+.card{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow)}
 
 .how{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .how .h{padding:14px 16px}
 .how .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)}
 .how .v{font-size:15px;margin-top:5px;line-height:1.4}
 .how .v b{font-weight:600}
+
+/* the form itself: Google's frame does not report its height, so it gets a
+   tall frame and scrolls inside; the link above it is the way out if the
+   frame will not show (a Google sign-in cannot be shown inside a frame) */
+.formbox{padding:10px;overflow:hidden}
+.formbox iframe{display:block;width:100%;height:min(1900px,calc(100vh - 40px));border:0;border-radius:6px;background:#fff}
+.fallback{font-size:14.5px;color:var(--ink-soft);line-height:1.4;margin:0 2px 10px}
+.fallback a{color:var(--rust);font-weight:600}
 footer{margin-top:40px;font-size:13.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
 footer a{color:var(--ink)}
 @media (max-width:700px){
-  .f,#eventBox,.modes,.how{grid-template-columns:1fr}
-  .req{grid-template-columns:1fr auto}
-  .req .d{grid-column:1 / -1}
-  .card{padding:16px}
+  .how{grid-template-columns:1fr}
   .wrap{padding:16px 14px 48px}
-  #map{height:280px}
+  .formbox{padding:6px}
+  .formbox iframe{height:calc(100vh - 24px)}
 }
 </style>
 <link rel="stylesheet" href="../site.css">
@@ -193,483 +97,32 @@ footer a{color:var(--ink)}
     </div>
     <div class="rule">
       <div class="k">The rule</div>
-      <b>Passing the Tiny Whoop test never grants permission to fly.</b> Before <b>every</b> flight on campus, file this form
-      at least <b>24 hours ahead</b>. Mr. Burr approves or denies it; you fly only after a yes, as filed.
+      <b>Passing a checkpoint never grants permission to fly.</b> Before <b>every</b> flight on campus, send this request
+      at least <b>24 hours ahead</b>. Mr. Burr approves or denies it; you fly only after a yes, as requested.
     </div>
   </header>
 
-  <div class="nextev" id="nextev" hidden></div>
-
-  <section aria-labelledby="formHead">
-    <div class="eyebrow"><h2 id="formHead">The request</h2><span class="line"></span><span class="hint">Phoenix time &middot; one flight per request</span></div>
-    <div class="card">
-      <div class="modes" role="radiogroup" aria-label="Kind of flight" id="modes">
-        <label><input type="radio" name="mode" value="rec" checked><div class="mn">Recreational flight</div><div class="md">Any Tier 1+ pilot. You, your aircraft, a spotter.</div></label>
-        <label><input type="radio" name="mode" value="meeting"><div class="mn">Club meeting</div><div class="md">Filed by a mentor. Flying at the regular meeting.</div><span class="lk">&#128274; locked</span></label>
-        <label><input type="radio" name="mode" value="special"><div class="mn">Special event</div><div class="md">Filed by a mentor. Name it; pick who is told.</div><span class="lk">&#128274; locked</span></label>
-      </div>
-
-      <form class="f" id="form" novalidate>
-        <label class="full"><span class="k" id="pilotK">Pilot</span>
-          <input id="pilot" list="pilotNames" placeholder="Your name, exactly as at the kiosk (Micah T.)" autocomplete="off" spellcheck="false" maxlength="40">
-          <datalist id="pilotNames"></datalist>
-          <div class="clr" id="clr">Pick your name.</div>
-        </label>
-
-        <div id="eventBox" hidden>
-          <div class="eh" id="evHint"></div>
-          <label><span class="k">Instructor password</span><input id="pw" type="password" autocomplete="current-password" spellcheck="false" autocapitalize="off"></label>
-          <label id="presetBox" hidden><span class="k">Start from a preset</span>
-            <select id="evPreset"><option value="">Custom (no preset)</option></select>
-            <div class="hint">Presets are saved in the instructor console: a name plus who is told and who approves.</div></label>
-          <label id="nameBox" hidden><span class="k">Event name</span><input id="evName" placeholder="Pep rally flyover, Open house demo…" maxlength="60"></label>
-          <label class="full"><span class="k">Other pilots flying</span><input id="pilots" placeholder="names, comma separated (optional)" maxlength="200" autocomplete="off"></label>
-          <label><span class="k">Expected crowd</span><input id="evCrowd" type="number" min="0" max="5000" step="1" placeholder="people nearby" inputmode="numeric"></label>
-          <label><span class="k">Start &middot; end</span>
-            <div style="display:flex;gap:8px"><input id="evStart" type="time" aria-label="Event start"><input id="evEnd" type="time" aria-label="Event end"></div></label>
-          <div id="apBox">
-            <label><span class="k">Approval emails</span>
-              <div class="fixed" id="fixedAp" hidden></div>
-              <textarea id="evApprovers" class="short" placeholder="type the instructor password above to prefill"></textarea>
-              <div class="hint" id="apHint">Use commas to separate emails. Every address here must say yes.</div></label>
-            <label><span class="k">Other emails</span>
-              <textarea id="evTold" class="short" placeholder="type the instructor password above to prefill"></textarea>
-              <div class="hint">Use commas to separate emails. Each gets the details now, who to contact if there is an issue, and the decision.</div></label>
-          </div>
-          <div class="eh" id="pwHint"></div>
-        </div>
-
-        <label><span class="k">Date and time of the flight</span>
-          <input id="when" type="datetime-local" step="300">
-          <div class="hint" id="whenHint">At least 24 hours from now.</div></label>
-        <label><span class="k">Aircraft</span>
-          <select id="ac">
-            <option value="meteor">Meteor 75 Pro (tiny whoop)</option>
-            <option value="pavo">Pavo 20 Pro</option>
-            <option value="sub250">Other sub-250 g</option>
-            <option value="plus250">Other 250 g and up</option>
-          </select>
-          <div class="hint" id="acHint">Tier 1 flies the Meteor only. Anything else needs Tier 2.</div></label>
-
-        <div class="mapbox">
-          <span class="k">Where on campus</span>
-          <div id="map" role="application" aria-label="Campus map: click to mark the flying spot"></div>
-          <div class="maprow">
-            <input id="loc" placeholder="name the spot, e.g. the field by the gym" maxlength="120" autocomplete="off" aria-label="Location name">
-            <button type="button" class="btn small" id="mapReset">Back to Brophy</button>
-            <div class="hint" id="mapHint">Zoom and drag the map, then <b>click the spot</b> you will fly from. A pin marks it; the pin goes in the email with a map link.</div>
-          </div>
-        </div>
-
-        <label><span class="k" id="spotK">Spotter</span>
-          <input id="spotter" list="mentorNames" placeholder="who watches the sky for you" maxlength="60" autocomplete="off">
-          <datalist id="mentorNames"></datalist>
-          <div class="hint" id="spotHint">Every flight has one. Name them.</div></label>
-        <label id="mentorBox" hidden><span class="k">Mentor spotter's email <em>*</em></span>
-          <input id="mentorEmail" type="email" placeholder="your mentor spotter's email" maxlength="120" spellcheck="false">
-          <div class="hint" id="mentorHint">Your spotter is a mentor, so they approve this flight too and get the email every time. Prefilled when the club knows it.</div></label>
-        <label class="full" id="extraApBox"><span class="k">Extra approval emails (optional)</span>
-          <textarea id="extraAp" class="short" placeholder="a teacher whose class you would be flying during, for example"></textarea>
-          <div class="hint">Use commas to separate emails. Added on top of Mr. Burr; everyone listed must say yes.</div></label>
-        <label><span class="k">Your email <em>*</em></span>
-          <input id="email" type="email" placeholder="the decision is sent here" maxlength="120" autocomplete="email" spellcheck="false" required>
-          <div class="hint">Required. Mr. Burr's yes or no lands here.</div></label>
-        <label class="full" id="ccBox"><span class="k">Other emails (optional)</span>
-          <textarea id="cc" class="short" placeholder="a teacher, a parent, your team…"></textarea>
-          <div class="hint">Use commas to separate emails. Each gets the details right away, who to email if there is an issue, and the decision when it is made.</div></label>
-        <label class="full"><span class="k">Notes (optional)</span>
-          <textarea id="notes" maxlength="600" placeholder="anything Mr. Burr should know: what you are practising, who else is coming, a video plan…"></textarea></label>
-
-        <div class="act">
-          <button class="btn primary" type="submit" id="send">File the request &rarr;</button>
-          <span class="msg" id="msg"></span>
-        </div>
-        <div class="filed" id="filed" hidden></div>
-      </form>
-    </div>
-  </section>
-
-  <section aria-labelledby="mineHead" id="calendar">
-    <div class="eyebrow"><h2 id="mineHead">Your requests</h2><span class="line"></span><span class="hint" id="mineHint"></span></div>
-    <div class="card">
-      <div class="wkhead"><button type="button" class="btn small" id="wkPrev">&larr;</button><b id="wkTitle"></b><button type="button" class="btn small" id="wkNext">&rarr;</button><button type="button" class="btn small" id="wkToday">This week</button><span class="hint" id="wkHint" style="font-size:13.5px;color:var(--ink-soft)">One card per request on its day: title and approval status. Click a card for the details.</span></div>
-      <div class="wk" id="wk"></div>
-      <div class="wkdetail" id="wkDetail"></div>
-      <details style="margin-top:12px"><summary class="hint" style="cursor:pointer;color:var(--ink-soft)">All your requests as a list</summary><div class="reqs" id="mine" style="margin-top:8px"><div class="empty">Pick your name above.</div></div></details>
-    </div>
-  </section>
-
   <section aria-label="How it works">
     <div class="how">
-      <div class="card h"><div class="k">1 &middot; File it</div><div class="v">24 hours or more before you want to fly. One flight, one request. Everyone who needs to know gets an email right away.</div></div>
-      <div class="card h"><div class="k">2 &middot; Wait for the yes</div><div class="v">Mr. Burr (and anyone else who has to approve) answers with one click. You and the people you listed get the decision by email.</div></div>
-      <div class="card h"><div class="k">3 &middot; Fly as filed</div><div class="v"><b>Only</b> that pilot, that aircraft, that place, that time, with your spotter. Different plan? New request, 24 h ahead.</div></div>
+      <div class="card h"><div class="k">1 &middot; Ask</div><div class="v">Fill in the form below at least <b>24 hours</b> before you want to fly. One flight, one request.</div></div>
+      <div class="card h"><div class="k">2 &middot; Spotter</div><div class="v">Every flight has a spotter. If you are not a <b>Mentor</b> yet, your spotter must be one.</div></div>
+      <div class="card h"><div class="k">3 &middot; Wait for the yes</div><div class="v">Fly only after Mr. Burr approves, and <b>only as requested</b>: that pilot, that aircraft, that place, that time.</div></div>
     </div>
   </section>
 
-  <div class="veil" id="veil" hidden role="dialog" aria-modal="true" aria-labelledby="dlgH">
-    <div class="dlg">
-      <h3 id="dlgH">Confirm email?</h3>
-      <p id="dlgP"></p>
-      <div class="em" id="dlgEm"></div>
-      <div class="row"><button type="button" class="btn primary" id="dlgYes">Yes, that's right</button><button type="button" class="btn" id="dlgNo">Fix it</button></div>
+  <section aria-labelledby="formHead">
+    <div class="eyebrow"><h2 id="formHead">The form</h2><span class="line"></span><a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">Open the form in a new tab &nearr;</a></div>
+    <p class="fallback">The form is Mr. Burr's Google Form and asks for a Brophy Google sign-in. If it does not appear below, or asks you to sign in,
+      <a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">open it in a new tab</a>.</p>
+    <div class="card formbox">
+      <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform?embedded=true" title="Flight request form" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write">Loading&hellip;</iframe>
     </div>
-  </div>
+  </section>
 
   <footer>
-    <span>Requests are filed with the club and emailed to the school. Names come from the kiosk roster. Map &copy; Esri, OpenStreetMap contributors.</span>
+    <span>The request goes to the school through Mr. Burr's form; the club website only shows it here.</span>
     <span><a href="../pilot-path/">Pilot Path</a> &middot; <a href="../">Home</a></span>
   </footer>
 </div>
-
-<script>
-/* The 24-hour flight permission form (2026-10-15, the grant's condition).
-   Everything is checked here for a quick answer and AGAIN by the club API
-   (POST /api/fly-request), which files the request in the private control
-   repo and emails the approvers and everyone else who should know; the
-   addresses live there, never here. Clearance = Tier 1+ in the kiosk
-   snapshot, or the Tiny Whoop checkpoint (kiosk badge or a signed instructor
-   decision on file). Club meeting / Special event send hex SHA-256 of the
-   instructor password as X-Review-Key, the console's key; the password
-   itself stays in this tab's memory. */
-(function () {
-  var API = 'https://brophy-fpv-club-api.netlify.app';
-  var DAY = 24 * 3600000;
-  var BROPHY = [33.5051, -112.0711];   // Brophy College Preparatory, 4701 N Central Ave (OSM)
-  var DATA = null, AW = {}, cur = { name: '', slug: '', cl: null }, PRESETS = [], pin = null, map = null, marker = null;
-  var FORM = null, KEY = '', MINE = [], UPCOMING = [], WK = { start: 0, sel: '' };
-  var LS_EMAIL = 'fs.email.v1';   // { <pilot slug>: email } - remembered on this device only
-  function emails() { try { return JSON.parse(localStorage.getItem(LS_EMAIL)) || {}; } catch (e) { return {}; } }
-  function rememberEmail(s, e) { var all = emails(); all[s] = e; try { localStorage.setItem(LS_EMAIL, JSON.stringify(all)); } catch (x) {} }
-  function $(id) { return document.getElementById(id); }
-  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function slug(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
-  function kind() { var r = document.querySelector('input[name=mode]:checked'); return r ? r.value : 'rec'; }
-  function locked() { return kind() !== 'rec'; }
-  function pad(n) { return (n < 10 ? '0' : '') + n; }
-
-  /* ---------- Phoenix time: UTC-7 all year, so a local wall-clock string
-     converts with a fixed offset and nobody's device timezone matters ---------- */
-  function phoenix(ms) {
-    var d = new Date(ms - 7 * 3600000);
-    return d.getUTCFullYear() + '-' + pad(d.getUTCMonth() + 1) + '-' + pad(d.getUTCDate()) + 'T' + pad(d.getUTCHours()) + ':' + pad(d.getUTCMinutes());
-  }
-  function fromPhoenix(s) { return /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(s) ? Date.parse(s + ':00-07:00') : NaN; }
-  function fmt(ms) { return new Intl.DateTimeFormat('en-US', { timeZone: 'America/Phoenix', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }).format(new Date(ms)); }
-  function hoursText(ms) { var h = ms / 3600000; return h >= 48 ? Math.round(h / 24) + ' days' : (Math.round(h * 10) / 10) + ' h'; }
-  function setMin() {
-    var min = Date.now() + DAY + 5 * 60000;
-    var w = $('when'); w.min = phoenix(min);
-    if (!w.value) { var dflt = new Date(min + 30 * 60000); dflt.setUTCMinutes(0, 0, 0); w.value = phoenix(Math.max(min, dflt.getTime() + 3600000)); }
-    whenChanged();
-  }
-  function whenChanged() {
-    var ms = fromPhoenix($('when').value), h = $('whenHint');
-    if (!(ms > 0)) { h.className = 'hint'; h.textContent = 'At least 24 hours from now (Phoenix time).'; return false; }
-    var ahead = ms - Date.now();
-    if (ahead < DAY - 60000) { h.className = 'hint bad'; h.textContent = 'Too soon: that is only ' + hoursText(Math.max(0, ahead)) + ' away. The earliest is ' + fmt(Date.now() + DAY) + '.'; return false; }
-    h.className = 'hint ok'; h.innerHTML = '<b>' + esc(fmt(ms)) + '</b> · ' + esc(hoursText(ahead)) + ' from now.';
-    return true;
-  }
-  $('when').addEventListener('input', whenChanged);
-  $('when').addEventListener('change', whenChanged);
-  setMin(); setInterval(setMin, 60000);
-
-  /* ---------- the map: satellite tiles, starts on Brophy, click to pin ---------- */
-  function initMap() {
-    if (!window.L || map) return;
-    map = L.map('map', { center: BROPHY, zoom: 17, scrollWheelZoom: true, attributionControl: true });
-    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-      maxZoom: 20, maxNativeZoom: 19, attribution: 'Imagery &copy; Esri'
-    }).addTo(map);
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_only_labels/{z}/{x}/{y}{r}.png', { maxZoom: 20, attribution: '&copy; OpenStreetMap, &copy; CARTO', opacity: .9 }).addTo(map);
-    L.circleMarker(BROPHY, { radius: 6, color: '#b0532a', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(map).bindTooltip('Brophy', { permanent: false });
-    map.on('click', function (e) { setPin(e.latlng.lat, e.latlng.lng); });
-    $('mapReset').addEventListener('click', function () { map.setView(BROPHY, 17); });
-    setTimeout(function () { map.invalidateSize(); }, 200);
-  }
-  function setPin(lat, lng) {
-    pin = { lat: Math.round(lat * 1e6) / 1e6, lng: Math.round(lng * 1e6) / 1e6 };
-    if (!marker) { marker = L.marker([lat, lng], { draggable: true }).addTo(map); marker.on('dragend', function () { var p = marker.getLatLng(); setPin(p.lat, p.lng); }); }
-    else marker.setLatLng([lat, lng]);
-    $('mapHint').className = 'hint ok'; $('mapHint').innerHTML = '<b>Pinned</b> at ' + pin.lat.toFixed(5) + ', ' + pin.lng.toFixed(5) + ' · drag the pin to adjust. Now name the spot.';
-    if (!$('loc').value) $('loc').focus();
-  }
-  if (window.L) initMap(); else document.querySelector('script[src*="leaflet"]').addEventListener('load', initMap);
-  setTimeout(function () { if (!map) { $('mapHint').className = 'hint bad'; $('mapHint').textContent = 'The map could not load; just name the spot below.'; } }, 6000);
-
-  /* ---------- pilot + clearance ---------- */
-  function row(s) {
-    if (!DATA || !DATA.pilots) return null;
-    for (var i = 0; i < DATA.pilots.length; i++) if (slug(DATA.pilots[i].name) === s) return DATA.pilots[i];
-    return null;
-  }
-  function has(rp, aw, id) { return !!((rp && rp.badges && rp.badges.indexOf(id) >= 0) || (aw && aw.badges && aw.badges[id] && aw.badges[id].status === 'earned')); }
-  function clearance(s) {
-    var rp = row(s), aw = AW[s] || null, tier = rp && rp.tier != null ? rp.tier : 0;
-    return { known: !!rp || !!aw, tier: tier, whoop: tier >= 1 || has(rp, aw, 'tiny-whoop'), big: tier >= 2 || has(rp, aw, 'pavo-flight'), mentor: has(rp, aw, 'mentor') };
-  }
-  function mentorNames() { return DATA && DATA.pilots ? DATA.pilots.filter(function (p) { return (p.badges || []).indexOf('mentor') >= 0; }).map(function (p) { return p.name; }) : []; }
-  /* a pilot who is not a mentor must be spotted by one, and that mentor approves too */
-  var spotterLookup = '';
-  function spotterRule() {
-    var lk = locked(), need = !lk && cur.cl && cur.cl.known && !cur.cl.mentor;
-    var sp = $('spotter').value.trim(), isMentor = !!sp && mentorNames().some(function (n) { return slug(n) === slug(sp); });
-    $('extraApBox').hidden = lk;
-    $('mentorBox').hidden = lk || !isMentor || slug(sp) === cur.slug;
-    $('spotK').textContent = need ? 'Spotter (a mentor)' : 'Spotter';
-    if (isMentor && slug(sp) !== spotterLookup && !lk) {   // prefill the mentor's email from the club directory
-      spotterLookup = slug(sp);
-      fetch(API + '/api/fly-request?pilot=' + encodeURIComponent(sp), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-        if (slug($('spotter').value) === spotterLookup && j && j.email && !$('mentorEmail').value) { $('mentorEmail').value = j.email; $('mentorHint').textContent = 'Prefilled from the club directory; change it if it is wrong.'; }
-      }).catch(function () {});
-    }
-    if (!need) { $('spotHint').className = 'hint ' + (isMentor ? 'ok' : ''); $('spotHint').textContent = isMentor ? sp + ' is a mentor - they approve too and get the email.' : 'Every flight has one. Name them.'; return; }
-    $('spotHint').className = 'hint ' + (sp ? (isMentor ? 'ok' : 'bad') : '');
-    $('spotHint').textContent = sp ? (isMentor ? sp + ' is a mentor - they get an approval email too.' : sp + ' is not a mentor. Mentors: ' + (mentorNames().join(', ') || 'none on the roster yet') + '.') : 'You are not a mentor, so your spotter must be one: ' + (mentorNames().join(', ') || 'none on the roster yet') + '.';
-  }
-  $('spotter').addEventListener('input', spotterRule);
-  function drawClearance() {
-    var box = $('clr'), s = cur.slug, lk = locked();
-    if (!s) { box.className = 'clr'; box.textContent = lk ? 'Who is the pilot in charge?' : 'Pick your name.'; acHint(); return; }
-    if (!DATA) { box.className = 'clr'; box.textContent = 'Checking the roster…'; return; }
-    var cl = clearance(s); cur.cl = cl;
-    if (lk) { box.className = 'clr ' + (cl.whoop ? 'ok' : ''); box.innerHTML = '<b>' + esc(cur.name) + '</b> · Tier ' + cl.tier + (cl.whoop ? ' · cleared' : ' · not cleared on their own; you vouch for this flight as the mentor filing it'); acHint(); return; }
-    if (!cl.known) { box.className = 'clr bad'; box.innerHTML = 'No pilot called <b>' + esc(cur.name) + '</b> on the roster. Use the exact name you fly under at the kiosk.' + (AW[s] === undefined ? ' (still checking decisions on file…)' : ''); }
-    else if (!cl.whoop) { box.className = 'clr bad'; box.innerHTML = '<b>' + esc(cur.name) + '</b> is <b>not cleared to fly yet</b> (Tier ' + cl.tier + '). Pass the Tier 1 checkpoint, the Tiny Whoop test, on the <a href="../pilot-path/#t1">Pilot Path</a> first - and remember, passing it only lets you file this form.'; }
-    else { box.className = 'clr ok'; box.innerHTML = '<b>' + esc(cur.name) + '</b> · Tier ' + cl.tier + (cl.mentor ? ' · mentor' : '') + ' · cleared to request ' + (cl.big ? 'any club aircraft' : 'the Meteor 75 Pro') + '.'; }
-    acHint(); spotterRule();
-  }
-  function acHint() {
-    var ac = $('ac').value, h = $('acHint'), cl = cur.cl;
-    if (locked()) { h.className = 'hint'; h.textContent = 'Any club aircraft; the mentor filing is responsible.'; return; }
-    if (ac !== 'meteor' && cl && cl.whoop && !cl.big) { h.className = 'hint bad'; h.textContent = 'Tier 1 pilots fly the Meteor 75 Pro only. This one needs Tier 2 (the Pavo checkpoint).'; return; }
-    h.className = 'hint'; h.textContent = 'Tier 1 flies the Meteor only. Anything else needs Tier 2.';
-  }
-  $('ac').addEventListener('change', acHint);
-  function pullAwards(s) {
-    if (!s || s in AW) return;
-    AW[s] = undefined;
-    fetch(API + '/api/award?pilot=' + encodeURIComponent(cur.name), { cache: 'no-store' }).then(function (r) { return r.json(); })
-      .then(function (j) { AW[s] = (j && j.awards) || null; if (cur.slug === s) drawClearance(); })
-      .catch(function () { AW[s] = null; if (cur.slug === s) drawClearance(); });
-  }
-  function setPilot(name, fromSite) {
-    cur.name = String(name || '').trim(); cur.slug = slug(cur.name); cur.cl = null;
-    if (!fromSite) $('pilot').value = cur.name;
-    var known = emails()[cur.slug];
-    if (known && !$('email').value) $('email').value = known;
-    drawClearance();
-    if (cur.slug.length >= 2) { pullAwards(cur.slug); loadMine(); }
-    else { $('mine').innerHTML = '<div class="empty">Pick your name above.</div>'; $('mineHint').textContent = ''; }
-  }
-  var t = null;
-  $('pilot').addEventListener('input', function () { clearTimeout(t); var v = this.value; t = setTimeout(function () { setPilot(v, true); }, 250); });
-  $('pilot').addEventListener('change', function () { clearTimeout(t); setPilot(this.value, true); });
-  document.addEventListener('site:pilot', function (e) { if (e.detail && e.detail.name) setPilot(e.detail.name); });
-
-  /* ---------- kind of flight ---------- */
-  function modeChanged() {
-    var k = kind(), lk = locked();
-    $('eventBox').hidden = !lk;
-    $('presetBox').hidden = k !== 'special'; $('nameBox').hidden = k !== 'special';
-    $('pilotK').textContent = lk ? 'Pilot in charge' : 'Pilot';
-    if (lk) $('evHint').textContent = (k === 'meeting' ? 'The club meeting' : 'A special event') + ' is filed by a mentor with the instructor password (checked by the club API, never stored). Type the password and the approver and told lists appear, prefilled from the console, for you to edit.';
-    drawClearance(); fillLists();
-  }
-  /* the password unlocks the console's addresses for prefilling (a wrong one is caught here, early) */
-  var pwT = null;
-  $('pw').addEventListener('input', function () {
-    clearTimeout(pwT); var v = $('pw').value;
-    if (v.length < 4) { KEY = ''; FORM = null; $('pwHint').textContent = ''; fillLists(); return; }
-    pwT = setTimeout(function () {
-      sha256Hex(v).then(function (key) {
-        return fetch(API + '/api/fly-request?form=1', { cache: 'no-store', headers: { 'X-Review-Key': key } }).then(function (r) { return r.json().then(function (j) { return { r: r, j: j }; }); }).then(function (x) {
-          if (!x.r.ok || !x.j.full) { KEY = ''; FORM = null; $('pwHint').textContent = x.r.status === 403 ? 'That is not the instructor password.' : (x.j.error || 'Could not check the password.'); fillLists(); return; }
-          KEY = key; FORM = x.j; $('pwHint').textContent = 'Password OK.'; fillLists(true);
-        });
-      }).catch(function () { $('pwHint').textContent = 'Could not reach the club API.'; });
-    }, 500);
-  });
-  function fillLists(force) {
-    var k = kind(), lk = locked();
-    $('ccBox').hidden = lk; $('extraApBox').hidden = lk;   // for events the boxes above replace these
-    if (!lk) return;
-    $('fixedAp').hidden = k !== 'meeting';
-    if (!FORM) { $('fixedAp').innerHTML = k === 'meeting' ? '<b>Always:</b> the console\'s approvers (Mr. Burr) - shown once the password is entered.' : ''; $('apHint').textContent = k === 'meeting' ? 'Use commas to separate emails. Extra approvers for this meeting; the always-approvers above cannot be removed.' : 'Use commas to separate emails. Prefilled with Mr. Burr and the preset\'s approvers; remove anyone who should not approve this one. Every address here must say yes.'; return; }
-    var pr = k === 'special' ? (FORM.presets || []).filter(function (p) { return p.id === $('evPreset').value; })[0] : null;
-    var extra = k === 'meeting' ? (FORM.meeting || {}) : (pr || {});
-    var ap = k === 'meeting' ? uniqList(extra.approvers || []) : uniqList((FORM.approvers || []).concat(extra.approvers || []));
-    var told = uniqList((FORM.always || []).concat(extra.to || []));
-    if (k === 'meeting') $('fixedAp').innerHTML = '<b>Always:</b> ' + esc((FORM.approvers || []).join(', ') || 'nobody set in the console yet') + ' - cannot be removed for a club meeting.';
-    if (force || !$('evApprovers').value) $('evApprovers').value = ap.join(', ');
-    if (force || !$('evTold').value) $('evTold').value = told.join(', ');
-    $('evApprovers').placeholder = 'emails, comma separated'; $('evTold').placeholder = 'emails, comma separated';
-  }
-  function uniqList(a) { var out = []; a.forEach(function (e) { e = String(e || '').trim().toLowerCase(); if (e && out.indexOf(e) < 0) out.push(e); }); return out; }
-  Array.prototype.forEach.call(document.querySelectorAll('input[name=mode]'), function (r) { r.addEventListener('change', modeChanged); });
-  if (location.hash === '#meeting' || location.hash === '#special' || location.hash === '#event') document.querySelector('input[name=mode][value=' + (location.hash === '#meeting' ? 'meeting' : 'special') + ']').checked = true;
-  modeChanged();
-  $('evPreset').addEventListener('change', function () {
-    var p = PRESETS.filter(function (x) { return x.id === $('evPreset').value; })[0];
-    if (p && !$('evName').value) $('evName').value = p.label;
-    fillLists(true);
-  });
-  fetch(API + '/api/fly-request?form=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-    PRESETS = (j && j.presets) || [];
-    $('evPreset').innerHTML = '<option value="">Custom (no preset)</option>' + PRESETS.map(function (p) { return '<option value="' + esc(p.id) + '">' + esc(p.label) + '</option>'; }).join('');
-  }).catch(function () {});
-
-  /* ---------- the next events on the calendar ---------- */
-  function drawNext(items) {
-    var box = $('nextev'); box.hidden = false; UPCOMING = items;
-    if (!items.length) { box.innerHTML = '<span class="k">Upcoming</span><span class="none">Nothing on the calendar yet.</span>'; return; }
-    box.innerHTML = '<span class="k">Upcoming</span>' + items.slice(0, 6).map(function (r) {
-      var st = r.status || 'pending', t = new Date(r.whenMs).toLocaleString('en-US', { timeZone: 'America/Phoenix', weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-      return '<a class="up ' + st + '" href="#calendar" data-id="' + esc(r.id) + '" title="' + esc(r.location) + ' · ' + (st === 'pending' ? 'waiting for approval' : st) + '"><span class="dot"></span><b>' + esc(r.kind === 'rec' ? r.pilot : r.name) + '</b><small>' + esc(t) + '</small></a>';
-    }).join('');
-  }
-  $('nextev').addEventListener('click', function (e) {
-    var a = e.target.closest('a[data-id]'); if (!a) return;
-    e.preventDefault();
-    var r = UPCOMING.filter(function (x) { return x.id === a.getAttribute('data-id'); })[0];
-    if (r) { WK.start = weekStart(r.whenMs); WK.sel = r.id; drawWeek(); }
-    $('calendar').scrollIntoView({ behavior: 'smooth', block: 'start' });
-  });
-  if (location.hash === '#calendar') setTimeout(function () { $('calendar').scrollIntoView({ block: 'start' }); }, 300);
-  function loadNext() { fetch(API + '/api/fly-request?upcoming=1', { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) { drawNext((j && j.items) || []); }).catch(function () {}); }
-  loadNext();
-
-  /* ---------- my requests ---------- */
-  var mineFor = '';
-  function loadMine() {
-    var s = cur.slug; mineFor = s;
-    $('mineHint').textContent = 'loading…';
-    fetch(API + '/api/fly-request?pilot=' + encodeURIComponent(cur.name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-      if (mineFor !== s) return;
-      var items = (j && j.items) || []; MINE = items;
-      if (j && j.email && !$('email').value) $('email').value = j.email;   // the club directory (console Emails tab / earlier requests)
-      $('mineHint').textContent = items.length ? items.length + ' on file' : '';
-      $('mine').innerHTML = items.length ? items.map(reqRow).join('') : '<div class="empty">Nothing filed under ' + esc(cur.name) + ' yet.</div>';
-      if (!WK.start) { WK.start = weekStart(items.length ? Math.min.apply(null, items.map(function (r) { return r.whenMs; }).concat([Date.now()])) : Date.now()); WK.start = weekStart(Date.now()); }
-      drawWeek();
-    }).catch(function () { if (mineFor === s) { $('mineHint').textContent = ''; $('mine').innerHTML = '<div class="empty">Could not reach the club API.</div>'; } });
-  }
-  /* ---------- the week view: Sunday to Saturday on the Phoenix clock ---------- */
-  function ymdPhx(ms) { return phoenix(ms).slice(0, 10); }
-  function weekStart(ms) { var d = new Date(ms - 7 * 3600000); d.setUTCHours(0, 0, 0, 0); d.setUTCDate(d.getUTCDate() - d.getUTCDay()); return d.getTime() + 7 * 3600000; }
-  function drawWeek() {
-    if (!WK.start) WK.start = weekStart(Date.now());
-    var box = $('wk'), days = [], i;
-    for (i = 0; i < 7; i++) days.push(WK.start + i * DAY);
-    var t0 = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Phoenix', month: 'short', day: 'numeric' });
-    $('wkTitle').textContent = t0.format(new Date(days[0])) + ' – ' + t0.format(new Date(days[6])) + (weekStart(Date.now()) === WK.start ? ' · this week' : '');
-    var today = ymdPhx(Date.now());
-    box.innerHTML = days.map(function (ms) {
-      var pool = MINE.slice(); UPCOMING.forEach(function (u) { if (u.id === WK.sel && !pool.some(function (m) { return m.id === u.id; })) pool.push(u); });
-      var k = ymdPhx(ms), mine = pool.filter(function (r) { return ymdPhx(r.whenMs) === k; }).sort(function (a, b) { return a.whenMs - b.whenMs; });
-      return '<div class="day' + (k === today ? ' today' : '') + '"><div class="dn"><span>' + ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][new Date(ms - 7 * 3600000).getUTCDay()] + '</span><span>' + new Date(ms - 7 * 3600000).getUTCDate() + '</span></div>' +
-        mine.map(function (r) {
-          var st = r.status || 'pending';
-          return '<button type="button" class="ev ' + st + (WK.sel === r.id ? ' on' : '') + '" data-id="' + esc(r.id) + '"><small>' + esc(new Date(r.whenMs).toLocaleTimeString('en-US', { timeZone: 'America/Phoenix', hour: 'numeric', minute: '2-digit' })) + '</small><b>' + esc(r.name || 'Flight') + '</b><span class="dot"></span>' + (st === 'pending' ? 'waiting' : st) + '</button>';
-        }).join('') + '</div>';
-    }).join('');
-    var d = $('wkDetail'), r = MINE.concat(UPCOMING).filter(function (x) { return x.id === WK.sel; })[0];
-    d.innerHTML = r ? reqRow(r) : '';
-  }
-  $('wk').addEventListener('click', function (e) { var b = e.target.closest('button[data-id]'); if (!b) return; WK.sel = WK.sel === b.getAttribute('data-id') ? '' : b.getAttribute('data-id'); drawWeek(); });
-  $('wkPrev').addEventListener('click', function () { WK.start -= 7 * DAY; drawWeek(); });
-  $('wkNext').addEventListener('click', function () { WK.start += 7 * DAY; drawWeek(); });
-  $('wkToday').addEventListener('click', function () { WK.start = weekStart(Date.now()); drawWeek(); });
-  drawWeek();
-
-  function reqRow(r) {
-    var st = r.status || 'pending', ap = r.approvals || { n: 0, of: 0 };
-    return '<div class="req"><div class="d">' + esc(r.whenText || fmt(r.whenMs)) + '<small>filed ' + esc(fmt(r.at)) + '</small></div>' +
-      '<div class="w"><b>' + esc(r.name || 'Flight') + '</b> · ' + esc(r.location) + ' · ' + esc(r.aircraft) + ' · spotter ' + esc(r.spotter) + (r.mentor ? ' (mentor)' : '') +
-      (r.event ? '<small>crowd ' + esc(r.event.crowd) + ' · ' + esc(r.event.start) + '–' + esc(r.event.end) + (r.pilots ? ' · also flying: ' + esc(r.pilots) : '') + '</small>' : '') +
-      (st === 'pending' && ap.of > 1 ? '<small>' + ap.n + ' of ' + ap.of + ' approvals so far</small>' : '') +
-      (st !== 'pending' && r.decisionNote ? '<small>' + esc(r.decisionNote) + '</small>' : '') +
-      (st === 'pending' && !r.mailed ? '<small style="color:var(--rust)">Filed, but the email did not fully go out' + (r.mailError ? ': ' + esc(r.mailError) : '') + '. Tell a mentor.</small>' : '') +
-      '</div><span class="chip ' + st + '">' + (st === 'pending' ? 'waiting' : st) + '</span></div>';
-  }
-
-  /* ---------- submit ---------- */
-  function sha256Hex(text) {
-    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)).then(function (buf) {
-      var b = new Uint8Array(buf), s = ''; for (var i = 0; i < b.length; i++) s += ('0' + b[i].toString(16)).slice(-2); return s;
-    });
-  }
-  function say(cls, text) { var m = $('msg'); m.className = 'msg ' + cls; m.textContent = text; }
-  var confirmed = false;
-  function askEmail(email) {
-    $('dlgP').textContent = 'Decisions for ' + cur.name + ' will be emailed here. Is it right?';
-    $('dlgEm').textContent = email; $('veil').hidden = false; $('dlgYes').focus();
-  }
-  $('dlgYes').addEventListener('click', function () { $('veil').hidden = true; confirmed = true; rememberEmail(cur.slug, $('email').value.trim()); $('send').click(); });
-  $('dlgNo').addEventListener('click', function () { $('veil').hidden = true; $('email').focus(); $('email').select(); });
-  $('veil').addEventListener('click', function (e) { if (e.target === $('veil')) { $('veil').hidden = true; } });
-  $('form').addEventListener('submit', function (e) {
-    e.preventDefault();
-    var k = kind(), lk = locked(), email = $('email').value.trim();
-    $('filed').hidden = true;
-    if (cur.slug.length < 2) return say('bad', lk ? 'Who is the pilot in charge?' : 'Pick your name first.');
-    if (!lk && cur.cl && !cur.cl.whoop) return say('bad', cur.cl.known ? 'Not cleared yet: pass the Tiny Whoop test first.' : 'That name is not on the roster.');
-    if (!whenChanged()) return say('bad', 'Pick a time at least 24 hours from now.');
-    if ($('loc').value.trim().length < 3) return say('bad', 'Where on campus? Click the spot on the map and name it.');
-    if (!lk && $('ac').value !== 'meteor' && cur.cl && !cur.cl.big) return say('bad', 'Tier 1 pilots fly the Meteor 75 Pro only.');
-    if ($('spotter').value.trim().length < 2) return say('bad', 'Every flight has a spotter - who is yours?');
-    var needMentor = !lk && cur.cl && cur.cl.known && !cur.cl.mentor, mentorShown = !$('mentorBox').hidden;
-    if (needMentor && !mentorNames().some(function (n) { return slug(n) === slug($('spotter').value); })) return say('bad', 'You are not a mentor, so your spotter must be one.');
-    if (mentorShown && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test($('mentorEmail').value.trim())) return say('bad', "Your mentor spotter's email is needed - they approve this flight too.");
-    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(email)) return say('bad', 'Your email is required - the decision is sent there.');
-    if (!confirmed && emails()[cur.slug] !== email.toLowerCase()) { askEmail(email); return; }   // first time for this pilot on this device
-    confirmed = false;
-    if (lk) {
-      if ($('pw').value.length < 4) return say('bad', 'Enter the instructor password.');
-      if (k === 'special' && $('evName').value.trim().length < 2) return say('bad', 'Name the event.');
-      if ($('evCrowd').value === '' || +$('evCrowd').value < 0) return say('bad', 'Expected crowd?');
-      if (!$('evStart').value || !$('evEnd').value) return say('bad', 'Event start and end times?');
-    }
-    var body = { kind: k, pilot: cur.name, pilots: lk ? $('pilots').value.trim() : '', email: email, cc: $('cc').value.split(/[\s,;]+/).filter(Boolean), whenLocal: $('when').value,
-                 location: { name: $('loc').value.trim(), lat: pin ? pin.lat : undefined, lng: pin ? pin.lng : undefined },
-                 aircraft: $('ac').value, spotter: $('spotter').value.trim(), notes: $('notes').value.trim() };
-    if (mentorShown) body.mentorEmail = $('mentorEmail').value.trim();
-    if (!lk) body.approvers = $('extraAp').value.split(/[\s,;]+/).filter(Boolean);
-    if (lk) {
-      body.event = { name: k === 'special' ? $('evName').value.trim() : '', preset: k === 'special' ? $('evPreset').value : '', crowd: +$('evCrowd').value, start: $('evStart').value, end: $('evEnd').value };
-      body.approvers = $('evApprovers').value.split(/[\s,;]+/).filter(Boolean); body.cc = $('evTold').value.split(/[\s,;]+/).filter(Boolean);
-    }
-    $('send').disabled = true; say('', 'Filing…');
-    (lk ? sha256Hex($('pw').value) : Promise.resolve('')).then(function (key) {
-      var h = { 'Content-Type': 'application/json' }; if (key) h['X-Review-Key'] = key;
-      return fetch(API + '/api/fly-request', { method: 'POST', headers: h, body: JSON.stringify(body) });
-    }).then(function (r) { return r.json().catch(function () { return { ok: false, error: 'HTTP ' + r.status }; }); }).then(function (j) {
-      if (!j || j.ok === false) throw new Error((j && j.error) || 'the club API said no');
-      var it = j.item, ap = it.approvals || { of: 0 };
-      say('', '');
-      $('filed').hidden = false;
-      $('filed').innerHTML = '<div class="big">Filed.</div>' +
-        '<b>' + esc(it.pilot) + '</b> · ' + esc(it.whenText) + ' · ' + esc(it.location) + ' · ' + esc(it.aircraft) + ' · spotter ' + esc(it.spotter) + (it.name ? ' · ' + esc(it.name) : '') + '<br>' +
-        (it.mailed ? 'Sent to ' + (ap.of === 1 ? 'the approver' : ap.of + ' approvers') + (it.mentor ? ' (your mentor ' + esc(it.mentor) + ' is one of them)' : '') + (body.cc.length ? ' and the people you listed' : '') + '. ' : '<span class="warn">Filed, but the email did not fully go out (' + esc(it.mailError || 'email not set up') + '). Tell a mentor so they can pass it on.</span> ') +
-        '<span class="warn">Do not fly until you have a yes.</span> The decision comes to ' + esc(email) + '.';
-      $('pw').value = ''; $('notes').value = '';
-      rememberEmail(cur.slug, email.toLowerCase());
-      loadMine(); loadNext();
-    }).catch(function (e) { say('bad', e.message); }).then(function () { $('send').disabled = false; });
-  });
-
-  /* ---------- boot: roster, then the site profile ---------- */
-  fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
-    DATA = window.mergePilots ? window.mergePilots(d) : d;
-    var names = (DATA.pilots || []).map(function (p) { return p.name; }).sort();
-    $('pilotNames').innerHTML = names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('');
-    $('mentorNames').innerHTML = mentorNames().map(function (n) { return '<option value="' + esc(n) + '">'; }).join('');
-    drawClearance();
-  }).catch(function () { $('clr').className = 'clr bad'; $('clr').textContent = 'Could not load the roster (data.json).'; });
-  var p = null; try { p = JSON.parse(localStorage.getItem('fs.pilot.v1')); } catch (e) {}
-  if (p && p.name) setPilot(p.name);
-})();
-</script>
 </body>
 </html>

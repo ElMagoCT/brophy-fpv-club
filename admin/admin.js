@@ -100,7 +100,7 @@
         el('who').textContent = ok ? 'Signed in · password checked · kept in this tab only'
                                    : 'Signed in · password NOT checked (photo review not set up and no signed kiosk status to check it against) · kept in this tab only';
         el('signout').hidden = false;
-        drawTabs(); drawActions(); loadStatus(); showView(); loadReview(true); loadFly(true);
+        drawTabs(); drawActions(); loadStatus(); showView(); loadReview(true);
       });
     }).catch(function (e) { el('signMsg').textContent = e.message; }).then(function () { el('go').disabled = false; });
   }
@@ -204,13 +204,11 @@
   // Review photos is the first view (2026-10-10): no hash, or one we do not
   // know, opens it. #approvals and #kiosks still deep-link.
   function showView() {
-    var ap = location.hash === '#approvals', ki = location.hash === '#kiosks', fl = location.hash === '#fly', em = location.hash === '#emails', rv = !ap && !ki && !fl && !em;
-    el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki; el('fly').hidden = !fl; el('emails').hidden = !em;
-    el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : ''; el('vFly').className = fl ? 'on' : ''; el('vEmails').className = em ? 'on' : '';
-    if ((ap || rv || em) && !ROSTER) loadRoster();
+    var ap = location.hash === '#approvals', ki = location.hash === '#kiosks', rv = !ap && !ki;
+    el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki;
+    el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : '';
+    if ((ap || rv) && !ROSTER) loadRoster();
     if (rv && S.key) loadReview();
-    if (fl && S.keyHex) { loadRecipients(); loadFly(); }
-    if (em && S.keyHex) loadEmails();
   }
   window.addEventListener('hashchange', showView);
   function drawApprovals() {
@@ -701,201 +699,6 @@
       el('bulkSimMsg').textContent = 'Approved: ' + (done.join(', ') || 'none') + (failed.length ? ' · Failed: ' + failed.join(', ') : '') + '. The kiosks apply them on their next sync.';
     });
   };
-
-  // ---------------------------------------------------------------- fly requests (2026-10-15)
-  // The 24 h permission form (../fly/). Recipients live in the control repo at
-  // settings/fly-recipients.json and are edited here; reading the list of
-  // requests, saving recipients and recording a decision all send the review
-  // key (hex SHA-256 of the password) like photo review does.
-  var RC = null;   // the recipients record as loaded / being edited
-  function loadRecipients() {
-    el('rcMsg').textContent = 'Loading…';
-    api('GET', '/api/fly-request?recipients=1', null, reviewHeaders()).then(function (j) {
-      var r = j.recipients || {}; RC = r;
-      el('rcApprovers').value = (r.approvers || []).join(', ');
-      el('rcAlways').value = (r.always || []).join(', ');
-      el('rcReply').value = r.replyTo || '';
-      el('rcMeetAp').value = ((r.meeting || {}).approvers || []).join(', ');
-      el('rcMeetTo').value = ((r.meeting || {}).to || []).join(', ');
-
-      drawTypes(r.presets || []);
-      var setup = el('flySetup'); setup.textContent = '';
-      var warn = [];
-      if (!j.mail) warn.push('Email is not set up on the API: requests are filed but nothing is sent. See mail/README.md in brophy-fpv-club-api.');
-      if (!j.links) warn.push('FLY_SECRET is not set on the API: the emails cannot carry Approve / Deny buttons.');
-      if (!(r.approvers || []).length) warn.push('No approvers yet - until there is one, requests go nowhere.');
-      setup.hidden = !warn.length; warn.forEach(function (w) { var d = document.createElement('div'); d.textContent = w; setup.appendChild(d); });
-      el('rcMsg').textContent = r.updated ? 'Saved ' + when(r.updated) + '.' : 'Nothing saved yet.';
-    }).catch(function (e) { el('rcMsg').textContent = 'Could not load: ' + e.message; });
-  }
-  function drawTypes(presets) {
-    var box = el('rcTypes'); box.textContent = '';
-    presets.forEach(function (t) { box.appendChild(typeRow(t)); });
-    if (!presets.length) { var d = document.createElement('div'); d.className = 'muted small'; d.textContent = 'No presets: a special event is named from scratch on the form.'; box.appendChild(d); }
-  }
-  function typeRow(t) {
-    var d = document.createElement('div'); d.className = 'rct';
-    var c1 = document.createElement('div');
-    var lab = document.createElement('input'); lab.placeholder = 'Preset name (Pep rally)'; lab.value = t.label || ''; lab.maxLength = 40; lab.className = 'lab';
-    var id = document.createElement('div'); id.className = 'id'; id.textContent = t.id ? 'id ' + t.id : 'new';
-    c1.appendChild(lab); c1.appendChild(id);
-    var to = document.createElement('textarea'); to.rows = 2; to.placeholder = 'also told (emails)'; to.value = (t.to || []).join(', '); to.className = 'to';
-    var ap = document.createElement('textarea'); ap.rows = 2; ap.placeholder = 'extra approvers (emails)'; ap.value = (t.approvers || []).join(', '); ap.className = 'ap';
-    var rm = document.createElement('button'); rm.textContent = 'Remove'; rm.className = 'danger'; rm.onclick = function () { if (window.confirm('Remove the preset "' + (lab.value || 'this one') + '"?')) d.remove(); };
-    d.appendChild(c1); d.appendChild(to); d.appendChild(ap); d.appendChild(rm);
-    d.rcType = function () { return { id: t.id || '', label: lab.value.trim(), to: to.value, approvers: ap.value }; };
-    return d;
-  }
-  el('rcAdd').onclick = function () { var r = typeRow({ label: '', to: [], approvers: [] }); el('rcTypes').appendChild(r); r.querySelector('.lab').focus(); };
-  el('rcSave').onclick = function () {
-    var presets = Array.prototype.map.call(el('rcTypes').querySelectorAll('.rct'), function (d) { return d.rcType(); }).filter(function (t) { return t.label.length >= 2; });
-    var rc = { approvers: el('rcApprovers').value, always: el('rcAlways').value, replyTo: el('rcReply').value.trim(),
-               meeting: { approvers: el('rcMeetAp').value, to: el('rcMeetTo').value }, presets: presets, pilots: (RC && RC.pilots) || {} };
-    el('rcSave').disabled = true; el('rcMsg').textContent = 'Saving…';
-    api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
-      var r = j.recipients || {};
-      el('rcMsg').textContent = 'Saved: ' + (r.approvers || []).length + ' approver' + ((r.approvers || []).length === 1 ? '' : 's') + ', ' + (r.always || []).length + ' always told, ' + (r.presets || []).length + ' preset' + ((r.presets || []).length === 1 ? '' : 's') + '. Addresses that did not look like emails were dropped.';
-      loadRecipients();
-    }).catch(function (e) { el('rcMsg').textContent = 'Could not save: ' + e.message; }).then(function () { el('rcSave').disabled = false; });
-  };
-  el('flyRcRefresh').onclick = loadRecipients;
-  el('flyRefresh').onclick = function () { loadFly(); };
-
-  // ---- the pilot email directory (Emails tab)
-  function loadEmails() {
-    el('emMsg').textContent = 'Loading…';
-    var pr = api('GET', '/api/fly-request?recipients=1', null, reviewHeaders());
-    var rr = ROSTER ? Promise.resolve(ROSTER) : fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { ROSTER = window.mergePilots ? window.mergePilots(d) : d; return ROSTER; });
-    Promise.all([pr, rr]).then(function (x) {
-      RC = x[0].recipients || {}; var dir = RC.pilots || {}, roster = (x[1].pilots || []).slice().sort(function (a, b) { return a.name.localeCompare(b.name); });
-      var box = el('emList'); box.textContent = '';
-      var seen = {};
-      roster.forEach(function (p) { var sl = FS.slug(p.name); seen[sl] = 1; box.appendChild(emRow(p.name, sl, dir[sl] || '', (p.badges || []).indexOf('mentor') >= 0)); });
-      Object.keys(dir).forEach(function (sl) { if (!seen[sl]) box.appendChild(emRow(sl, sl, dir[sl], false)); });
-      var n = Object.keys(dir).length;
-      el('emMsg').textContent = roster.length + ' pilots on the roster · ' + n + ' with an email on file.';
-    }).catch(function (e) { el('emMsg').textContent = 'Could not load: ' + e.message; });
-  }
-  function emRow(name, sl, email, mentor) {
-    var d = document.createElement('div'); d.className = 'emrow'; d.setAttribute('data-slug', sl);
-    var b = document.createElement('b'); b.textContent = name; b.title = name;
-    if (mentor) { var m = document.createElement('span'); m.className = 'm'; m.textContent = 'MENTOR'; b.appendChild(m); }
-    var i = document.createElement('input'); i.type = 'email'; i.value = email; i.placeholder = 'email'; i.spellcheck = false;
-    d.appendChild(b); d.appendChild(i); return d;
-  }
-  el('emSave').onclick = function () {
-    if (!RC) return;
-    var pilots = {};
-    Array.prototype.forEach.call(el('emList').querySelectorAll('.emrow'), function (d) { var v = d.querySelector('input').value.trim().toLowerCase(); if (v) pilots[d.getAttribute('data-slug')] = v; });
-    var rc = { approvers: RC.approvers || [], always: RC.always || [], replyTo: RC.replyTo || '', meeting: RC.meeting || { to: [], approvers: [] }, presets: RC.presets || [], pilots: pilots };
-    el('emSave').disabled = true; el('emSaveMsg').textContent = 'Saving…';
-    api('POST', '/api/fly-request', { action: 'recipients', recipients: rc }, reviewHeaders()).then(function (j) {
-      el('emSaveMsg').textContent = 'Saved ' + Object.keys((j.recipients || {}).pilots || {}).length + ' addresses. Ones that did not look like emails were dropped.';
-      loadEmails();
-    }).catch(function (e) { el('emSaveMsg').textContent = 'Could not save: ' + e.message; }).then(function () { el('emSave').disabled = false; });
-  };
-  el('emRefresh').onclick = loadEmails;
-
-  // ---- next event + calendar
-  var FLY = [], CAL = { y: 0, m: 0, sel: '' };
-  function ymdPhx(ms) { return new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Phoenix', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(ms)); }
-  function drawNext() {
-    var now = Date.now(), ev = FLY.filter(function (r) { return r.kind !== 'rec' && r.whenMs > now - 3 * 3600000; }).sort(function (a, b) { return a.whenMs - b.whenMs; });
-    var box = el('flyNext'); box.textContent = '';
-    var h = document.createElement('div'); h.className = 'muted small'; h.textContent = 'Next event'; box.appendChild(h);
-    if (!ev.length) { var n = document.createElement('div'); n.className = 'nv'; n.textContent = 'Nothing on the calendar. File a meeting or event from the form (a locked type needs your password).'; box.appendChild(n); return; }
-    var r = ev[0], b = document.createElement('div'); b.className = 'big';
-    b.textContent = (r.name || 'Event') + ' · ' + r.whenText + ' · ' + r.location;
-    var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting for approval' : r.status; chip.classList.add('gapl'); b.appendChild(chip);
-    var v = document.createElement('div'); v.className = 'nv';
-    v.textContent = 'Pilot in charge ' + r.pilot + (r.pilots ? ' (+ ' + r.pilots + ')' : '') + ' · ' + (r.event ? r.event.start + '–' + r.event.end + ' · crowd ' + r.event.crowd : '') + (r.status !== 'pending' ? ' · decided ' + when(r.decidedAt) : ' · approvals ' + (r.approvals ? r.approvals.n + '/' + r.approvals.of : '?') + (r.mailed ? '' : ' · NOT fully emailed'));
-    box.appendChild(b); box.appendChild(v);
-    if (ev.length > 1) { var m = document.createElement('div'); m.className = 'nv'; m.textContent = 'Then: ' + ev.slice(1, 4).map(function (x) { return (x.name || 'event') + ' ' + x.whenText + ' (' + (x.status === 'pending' ? 'waiting' : x.status) + ')'; }).join(' · '); box.appendChild(m); }
-  }
-  function drawCal() {
-    if (!CAL.y) { var t = ymdPhx(Date.now()).split('-'); CAL.y = +t[0]; CAL.m = +t[1] - 1; }
-    el('calTitle').textContent = new Date(Date.UTC(CAL.y, CAL.m, 1)).toLocaleDateString(undefined, { month: 'long', year: 'numeric', timeZone: 'UTC' });
-    var box = el('cal'); box.textContent = '';
-    ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(function (d) { var x = document.createElement('div'); x.className = 'dow'; x.textContent = d; box.appendChild(x); });
-    var by = {}; FLY.forEach(function (r) { var k = ymdPhx(r.whenMs); (by[k] = by[k] || []).push(r); });
-    var first = new Date(Date.UTC(CAL.y, CAL.m, 1)), start = first.getUTCDay(), today = ymdPhx(Date.now());
-    for (var i = 0; i < 42; i++) {
-      var d = new Date(Date.UTC(CAL.y, CAL.m, 1 - start + i)), k = d.toISOString().slice(0, 10), out = d.getUTCMonth() !== CAL.m;
-      if (i >= 35 && out) break;
-      var cell = document.createElement('div'); cell.className = 'day' + (out ? ' out' : '') + (k === today ? ' today' : '') + (k === CAL.sel ? ' sel' : '');
-      var n = document.createElement('div'); n.className = 'n'; n.textContent = d.getUTCDate(); cell.appendChild(n);
-      (by[k] || []).sort(function (a, b) { return a.whenMs - b.whenMs; }).forEach(function (r) {
-        var e = document.createElement('span'); e.className = 'ev ' + r.status + (r.kind !== 'rec' ? ' event' : '');
-        e.textContent = new Date(r.whenMs).toLocaleTimeString('en-US', { timeZone: 'America/Phoenix', hour: 'numeric', minute: '2-digit' }).replace(' ', '') + ' ' + (r.kind !== 'rec' ? r.name : r.pilot);
-        e.title = r.pilot + ' · ' + r.whenText + ' · ' + r.location + ' · ' + r.status; cell.appendChild(e);
-      });
-      cell.onclick = (function (k) { return function () { CAL.sel = CAL.sel === k ? '' : k; drawCal(); drawList(); }; })(k);
-      box.appendChild(cell);
-    }
-  }
-  el('calPrev').onclick = function () { CAL.m--; if (CAL.m < 0) { CAL.m = 11; CAL.y--; } drawCal(); };
-  el('calNext').onclick = function () { CAL.m++; if (CAL.m > 11) { CAL.m = 0; CAL.y++; } drawCal(); };
-  function drawList() {
-    var items = CAL.sel ? FLY.filter(function (r) { return ymdPhx(r.whenMs) === CAL.sel; }) : FLY;
-    var pending = FLY.filter(function (r) { return r.status === 'pending' && r.whenMs > Date.now() - 3600000; }).length;
-    el('flyMsg').textContent = (CAL.sel ? items.length + ' on ' + CAL.sel + ' (click the day again for all) · ' : '') + FLY.length + ' on file · ' + pending + ' waiting for a decision.';
-    var box = el('flyList'); box.textContent = '';
-    items.forEach(function (r) { box.appendChild(flyRow(r)); });
-    if (!items.length) { var d = document.createElement('div'); d.className = 'muted small'; d.textContent = 'Nothing here.'; box.appendChild(d); }
-  }
-  function loadFly(countOnly) {
-    if (!S.keyHex) return;
-    if (!countOnly) el('flyMsg').textContent = 'Loading…';
-    api('GET', '/api/fly-request?list=1', null, reviewHeaders()).then(function (j) {
-      FLY = j.items || [];
-      var pending = FLY.filter(function (r) { return r.status === 'pending' && r.whenMs > Date.now() - 3600000; }).length;
-      el('flyCount').textContent = pending ? String(pending) : '';
-      if (countOnly) return;
-      drawNext(); drawCal(); drawList();
-    }).catch(function (e) { if (!countOnly) el('flyMsg').textContent = 'Could not load: ' + e.message; });
-  }
-  function flyRow(r) {
-    var d = document.createElement('div'); d.className = 'fr';
-    var h = document.createElement('div'); h.className = 'fh';
-    var b = document.createElement('b'); b.textContent = r.pilot + (r.tier != null ? ' (T' + r.tier + ')' : ''); h.appendChild(b);
-    h.appendChild(document.createTextNode(' · ' + r.whenText + ' · ' + r.location + ' · ' + r.aircraft));
-    var chip = document.createElement('span'); chip.className = 'pchip ' + r.status; chip.textContent = r.status === 'pending' ? 'waiting' : r.status; h.appendChild(chip);
-    if (r.kind !== 'rec') { var ec = document.createElement('span'); ec.className = 'pchip src'; ec.textContent = (r.kind === 'meeting' ? 'meeting' : 'special · ' + (r.name || '')); h.appendChild(ec); }
-    if (r.point) { var ml = document.createElement('a'); ml.href = 'https://www.google.com/maps?q=' + r.point.lat + ',' + r.point.lng; ml.target = '_blank'; ml.rel = 'noopener'; ml.textContent = 'map'; ml.className = 'pchip src'; h.appendChild(ml); }
-    var fd = document.createElement('div'); fd.className = 'fd';
-    var bits = ['spotter ' + r.spotter + (r.mentor ? ' (mentor' + (r.mentorEmail ? ' ' + r.mentorEmail : '') + ')' : ''), 'filed ' + when(r.at)];
-    if (r.pilots) bits.push('also flying: ' + r.pilots);
-    if (r.email) bits.push('pilot ' + r.email);
-    if (r.event) bits.push('crowd ' + r.event.crowd + ' · ' + r.event.start + '–' + r.event.end);
-    if ((r.recipients || []).length) bits.push('told: ' + r.recipients.join(', '));
-    if (r.notes) bits.push('"' + r.notes + '"');
-    bits.push(r.mailed ? 'emailed' : 'NOT fully emailed' + (r.mailError ? ' (' + r.mailError + ')' : ''));
-    if (r.status !== 'pending') bits.push(r.status + ' ' + when(r.decidedAt) + (r.decidedBy ? ' via ' + r.decidedBy : '') + (r.decisionNote ? ': ' + r.decisionNote : ''));
-    fd.textContent = bits.join(' · ');
-    var ap = document.createElement('div'); ap.className = 'fap';
-    (r.approvers || []).forEach(function (a, i) {
-      if (i) ap.appendChild(document.createTextNode(' · '));
-      var sp = document.createElement('span'); sp.className = a.status; sp.textContent = a.email + ': ' + a.status + (a.note && a.note !== 'console' ? ' ("' + a.note + '")' : ''); ap.appendChild(sp);
-    });
-    if (!(r.approvers || []).length) ap.textContent = 'no approvers were set when this was filed';
-    fd.appendChild(document.createElement('br')); fd.appendChild(ap);
-    var fa = document.createElement('div'); fa.className = 'fa';
-    var ok = document.createElement('button'); ok.className = 'ok'; ok.textContent = 'Approve';
-    var no = document.createElement('button'); no.className = 'danger'; no.textContent = 'Deny';
-    ok.onclick = function () { decideFly(r, 'approve', d); }; no.onclick = function () { decideFly(r, 'deny', d); };
-    fa.appendChild(ok); fa.appendChild(no);
-    d.appendChild(h); d.appendChild(fa); d.appendChild(fd);
-    return d;
-  }
-  function decideFly(r, decision, row) {
-    var note = window.prompt((decision === 'approve' ? 'Approve' : 'Deny') + ' ' + r.pilot + ' · ' + r.whenText + ' · ' + r.location + '?\n\nThis records a decision an approver gave another way (reply, in person) and settles it for every approver. Note to the pilot (optional):', r.status !== 'pending' ? 'changed from ' + r.status : 'per Mr. Burr');
-    if (note === null) return;
-    Array.prototype.forEach.call(row.querySelectorAll('button'), function (b) { b.disabled = true; });
-    api('POST', '/api/fly-request', { action: 'decide', id: r.id, decision: decision, note: note }, reviewHeaders()).then(function (j) {
-      el('flyMsg').textContent = (j.item.status === 'approved' ? 'Approved' : 'Denied') + ' ' + r.pilot + ' · ' + r.whenText + (j.mailed ? ' · ' + j.mailed + ' emailed.' : (j.mailError ? ' · could not email: ' + j.mailError : ' · nothing changed, so nobody was emailed.'));
-      loadFly();
-    }).catch(function (e) { el('flyMsg').textContent = 'Could not record it: ' + e.message; Array.prototype.forEach.call(row.querySelectorAll('button'), function (b) { b.disabled = false; }); });
-  }
 
   // ---------------------------------------------------------------- boot
   el('app').hidden = false;
