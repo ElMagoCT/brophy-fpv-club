@@ -73,6 +73,23 @@ section{margin-top:26px}
 .eyebrow .hint{font-size:13.5px;color:var(--ink-soft)}
 .card{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow)}
 
+/* how it works: a collapsible box, open until the certification is done
+   (2026-10-20); the pilot can still toggle it */
+.howbox{margin-top:26px}
+.howbox>summary{cursor:pointer;list-style:none}
+.howbox>summary::-webkit-details-marker{display:none}
+.howbox>summary h2::before{content:'\25B8';display:inline-block;margin-right:8px;transition:transform .15s}
+.howbox[open]>summary h2::before{transform:rotate(90deg)}
+.howbox[open]>summary{margin-bottom:12px}
+.how{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.how .h{padding:12px 15px}
+.how .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)}
+.how .v{font-size:14.5px;margin-top:4px;line-height:1.4}
+.how .v b{font-weight:600}
+.how .v a{color:var(--rust);font-weight:600}
+@media (max-width:900px){.how{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:700px){.how{grid-template-columns:1fr}}
+
 /* the three sections swap places: cleared = form, drones, badges */
 #halves{display:flex;flex-direction:column}
 #badgeSec{order:1} #droneSec{order:2} #formSec{order:3}
@@ -256,6 +273,16 @@ footer a{color:var(--ink)}
   </header>
 
 
+  <details class="howbox" id="howbox" open>
+    <summary class="eyebrow"><h2>How it works</h2><span class="line"></span><span class="hint">certification once, permission every flight</span></summary>
+    <div class="how">
+      <div class="card h"><div class="k">1 &middot; Get certified</div><div class="v">The <a href="#badges">Brophy Drone Certification</a>: four badges - FAA TRUST, Safe Flight, the Pilot Agreement - and a drone in your portfolio.</div></div>
+      <div class="card h"><div class="k">2 &middot; Ask Mr. Burr</div><div class="v">Fill in his form at least <b>24 hours</b> before you want to fly. One flight, one request: that drone, that place, that time.</div></div>
+      <div class="card h"><div class="k">3 &middot; Spotter</div><div class="v">Every flight has a spotter with eyes on the aircraft. Your own drone: anyone you name on the form. A club drone: a <b>mentor</b> is there for the session.</div></div>
+      <div class="card h"><div class="k">4 &middot; Wait for the yes</div><div class="v">Fly only after Mr. Burr approves, and <b>only as requested</b>. No answer is a no.</div></div>
+    </div>
+  </details>
+
   <div id="halves">
     <section aria-label="Who is asking" id="gateSec" hidden></section>
 
@@ -270,7 +297,7 @@ footer a{color:var(--ink)}
     </section>
 
     <section aria-labelledby="droneHead" id="droneSec">
-      <div class="eyebrow"><h2 id="droneHead">Drone portfolio</h2><span class="line"></span><span class="hint" id="droneHint"></span></div>
+      <div class="eyebrow"><h2 id="droneHead">Drone portfolio</h2><span class="line"></span><span class="hint" id="droneHint">your own drones first</span></div>
       <div class="drones" id="drones"></div>
     </section>
 
@@ -375,9 +402,15 @@ function picker() {
     '<div class="row"><button type="button" class="btn primary" id="gateGo">That\'s me</button></div>' +
     '<div class="hint">No password: picking a name is signing in. ' + (ST.loaded.data ? '' : 'Loading the roster&hellip;') + '</div></div>';
 }
+/* how-it-works: open until certified, closed after - unless the pilot toggles
+   it themselves. `toggle` fires asynchronously, so a toggle that leaves the box
+   in the state this page last set is ours; anything else is the pilot's. */
+var howTouched = false, howWant = true;
+$('howbox').addEventListener('toggle', function () { if ($('howbox').open !== howWant) howTouched = true; });
 function render() {
   var st = CL.status(), p = ST.pilot;
   drawTop(st);
+  if (!howTouched && !st.pending) { howWant = !(p && st.cleared); $('howbox').open = howWant; }
   $('halves').className = !p ? 'nobody' : (st.cleared ? 'cleared' : '');
   $('gateSec').hidden = !!p;
   if (!p) { $('gateSec').innerHTML = picker(); var go = $('gateGo'), inp = $('gateName'); go.onclick = function () { var v = inp.value.trim(); if (v.length >= 2) SiteNav.set(v); }; inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); }); }
@@ -392,7 +425,7 @@ function render() {
 /* ---------- drones ---------- */
 function drawDrones() {
   var pf = CL.portfolio(), ok = pf.club.filter(function (d) { return d.unlocked; }).length + pf.mine.filter(function (d) { return d.status === 'pass'; }).length;
-  $('droneHint').textContent = ST.pilot ? (ok ? ok + (ok === 1 ? ' drone' : ' drones') + ' you may request' : 'no drone yet') : '';
+  $('droneHint').textContent = ST.pilot ? (ok ? ok + (ok === 1 ? ' drone' : ' drones') + ' you may request' : 'no drone yet - add your own') : 'your own drones first';
   var h = '<div class="drone add" data-add="1"><span class="plus">+</span>Add a drone<small style="text-transform:none;letter-spacing:0;font-family:var(--font-body);font-size:13px;color:var(--ink-soft)">name, specs, a picture and a minute of flight video</small></div>';
   pf.club.forEach(function (d) {
     h += '<div class="drone ' + (d.unlocked ? 'ok' : 'locked') + '"><div class="pic">' + QUAD + '</div>' +

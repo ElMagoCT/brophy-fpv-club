@@ -237,8 +237,8 @@
       why: 'A simple, clear reminder that you are flying expensive equipment and are responsible for how you use it - signed by you and a parent or guardian, as Mr. Reasy and Mr. Burr asked.',
       steps: ['Read the terms', 'Print the signing paper (one page) and sign it with a parent or guardian', 'Submit a photo of the signed paper'] },
     { id: 'drone-portfolio', tier: 'cl', track: 'flight', type: 'bench', kind: 'drone', name: 'Drone Portfolio', est: 'a minute of video per drone',
-      do: 'Every drone you may fly at Brophy: yours, each with a short flight video a mentor approves, and the club\'s, unlocked by their checkpoints.',
-      why: 'Clearance is per aircraft: the club knows what you fly and has seen you fly it safely.',
+      do: 'Your own drones, each with a picture, its specs and a minute of flight video a mentor approves. Club drones join it when you pass their checkpoint.',
+      why: 'Clearance is per aircraft, for every pilot - DJI, FPV, anything: the club knows what you fly and has seen you fly it safely.',
       steps: ['Record about a minute: take off, fly, land safely', 'Upload it to Google Drive, shared as "Anyone with the link"', 'Add the drone: name, specs, a picture and the link'] },
 
     // ---------------- Bonus badges (tier 'el') - never counted toward the total or the tier
