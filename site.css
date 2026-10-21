@@ -127,6 +127,11 @@ body{background-color:#f8f5ee}
 [data-theme=dark] #map{background:#1d2628}
 [data-theme=dark] .leaflet-tile-pane{filter:brightness(.82) saturate(.85)}
 
+/* ---------- footer links on every page (site.js, 2026-10-20) ---------- */
+footer .sitelinks{flex-basis:100%;font-size:13.5px;color:var(--ink-soft)}
+footer .sitelinks a{color:var(--ink);text-decoration:underline;text-underline-offset:3px}
+footer .sitelinks a:hover{color:var(--rust)}
+
 /* ---------- the light / auto / dark switch, in the footer ---------- */
 .themeswitch{display:flex;align-items:center;gap:0;margin-left:auto;flex-wrap:wrap}
 .themeswitch .tk{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-right:10px}

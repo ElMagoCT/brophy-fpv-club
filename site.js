@@ -163,5 +163,16 @@
     .then(function (d) { DATA = window.mergePilots ? window.mergePilots(d) : d; draw(); }).catch(function () {});
 
   draw();
+  /* 2026-10-20: every footer links the Pilot Agreement terms and Mr. Burr's
+     request form, in front of the theme switch theme.js appends */
+  function footLinks() {
+    var foot = document.querySelector('footer');
+    if (!foot || foot.querySelector('.sitelinks')) return;
+    var sp = document.createElement('span'); sp.className = 'sitelinks';
+    sp.innerHTML = '<a href="' + BASE + 'clearance/">Flight Clearance</a> · <a href="' + BASE + 'clearance/terms/">Pilot Agreement terms</a> · ' +
+      '<a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">Request form (Mr. Burr) &nearr;</a>';
+    foot.appendChild(sp);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', footLinks); else footLinks();
   window.SiteNav = { pilot: get, set: set, open: function () { picking = false; open(); window.scrollTo({ top: 0, behavior: 'smooth' }); }, row: row, slug: slug };
 })();

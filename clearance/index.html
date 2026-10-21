@@ -160,18 +160,6 @@ section{margin-top:26px}
 .badge.earned .body,.badge.earned .lab{opacity:.5}
 .badge.earned .nm{color:var(--green)}
 .badge.failed{border-color:var(--rust)}
-/* the terms (Pilot Agreement) */
-details.terms{border:1px solid var(--line-hard);border-radius:8px;background-color:var(--glass);margin-top:6px}
-details.terms>summary{cursor:pointer;padding:9px 12px;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--rust);list-style:none;display:flex;justify-content:space-between;gap:10px}
-details.terms>summary::-webkit-details-marker{display:none}
-details.terms>summary::after{content:'open';color:var(--ink-soft)}
-details.terms[open]>summary::after{content:'close'}
-.terms .tb{padding:2px 14px 12px;font-size:14px;line-height:1.5;max-height:460px;overflow:auto}
-.terms h4{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--rust);margin:12px 0 4px}
-.terms p{margin:0 0 6px}
-.terms .tb ul{list-style:disc;padding-left:18px;display:block;margin:2px 0 6px}
-.terms .tb li{display:list-item;padding:0;margin:0 0 2px}
-.terms .lead{color:var(--ink-soft);font-style:italic}
 
 /* ---------- the Pilot Path checkpoints, one line ---------- */
 .cps{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center;font-size:14px;color:var(--ink-soft)}
@@ -511,7 +499,6 @@ function more(b, s) {
       '<div class="act"><button class="btn primary" type="button" data-add="1">Add a drone</button><a class="btn" href="#droneSec">Your drones &uarr;</a></div>';
   } else if (b.kind === 'paper') {
     h += stepsList(b) + TERMS +
-      '<div class="act"><a class="btn" href="agreement.html" target="_blank" rel="noopener">Print the signing paper &nearr;</a></div>' +
       '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'the signed paper is on file.' : 'submit a photo of the whole signed page, every line readable; a mentor checks it.') + '</div>' +
       subsList(b, s, 'Submit a photo of the signed paper');
   } else {
@@ -521,52 +508,8 @@ function more(b, s) {
   return h + resources(b);
 }
 
-/* The Pilot Agreement terms - the club's draft of 2026-10-19, kept simple
-   as Mr. Burr asked (2026-10-20): a plain reminder of responsibility, not a
-   legal contract; as minors, pilots sign it WITH a parent or guardian. Edit
-   here and in agreement.html together. */
-var TERMS = '<details class="terms"><summary>The terms</summary><div class="tb">' +
-  '<p class="lead">Kept simple on purpose: a plain reminder that you are flying expensive equipment and are responsible for how you use it, signed by you and a parent or guardian. Not a legal contract.</p>' +
-  '<p>This agreement is between the student pilot ("you"), your parent or guardian, and the Brophy FPV Club ("the club"). Signing it is part of Flight Clearance.</p>' +
-  '<h4>1 · Words used here</h4><ul>' +
-  '<li><b>Club equipment:</b> every drone (the Meteor 75 Pro and Pavo 20 Pro included), air units, goggles, radios, batteries, chargers, props, spares, and anything else the club owns or bought with grant money.</li>' +
-  '<li><b>Mentor:</b> a member holding the Mentor badge whose clearance is in good standing. Sign-offs are recorded on the club website.</li>' +
-  '<li><b>Flight session:</b> from the moment you take club equipment until a mentor checks it back in. A mentor and a Spotter badge holder are present the whole time; each is flying or watching.</li>' +
-  '<li><b>Clearance:</b> the club\'s Brophy Drone Certification, which lets you ask to fly on Brophy property.</li>' +
-  '<li><b>Malfunction:</b> a failure of club equipment not caused by your input, carelessness or misuse. <b>External event:</b> an outside cause you could not reasonably have prevented (section 3).</li></ul>' +
-  '<h4>2 · Your responsibility</h4><ul>' +
-  '<li>You are responsible for loss of or damage to club equipment, property or people that results from your flying. Damage during a flight session is taken to be your fault unless section 3 says otherwise.</li>' +
-  '<li>Using club equipment without a mentor and spotter present makes you fully responsible, with no section 3 claim.</li></ul>' +
-  '<h4>3 · Malfunctions and external events</h4><ul>' +
-  '<li>You are released from responsibility only by showing the incident was a malfunction or an external event: goggle DVR footage, flight controller logs, a defect logged before the session, spotter testimony, or other evidence the active mentors accept. Record and keep DVR footage of every flight; without evidence, the presumption stands.</li>' +
-  '<li>Claims go to a mentor within 48 hours. The active mentors vote; a majority decides, a tie denies. A mentor who flew or spotted that flight does not vote. You may appeal once to the faculty moderator, whose decision is final.</li>' +
-  '<li><b>Not covered:</b> failed tricks or freestyle, pilot error, flying out of range or past low-battery warnings, signal loss behind obstacles, flying in unapproved conditions or strong or forecast wind, flying near people who then interfere, continuing after a hazard appears, or flying equipment you knew or should have known was damaged.</li>' +
-  '<li><b>Covered external events:</b> someone deliberately hitting, grabbing or interfering with the drone; a sudden, unforeseeable gust; a visual obstruction outside your control (lights switched off); a bird or animal strike; unforeseeable interference from another drone or radio.</li>' +
-  '<li>If a third party caused the damage the club may seek the cost from them; you help identify them and share footage.</li></ul>' +
-  '<h4>4 · Looking after the gear</h4><ul>' +
-  '<li>Before flying, inspect the drone, props, frame, battery and video link and report any defect to a mentor. Starting a flight confirms the equipment was in acceptable condition.</li>' +
-  '<li>Report every crash, damage or incident to a mentor at once, even with no visible damage, and return everything for check-in at the end of the session.</li></ul>' +
-  '<h4>5 · Spares, replacement and payment</h4><ul>' +
-  '<li>The club keeps spares and may swap one in at once.</li>' +
-  '<li>If you are responsible, replace the used spare within <b>14 days</b> (or another reasonable time set by club leadership) with the same model or a mentor-approved equivalent, at current retail price plus shipping.</li>' +
-  '<li>You may buy and deliver the part, pay the club directly, or work it off through Brophy\'s <b>BEAST program</b> (subject to BEAST approval) on a plan arranged with club leadership within the replacement period.</li>' +
-  '<li>Flight privileges pause until the replacement or payment is complete. Unpaid balances may be referred to the school under its policies.</li></ul>' +
-  '<h4>6 · Clearance and personal drones</h4><ul>' +
-  '<li>Clearance lets you ask to fly on Brophy property under club rules. It does not vouch for your skill or safety and does not make the club, its members, its moderator or Brophy liable for anything you do with club or personal equipment. Club leadership may suspend or revoke it at any time.</li>' +
-  '<li><b>Personal drones:</b> cleared pilots may fly their own drones on Brophy property under sections 7 and 8. You are fully responsible for your own drone, its damage or loss and any harm it causes; section 3 does not apply. The club does not inspect, maintain, insure or vouch for it, and you make sure it meets FAA requirements, including registration at 250 g or more.</li></ul>' +
-  '<h4>7 · FAA and the law</h4><ul>' +
-  '<li>You alone are responsible for following FAA regulations and state and local law: a valid TRUST certificate shown on request; visual line of sight, with a visual observer when flying FPV; never over people or moving vehicles; airspace and altitude limits.</li>' +
-  '<li>Any fines or legal consequences are yours. The club does not give legal advice.</li></ul>' +
-  '<h4>8 · Flying on Brophy property</h4><ul>' +
-  '<li>Only in approved areas, at approved times, with a mentor and spotter present, and only after Mr. Burr has approved the request.</li>' +
-  '<li>Never over or near non-participants, windows, vehicles or areas not set aside for flight. No reckless flying, no stunts outside approved areas, no flying while distracted.</li>' +
-  '<li>No modifications, firmware updates or settings changes to club equipment without a mentor\'s approval. A mentor may end any flight session at any time.</li></ul>' +
-  '<h4>9 · Release</h4><ul>' +
-  '<li>You and your parent or guardian release and hold harmless the club, its members, its faculty moderator and Brophy College Preparatory from claims or costs arising from your flying, except those caused solely by a malfunction or external event accepted under section 3.</li>' +
-  '<li>You both acknowledge that FPV flying carries real risks - propeller injuries, battery fires, collisions - and accept them.</li></ul>' +
-  '<h4>10 · If the rules are broken</h4><ul><li>Warnings, suspension, or loss of clearance and flight privileges. Serious cases go to the school administration.</li></ul>' +
-  '<p class="lead">Draft of 2026-10-19, simplified 2026-10-20 after review by the Director of Student Activities and the club moderator. Not reviewed by legal counsel.</p>' +
-  '</div></details>';
+/* the Pilot Agreement terms are their own page, terms/ (2026-10-20) */
+var TERMS = '<div class="act"><a class="btn" href="terms/">Read the terms &rarr;</a><a class="btn" href="agreement.html" target="_blank" rel="noopener">Print the signing paper &nearr;</a></div>';
 
 /* ---------- lessons in a frame (the Ground School course app) ---------- */
 var LP = { id: null };
