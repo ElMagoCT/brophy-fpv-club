@@ -594,6 +594,30 @@
       who.querySelector('b').textContent = it.pilot; who.querySelector('span').textContent = bd ? bd.name : it.badge;
       var meta = document.createElement('div'); meta.className = 'meta';
       meta.textContent = new Date(it.at).toLocaleString() + (it.note ? ' · “' + it.note + '”' : '');
+      // 2026-10-20: a Drone Portfolio submission carries the drone (name, specs)
+      // and a Google Drive flight video. Shown with the link, whether Drive
+      // serves it publicly (its thumbnail loads only for a shareable file) and
+      // an embedded player. A pass records the review only - no badge award:
+      // the drone is approved, not a badge earned.
+      var extra = null;
+      if (it.drone) {
+        extra = document.createElement('div'); extra.className = 'drone';
+        var dn = document.createElement('b'); dn.textContent = it.drone.name || 'drone';
+        var ds = document.createElement('span'); ds.textContent = it.drone.specs ? ' · ' + it.drone.specs : '';
+        extra.appendChild(dn); extra.appendChild(ds);
+        var vid = driveId(it.drone.video), vrow = document.createElement('div'); vrow.className = 'video';
+        if (vid) {
+          var va = document.createElement('a'); va.href = 'https://drive.google.com/file/d/' + encodeURIComponent(vid) + '/view'; va.target = '_blank'; va.rel = 'noopener'; va.textContent = 'Open the flight video ↗';
+          var pub = document.createElement('span'); pub.className = 'pub'; pub.textContent = 'checking the link…';
+          var probe = new Image(); probe.referrerPolicy = 'no-referrer';
+          probe.onload = function () { pub.textContent = 'public ✓'; pub.className = 'pub ok'; };
+          probe.onerror = function () { pub.textContent = 'NOT public - fail it and ask for "Anyone with the link"'; pub.className = 'pub bad'; };
+          probe.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(vid) + '&sz=w200';
+          var fr = document.createElement('iframe'); fr.src = 'https://drive.google.com/file/d/' + encodeURIComponent(vid) + '/preview'; fr.title = 'flight video'; fr.loading = 'lazy'; fr.allow = 'autoplay; fullscreen';
+          vrow.appendChild(va); vrow.appendChild(pub); extra.appendChild(vrow); extra.appendChild(fr);
+        } else { vrow.textContent = 'No usable Google Drive link: ' + (it.drone.video || '(none)'); extra.appendChild(vrow); }
+      }
+      var isDrone = !!(bd && bd.kind === 'drone');
       var rule = checkRules(it.pilot, bd), warn = null;
       if (rule) { warn = document.createElement('div'); warn.className = 'warn'; warn.textContent = rule.stop || rule.ask.replace(/ Approve it anyway\? It will count\.$/, ''); }
       var note = document.createElement('input'); note.placeholder = 'Note to the pilot (say why, if it fails)'; note.maxLength = 300;
@@ -601,7 +625,7 @@
       var pass = document.createElement('button'); pass.className = 'primary'; pass.textContent = 'Pass';
       var fail = document.createElement('button'); fail.className = 'danger'; fail.textContent = 'Fail';
       row.appendChild(pass); row.appendChild(fail);
-      [frame, who, meta].concat(warn ? [warn] : []).concat([note, row]).forEach(function (n) { card.appendChild(n); });
+      [frame, who, meta].concat(extra ? [extra] : []).concat(warn ? [warn] : []).concat([note, row]).forEach(function (n) { card.appendChild(n); });
       api('GET', '/api/submission?photo=' + encodeURIComponent(it.photo), null, reviewHeaders()).then(function (j) {
         var img = document.createElement('img'); img.alt = 'photo from ' + it.pilot; img.src = 'data:' + (j.type || 'image/jpeg') + ';base64,' + j.base64;
         img.draggable = false;
@@ -611,7 +635,7 @@
       function decide(result) {
         pass.disabled = fail.disabled = true;
         var first = Promise.resolve();
-        if (result === 'pass') {
+        if (result === 'pass' && !isDrone) {
           var r = checkRules(it.pilot, bd);
           if (r && r.stop) { window.alert(r.stop.replace(/ Not filed\.$/, ' Fail it with a note, or wait.')); pass.disabled = fail.disabled = false; return; }
           if (r && r.ask && !window.confirm(r.ask)) { pass.disabled = fail.disabled = false; return; }
@@ -623,7 +647,8 @@
           return api('POST', '/api/submission', { action: 'review', pilot: it.pilot, id: it.id, result: result, note: note.value.trim() }, reviewHeaders());
         }).then(function () {
           var d = document.createElement('div'); d.className = 'done ' + result;
-          d.textContent = result === 'pass' ? 'Passed - the badge is on file; the kiosks pick it up on their next sync.' : 'Failed - the pilot sees your note and can send a new photo.';
+          d.textContent = result === 'pass' ? (isDrone ? 'Approved - the drone is in the pilot\'s portfolio.' : 'Passed - the badge is on file; the kiosks pick it up on their next sync.')
+                                           : (isDrone ? 'Not approved - the pilot sees your note and can add the drone again.' : 'Failed - the pilot sees your note and can send a new photo.');
           row.replaceWith(d); note.disabled = true; card.classList.add('decided');
           setTimeout(function () { if (RV.stage === card) rvNext(card); }, 1500);
           var n = +(el('rvCount').textContent || 0) - 1; el('rvCount').textContent = n > 0 ? String(n) : '';
@@ -638,6 +663,7 @@
     });
     rvFocus(RV.cards[0]);
   }
+  function driveId(u) { var m = /\/file\/d\/([\w-]{15,})/.exec(String(u || '')) || /[?&]id=([\w-]{15,})/.exec(String(u || '')); return m ? m[1] : null; }
   function badgeInfo() {
     var b = FS.BADGES.filter(function (x) { return x.id === el('apBadge').value; })[0];
     el('apBadgeInfo').textContent = b ? ((b.minTier != null ? 'Tier ' + b.minTier + ' pilots only. ' : '') + (b.minHours ? 'Only after ' + b.minHours + ' h in the sim. ' : '') + (b.tier === 'el' ? 'Bonus badge. ' : '') + b.do + (b.standard ? ' — Standard: ' + b.standard : '')) : '';

@@ -11,8 +11,8 @@
    electives became BONUS badges (tier 'el', never counted); est added.
    2026-10-08: 20 counted badges. Each tier's badges END IN A CHECKPOINT
    (checkpoint:true) - the "exam" that moves a pilot up a tier:
-     FPV Certification Test (id tiny-whoop; first real Meteor flight)  closes Tier 0 -> Tier 1
-     (renamed from "Tiny Whoop" 2026-10-19 at Micah's request; the id is permanent)
+     Meteor 75 Pro Certification (id tiny-whoop; first real Meteor flight)  closes Tier 0 -> Tier 1
+     (was "Tiny Whoop", then "FPV Certification Test" 2026-10-19; the id is permanent)
      Pavo 20 Pro Flight (new)               closes Tier 1 -> Tier 2
      Event Pilot (new: fly at an event)     closes Tier 2 -> Tier 3
    A checkpoint counts only once every other badge of its tier is earned; it
@@ -31,6 +31,20 @@
    only). Every badge has optional resources (RES below): tips and links.
    Mentor needs deep knowledge of the FAA rules - judged by an officer, no quiz.
 
+   2026-10-20 (Micah, after Mr. Burr's and Mr. Reasy's replies): the FPV
+   Certification Test is SPLIT in two.
+     - FLIGHT CLEARANCE (tier 'cl', its own page ../clearance/) = the "Brophy
+       Drone Certification": FAA TRUST, Safe Flight (both moved here), the
+       Pilot Agreement (terms on the page; a one-page paper the pilot AND a
+       parent sign, photographed and reviewed) and the Drone Portfolio (every
+       drone the pilot may fly at Brophy: their own, each with a minute of
+       flight video on Google Drive a mentor approves in the console; the
+       club's, unlocked by its checkpoint). Never counted, no tier. Clearance
+       is still not permission: every campus flight is requested on
+       ../fly/ ("Brophy Flight", Mr. Burr's Google Form) 24 h ahead.
+     - Tier 1 = the "Meteor 75 Pro Certification" (id tiny-whoop kept): just
+       the drone things - Battery Care, Building, Betaflight, Line of Sight,
+       Sim Flight, then the checkpoint flight.
    2026-10-15 (the grant's condition: make getting to the Meteor easy):
    the Tier 0 path is six short parts a new member can do in one community
    period - two quizzes (Safe Flight, Battery Care), a short Building and
@@ -54,11 +68,21 @@
    standard: what the mentor is watching for */
 (function () {
   var TIERS = [
-    { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: FPV Certification Test (Meteor 75 Pro)' },
-    { id: 't1', n: 1, name: 'FPV Certification Test',  gear: 'Meteor 75 Pro · sub-250 g',                       color: 'var(--violet)', gate: 'Checkpoint: Pavo 20 Pro Flight · unlocks full-size' },
+    { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: Meteor 75 Pro Certification' },
+    { id: 't1', n: 1, name: 'Meteor 75 Pro Certification',  gear: 'Meteor 75 Pro · sub-250 g',                       color: 'var(--violet)', gate: 'Checkpoint: Pavo 20 Pro Flight · unlocks full-size' },
     { id: 't2', n: 2, name: 'Full-size',   gear: 'Pavo 20 Pro · larger drones at Brophy',          color: 'var(--rust)',   gate: 'Checkpoint: Event Pilot' },
     { id: 't3', n: 3, name: 'Event Pilot', gear: 'Any Tier 2 airframe at a school event, with a spotter', color: 'var(--green)', gate: 'The top' },
-    { id: 'el', n: -1, name: 'Bonus badges', gear: 'Any order, any time · not counted toward your total', color: 'var(--amber)', gate: '' }
+    { id: 'el', n: -1, name: 'Bonus badges', gear: 'Any order, any time · not counted toward your total', color: 'var(--amber)', gate: '' },
+    /* 2026-10-20: Flight Clearance - the Brophy Drone Certification. Its own
+       page (../clearance/), never a tier, never counted. n = -2 keeps it out
+       of every "n >= 0" tier loop. */
+    { id: 'cl', n: -2, name: 'Flight Clearance', gear: 'Brophy Drone Certification · four parts, then ask before every flight', color: 'var(--rust)', gate: '' }
+  ];
+  /* The club's drones (2026-10-20). Each sits in every pilot's Drone
+     Portfolio faded out and is unlocked by the checkpoint that certifies it. */
+  var CLUB_DRONES = [
+    { id: 'club-meteor', name: 'Meteor 75 Pro', specs: 'BetaFPV 75 mm brushless whoop · 1S · about 25 g without battery · sub-250 g', badge: 'tiny-whoop', unlock: 'Meteor 75 Pro Certification (the Tier 1 checkpoint)' },
+    { id: 'club-pavo',   name: 'Pavo 20 Pro',   specs: 'BetaFPV 2-inch cinewhoop · 4S · DJI O4 Pro air unit · about 125 g without battery', badge: 'pavo-flight', unlock: 'Pavo 20 Pro Flight (the Tier 2 checkpoint)' }
   ];
   var TRACK = { flight: 'Flight', build: 'Build & tech', know: 'Knowledge & safety', crew: 'Crew & leadership' };
   var PHOTO = 'Take a photo of your work with "Submit a photo" below - a mentor reviews it and passes or fails it.';
@@ -103,8 +127,10 @@
   };
 
   var B = [
-    // ---------------- Tier 0 · Simulator -> checkpoint FPV Certification Test (id tiny-whoop)
-    // Six short parts in one community period, plus Sim Flight (practice first, 5 h suggested).
+    // ---------------- Tier 0 · Simulator -> checkpoint Meteor 75 Pro Certification (id tiny-whoop)
+    // Just the drone things (2026-10-20): Battery Care, Building, Betaflight, Line of Sight,
+    // Sim Flight (practice first, 5 h suggested), then the checkpoint flight. Safe Flight is
+    // part of Flight Clearance now.
     { id: 'proficient-flight', tier: 't0', track: 'flight', type: 'witnessed', name: 'Sim Flight', est: 'one flight · about 5 h of sim practice first is typical', rule: ONE_GO,
       do: 'Fly a short checkride in Liftoff: an orbit, a Split-S, three gaps.', why: 'Acro muscle memory where crashes are free.',
       note: 'Suggested, not required: about 5 hours in the sims before you try it. Ask a mentor whenever you feel ready.',
@@ -112,9 +138,6 @@
              { t: 'A clean orbit around a gate', v: VID.orbit },
              { t: 'A Split-S', lessons: ['gs-trk-02'], v: VID.splitS },
              { t: 'Three gaps without a crash', v: VID.gaps }] },
-    { id: 'safe-flight', quiz: 'gs-saf-quiz', tier: 't0', track: 'know', type: 'knowledge', name: 'Safe Flight', est: 'about 10 min',
-      do: 'Know and follow the Brophy FPV safe-flight rules.', why: 'The baseline code of conduct for real hardware.',
-      lessons: [{ id: 'gs-saf-01', t: "Who's flying, who's watching" }, { id: 'gs-saf-02', t: 'The Brophy FPV rules sheet' }, { id: 'gs-saf-03', t: 'Go / No-Go', drill: true }] },
     { id: 'battery-care', quiz: 'gs-bat-quiz', tier: 't0', track: 'build', type: 'knowledge', name: 'Battery Care', est: 'about 10 min',
       do: 'Charging, storage, puffed packs and disposal.', why: 'LiPos are the biggest real fire risk in the hobby.',
       lessons: [{ id: 'gs-bat-01', t: 'LiPo basics' }, { id: 'gs-bat-02', t: 'Battery math', drill: true }, { id: 'gs-bat-03', t: 'Charging, storage and disposal', v: VID.lipo }, { id: 'gs-bat-04', t: 'When a pack goes bad' }] },
@@ -131,8 +154,8 @@
              { t: 'A 20-second steady hover', lessons: ['gs-fly-03'], v: VID.throttle },
              { t: 'A lap around a tree', lessons: ['gs-los-02'] },
              { t: 'A smooth landing', lessons: ['gs-los-03'] }] },
-    { id: 'tiny-whoop', tier: 't0', track: 'flight', type: 'witnessed', name: 'FPV Certification Test (Meteor 75 Pro)', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
-      do: 'Checkpoint into Tier 1: the Meteor 75 Pro in goggles.', why: 'Your first real flight. Pass it and you are Tier 1.',
+    { id: 'tiny-whoop', tier: 't0', track: 'flight', type: 'witnessed', name: 'Meteor 75 Pro Certification', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
+      do: 'Checkpoint into Tier 1: the Meteor 75 Pro in goggles.', why: 'Your first real flight. Pass it and you are Tier 1, and the club Meteor joins your Drone Portfolio.',
       reqs: [{ t: 'A controlled take-off', v: VID.throttle },
              { t: 'A figure-eight through two gates', v: VID.turns },
              { t: 'An orbit', v: VID.orbit },
@@ -171,9 +194,6 @@
     { id: 'spotter', quiz: 'gs-spt-quiz', tier: 't2', track: 'crew', type: 'knowledge', name: 'Spotter', est: 'about 5 min',
       do: 'Short course and quiz: the spotter’s job and the four calls.', why: 'FPV pilots can’t see around themselves; at an event a spotter stands beside every pilot.',
       lessons: [{ id: 'gs-spt-01', t: 'The spotter’s job' }, { id: 'gs-spt-02', t: 'What to call' }] },
-    { id: 'faa-trust', tier: 't2', track: 'know', type: 'bench', name: 'FAA TRUST', est: 'about 20 min',
-      do: 'Take the free TRUST test and send a photo of the certificate.', why: 'Federal requirement for recreational flyers.',
-      steps: [{ t: 'Take the free TRUST test (link below - about 20 min, cannot be failed)', v: VID.trust }, 'Save the certificate; keep a copy on your phone', 'Submit a photo of it, name readable - a mentor passes or fails it.'] },
     { id: 'event-ops', quiz: 'gs-evt-quiz', tier: 't2', track: 'know', type: 'witnessed', name: 'Event Ops', est: 'about 40 min',
       do: 'Course and quiz, then run a real flight-zone setup.', why: 'Flying at a game or rally, and a plan for when it goes wrong.',
       lessons: [{ id: 'gs-asp-01', t: 'Class B, 400 ft and Sky Harbor' }, { id: 'gs-asp-02', t: 'B4UFLY, LAANC and TRUST' }, { id: 'gs-evt-01', t: 'The flight zone' }, { id: 'gs-evt-02', t: 'Briefing bystanders' }, { id: 'gs-evt-03', t: 'Pilot and spotter call-outs' }, { id: 'gs-emg-01', t: 'Failsafe: set it, test it' }, { id: 'gs-emg-02', t: 'Flyaway and lost video' }, { id: 'gs-emg-03', t: 'LiPo fire and injury' }, { id: 'gs-emg-04', t: 'The incident report' }, { id: 'gs-emg-05', t: 'Scenario drill', drill: true }],
@@ -203,6 +223,23 @@
       reqs: [{ t: 'Zone set up and briefed' },
              { t: 'A spotter beside you' },
              { t: 'A mentor on site signs it off' }] },
+
+    // ---------------- Flight Clearance (tier 'cl', 2026-10-20) - the Brophy Drone Certification.
+    // Four parts on ../clearance/; never a tier, never counted. Order here is the page order.
+    { id: 'faa-trust', tier: 'cl', track: 'know', type: 'bench', name: 'FAA TRUST', est: 'about 20 min',
+      do: 'Take the free TRUST test and send a photo of the certificate.', why: 'Federal requirement for every recreational flyer, before the first real flight.',
+      steps: [{ t: 'Take the free TRUST test (link below - about 20 min, cannot be failed)', v: VID.trust }, 'Save the certificate; keep a copy on your phone', 'Submit a photo of it, name readable - a mentor passes or fails it.'] },
+    { id: 'safe-flight', quiz: 'gs-saf-quiz', tier: 'cl', track: 'know', type: 'knowledge', name: 'Safe Flight', est: 'about 10 min',
+      do: 'Know and follow the Brophy FPV safe-flight rules.', why: 'The baseline code of conduct for real hardware.',
+      lessons: [{ id: 'gs-saf-01', t: "Who's flying, who's watching" }, { id: 'gs-saf-02', t: 'The Brophy FPV rules sheet' }, { id: 'gs-saf-03', t: 'Go / No-Go', drill: true }] },
+    { id: 'pilot-agreement', tier: 'cl', track: 'know', type: 'bench', kind: 'paper', name: 'Pilot Agreement', est: 'about 10 min, plus a parent',
+      do: 'Read the terms, print the signing paper, sign it with a parent, send a photo of it.',
+      why: 'A simple, clear reminder that you are flying expensive equipment and are responsible for how you use it - signed by you and a parent or guardian, as Mr. Reasy and Mr. Burr asked.',
+      steps: ['Read the Pilot Agreement terms on the Flight Clearance page', 'Print the signing paper (one page)', 'Tick the four boxes: the FAA rules, the Brophy flight guidelines, the flight form before every flight, liable for any damage', 'Sign it, and a parent or guardian signs it', 'Submit a photo of the signed paper, every line readable - a mentor checks it.'] },
+    { id: 'drone-portfolio', tier: 'cl', track: 'flight', type: 'bench', kind: 'drone', name: 'Drone Portfolio', est: 'a minute of video per drone',
+      do: 'Every drone you may fly at Brophy: yours, each with a short flight video a mentor approves, and the club\'s, unlocked by their checkpoints.',
+      why: 'Clearance is per aircraft: the club knows what you fly and has seen you fly it safely.',
+      steps: ['Add the drone: its name, specs and a picture', 'Record about a minute: take off, fly, land safely', 'Upload the video to Google Drive, share it as "Anyone with the link", paste the link', 'A mentor watches it from the console and approves the drone.'] },
 
     // ---------------- Bonus badges (tier 'el') - never counted toward the total or the tier
     { id: 'editing', tier: 'el', track: 'crew', type: 'witnessed', name: 'Editing', est: 'about 1 h',
@@ -249,6 +286,8 @@
     'freestyle-flight': [{ tip: 'Learn each trick high and slow in the sim, then lower and faster.' }, { tip: 'Watch the trick at half speed on YouTube and copy the sticks, not the camera.' }, LIFT, JB],
     'pavo-flight': [{ tip: 'The Pavo is heavier than the Meteor - give it more room to stop.' }, { t: 'BetaFPV Pavo20 Pro', u: 'https://betafpv.com/products/pavo20-pro-brushless-whoop-quadcopter' }],
     'faa-trust': [{ t: 'Take the TRUST test (Pilot Institute, free, FAA-approved)', u: 'https://trust.pilotinstitute.com/' }, { t: 'FAA TRUST (the free test)', u: 'https://www.faa.gov/uas/recreational_flyers/knowledge_test_updates' }, FAA],
+    'pilot-agreement': [{ tip: 'Kept simple on purpose: a reminder of responsibility that you and a parent sign, not a legal contract.' }],
+    'drone-portfolio': [{ tip: 'Film from the ground with a phone: take-off, a minute of flying, a landing on the pad.' }, { tip: 'In Drive: Share > General access > Anyone with the link. The page checks the link before you send it.' }, { t: 'Google Drive: share a file with a link', u: 'https://support.google.com/drive/answer/2494822' }],
     'event-ops': [{ tip: 'Walk the zone before the event with the organiser.' }, { t: 'FAA B4UFLY', u: 'https://www.faa.gov/uas/getting_started/b4ufly' }, FAA],
     'cinematography': [{ tip: 'Smooth beats fast: slow throttle changes, wide gentle turns.' }, { t: 'Oscar Liang: making FPV video cinematic', u: 'https://oscarliang.com/cinematic-fpv/' }],
     'indoor-proximity': [{ tip: 'Lower your rates for tight spaces.' }, { tip: 'Fly the hallway course in the sim first.' }],
@@ -272,9 +311,12 @@
 
   function slug(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 
-  window.FS = { TIERS: TIERS, TRACK: TRACK, BADGES: B, LESSON_TITLES: LESSON_TITLES, slug: slug, PASS: 80, SIM_HOURS: 5 /* suggested, not a gate (2026-10-15) */,
+  window.FS = { TIERS: TIERS, TRACK: TRACK, BADGES: B, LESSON_TITLES: LESSON_TITLES, CLUB_DRONES: CLUB_DRONES, slug: slug, PASS: 80, SIM_HOURS: 5 /* suggested, not a gate (2026-10-15) */,
     API: 'https://brophy-fpv-club-api.netlify.app',
-    counted: function (b) { return b.tier !== 'el'; },
+    /* bonus and clearance badges are never counted toward a pilot's total (2026-10-20) */
+    counted: function (b) { return b.tier !== 'el' && b.tier !== 'cl'; },
+    /* the Flight Clearance parts, in page order */
+    clearance: function () { return B.filter(function (b) { return b.tier === 'cl'; }); },
     /* the other badges of a checkpoint's tier */
     mates: function (b) { return B.filter(function (x) { return x !== b && x.tier === b.tier && !x.checkpoint; }); },
     /* a photo can be submitted for any badge a mentor signs off */

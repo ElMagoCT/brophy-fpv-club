@@ -464,6 +464,7 @@ header.title .side .btn{text-align:center;justify-content:center}
         <div class="detail" id="statusDetail">Reading the lab schedule&hellip;</div>
       </div>
       <a class="btn primary" href="pilot-path/">Pilot Path: badges &amp; lessons &rarr;</a>
+      <a class="btn" href="clearance/">Flight Clearance: fly at Brophy &rarr;</a>
     </div>
   </header>
 
@@ -755,7 +756,9 @@ function renderStats(){
 
 /* Bonus badges (2026-10-07) - extra, never counted in a pilot's badge total.
    Same ids as tier 'el' in flightschool/badges.js. */
-var BONUS_BADGES = { editing: 1, tuning: 1, 'fleet-steward': 1, mentor: 1 };
+var BONUS_BADGES = { editing: 1, tuning: 1, 'fleet-steward': 1, mentor: 1,
+  /* 2026-10-20: the Flight Clearance parts (tier 'cl') are not counted either */
+  'faa-trust': 1, 'safe-flight': 1, 'pilot-agreement': 1, 'drone-portfolio': 1 };
 
 var BOARD_SHOW = 10;
 
@@ -819,9 +822,9 @@ var LADDER_SHOW = 8;
 /* what each tier is - these were their own row of cards above the boards
    until 2026-10-10, now folded into the ladder */
 var TIER_DESC = [
-  'The five sims in the IC. Everyone starts here: two short quizzes, rebuild and set up a Meteor, fly it line of sight, and fly Sim Flight (about 5 sim hours of practice is typical). One community period, then your first real flight.',
-  'Your first real flight on the Meteor 75 Pro. Then solder, diagnose, freestyle.',
-  'Pavo 20 Pro and larger drones at Brophy. Spotter, FAA TRUST, Event Ops, filming and racing.',
+  'The five sims in the IC. Everyone starts here: just the drone things - the Battery Care quiz, rebuild and set up a Meteor, fly it line of sight, and fly Sim Flight (about 5 sim hours of practice is typical). One community period, then the Meteor 75 Pro Certification: your first real flight.',
+  'Certified on the Meteor 75 Pro. Then solder, diagnose, freestyle.',
+  'Pavo 20 Pro and larger drones at Brophy. Spotter, Event Ops, filming and racing.',
   'Earned by flying at a school event or a race, with a spotter. The top of the path.'
 ];
 function renderLadder(){

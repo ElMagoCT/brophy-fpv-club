@@ -255,7 +255,7 @@ footer a{color:var(--ink)}
       <div class="card h"><div class="k">Quiz badges</div><div class="v">Short lessons, then a 10-question quiz - all opened right here from the badge card, with <b>Proceed to next</b> when each one ends. <b>80 % passes.</b> Retake as often as you like; your best score counts. The kiosk awards these by itself.</div></div>
       <div class="card h"><div class="k">Bench badges</div><div class="v">Step-by-step instructions on the kiosk or here. Tick the boxes as you go, then <b>submit a photo</b> of your work right from the card &mdash; a mentor reviews it and passes or fails it.</div></div>
       <div class="card h"><div class="k">Witnessed badges</div><div class="v">Each card lists its <b>requirements</b> as boxes, with a lesson and a video where there is one. Practise until you can tick them all, then a mentor who holds the badge watches you. <b>Event Ops</b> starts with a short quiz.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is short on purpose: six quick parts, doable in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it; when they are all done it gets a <b>big green &#10003;</b> and you may attempt it with a mentor watching. Pass it and <b>you are on that tier.</b> Passing <b>never grants permission to fly</b>: every campus flight is requested on <a href="../fly/">Request to fly</a> at least 24 h ahead and approved by Mr. Burr. Bonus badges are extra, any time, and don&rsquo;t count toward your total &mdash; <b>Mentor</b> is for Tier 2 pilots.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is just the drone things, short on purpose: five quick parts, doable in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it; when they are all done it gets a <b>big green &#10003;</b> and you may attempt it with a mentor watching. Pass it and <b>you are on that tier.</b> Passing <b>never grants permission to fly</b>: you also need <a href="../clearance/">Flight Clearance</a> (FAA TRUST, Safe Flight, the Pilot Agreement, your Drone Portfolio), and every campus flight is requested on <a href="../fly/">Brophy Flight</a> at least 24 h ahead and approved by Mr. Burr. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total &mdash; <b>Mentor</b> is for Tier 2 pilots.</div></div>
     </div>
   </details>
 
@@ -506,7 +506,8 @@ function countDone(bs) {
   return { n: n, of: bs.length };
 }
 /* 2026-10-07: a tier's badges are the PREREQUISITES of the next tier's
-   checkpoint (tier t0's badges build to the FPV Certification Test = Tier 1). */
+   checkpoint (tier t0's badges build to the Meteor 75 Pro Certification = Tier 1).
+   Tier 'cl' (Flight Clearance) never shows here: it has its own page. */
 function prereqs(i) { return FS.BADGES.filter(function (b) { return b.tier === 't' + i && !b.checkpoint; }); }
 function checkpointOf(i) { return FS.BADGES.filter(function (b) { return b.tier === 't' + i && b.checkpoint; })[0]; }
 function nextStep() {
@@ -608,11 +609,15 @@ function card(b, open) {
 }
 /* 2026-10-15: Pete Burr's condition on the grant. Passing a checkpoint is a
    licence to ASK, never permission to fly: every campus flight is requested
-   on ../fly/ at least 24 h ahead and approved by him. Said on every
-   checkpoint card, closed or open. */
+   on ../fly/ (Brophy Flight) at least 24 h ahead and approved by him. Said
+   on every checkpoint card, closed or open. 2026-10-20: it also takes Flight
+   Clearance, and a passed checkpoint unlocks that club drone in the
+   pilot's Drone Portfolio there. */
 function permitLine(b) {
-  var what = b.id === 'tiny-whoop' ? 'Passing this test <b>never grants permission to fly</b>.' : 'Passing this <b>never grants permission to fly</b>.';
-  return '<div class="permit">' + what + ' Before <b>every</b> flight on campus, send a <a href="../fly/">Request to fly</a> at least <b>24 hours ahead</b>; Mr. Burr approves it. Fly only after a yes.</div>';
+  var what = b.id === 'tiny-whoop' ? 'Passing this certification <b>never grants permission to fly</b>.' : 'Passing this <b>never grants permission to fly</b>.';
+  var drone = { 'tiny-whoop': 'the club Meteor 75 Pro', 'pavo-flight': 'the club Pavo 20 Pro' }[b.id];
+  return '<div class="permit">' + what + ' You also need <a href="../clearance/">Flight Clearance</a>' + (drone ? ' (passing adds ' + drone + ' to your Drone Portfolio there)' : '') +
+    ', and before <b>every</b> flight on campus a request on <a href="../fly/">Brophy Flight</a> at least <b>24 hours ahead</b>; Mr. Burr approves it. Fly only after a yes.</div>';
 }
 /* the checkpoint's prerequisites: a box per badge, ticked once earned (tap one
    to jump to it), and the big check once every box is ticked */

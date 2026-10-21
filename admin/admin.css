@@ -75,6 +75,11 @@ button.primary.flush{margin-top:0}
 .rv .warn{font-size:13.5px;color:var(--warn)}
 .rv input{width:100%}
 .rv .row button{margin-top:0;flex:1}
+.rv .drone{font-size:14px;line-height:1.4;border-top:1px dashed var(--line);padding-top:6px}
+.rv .drone .video{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin-top:2px}
+.rv .drone .pub{font-size:13px;color:var(--muted)}
+.rv .drone .pub.ok{color:var(--ok);font-weight:600} .rv .drone .pub.bad{color:var(--bad);font-weight:600}
+.rv .drone iframe{width:100%;aspect-ratio:16/9;border:0;border-radius:7px;margin-top:6px;background:#000}
 .rv .done{font-size:14px;font-weight:600}
 .rv .done.pass{color:var(--ok)} .rv .done.fail{color:var(--bad)}
 

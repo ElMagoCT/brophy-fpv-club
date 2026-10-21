@@ -1,5 +1,6 @@
 /* Site bar (2026-10-10): the same top bar on every page - Home / Pilot Path /
-   Request to fly (2026-10-15) / Resources, and the profile button top right.
+   Flight Clearance (2026-10-20) / Brophy Flight (was Request to fly,
+   2026-10-15) / Resources, and the profile button top right.
 
    The profile is the pilot NAME, saved in localStorage under fs.pilot.v1 -
    the key Flight School has always used, so picking a name on any page is
@@ -41,6 +42,7 @@
   }
 
   var page = /\/(pilot-path|progression|flightschool)\//.test(location.pathname) ? 'prog'
+           : /\/clearance\//.test(location.pathname) ? 'clear'
            : /\/fly\//.test(location.pathname) ? 'fly'
            : /\/posters\//.test(location.pathname) ? 'res' : 'home';
 
@@ -50,7 +52,8 @@
     '<nav class="sitenav" aria-label="Site">' +
       '<a href="' + BASE + '"' + (page === 'home' ? ' aria-current="page"' : '') + '>Home</a>' +
       '<a href="' + BASE + 'pilot-path/"' + (page === 'prog' ? ' aria-current="page"' : '') + '>Pilot Path</a>' +
-      '<a href="' + BASE + 'fly/"' + (page === 'fly' ? ' aria-current="page"' : '') + '>Request to fly</a>' +
+      '<a href="' + BASE + 'clearance/"' + (page === 'clear' ? ' aria-current="page"' : '') + '>Flight Clearance</a>' +
+      '<a href="' + BASE + 'fly/"' + (page === 'fly' ? ' aria-current="page"' : '') + '>Brophy Flight</a>' +
       '<a href="' + BASE + 'posters/"' + (page === 'res' ? ' aria-current="page"' : '') + '>Resources</a>' +
     '</nav>' +
     '<div class="sitme">' +
@@ -115,7 +118,8 @@
     return 1 + DATA.pilots.filter(function (x) { return (x.weekMs || 0) > r.weekMs; }).length;
   }
   function countBadges(r) {
-    var bonus = { editing: 1, tuning: 1, 'fleet-steward': 1, mentor: 1 };
+    /* bonus badges and the Flight Clearance parts are never counted (2026-10-20) */
+    var bonus = { editing: 1, tuning: 1, 'fleet-steward': 1, mentor: 1, 'faa-trust': 1, 'safe-flight': 1, 'pilot-agreement': 1, 'drone-portfolio': 1 };
     return (r.badges || []).filter(function (id) { return !bonus[id]; }).length;
   }
   function drawNames() {
