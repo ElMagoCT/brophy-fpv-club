@@ -1156,6 +1156,30 @@ document.addEventListener('site:pilot', function (){
   if (DATA){ renderStats(); renderBoard(); renderLadder(); renderCerts(); }
 });
 
+/* 2026-10-21: console approvals, live from the club API, merged into the snapshot's
+   badge lists (forward-only: nothing here removes a badge). The kiosk publishes the
+   snapshot only when it is on and synced - it was five days behind - and it cannot
+   carry a badge id it does not know yet, so without this the certification section
+   lagged every approval. Matched by slug, like every page. */
+function slugOf(n){ return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+var AWARDS = null;
+function mergeAwards(){
+  if (!DATA || !AWARDS) return;
+  (DATA.pilots || []).forEach(function (p){
+    var a = AWARDS[slugOf(p.name)]; if (!a) return;
+    p.badges = p.badges || [];
+    a.badges.forEach(function (id){ if (p.badges.indexOf(id) < 0) p.badges.push(id); });
+  });
+}
+function loadAwards(){
+  fetch('https://brophy-fpv-club-api.netlify.app/api/award?all=1', { cache: 'no-store' })
+    .then(function (r){ return r.json(); })
+    .then(function (j){
+      if (!j || !j.pilots) return;
+      AWARDS = j.pilots; mergeAwards();
+      if (DATA){ renderBoard(); renderLadder(); renderCerts(); }
+    }).catch(function (){});
+}
 function load(refresh){
   /* cache-bust so a CDN edge cache can never pin an old leaderboard */
   fetch('data.json?t=' + Date.now(), { cache: 'no-store' })
@@ -1166,7 +1190,8 @@ function load(refresh){
     .then(function(json){
       if (window.mergePilots) window.mergePilots(json);   // one row per pilot (pilots.js)
       var first = !DATA;
-      DATA = json;
+      DATA = json; mergeAwards();
+      if (first || !refresh) loadAwards();
       /* The minute refresh redraws the numbers but not the reel: rebuilding
          the iframes every minute would restart whatever video is playing. */
       if (first || !refresh){ pickReel(); renderAll(); return; }
