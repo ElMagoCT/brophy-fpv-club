@@ -332,7 +332,7 @@ def render(s, fs, prev_count):
   }}
 
   function run() {{
-    var ks = [1, .96, .92, .88, .84], r = null;
+    var ks = [1, .96, .92, .88, .84, .80, .76], r = null;   // .80/.76 added 2026-10-20 for the six-card Tier 2 sheet
     for (var i = 0; i < ks.length; i++) {{ r = layout(ks[i], GAP); if (r.over <= 0) break; }}
     if (r.over <= 0 && r.spare > 40) {{                    // spread the spare height between the cards
       var g2 = GAP + Math.min(130, Math.floor(r.spare / Math.max(1, r.per)));

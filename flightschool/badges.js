@@ -128,7 +128,7 @@
 
   var B = [
     // ---------------- Tier 0 · Simulator -> checkpoint Meteor 75 Pro Certification (id tiny-whoop)
-    // Just the drone things (2026-10-20): Battery Care, Building, Betaflight, Line of Sight,
+    // Just the drone things (2026-10-20): Battery Care, Building, Betaflight Intro, Line of Sight,
     // Sim Flight (practice first, 5 h suggested), then the checkpoint flight. Safe Flight is
     // part of Flight Clearance now.
     { id: 'proficient-flight', tier: 't0', track: 'flight', type: 'witnessed', name: 'Sim Flight', est: 'one flight · about 5 h of sim practice first is typical', rule: ONE_GO,
@@ -144,10 +144,10 @@
     { id: 'building', tier: 't0', track: 'build', type: 'bench', name: 'Building', est: 'about 15 min',
       do: 'Rebuild a disassembled Meteor 75 Pro.', why: 'Members can fix what they break.',
       steps: [{ t: 'Parts check: frame, FC/ESC, motors, RX, VTX, camera, antenna, props, strap', v: VID.meteor }, 'Motors on - right screw length, nothing touching a winding', 'Plug in the motors', 'Assemble it and put the canopy on', 'Plug in the canopy', 'Test: motors beep, camera turns on', { t: 'Props: each matches its motor\'s spin (props in or out, as set in Betaflight), leading edge first', v: VID.motors }, PHOTO] },
-    { id: 'betaflight', tier: 't0', track: 'build', type: 'bench', name: 'Betaflight', est: 'about 10 min',
-      do: 'Motors, OSD, rates, arm switch, then bind.', why: 'Most “won’t fly” problems get solved here.',
-      steps: ['Props OFF, battery OUT, USB only', 'Connect - the kiosk reads the board', 'Flash the practice config (a lightly messed-up drone)', 'Receiver: protocol', 'Modes: ARM and angle; set the rates', { t: 'Motors: order and direction (props off!)', v: VID.motors }, 'OSD: battery usage and amp draw, positioned', 'Check my work - the kiosk compares with the stock config', 'Bind last (plug/unplug method)', PHOTO],
-      note: 'Practised on the club Meteor 75 Pro at the kiosk, right after Building.' },
+    { id: 'betaflight-intro', tier: 't0', track: 'build', type: 'bench', name: 'Betaflight Intro', est: 'about 5 min',
+      do: 'Calibrate the accelerometer and bind the receiver.', why: 'The two things every Meteor needs before its first flight.',
+      steps: ['Props OFF, battery OUT, USB only', 'Connect - the kiosk reads the board', 'Setup tab: calibrate the accelerometer, the drone flat and still', 'Bind the receiver (plug/unplug method)', PHOTO],
+      note: 'Practised on the club Meteor 75 Pro at the kiosk, right after Building. The rest of Betaflight is a Tier 2 badge (2026-10-20).' },
     { id: 'line-of-sight', tier: 't0', track: 'flight', type: 'witnessed', name: 'Line of Sight', est: 'about 15 min', rule: ONE_GO,
       do: 'No goggles: fly a whoop in angle mode.', why: 'If video cuts out you can still land.',
       reqs: [{ t: 'Take-off to head height', lessons: ['gs-los-01'], v: VID.los },
@@ -165,6 +165,10 @@
     { id: 'soldering', tier: 't1', track: 'build', type: 'bench', name: 'Soldering', est: 'about 30 min',
       do: 'Solder an ESC and motors, then spin them up.', why: 'Core electronics skill that transfers to robotics.',
       steps: ['Iron at the right temperature, tip tinned', { t: 'Tin the pad, tin the wire, join', v: VID.solder }, 'ESC pads: shiny, no bridges', 'Motor wires: all three, trimmed', 'Spin each motor in Betaflight (props off)', PHOTO] },
+    { id: 'betaflight', tier: 't1', track: 'build', type: 'bench', name: 'Betaflight', est: 'about 10 min',
+      do: 'Motors, OSD, rates and the arm switch on a messed-up config.', why: 'Most “won’t fly” problems get solved here.',
+      steps: ['Props OFF, battery OUT, USB only - connect, the kiosk reads the board', 'Flash the practice config (a lightly messed-up drone)', 'Receiver protocol; modes: ARM and angle; set the rates', { t: 'Motors: order and direction (props off!)', v: VID.motors }, 'OSD: battery usage and amp draw, positioned', 'Check my work - the kiosk compares with the stock config', PHOTO],
+      note: 'On the club Meteor 75 Pro at the kiosk. Betaflight Intro (Tier 1 path) covered the accelerometer and binding.' },
     { id: 'electrical-components', quiz: 'gs-elc-quiz', tier: 't1', track: 'know', type: 'knowledge', name: 'Electrical Components', est: 'about 10 min',
       do: 'Choose motors, ESCs, batteries and props that match.', why: 'Why small and big quads need different parts.',
       lessons: [{ id: 'gs-elc-01', t: 'The six parts' }, { id: 'gs-elc-02', t: 'Motors, props and thrust', drill: true }, { id: 'gs-elc-03', t: 'Matching motor, ESC, prop and battery' }, { id: 'gs-elc-04', t: 'Why a 3-inch and a 5-inch differ' }] },
@@ -276,6 +280,7 @@
     'safe-flight': [{ tip: 'When you are not sure something is allowed, ask a mentor first.' }, FAA, { t: 'Academy of Model Aeronautics safety code (PDF)', u: 'https://www.modelaircraft.org/sites/default/files/documents/100.pdf' }],
     'battery-care': [{ tip: 'Write the date on a pack when it goes to storage.' }, { tip: 'Land at 3.5 V a cell, not at the beep - packs last much longer.' }, { t: 'Oscar Liang: LiPo battery guide', u: 'https://oscarliang.com/lipo-battery-guide/' }],
     'building': [{ tip: 'Lay the parts out in order on a tray first; tiny screws love carpet.' }, { tip: 'Prop direction: the leading edge - the thicker, rounded edge of each blade - goes first in the direction the motor spins. Diagonal props match; neighbours are mirror images. A prop on backwards makes the quad flip on take-off.' }, { tip: 'Take a photo before you unplug anything - it is your wiring diagram.' }, { t: 'BetaFPV Meteor75 Pro (manual and parts)', u: 'https://betafpv.com/products/meteor75-pro-brushless-whoop-quadcopter' }, { t: 'Oscar Liang: how to build an FPV drone', u: 'https://oscarliang.com/how-to-build-fpv-drone/' }],
+    'betaflight-intro': [{ tip: 'Calibrate on a flat table, drone still - the goggles horizon depends on it.' }, { t: 'BetaFPV: binding the Meteor', u: 'https://support.betafpv.com/hc/en-us' }],
     'betaflight': [{ tip: 'Save a backup ("diff all") before you change anything.' }, BF, { t: 'Betaflight in the browser (app.betaflight.com)', u: 'https://app.betaflight.com' }, { t: 'Oscar Liang: Betaflight OSD setup', u: 'https://oscarliang.com/betaflight-osd/' }],
     'line-of-sight': [{ tip: 'Keep the nose pointed away from you at first, so left is left.' }, { tip: 'Small stick moves; a whoop answers fast.' }, { t: 'Oscar Liang: from angle mode to acro', u: 'https://oscarliang.com/tiny-whoop/' }],
     'tiny-whoop': [{ tip: 'Fly the same figure-eight in the sim the day before.' }, { tip: 'If it goes wrong, disarm - a whoop falling is fine.' }, LEARN],

@@ -761,7 +761,7 @@
   function loadRoster() {
     fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
       ROSTER = window.mergePilots ? window.mergePilots(d) : d;
-      setTimeout(drawBulkSim, 0);
+      setTimeout(drawBulkSim, 0); setTimeout(drawBulkBf, 0);
       var dl = el('apPilots'); dl.textContent = '';
       (d.pilots || []).forEach(function (p) { var o = document.createElement('option'); o.value = p.name; dl.appendChild(o); });
       var box = el('apRoster'); box.textContent = '';
@@ -813,6 +813,33 @@
       });
     }, Promise.resolve()).then(function () {
       el('bulkSimMsg').textContent = 'Approved: ' + (done.join(', ') || 'none') + (failed.length ? ' · Failed: ' + failed.join(', ') : '') + '. The kiosks apply them on their next sync.';
+    });
+  };
+
+  // ------------------------------------------- bulk: Betaflight Intro for Betaflight holders (2026-10-20)
+  var BULK_BF = [];
+  function drawBulkBf() {
+    var box = el('bulkBfList'); if (!box || !ROSTER) return;
+    BULK_BF = (ROSTER.pilots || []).filter(function (p) {
+      var b = p.badges || []; return b.indexOf('betaflight') >= 0 && b.indexOf('betaflight-intro') < 0;
+    }).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+    box.textContent = BULK_BF.length ? BULK_BF.map(function (p) { return p.name; }).join(' · ') : 'Everyone who holds Betaflight already holds Betaflight Intro.';
+    el('bulkBfGo').disabled = !BULK_BF.length;
+  }
+  el('bulkBfGo').onclick = function () {
+    if (!S.key) { el('bulkBfMsg').textContent = 'Sign in with the instructor password first.'; return; }
+    if (!BULK_BF.length) return;
+    if (!window.confirm('Approve Betaflight Intro for ' + BULK_BF.length + ' pilot' + (BULK_BF.length === 1 ? '' : 's') + '?\n\n' + BULK_BF.map(function (p) { return p.name; }).join(', '))) return;
+    var btn = this, done = [], failed = [];
+    btn.disabled = true; el('bulkBfMsg').textContent = 'Filing…';
+    BULK_BF.reduce(function (chain, p) {
+      return chain.then(function () {
+        return fileAward(p.name, 'betaflight-intro', 'earned', 'held Betaflight before the split (2026-10-20)', ['console'])
+          .then(function () { done.push(p.name); }, function (e) { failed.push(p.name + ' (' + ((e && e.message) || 'error') + ')'); })
+          .then(function () { el('bulkBfMsg').textContent = 'Filed ' + done.length + ' of ' + BULK_BF.length + '…'; });
+      });
+    }, Promise.resolve()).then(function () {
+      el('bulkBfMsg').textContent = 'Approved: ' + (done.join(', ') || 'none') + (failed.length ? ' · Failed: ' + failed.join(', ') : '') + '. The kiosks apply them on their next sync.';
     });
   };
 
