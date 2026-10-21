@@ -19,7 +19,7 @@ and makes one loop in the biggest gap.
 
 Checkpoints (2026-10-07): a tier's badges are the PREREQUISITES of the next
 tier's checkpoint. Each checkpoint is NOT a trail card: it is a full-width box
-on the sheet of the tier it opens - Tiny Whoop at the foot of sheet 2, the
+on the sheet of the tier it opens - the Meteor 75 Pro Certification at the foot of sheet 2, the
 Pavo 20 Pro Flight at the head of sheet 3, Event Pilot as the summit of sheet
 4 - with a tick box per prerequisite and a big check for when all are done.
 
@@ -55,8 +55,8 @@ SHEETS = [
        gear='FPV sim rigs in the IC · Liftoff · Micro Drones · SkyDive · FPV Labs · PicaSim',
        start=('START', 'Add your name at the kiosk'),
        sticker='Bonus Challenge: do this all in one CP and get to fly!',   # 2026-10-15, Micah
-       gate=('NEXT', 'Tier 1 checkpoint', 'FPV Certification Test · sheet 2')),
-  dict(file='04-map-tier1', sheet=2, tier='t1', name='FPV CERTIFICATION TEST', color='var(--violet)', dir='up',
+       gate=('NEXT', 'Tier 1 checkpoint', 'Meteor 75 Pro Certification · sheet 2')),
+  dict(file='04-map-tier1', sheet=2, tier='t1', name='METEOR 75 PRO<br>CERTIFICATION', long=True, color='var(--violet)', dir='up',   # two short lines: the full name is too wide for one
        gear='Meteor 75 Pro · sub-250 g · safe indoors',
        checkpoint='t0',
        gate=('NEXT', 'Tier 2 checkpoint', 'Pavo 20 Pro Flight · sheet 3')),
@@ -186,7 +186,7 @@ def render(s, fs, prev_count):
     title_tier = 'Tier %d' % tier_n
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>Pilot Path — sheet {s['sheet']} of 4 — {title_tier} {s['name'].title()}</title>
+<title>Pilot Path — sheet {s['sheet']} of 4 — {title_tier} {s['name'].replace('<br>', ' ').title()}</title>
 <link rel="stylesheet" href="poster.css">
 <link rel="stylesheet" href="map.css">
 </head>
@@ -195,7 +195,7 @@ def render(s, fs, prev_count):
 <div class="sheet{' electives' if electives else ''}" style="--tier:{s['color']}" data-dir="{s['dir']}" data-sheet="{s['sheet']}">
   <div class="stamp"><b>BROPHY</b>FPV CLUB<br>PILOT PATH</div>
   <div class="eyebrow"><h2>The pilot path &middot; sheet {s['sheet']} of 4 &middot; badges unlock the gear</h2><span class="rule"></span></div>
-  <div class="tierhead"><div class="tn">TIER {tier_n}</div><div class="tname">{s['name']}</div></div>
+  <div class="tierhead"><div class="tn">TIER {tier_n}</div><div class="tname{' long' if s.get('long') else ''}">{s['name']}</div></div>
   <div class="facts">
     <div class="f"><div class="k">You fly</div><div class="v">{esc(s['gear'])}</div></div>
     <div class="f"><div class="k">To get here</div><div class="v">{esc(prereq)}</div>{'<div class="bonus">' + esc(s['sticker']) + '</div>' if s.get('sticker') else ''}</div>
@@ -209,6 +209,7 @@ def render(s, fs, prev_count):
   </div>
 
   <div class="legend">{legend}<span class="how"><b>Quiz</b> badges: pass at {fs['PASS']} %, no sign-off &middot; <b>Bench</b> and <b>witnessed</b> badges: a mentor who holds the badge signs it off &middot; demonstration, not attendance</span></div>
+  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; FAA TRUST &middot; Safe Flight &middot; the Pilot Agreement (signed with a parent) &middot; your Drone Portfolio &middot; then a request on Brophy Flight 24 h before every flight &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
   <div class="qrmini qr"><svg viewBox="0 0 370 370"><use href="qr-path.svg#q"/></svg><div class="say"><b>Full badge list</b>scan</div></div>
   <div class="foot"><span><b>Brophy FPV Club</b> &middot; Pilot Path &middot; Tier {tier_n} of 3</span><span>mtucker27@ for questions</span></div>
 </div>

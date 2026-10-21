@@ -7,6 +7,7 @@
 .tierhead .tn{font-family:var(--mono);font-size:44px;letter-spacing:.1em;color:var(--tier);
   border:3px solid var(--tier);border-radius:10px;padding:4px 18px;line-height:1.1}
 .tierhead .tname{font-family:var(--sketch);font-weight:700;font-size:96px;line-height:.9;letter-spacing:.5px}
+.tierhead .tname.long{font-size:48px;line-height:.95}   /* 2026-10-20: "Meteor 75 Pro Certification" on two lines, same height as one big line */
 
 .facts{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:12px;margin-top:22px}
 .facts .f{background-color:var(--white);border:1.5px solid var(--line-hard);border-radius:8px;padding:10px 14px}
@@ -90,13 +91,18 @@
   border:1.5px dashed var(--line-hard);border-radius:8px;padding:10px 14px;background-color:var(--paper)}
 .p107 b{display:block;font-family:var(--mono);font-size:13px;letter-spacing:.24em;color:var(--ink);margin-bottom:4px}
 
-.legend{position:absolute;left:56px;right:230px;bottom:96px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;
+.legend{position:absolute;left:56px;right:230px;bottom:112px;display:flex;flex-wrap:wrap;gap:8px 20px;align-items:center;
   font-family:var(--mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 .legend span{display:flex;align-items:center;gap:7px}
 .legend i{width:12px;height:12px;border-radius:3px;display:inline-block}
 .legend .how{font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;color:var(--ink);width:100%;display:block}
 .legend .how b{font-weight:600}
-.qrmini{position:absolute;right:56px;bottom:96px}
+.qrmini{position:absolute;right:56px;bottom:112px}
+/* 2026-10-20: Flight Clearance (the Brophy Drone Certification) is required to fly at
+   Brophy and lives on the website, not on these sheets - one strip above the foot */
+.clearance{position:absolute;left:56px;right:56px;bottom:64px;border-left:4px solid var(--rust);padding:3px 0 3px 10px;font-family:var(--body);font-size:12.5px;line-height:1.3;color:var(--ink)}
+.clearance b{color:var(--rust);font-weight:600}
+.clearance .url{font-family:var(--mono);font-size:11.5px;letter-spacing:.02em;color:var(--ink-soft)}
 .qrmini svg{width:96px;height:96px}
 .qrmini .say{font-size:12px}
 .qrmini .say b{font-size:14px}
