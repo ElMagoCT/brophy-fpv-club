@@ -3,13 +3,13 @@
    ---------------------------------------------------------------------------
    Two groups.
 
-   GSPanels   the drills that are not flight simulations - go/no-go sorting,
+   GSPanels   the drills that aren\'t flight simulations - go/no-go sorting,
               the motor picker, battery arithmetic, channel assignment. Same
               contract as GSDrills: (root, ctx, opt) -> { stop() }.
 
    GSWidgets  the interactive pieces embedded INSIDE reading lessons. These
-              are not scored and never call finish() - they exist because a
-              slider teaches voltage sag and a paragraph does not. Contract:
+              aren\'t scored and never call finish() - they exist because a
+              slider teaches voltage sag and a paragraph doesn\'t. Contract:
               (root) -> { stop() }.
    =========================================================================== */
 
@@ -137,18 +137,18 @@ var GSPanels = (function(){
      ====================================================================== */
   /* TWO PILES, FIVE CARDS, BLACK AND WHITE (Micah, 2026-10-10).
      Three piles (fly / not yet / no fly) were too ambiguous - a swollen pack
-     is "no fly" for that pack but "not yet" for the session - so it is now
+     is "no fly" for that pack but "not yet" for the session - so it\'s now
      FLY or NOT YET, and every card has one clear answer. Any wind is "not
      yet". Five cards a run: two FLY and three NOT YET, shuffled. */
   var SCENARIOS = [
     { text:'One pack in the bag is visibly swollen. The shrink wrap is tight and domed.',
       a:1, why:'That pack never flies again - swap to a good one, then go. A puffed cell has already vented gas inside itself.' },
     { text:'The flags on the field are moving in a steady breeze.',
-      a:1, why:'Any wind is "not yet". Wait for it to drop, or ask a mentor whether it is fine for what you are flying.' },
+      a:1, why:'A steady breeze is "not yet" for a whoop. Wait for it to drop, or ask a mentor whether it\'s fine for what you\'re flying.' },
     { text:'Your video is clean everywhere except the far end of the field, where it picks up light static.',
-      a:0, why:'That is analog working exactly as designed, and it has just told you where your range ends. Nothing needs fixing. Fly, and treat that spot as the boundary.' },
-    { text:'Two others are already flying on Raceband R1 and R5. You are set to R8.',
-      a:0, why:'R8 is 5917 MHz, R5 is 5806 and R1 is 5658 - your nearest neighbour is 111 MHz away, which is plenty. Go.' },
+      a:0, why:'That\'s analog working exactly as designed, and it has just told you where your range ends. Nothing needs fixing. Fly, and treat that spot as the boundary.' },
+    { text:'Two others are already flying on Raceband R1 and R5. You\'re set to R8.',
+      a:0, why:'R8 is 5917 MHz, R5 is 5806 and R1 is 5658 - your nearest neighbor is 111 MHz away, which is plenty. Go.' },
     { text:'Your pack is charged, the props are clean, your spotter is ready and the area is clear.',
       a:0, why:'Nothing to change. Part of pre-flight is being able to say "this is fine" and mean it. Call TAKEOFF and go.' },
     { text:'Indoors, calm air, a full pack, and your spotter has just said the room is clear.',
@@ -156,14 +156,14 @@ var GSPanels = (function(){
     { text:'One prop has a small nick out of the trailing edge.',
       a:1, why:'Swap it - two minutes - rather than fly a vibration into your gyro. Then go.' },
     { text:'Somebody is walking a dog across the flying area.',
-      a:1, why:'Wait until they are out of the area. You never fly over people, and you land if somebody walks in.' },
+      a:1, why:'Wait until they\'re out of the area. You don\'t fly over people, and you land if somebody walks in.' },
     { text:'Another pilot has just landed and is walking out to collect their quad.',
       a:1, why:'Nobody flies while somebody is out there. Wait for them to come back, then go.' },
-    { text:'An aircraft you do not recognise is circling low over the field.',
-      a:1, why:'You always give way. Wait on the ground until it has gone.' },
+    { text:'An aircraft you don\'t recognize is circling low over the field.',
+      a:1, why:'Crewed aircraft always get the air. Wait on the ground until it has gone.' },
     { text:'Your goggles have fogged and you can make out maybe half the picture.',
       a:1, why:'Wipe them, then go. Flying on half a picture is how people fly into whatever was in the other half.' },
-    { text:'You are in goggles and your spotter has just left.',
+    { text:'You\'re in goggles and your spotter has just left.',
       a:1, why:'No spotter, no goggle flight. Wait until somebody else takes the job.' }
   ];
   function pickFive(){
@@ -181,7 +181,7 @@ var GSPanels = (function(){
       unit:'SCENARIO',
       items: pickFive(),
       pass:80,
-      outro:'The mistake is almost never putting something in the wrong pile. It is not sorting at all, and flying because the pack is charged and everyone is waiting.',
+      outro:'The mistake is almost never putting something in the wrong pile. It\'s not sorting at all, and flying because the pack is charged and everyone is waiting.',
       regenerate:pickFive,
       extra:function(c,t){ return { scenariosRight:c, scenariosTotal:t }; }
     });
@@ -192,15 +192,15 @@ var GSPanels = (function(){
   /* ======================================================================
      gs-ele-02 - MOTOR PICKER
      The spin directions are drawn on the diagram, so every answer is
-     derivable rather than memorised.
+     derivable rather than memorized.
      ====================================================================== */
   function motors(root, ctx){
     /* Layout, viewed from above, Betaflight numbering:
          1 rear-right   2 front-right   3 rear-left   4 front-left
        Spin, as DRAWN on the diagram:
-         2 and 3 clockwise, 1 and 4 counter-clockwise.
+         2 and 3 clockwise, 1 and 4 counterclockwise.
        A prop pushes the airframe the opposite way to its own rotation, so
-       speeding up the counter-clockwise pair (1,4) yaws the airframe
+       speeding up the counterclockwise pair (1,4) yaws the airframe
        clockwise - to the right. */
     var POS = {
       1:{ x:206, y:206, spin:'ccw' },
@@ -214,8 +214,8 @@ var GSPanels = (function(){
       { ask:'ROLL LEFT',     want:[1,2],     why:'More thrust on the right side tips it to the left. Motors 1 and 2 are the right pair.' },
       { ask:'PITCH FORWARD', want:[1,3],     why:'More thrust at the BACK tips the nose down and it moves forward. Motors 1 and 3 are the rear pair.' },
       { ask:'PITCH BACK',    want:[2,4],     why:'More thrust at the front tips the nose up and it moves backward. Motors 2 and 4 are the front pair.' },
-      { ask:'YAW RIGHT',     want:[1,4],     why:'A prop pushes the airframe the opposite way to its own spin. 1 and 4 turn counter-clockwise on the diagram, so speeding them up twists the airframe clockwise - to the right.' },
-      { ask:'YAW LEFT',      want:[2,3],     why:'2 and 3 turn clockwise, so speeding them up twists the airframe counter-clockwise - to the left.' }
+      { ask:'YAW RIGHT',     want:[1,4],     why:'A prop pushes the airframe the opposite way to its own spin. 1 and 4 turn counterclockwise on the diagram, so speeding them up twists the airframe clockwise - to the right.' },
+      { ask:'YAW LEFT',      want:[2,3],     why:'2 and 3 turn clockwise, so speeding them up twists the airframe counterclockwise - to the left.' }
     ];
 
     var order = shuffle(ROUNDS), idx = 0, correct = 0, sel = {}, locked = false;
@@ -333,7 +333,7 @@ var GSPanels = (function(){
       var card = h('div','scorecard');
       card.appendChild(h('div','bigscore ' + (score>=70?'pass':'fail'), String(score)));
       card.appendChild(h('div','verdict ' + (score>=70?'pass':'fail'), correct + ' of ' + order.length + ' right'));
-      var p = h('p','','Roll and pitch are about which SIDE gets more thrust. Yaw is the only one that needs the spin directions - and it is the one that catches everybody out.');
+      var p = h('p','','Roll and pitch are about which SIDE gets more thrust. Yaw is the only one that needs the spin directions - and it\'s the one that catches everybody out.');
       p.style.cssText = 'margin-top:16px;font-weight:400;font-size:17px;line-height:1.55;color:var(--ink)';
       card.appendChild(p);
       var bs = h('div',''); bs.style.cssText='display:flex;gap:12px;justify-content:center;margin-top:22px';
@@ -352,7 +352,7 @@ var GSPanels = (function(){
 
   /* ======================================================================
      gs-ele-04 - BATTERY MATH
-     Numbers are generated, so there is nothing to memorise.
+     Numbers are generated, so there\'s nothing to memorize.
      ====================================================================== */
   function batteryMath(root, ctx){
 
@@ -405,7 +405,7 @@ var GSPanels = (function(){
 
       /* 3 - pack choice for a peak draw.
          Built from the full grid of realistic mAh and C values rather than a
-         short hand-written candidate list, because a fixed list cannot
+         short hand-written candidate list, because a fixed list can\'t
          guarantee one sufficient pack AND three insufficient ones for every
          value of `need` - at the low end there were only two packs weak
          enough, and the question rendered with two options. */
@@ -449,12 +449,12 @@ var GSPanels = (function(){
 
     return runCards(root, ctx, {
       briefTitle:'Three sums',
-      briefBody:'The numbers are generated fresh every attempt, so there is nothing to learn by heart. Work them.',
+      briefBody:'The numbers are generated fresh every attempt, so there\'s nothing to learn by heart. Work them.',
       unit:'PROBLEM',
       items: makeItems(),
       regenerate: makeItems,
       pass:67,
-      outro:'You will do these three sums for as long as you fly. Usable capacity is 80% of the pack, maximum current is mAh over 1000 times C, and a pack asked for more than that does not last.',
+      outro:'You\'ll do these three sums for as long as you fly. Usable capacity is 80% of the pack, maximum current is mAh over 1000 times C, and a pack asked for more than that doesn\'t last.',
       extra:function(c,t){ return { mathRight:c, mathTotal:t }; }
     });
   }
@@ -465,7 +465,7 @@ var GSPanels = (function(){
      Part B: three questions on power and the antenna rule.
      ====================================================================== */
   function channels(root, ctx){
-    /* Real Raceband centre frequencies, MHz. 37 MHz apart. */
+    /* Real Raceband center frequencies, MHz. 37 MHz apart. */
     var R = [5658,5695,5732,5769,5806,5843,5880,5917];
     var GAP = 55;          /* leave a gap: adjacent is 37, so skip one */
     var ROUNDS = 5;
@@ -546,7 +546,7 @@ var GSPanels = (function(){
       var why = h('div','why' + (ok ? ' ok' : ''),
         '<b>' + (ok ? 'Clear' : 'Too close') + '</b> Your pick is ' + nearestPick +
         ' MHz from the nearest pilot. ' +
-        (ok ? 'That is enough separation for both of you to keep a picture.'
+        (ok ? 'That\'s enough separation for both of you to keep a picture.'
             : 'Under ' + GAP + ' MHz and the two transmitters bleed into each other. Amber cells above are the ones that were also too close.'));
       why.style.cssText = 'max-width:720px;margin:18px auto 0';
       area.appendChild(why);
@@ -563,14 +563,14 @@ var GSPanels = (function(){
     }
 
     var QS = [
-      { text:'You are about to power up a video transmitter and you notice the antenna is not fitted. What happens if you plug the battery in?',
-        opts:['Nothing, it just has no range','The transmitter cooks itself within seconds','It falls back to 25 mW','The goggles will not find it'],
-        a:1, why:' With no antenna the output has nowhere to go, reflects back into the amplifier, and destroys it. Antenna first, battery second - every time.' },
+      { text:'You\'re about to power up a video transmitter and you notice the antenna isn\'t fitted. What happens if you plug the battery in?',
+        opts:['Nothing, it just has no range','The transmitter cooks itself within seconds','It falls back to 25 mW','The goggles won\'t find it'],
+        a:1, why:' With no antenna the output has nowhere to go, reflects back into the amplifier, and destroys it. Antenna first, battery second.' },
       { text:'Four of you want to fly at once. Which band and why?',
-        opts:['Band A, it is the default','Raceband, its channels are spaced further apart','Whichever band has the lowest frequency','Any band, as long as the channels differ'],
+        opts:['Band A, it\'s the default','Raceband, its channels are spaced further apart','Whichever band has the lowest frequency','Any band, as long as the channels differ'],
         a:1, why:' The other bands pack their channels too close together to run four aircraft. Raceband exists precisely for this.' },
       { text:'Mid-flight your picture tears into a second, unfamiliar image. What has just happened, and what do you do?',
-        opts:['Your VTX is failing - land','Somebody powered up on or near your channel - land and sort out channels on the ground','Your goggles lost diversity - switch antennas','You are at the edge of range - fly back'],
+        opts:['Your VTX is failing - land','Somebody powered up on or near your channel - land and sort out channels on the ground','Your goggles lost diversity - switch antennas','You\'re at the edge of range - fly back'],
         a:1, why:' Two transmitters close in frequency destroy each other\'s picture. Neither of you can fly. Land, and assign channels out loud before anyone arms.' }
     ];
 
@@ -710,7 +710,7 @@ var GSWidgets = (function(){
     w.appendChild(note);
 
     function classify(v){
-      if(v >= 4.15) return { c:'s-full', t:'FULL - fly it, but do not store it here' };
+      if(v >= 4.15) return { c:'s-full', t:'FULL - fly it, but don\'t store it here' };
       if(v >= 3.75) return { c:'s-good', t:'GOOD - fly, and this is storage territory too' };
       if(v >= 3.50) return { c:'s-land', t:'LAND NOW - it goes on the charger, not back up' };
       return          { c:'s-dead', t:'DAMAGE - every second below 3.00 costs capacity' };
@@ -734,7 +734,7 @@ var GSWidgets = (function(){
 
     /* The sag animation only exists while punch is decaying, which is a second
        or so after the button. It used to hold a requestAnimationFrame loop open
-       for the whole lesson to watch a variable that is almost always 0, so the
+       for the whole lesson to watch a variable that\'s almost always 0, so the
        loop now starts on the punch and retires itself when the decay is done. */
     function tick(){
       if(punch > 0){
@@ -838,7 +838,7 @@ var GSWidgets = (function(){
         }
       }
       A.st.textContent = sig > 0.75 ? 'clean' :
-                         sig > 0.45 ? 'grain - you are getting far out' :
+                         sig > 0.45 ? 'grain - you\'re getting far out' :
                          sig > 0.18 ? 'heavy static - turn back now' :
                                       'snow, but you can still fly it home';
     }
@@ -879,18 +879,18 @@ var GSWidgets = (function(){
       }
     }
 
-    /* THE EXPENSIVE ONE, and why it is throttled.
+    /* THE EXPENSIVE ONE, and why it\'s throttled.
 
        Each pane is a 340x200 getImageData / per-pixel loop / putImageData pass.
        At 60 fps that was two full passes over 68000 pixels and roughly four
        million Math.random() calls a second - permanently, for as long as the
-       lesson was open, on a Ryzen 5 that is also running a simulator.
+       lesson was open, on a Ryzen 5 that\'s also running a simulator.
 
        Two changes. It runs at ~15 fps, which is plenty for static to look like
        static and is what analog noise wants anyway. And it only repaints when
        the picture can actually differ from the one already on screen: analog is
        a fixed image once noise is negligible, digital is a fixed image whenever
-       it is clean or fully black. Move the slider and both wake up. */
+       it\'s clean or fully black. Move the slider and both wake up. */
     var FPS = 15, FRAME_MS = 1000 / FPS;
     var lastPaint = 0, lastSig = -1;
 
@@ -902,9 +902,9 @@ var GSWidgets = (function(){
       var moved = (sig !== lastSig);
       lastSig = sig;
 
-      /* analog only animates while there is visible grain to shimmer */
+      /* analog only animates while there\'s visible grain to shimmer */
       if(moved || (1 - sig) > 0.03) drawAnalog();
-      /* digital is a still image unless it is in the blocky band */
+      /* digital is a still image unless it\'s in the blocky band */
       if(moved || (sig >= 0.32 && sig < 0.58)) drawDigital();
     }
     raf = requestAnimationFrame(tick);
@@ -1027,7 +1027,7 @@ var GSWidgets = (function(){
          rebuilding identical innerHTML sixty times a second */
       var msg = pct > 70
         ? 'Strong. The patch is pointed where the aircraft actually is.'
-        : (inCone ? 'In the cone but a long way out.' : 'Outside the cone - you are running on the omni alone.');
+        : (inCone ? 'In the cone but a long way out.' : 'Outside the cone - you\'re running on the omni alone.');
       if(msg !== lastMsg){ lastMsg = msg; readout.textContent = msg; }
 
       raf = requestAnimationFrame(tick);

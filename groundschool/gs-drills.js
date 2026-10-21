@@ -16,10 +16,10 @@
 
    finish() is called exactly once, with a score 0-100 and an optional object
    of extra fields. Those extras are written into the student's lesson record -
-   the bridge preserves fields it does not recognise, so bestLevel and
+   the bridge preserves fields it doesn\'t recognize, so bestLevel and
    bestHoldPct survive without a line of PowerShell changing.
 
-   A drill must call ctx.finish() or the lesson cannot complete. If a student
+   A drill must call ctx.finish() or the lesson can\'t complete. If a student
    walks away mid-drill, stop() tears down the animation frame and the app
    banks the time with the lesson still in-progress.
    =========================================================================== */
@@ -37,7 +37,7 @@ var GSDrills = (function(){
     return e;
   }
 
-  /* A canvas that is crisp on the kiosk's 125% scaling. The logical drawing
+  /* A canvas that\'s crisp on the kiosk's 125% scaling. The logical drawing
      size is fixed so every drill can use plain world units; the backing store
      is sized to the device. */
   function makeStage(parent, logicalW, logicalH){
@@ -271,8 +271,8 @@ var GSDrills = (function(){
     g.fillText('YOU', x, y+22);
   }
 
-  function label(g, x, y, text, colour, size, align){
-    g.fillStyle = colour || INKS;
+  function label(g, x, y, text, color, size, align){
+    g.fillStyle = color || INKS;
     g.font = (size||11) + 'px "Share Tech Mono", monospace';
     g.textAlign = align || 'left';
     g.fillText(text, x, y);
@@ -325,7 +325,7 @@ var GSDrills = (function(){
 
     var sticksVis = makeSticks();
     brief(wrap, 'Stick check',
-      'The prompt names a movement. Make it, and hold it for a moment. If your transmitter is plugged in this also proves the channels are mapped the way you think they are.',
+      'The prompt names a movement. Make it, and hold it for a moment. If your transmitter is plugged in this also proves the channels are mapped the way you think they\'re.',
       sticksVis.el);
 
     var hud = makeHud(wrap, [
@@ -430,7 +430,7 @@ var GSDrills = (function(){
             } else {
               showOver(stage, {
                 title:'Calibration failed', cls:'lose',
-                sub:'Two channels came out on the same axis. Centre every stick, then try again.',
+                sub:'Two channels came out on the same axis. Center every stick, then try again.',
                 buttons:[{ label:'Try again', cls:'go', onClick:startCal },
                          { label:'Use the keyboard', onClick:startRun }]
               });
@@ -531,8 +531,8 @@ var GSDrills = (function(){
       t = 0; inBand = 0; running = true;
       hideOver(stage);
       ctx.hint(phase === 0
-        ? 'ANGLE mode - centre the stick and it levels itself'
-        : 'RATE mode - centring the stick only stops the rotation');
+        ? 'ANGLE mode - center the stick and it levels itself'
+        : 'RATE mode - centering the stick only stops the rotation');
     }
 
     function endPhase(){
@@ -542,14 +542,14 @@ var GSDrills = (function(){
       if(phase === 0){
         showOver(stage, {
           title:'Angle mode: ' + pct + '% level',
-          sub:'Now the same thing with no self-levelling. Centring the stick will stop it rotating - it will not bring it back.',
+          sub:'Now the same thing with no self-leveling. Centering the stick will stop it rotating - it won\'t bring it back.',
           buttons:[{ label:'Switch to rate mode', cls:'go', onClick:function(){ phase=1; startPhase(); } }]
         });
       } else {
         var score = Math.round(results[0]*0.35 + results[1]*0.65);
         showOver(stage, {
           title:'Both modes flown', cls:'win', big:score,
-          sub:'Angle ' + results[0] + '% level, rate ' + results[1] + '% level. Rate is weighted higher because it is the one that needs the practice.',
+          sub:'Angle ' + results[0] + '% level, rate ' + results[1] + '% level. Rate is weighted higher because it\'s the one that needs the practice.',
           buttons:[
             { label:'Finish lesson', cls:'go', onClick:function(){
                 ctx.finish(score, { anglePct:results[0], ratePct:results[1] });
@@ -573,7 +573,7 @@ var GSDrills = (function(){
           roll += (want - roll) * Math.min(1, dt * 5.5);
         } else {
           /* rate mode: the stick asks for a rotation speed. Plus a slow bias,
-             so "do nothing" is not a winning strategy. */
+             so "do nothing" isn\'t a winning strategy. */
           roll += a.roll * 2.6 * dt;
           roll += 0.13 * dt;
           roll = clamp(roll, -Math.PI, Math.PI);
@@ -635,7 +635,7 @@ var GSDrills = (function(){
     var wrap = h('div','drill'); root.appendChild(wrap);
     var sv = makeSticks();
     brief(wrap, 'Hover Trainer',
-      'A hover is not something you set, it is something you keep. Small corrections, made early. Touch the ground and the attempt ends.',
+      'A hover isn\'t something you set, it\'s something you keep. Small corrections, made early. Touch the ground and the attempt ends.',
       sv.el);
 
     var hud = makeHud(wrap, [
@@ -718,7 +718,7 @@ var GSDrills = (function(){
 
       if(running){
         t += dt;
-        /* gusting wind: a slow sine plus a faster one, so it is never a
+        /* gusting wind: a slow sine plus a faster one, so it\'s never a
            constant you can simply trim out */
         windT += dt;
         wind = L.wind * (Math.sin(windT*0.55) * 0.7 + Math.sin(windT*1.9 + 1.1) * 0.3);
@@ -764,7 +764,7 @@ var GSDrills = (function(){
       g.strokeRect(bx0, by0, bx1-bx0, by1-by0);
       g.setLineDash([]);
       label(g, bx0 + 8, by0 - 9, 'HOLD IT IN HERE', RUST, 12);
-      /* centre line */
+      /* center line */
       g.strokeStyle = 'rgba(143,61,18,.45)'; g.lineWidth = 1; g.setLineDash([3,6]);
       g.beginPath(); g.moveTo(bx0, sy(5.3)); g.lineTo(bx1, sy(5.3)); g.stroke();
       g.setLineDash([]);
@@ -802,7 +802,7 @@ var GSDrills = (function(){
 
     showOver(stage, {
       title:'Level 1',
-      sub:LEVELS[0].brief + ' Small corrections, made early - if you can see the drift, you are already late.',
+      sub:LEVELS[0].brief + ' Small corrections, made early - if you can see the drift, you\'re already late.',
       buttons:[{ label:'Start', cls:'go', onClick:startLevel }],
       keyhint:'W and S for throttle, arrows for roll'
     });
@@ -817,7 +817,7 @@ var GSDrills = (function(){
     var SECS = 40;
     var wrap = h('div','drill'); root.appendChild(wrap);
     brief(wrap, 'Throttle discipline',
-      'Follow the target line. You are scored on <b>two</b> things: how close you stay, and how smooth you were. Perfect tracking with violent inputs still scores badly.');
+      'Follow the target line. You\'re scored on <b>two</b> things: how close you stay, and how smooth you were. Perfect tracking with violent inputs still scores badly.');
 
     var hud = makeHud(wrap, [
       { id:'time', k:'Left', v:String(SECS) },
@@ -833,7 +833,7 @@ var GSDrills = (function(){
 
     var running = false, t = 0, st, errSum = 0, jerkSum = 0, lastThr = 0, trail = [];
 
-    /* the target: two sines, so it is smooth but not guessable */
+    /* the target: two sines, so it\'s smooth but not guessable */
     function target(tt){ return 7 + Math.sin(tt*0.44)*3.1 + Math.sin(tt*0.97 + 2.0)*1.35; }
 
     function reset(){
@@ -855,7 +855,7 @@ var GSDrills = (function(){
       showOver(stage, {
         title:'Time', cls:'win', big:score,
         sub:'Tracking ' + Math.round(track) + ' (mean error ' + fmt1(meanErr) + ' m), smoothness ' + Math.round(smooth) +
-            '. Tracking is 60% of the score, smoothness 40% - because a pilot who chases the line with the throttle wide open is not in control of anything.',
+            '. Tracking is 60% of the score, smoothness 40% - because a pilot who chases the line with the throttle wide open isn\'t in control of anything.',
         buttons:[
           { label:'Finish lesson', cls:'go', onClick:function(){
               ctx.finish(score, { trackScore:Math.round(track), smoothScore:Math.round(smooth) });
@@ -953,7 +953,7 @@ var GSDrills = (function(){
 
   /* ======================================================================
      gs-los-01 - WHICH WAY IS LEFT?
-     No flying. Just the reversal, drilled until it is instant.
+     No flying. Just the reversal, drilled until it\'s instant.
      Also used by the checkride in a five-round version.
      ====================================================================== */
   function orient(root, ctx, opt){
@@ -1019,7 +1019,7 @@ var GSDrills = (function(){
         showOver(stage, {
           title: correct === ROUNDS ? 'All ten' : correct + ' of ' + ROUNDS,
           cls: score >= 80 ? 'win' : 'lose', big:score,
-          sub:'Average ' + fmt1(mean) + ' s per answer. Accuracy is 88 of the score and speed the other 12 - because knowing it slowly is not the same as knowing it.',
+          sub:'Average ' + fmt1(mean) + ' s per answer. Accuracy is 88 of the score and speed the other 12 - because knowing it slowly isn\'t the same as knowing it.',
           buttons:[
             { label:'Finish lesson', cls:'go', onClick:function(){
                 ctx.finish(score, { orientCorrect:correct, orientRounds:ROUNDS, meanSec:Math.round(mean*100)/100 });
@@ -1044,7 +1044,7 @@ var GSDrills = (function(){
       hud.showSource();
       if(running && !flash){
         tRound += dt;
-        /* the stick can answer too, once it has been returned to centre */
+        /* the stick can answer too, once it has been returned to center */
         var a = GSInput.axes();
         if(Math.abs(a.roll) < 0.2) armed = true;
         if(armed && a.roll < -0.55) answer(-1);
@@ -1094,7 +1094,7 @@ var GSDrills = (function(){
 
   /* ======================================================================
      gs-los-02 - GATE RUN
-     Top-down. Six gates, ordered so the lap cannot be flown nose-away.
+     Top-down. Six gates, ordered so the lap can\'t be flown nose-away.
      ====================================================================== */
   function gates(root, ctx){
     var PAR = 42;      /* seconds; over this costs a point each */
@@ -1134,7 +1134,7 @@ var GSDrills = (function(){
       t = 0; next = 0; hits = 0; trail = [];
       prevSide = GATES.map(function(){ return null; });
     }
-    function start(){ reset(); running = true; hideOver(stage); ctx.hint('Gates in order. If you get lost: centre the sticks and yaw slowly.'); }
+    function start(){ reset(); running = true; hideOver(stage); ctx.hint('Gates in order. If you get lost: center the sticks and yaw slowly.'); }
 
     function end(reason){
       running = false;
@@ -1261,7 +1261,7 @@ var GSDrills = (function(){
 
     showOver(stage, {
       title:'Six gates',
-      sub:'Take them in order, in the direction of the arrow. Gates 3 and 6 will have the nose swung back toward you - that is the point of the course.',
+      sub:'Take them in order, in the direction of the arrow. Gates 3 and 6 will have the nose swung back toward you - that\'s the point of the course.',
       buttons:[{ label:'Start', cls:'go', onClick:start }],
       keyhint:'arrows pitch and roll, A and D yaw'
     });
@@ -1277,7 +1277,7 @@ var GSDrills = (function(){
 
     var stepsEl = h('div','steps');
     var STEPS = [
-      { k:'LEVEL', d:'Centre pitch and roll' },
+      { k:'LEVEL', d:'Center pitch and roll' },
       { k:'HOLD',  d:'Steady throttle, gain a little height' },
       { k:'YAW',   d:'Turn until the nose points away' },
       { k:'GO',    d:'Fly to the pad and land' }
@@ -1291,7 +1291,7 @@ var GSDrills = (function(){
     });
 
     brief(wrap, 'Recovery, in order',
-      'You have been dropped in confused and drifting. Run the four steps <b>in sequence</b> - skipping one does not count - and then put it on the pad. Jumping straight to GO is exactly the habit this drill exists to break.',
+      'You have been dropped in confused and drifting. Run the four steps <b>in sequence</b> - skipping one doesn\'t count - and then put it on the pad. Jumping straight to GO is exactly the habit this drill exists to break.',
       stepsEl);
 
     var hud = makeHud(wrap, [
@@ -1319,7 +1319,7 @@ var GSDrills = (function(){
     }
     var PAD = { x:500, y:430, r:40 };
 
-    function start(){ reset(); running = true; hideOver(stage); ctx.hint('LEVEL first. Centre the sticks and stop making it worse.'); }
+    function start(){ reset(); running = true; hideOver(stage); ctx.hint('LEVEL first. Center the sticks and stop making it worse.'); }
 
     function end(ok, why){
       running = false;
@@ -1331,9 +1331,9 @@ var GSDrills = (function(){
         cls: ok ? 'win' : 'lose', big:score,
         sub:(ok
             ? 'Four steps, in order, and down on the pad in ' + fmt1(t) + ' s. '
-            : (why || 'The procedure was not completed. ')) +
-            (panic ? 'You made ' + panic + ' large input' + (panic===1?'':'s') + ' out of sequence - each one costs you, because that is the reflex that breaks aircraft.'
-                   : 'No out-of-sequence inputs at all. That is the whole skill.'),
+            : (why || 'The procedure wasn\'t completed. ')) +
+            (panic ? 'You made ' + panic + ' large input' + (panic===1?'':'s') + ' out of sequence - each one costs you, because that\'s the reflex that breaks aircraft.'
+                   : 'No out-of-sequence inputs at all. That\'s the whole skill.'),
         buttons:[
           { label:'Finish lesson', cls:'go', onClick:function(){
               ctx.finish(score, { recovered:ok?1:0, panicInputs:panic, recoverSec:Math.round(t*10)/10 });
@@ -1456,8 +1456,8 @@ var GSDrills = (function(){
     });
 
     showOver(stage, {
-      title:'You are disoriented',
-      sub:'It is drifting and the nose is not where you think. Run LEVEL, HOLD, YAW, GO in that order. Big stick inputs before you reach GO count against you.',
+      title:'You\'re disoriented',
+      sub:'It\'s drifting and the nose isn\'t where you think. Run LEVEL, HOLD, YAW, GO in that order. Big stick inputs before you reach GO count against you.',
       buttons:[{ label:'Start', cls:'go', onClick:start }],
       keyhint:'arrows pitch and roll, A and D yaw, W and S throttle'
     });
