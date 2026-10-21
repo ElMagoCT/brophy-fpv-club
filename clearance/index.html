@@ -428,7 +428,7 @@ function render() {
 /* ---------- drones ---------- */
 function drawDrones() {
   var pf = CL.portfolio(), ok = pf.club.filter(function (d) { return d.unlocked; }).length + pf.mine.filter(function (d) { return d.status === 'pass'; }).length;
-  $('droneHint').textContent = ST.pilot ? (ok ? ok + (ok === 1 ? ' drone' : ' drones') + ' you may request' : 'no drone yet - add your own') : 'your own drones first';
+  $('droneHint').textContent = ST.pilot ? (ok ? ok + (ok === 1 ? ' drone' : ' drones') + ' you may fly' : 'No drones you can fly') : 'your own drones first';
   var h = '<div class="drone add" data-add="1"><span class="plus">+</span>Add a drone<small style="text-transform:none;letter-spacing:0;font-family:var(--font-body);font-size:13px;color:var(--ink-soft)">name, specs, a picture and a minute of flight video</small></div>';
   pf.club.forEach(function (d) {
     h += '<div class="drone ' + (d.unlocked ? 'ok' : 'locked') + '"><div class="pic">' + QUAD + '</div>' +

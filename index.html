@@ -389,6 +389,10 @@ footer a{color:var(--ink)}
 .rung-h .tn{font-family:var(--font-mono);font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--c)}
 .rung-h .nm{font-family:var(--font-sketch);font-weight:700;font-size:22px;line-height:1}
 .rung-h .ct{margin-left:auto;font-family:var(--font-mono);font-size:13px;color:var(--ink-soft);white-space:nowrap}
+.cert{color:var(--green);font-weight:700}
+.rung.cert{background:rgba(45,112,69,.06)}
+.rung.cert .climb .n{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--green);white-space:nowrap}
+.rung .none a{color:var(--rust)}
 .climb{display:grid;grid-template-columns:minmax(0,1fr) 92px 44px;gap:10px;align-items:center;padding:4px 0}
 .climb .nm{font-size:15.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .climb .pips{display:flex;gap:3px}
@@ -794,7 +798,7 @@ function renderBoard(){
       '<div class="row' + medal + '">' +
         '<div class="rank">' + (i + 1) + '</div>' +
         '<div class="who">' +
-          '<div class="nm">' + esc(p.name) + '</div>' +
+          '<div class="nm">' + nameHtml(p) + '</div>' +
           '<div class="meta">' + meta.join(' &middot; ') + '</div>' +
         '</div>' +
         '<div class="hrs">' + hoursMinutes(p[key]) + '</div>' +
@@ -814,6 +818,16 @@ function isMe(p){
 function countedBadges(p){
   return (p.badges || []).filter(function (id) { return !BONUS_BADGES[id]; });
 }
+/* 2026-10-20: the Brophy Drone Certification, from the kiosk snapshot: TRUST,
+   Safe Flight and the signed agreement on file, plus a drone in the portfolio
+   (an approved personal drone awards drone-portfolio; a club drone comes with
+   its checkpoint). Shown as a check after the pilot's name. */
+function certified(p){
+  var b = p.badges || [];
+  function has(id){ return b.indexOf(id) >= 0; }
+  return has('faa-trust') && has('safe-flight') && has('pilot-agreement') && (has('drone-portfolio') || has('tiny-whoop') || has('pavo-flight'));
+}
+function nameHtml(p){ return esc(p.name) + (certified(p) ? ' <span class="cert" title="Brophy Drone Certification">&#10003;</span>' : ''); }
 
 /* Tiers: who is on each one and how many of its prerequisites they hold
    toward the next checkpoint (flightschool/badges.js decides which badges
@@ -840,7 +854,7 @@ function renderLadder(){
     '<span class="ct">' + mentors.length + (mentors.length === 1 ? ' mentor' : ' mentors') + '</span></a>' +
     '<div class="desc">These are the people who can approve your stuff: they watch your witnessed badges, check your photos and sign your badges off.</div>' +
     (mentors.length ? mentors.map(function (p){
-      return '<div class="climb top' + (isMe(p) ? ' me' : '') + '"><span class="nm">' + esc(p.name) + '</span><span class="n">signs off badges</span></div>';
+      return '<div class="climb top' + (isMe(p) ? ' me' : '') + '"><span class="nm">' + nameHtml(p) + '</span><span class="n">signs off badges</span></div>';
     }).join('') : '<div class="none">No mentors yet. Tier 2 pilots can earn it.</div>') +
     '</div>';
 
@@ -868,7 +882,7 @@ function renderLadder(){
     }
     started.slice(0, LADDER_SHOW).forEach(function (r){
       if (isTop){
-        html += '<div class="climb' + (isMe(r.p) ? ' me' : '') + '"><span class="nm">' + esc(r.p.name) + '</span><span class="n">Event Pilot</span></div>';
+        html += '<div class="climb' + (isMe(r.p) ? ' me' : '') + '"><span class="nm">' + nameHtml(r.p) + '</span><span class="n">Event Pilot</span></div>';
         return;
       }
       var pips = '';
@@ -876,7 +890,7 @@ function renderLadder(){
       var ready = r.have === reqs.length;
       html += '<div class="climb' + (ready ? ' ready' : '') + (isMe(r.p) ? ' me' : '') + '" title="' +
         esc(r.have + ' of ' + reqs.length + ' prerequisites' + (cp ? ' for ' + cp.name : '')) + '">' +
-        '<span class="nm">' + esc(r.p.name) + '</span>' +
+        '<span class="nm">' + nameHtml(r.p) + '</span>' +
         '<span class="pips">' + pips + '</span>' +
         '<span class="n">' + (ready ? '&#10003;' : r.have + '/' + reqs.length) + '</span></div>';
     });
@@ -886,6 +900,17 @@ function renderLadder(){
     if (rest.length) html += '<div class="rest">' + rest.join(' &middot; ') + '</div>';
     if (cp && on.length) html += '<div class="rest">Next checkpoint: <b>' + esc(cp.name) + '</b></div>';
     html += '</div>';
+    /* 2026-10-20: the certified pilots, right under Tier 1 */
+    if (t.n === 1){
+      var certs = (DATA.pilots || []).filter(certified).sort(function (a, b) { return (b.totalMs || 0) - (a.totalMs || 0); });
+      html += '<div class="rung cert" style="--c:var(--green)">' +
+        '<a class="rung-h" href="clearance/"><span class="tn">Certified</span><span class="nm">Brophy Drone Certification</span>' +
+        '<span class="ct">' + certs.length + (certs.length === 1 ? ' pilot' : ' pilots') + '</span></a>' +
+        '<div class="desc">Cleared to ask Mr. Burr for a flight: FAA TRUST, Safe Flight, the signed Pilot Agreement and a drone in their portfolio.</div>' +
+        (certs.length ? certs.map(function (p){ return '<div class="climb top' + (isMe(p) ? ' me' : '') + '"><span class="nm">' + nameHtml(p) + '</span><span class="n">certified</span></div>'; }).join('')
+                      : '<div class="none">Nobody yet. Start on <a href="clearance/">Flight Clearance</a>.</div>') +
+        '</div>';
+    }
   });
   $('ladder').innerHTML = html;
 }

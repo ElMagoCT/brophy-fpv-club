@@ -204,7 +204,7 @@
   // Review photos is the first view (2026-10-10): no hash, or one we do not
   // know, opens it. #approvals and #kiosks still deep-link.
   function showView() {
-    var ap = location.hash === '#approvals', ki = location.hash === '#kiosks', rv = !ap && !ki;
+    var ap = location.hash === '#approvals' || location.hash === '#pilots', ki = location.hash === '#kiosks', rv = !ap && !ki;
     el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki;
     el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : '';
     if ((ap || rv) && !ROSTER) loadRoster();
@@ -349,23 +349,89 @@
   // School shows it: "Building to Tier N" prerequisites, then that checkpoint,
   // and so on; bonus badges last. Fields are read defensively - a badge may
   // gain `quiz` on a witnessed/bench badge (= quiz AND a mentor's approval).
-  var PP = { slug: null, name: '', awards: null, prog: null };
+  var PP = { slug: null, name: '', awards: null, prog: null, subs: null };
+  // 2026-10-20: every submission this pilot ever sent (photos, PDFs, drone videos),
+  // from the review queue's `all` view - needs the instructor password like review.
+  function loadPilotSubs(s) {
+    if (!S.keyHex) return Promise.resolve(null);
+    return api('GET', '/api/submission?review=all', null, reviewHeaders()).then(function (j) {
+      return (j.items || []).filter(function (it) { return FS.slug(it.pilot) === s; }).sort(function (a, b) { return b.at - a.at; });
+    }, function () { return null; });
+  }
+  var PHOTOS = {};   // photo path -> data URL, so opening a badge twice does not refetch
+  function photoInto(box, it) {
+    function show(src, type) {
+      box.textContent = '';
+      var img;
+      if (type === 'application/pdf') { img = document.createElement('embed'); img.type = 'application/pdf'; img.className = 'pdf'; }
+      else { img = document.createElement('img'); img.alt = 'submission from ' + it.pilot; }
+      img.src = src; box.appendChild(img);
+    }
+    if (!it.photo) { box.textContent = 'no file'; return; }
+    if (PHOTOS[it.photo]) { show(PHOTOS[it.photo].src, PHOTOS[it.photo].type); return; }
+    box.textContent = 'Loading…';
+    api('GET', '/api/submission?photo=' + encodeURIComponent(it.photo), null, reviewHeaders()).then(function (j) {
+      var src = 'data:' + (j.type || 'image/jpeg') + ';base64,' + j.base64;
+      PHOTOS[it.photo] = { src: src, type: j.type || 'image/jpeg' }; show(src, j.type || 'image/jpeg');
+    }).catch(function (e) { box.textContent = 'Could not load: ' + e.message; });
+  }
+  // one submission: the file, then status, date, note, and for a drone its name, specs and video
+  function subEl(it, big) {
+    var d = document.createElement('div'); d.className = 'psub ' + (it.status || 'pending') + (big ? ' big' : '');
+    var ph = document.createElement('div'); ph.className = 'ph';
+    ph.addEventListener('click', function () { ph.classList.toggle('full'); });
+    var meta = document.createElement('div'); meta.className = 'pmeta';
+    var st = document.createElement('b'); st.textContent = it.status === 'pass' ? 'Passed' : it.status === 'fail' ? 'Failed' : 'Pending review';
+    meta.appendChild(st);
+    var dt = document.createElement('span'); dt.textContent = ' · sent ' + new Date(it.at).toLocaleDateString() + (it.reviewedAt ? ' · reviewed ' + new Date(it.reviewedAt).toLocaleDateString() : '');
+    meta.appendChild(dt);
+    if (it.drone) {
+      var dr = document.createElement('div'); dr.className = 'pdrone';
+      var dn = document.createElement('b'); dn.textContent = it.drone.name || 'drone'; dr.appendChild(dn);
+      if (it.drone.specs) dr.appendChild(document.createTextNode(' · ' + it.drone.specs));
+      var vid = driveId(it.drone.video);
+      if (vid) {
+        var a = document.createElement('a'); a.href = 'https://drive.google.com/file/d/' + encodeURIComponent(vid) + '/view'; a.target = '_blank'; a.rel = 'noopener'; a.textContent = ' · flight video ↗';
+        dr.appendChild(a);
+      }
+      meta.appendChild(dr);
+    } else if (it.note) { var n = document.createElement('div'); n.className = 'pnote'; n.textContent = '“' + it.note + '”'; meta.appendChild(n); }
+    if (it.reviewNote) { var rn = document.createElement('div'); rn.className = 'pnote'; rn.textContent = 'Mentor: ' + it.reviewNote; meta.appendChild(rn); }
+    d.appendChild(ph); d.appendChild(meta);
+    photoInto(ph, it);
+    return d;
+  }
+  // the two documents at the top of a pilot's page: the latest TRUST certificate and signed agreement
+  function drawDocs() {
+    var box = el('ppDocs'); box.textContent = '';
+    if (!S.keyHex) { box.className = 'ppdocs muted small'; box.textContent = 'Sign in with the instructor password to see this pilot\'s submissions (TRUST certificate, signed agreement, drone videos).'; return; }
+    box.className = 'ppdocs';
+    [['faa-trust', 'TRUST certificate'], ['pilot-agreement', 'Pilot Agreement (signed)']].forEach(function (pair) {
+      var col = document.createElement('div'); col.className = 'pdoc';
+      var h = document.createElement('h3'); h.textContent = pair[1]; col.appendChild(h);
+      var it = (PP.subs || []).filter(function (x) { return x.badge === pair[0]; })[0];
+      if (it) col.appendChild(subEl(it, true));
+      else { var none = document.createElement('div'); none.className = 'muted small'; none.textContent = PP.subs ? 'Nothing submitted yet.' : 'Could not load submissions.'; col.appendChild(none); }
+      box.appendChild(col);
+    });
+  }
   function pickPilot() {
     var name = el('apPilot').value.trim(), s = FS.slug(name);
     showHas();
     if (s.length < 2) { el('pp').hidden = true; PP.slug = null; return; }
     if (s === PP.slug) return;
-    PP.slug = s; PP.name = name; PP.awards = PP.prog = null; PP.loaded = false;
+    PP.slug = s; PP.name = name; PP.awards = PP.prog = PP.subs = null; PP.loaded = false; el('ppDocs').textContent = '';
     el('pp').hidden = false; el('ppName').textContent = name + ' · progress';
     el('ppMsg').textContent = 'Loading…'; el('ppList').textContent = ''; el('ppSum').textContent = '';
     var q = encodeURIComponent(name);
     Promise.all([
       api('GET', '/api/award?pilot=' + q).then(function (j) { return j.awards || null; }),
       api('GET', '/api/progress?pilot=' + q).then(function (j) { return j.progress || null; }),
+      loadPilotSubs(s),
       ROSTER ? Promise.resolve() : fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { ROSTER = ROSTER || (window.mergePilots ? window.mergePilots(d) : d); })
     ]).then(function (r) {
       if (PP.slug !== s) return;
-      PP.awards = r[0]; PP.prog = r[1]; PP.loaded = true; el('ppMsg').textContent = ''; drawProgress();
+      PP.awards = r[0]; PP.prog = r[1]; PP.subs = r[2]; PP.loaded = true; el('ppMsg').textContent = ''; drawDocs(); drawProgress();
     }).catch(function (e) { if (PP.slug === s) { el('ppMsg').textContent = 'Could not load progress: ' + e.message; PP.slug = null; } });
   }
   // Everything known about one badge for the picked pilot. Mirrors the rules
@@ -418,6 +484,18 @@
     var row = document.createElement('div'); row.className = 'prow' + (st.earned ? ' done' : '') + (b.checkpoint ? ' cp' : ''); row.setAttribute('data-badge', b.id);
     var main = document.createElement('div'); main.className = 'pmain';
     var nm = document.createElement('b'); nm.textContent = b.name;
+    var subs = (PP.subs || []).filter(function (x) { return x.badge === b.id; });
+    if (subs.length) {   // 2026-10-20: + opens this badge's submissions for the pilot
+      var plus = document.createElement('button'); plus.type = 'button'; plus.className = 'pplus'; plus.textContent = '+ ' + subs.length; plus.title = 'Show ' + subs.length + ' submission' + (subs.length === 1 ? '' : 's');
+      plus.onclick = function () {
+        var open = row.querySelector('.psubs');
+        if (open) { open.remove(); plus.textContent = '+ ' + subs.length; return; }
+        var list = document.createElement('div'); list.className = 'psubs';
+        subs.forEach(function (it) { list.appendChild(subEl(it, false)); });
+        row.appendChild(list); plus.textContent = '− ' + subs.length;
+      };
+      nm.appendChild(plus);
+    }
     var ty = document.createElement('span'); ty.className = 'ptype';
     ty.textContent = (b.checkpoint ? 'checkpoint · ' : '') + ({ knowledge: 'quiz', bench: 'bench', witnessed: 'witnessed', auto: 'auto' }[b.type] || b.type || '') + (st.both ? ' + quiz' : '');
     main.appendChild(nm); main.appendChild(ty);
@@ -489,6 +567,13 @@
       });
     });
     FS.BADGES.forEach(function (b) { if (FS.counted(b) && shown[b.id]) { counted++; if (states[b.id].earned) earnedN++; } });
+    // 2026-10-20: the Brophy Drone Certification (tier 'cl') - its own section, not bonus badges
+    var cl = FS.BADGES.filter(function (b) { return b.tier === 'cl'; });
+    if (cl.length) {
+      var clDone = cl.filter(function (b) { return states[b.id].earned; }).length;
+      head('Brophy Drone Certification', clDone + ' of ' + cl.length + ' · Flight Clearance on the website · not counted toward the tier');
+      cl.forEach(function (b) { shown[b.id] = 1; list.appendChild(progressRow(b, states[b.id])); });
+    }
     var bonus = FS.BADGES.filter(function (b) { return !shown[b.id]; });
     if (bonus.length) {
       head('Bonus badges', 'any order · not counted');
@@ -597,8 +682,8 @@
       // 2026-10-20: a Drone Portfolio submission carries the drone (name, specs)
       // and a Google Drive flight video. Shown with the link, whether Drive
       // serves it publicly (its thumbnail loads only for a shareable file) and
-      // an embedded player. A pass records the review only - no badge award:
-      // the drone is approved, not a badge earned.
+      // an embedded player. A pass records the review and files the
+      // Drone Portfolio badge (one drone approved = the badge).
       var extra = null;
       if (it.drone) {
         extra = document.createElement('div'); extra.className = 'drone';
@@ -638,7 +723,9 @@
       function decide(result) {
         pass.disabled = fail.disabled = true;
         var first = Promise.resolve();
-        if (result === 'pass' && !isDrone) {
+        if (result === 'pass' && isDrone) {   // 2026-10-20: an approved drone = the Drone Portfolio badge on file (the kiosk catalogue has it)
+          first = fileAward(it.pilot, 'drone-portfolio', 'earned', 'drone approved: ' + ((it.drone && it.drone.name) || 'drone') + (note.value.trim() ? ' - ' + note.value.trim() : ''), ['photo:' + it.id]);
+        } else if (result === 'pass') {
           var r = checkRules(it.pilot, bd);
           if (r && r.stop) { window.alert(r.stop.replace(/ Not filed\.$/, ' Fail it with a note, or wait.')); pass.disabled = fail.disabled = false; return; }
           if (r && r.ask && !window.confirm(r.ask)) { pass.disabled = fail.disabled = false; return; }
@@ -650,7 +737,7 @@
           return api('POST', '/api/submission', { action: 'review', pilot: it.pilot, id: it.id, result: result, note: note.value.trim() }, reviewHeaders());
         }).then(function () {
           var d = document.createElement('div'); d.className = 'done ' + result;
-          d.textContent = result === 'pass' ? (isDrone ? 'Approved - the drone is in the pilot\'s portfolio.' : 'Passed - the badge is on file; the kiosks pick it up on their next sync.')
+          d.textContent = result === 'pass' ? (isDrone ? 'Approved - the drone is in the pilot\'s portfolio and the Drone Portfolio badge is on file.' : 'Passed - the badge is on file; the kiosks pick it up on their next sync.')
                                            : (isDrone ? 'Not approved - the pilot sees your note and can add the drone again.' : 'Failed - the pilot sees your note and can send a new photo.');
           row.replaceWith(d); note.disabled = true; card.classList.add('decided');
           setTimeout(function () { if (RV.stage === card) rvNext(card); }, 1500);

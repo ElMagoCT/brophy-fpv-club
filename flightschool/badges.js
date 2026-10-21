@@ -76,7 +76,7 @@
     /* 2026-10-20: Flight Clearance - the Brophy Drone Certification. Shown on
        ../clearance/ (../fly/ redirects there), never a tier,
        never counted. n = -2 keeps it out of every "n >= 0" tier loop. */
-    { id: 'cl', n: -2, name: 'Flight Clearance', gear: 'Brophy Drone Certification · four parts, then ask before every flight', color: 'var(--rust)', gate: '' }
+    { id: 'cl', n: -2, name: 'Brophy Drone Certification', gear: 'Flight Clearance on the website · four badges, then ask before every flight', color: 'var(--rust)', gate: '' }
   ];
   /* The club's drones (2026-10-20). Each sits in every pilot's Drone
      Portfolio faded out and is unlocked by the checkpoint that certifies it. */
@@ -237,7 +237,7 @@
       why: 'A simple, clear reminder that you are flying expensive equipment and are responsible for how you use it - signed by you and a parent or guardian, as Mr. Reasy and Mr. Burr asked.',
       steps: ['Read the terms', 'Print the signing paper (one page) and sign it with a parent or guardian', 'Submit a photo of the signed paper'] },
     { id: 'drone-portfolio', tier: 'cl', track: 'flight', type: 'bench', kind: 'drone', name: 'Drone Portfolio', est: 'a minute of video per drone',
-      do: 'Your own drones, each with a picture, its specs and a minute of flight video a mentor approves. Club drones join it when you pass their checkpoint.',
+      do: 'Your personal portfolio of drones we know you can fly safely, so you can have permission to fly them at Brophy. Club drones are added upon checkpoint completion.',
       why: 'Clearance is per aircraft, for every pilot - DJI, FPV, anything: the club knows what you fly and has seen you fly it safely.',
       steps: ['Record about a minute: take off, fly, land safely', 'Upload it to Google Drive, shared as "Anyone with the link"', 'Add the drone: name, specs, a picture and the link'] },
 

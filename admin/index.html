@@ -47,7 +47,7 @@
   <section id="console" hidden>
     <nav class="views" id="views">
       <a href="#review" id="vReview" class="on">Review photos <span id="rvCount"></span></a>
-      <a href="#approvals" id="vApprovals">Approvals</a>
+      <a href="#pilots" id="vApprovals">Pilots</a>
       <a href="#kiosks" id="vKiosks">Kiosks</a>
     </nav>
 
@@ -61,7 +61,7 @@
         <p class="muted small">Photos pilots took of their work on the Pilot Path and Flight Clearance pages (TRUST certificates,
           signed Pilot Agreements), and <b>Drone Portfolio</b> entries - a picture, the drone's name and specs, and a Google Drive flight
           video (the card says whether the link is public and plays it). <b>Pass</b> files the same signed approval as the Approvals tab
-          (both kiosks pull it) and tells the pilot; for a drone it only approves that drone. <b>Fail</b> tells the pilot why, and they
+          (both kiosks pull it) and tells the pilot; for a drone it approves that drone and files the Drone Portfolio badge. <b>Fail</b> tells the pilot why, and they
           can send a new photo. The badge rules still apply: Sim Flight needs 5 sim hours, a checkpoint needs the rest of its tier.</p>
         <div class="setup" id="rvSetup" hidden></div>
         <div class="muted small" id="rvMsg"></div>
@@ -105,6 +105,9 @@
           Approve and Revoke file the same signed decision as the form above (with its note); both kiosks apply it on their next
           sync, and a revoke clears the badge there even if the kiosk awarded it.</p>
         <div class="muted small" id="ppMsg"></div>
+        <!-- 2026-10-20: the pilot's TRUST certificate and signed Pilot Agreement, as submitted,
+             load here; every badge with submissions gets a + that opens them -->
+        <div id="ppDocs" class="ppdocs"></div>
         <div id="ppList"></div>
       </div>
       <div class="card" id="bulkSim">
