@@ -10,47 +10,51 @@
 <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Cabin+Sketch:wght@700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
 <style>
 /* The ONE page a pilot and a parent sign (2026-10-20): black and white, one
-   Letter sheet. The body is the tick boxes; the first one says the terms were
-   read, with a QR code to terms/ (qr-terms.svg). Print it from Flight
-   Clearance, sign it, photograph it, submit it there. */
-:root{--ink:#000;--soft:#444;--line:#000}
+   Letter sheet. Names and contact at the top, the tick boxes (the first one:
+   the terms were read, with a QR code to terms/) in the middle, signatures
+   and dates at the bottom. Labels are small text ABOVE each writing line.
+   Printed with real page margins so nothing is clipped. */
+:root{--ink:#000;--soft:#444}
 *{box-sizing:border-box}
 html,body{margin:0;background:#e9e6df;color:var(--ink);font-family:'Barlow','Segoe UI',system-ui,sans-serif;font-size:12.5pt;line-height:1.35}
 .bar{max-width:8.5in;margin:14px auto 0;padding:0 8px;display:flex;gap:10px;justify-content:space-between;align-items:center;font-size:14px;color:#555}
 .bar button,.bar a{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:.1em;text-transform:uppercase;border:1.5px solid #000;background:#000;color:#fff;border-radius:7px;padding:8px 14px;cursor:pointer;text-decoration:none}
 .bar a{background:#fff;color:#000}
-.page{background:#fff;width:8.5in;height:11in;margin:10px auto 30px;padding:.5in .6in .45in;box-shadow:0 2px 14px rgba(0,0,0,.18);position:relative;overflow:hidden;display:flex;flex-direction:column}
+.page{background:#fff;width:8.5in;min-height:11in;margin:10px auto 30px;padding:.55in .65in .55in;box-shadow:0 2px 14px rgba(0,0,0,.18)}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;border-bottom:2.5px solid #000;padding-bottom:8px}
 h1{font-family:'Cabin Sketch',cursive;font-weight:700;font-size:27pt;line-height:.95;margin:0}
 .sub{font-family:'Share Tech Mono',monospace;font-size:10pt;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-top:4px}
 .stamp{font-family:'Share Tech Mono',monospace;font-size:9.5pt;letter-spacing:.1em;text-transform:uppercase;border:2px solid #000;border-radius:5px;padding:4px 9px;transform:rotate(-2deg);white-space:nowrap}
-h2{font-family:'Share Tech Mono',monospace;font-size:10pt;letter-spacing:.16em;text-transform:uppercase;font-weight:400;margin:14px 0 6px}
+h2{font-family:'Share Tech Mono',monospace;font-size:10pt;letter-spacing:.16em;text-transform:uppercase;font-weight:400;margin:16px 0 6px}
 p{margin:0 0 6px}
 .lead{font-size:11.5pt;color:var(--soft)}
+/* writing lines: a small label above, then room to write */
+.lines{display:grid;grid-template-columns:2fr 1fr;gap:6px 24px}
+.lines.three{grid-template-columns:1.6fr .7fr 1fr}
+.f{display:flex;flex-direction:column}
+.f small{font-family:'Share Tech Mono',monospace;font-size:8.5pt;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
+.f i{display:block;height:30px;border-bottom:1.5px solid #000}
 .boxes{display:flex;flex-direction:column;gap:9px}
-.box{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:6px;padding:9px 11px;font-size:12pt;line-height:1.32}
+.box{display:flex;gap:12px;align-items:flex-start;border:1.5px solid #000;border-radius:6px;padding:9px 11px;font-size:12pt;line-height:1.32}
 .box::before{content:'';width:22px;height:22px;flex:none;border:2.5px solid #000;border-radius:3px;margin-top:2px}
 .box b{font-weight:600}
 .box .qr{margin-left:auto;flex:none;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:8pt;letter-spacing:.06em;color:var(--soft);text-align:center}
 .box .qr img{width:88px;height:88px;display:block}
-.sig{display:grid;grid-template-columns:1fr 1fr;gap:8px 22px;margin-top:6px}
-.sig div{border-bottom:1.5px solid #000;padding:17px 0 3px;font-family:'Share Tech Mono',monospace;font-size:9pt;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
-.sig div.w{grid-column:1/-1}
-.sig div.sp{padding-top:24px}
-.foot{margin-top:auto;font-size:10pt;color:var(--soft);border-top:1px solid #000;padding-top:7px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.sigs{break-inside:avoid}
+.foot{margin-top:14px;font-size:10pt;color:var(--soft);border-top:1px solid #000;padding-top:7px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;break-inside:avoid}
 .foot b{color:#000;font-weight:600}
 @media print{
-  @page{size:letter;margin:0}
+  @page{size:letter;margin:.5in .6in}
   html,body{background:#fff}
   .bar{display:none}
-  .page{box-shadow:none;margin:0;width:8.5in;height:11in}
+  .page{box-shadow:none;margin:0;width:auto;min-height:0;padding:0}
 }
-@media (max-width:620px){.page{width:auto;height:auto;margin:10px 8px 30px;padding:20px 18px}.sig{grid-template-columns:1fr}.sig div.w{grid-column:auto}.box .qr{display:none}}
+@media (max-width:620px){.page{width:auto;margin:10px 8px 30px;padding:20px 18px}.lines,.lines.three{grid-template-columns:1fr}.box .qr{display:none}}
 </style>
 </head>
 <body>
 <div class="bar">
-  <span>Print this page, tick the boxes, sign it with a parent or guardian, then photograph it and submit it on Flight Clearance.</span>
+  <span>Print this page, fill it in, sign it with a parent or guardian, then photograph it and submit it on Flight Clearance.</span>
   <span style="display:flex;gap:8px"><a href="./#pilot-agreement">&larr; Back</a><a href="terms/">The terms</a><button type="button" onclick="window.print()">Print</button></span>
 </div>
 
@@ -58,14 +62,24 @@ p{margin:0 0 6px}
   <header>
     <div>
       <h1>Pilot Agreement</h1>
-      <div class="sub">Brophy FPV Club &middot; Flight Clearance &middot; signing paper</div>
+      <div class="sub">Brophy FPV Club &middot; Flight Clearance</div>
     </div>
     <div class="stamp">pilot + parent</div>
   </header>
 
-  <p class="lead" style="margin-top:10px">You are about to fly expensive equipment on school property. This paper is a plain reminder that you are responsible for how you use it. The full terms are on the club website; scan the code to read them. Tick each box only if it is true, then both of you sign.</p>
+  <h2>Pilot</h2>
+  <div class="lines three">
+    <div class="f"><small>Pilot name (please print)</small><i></i></div>
+    <div class="f"><small>Grade</small><i></i></div>
+    <div class="f"><small>TRUST certificate number</small><i></i></div>
+  </div>
+  <div class="lines" style="margin-top:8px">
+    <div class="f"><small>Parent or guardian name</small><i></i></div>
+    <div class="f"><small>Parent phone or email</small><i></i></div>
+  </div>
 
   <h2>Tick each box</h2>
+  <p class="lead">You are about to fly expensive equipment on school property. This paper is a plain reminder that you are responsible for how you use it. Tick each box only if it is true.</p>
   <div class="boxes">
     <div class="box"><span><b>I have read the terms</b> of the Pilot Agreement on the club website, and my parent or guardian has too. In short: I am responsible for loss or damage from my flying, I replace what I break within 14 days (or through BEAST), I fly club equipment only with a mentor and spotter present, my own drone is entirely my responsibility, and certification can be suspended.</span>
       <span class="qr"><img src="qr-terms.svg" alt="QR code to the terms"><span>scan for<br>the terms</span></span></div>
@@ -75,23 +89,21 @@ p{margin:0 0 6px}
     <div class="box"><span><b>I am liable for any and all damages</b> to club equipment, property or people that come from my flying, as the terms describe.</span></div>
   </div>
 
-  <h2>Signatures</h2>
-  <p class="lead">By signing, the pilot and the parent or guardian confirm they have read and agree to this paper and the full terms on the website.</p>
-  <div class="sig">
-    <div>Pilot name &middot; grade</div>
-    <div>TRUST certificate number</div>
-    <div class="sp">Pilot signature</div>
-    <div class="sp">Date</div>
-    <div>Parent or guardian name</div>
-    <div>Phone or email</div>
-    <div class="sp">Parent or guardian signature</div>
-    <div class="sp">Date</div>
-    <div class="w">Received by (club mentor) &middot; date</div>
-  </div>
-
-  <div class="foot">
-    <span><b>Next:</b> photograph this whole page, every line readable, and submit it on Flight Clearance &rarr; Pilot Agreement. A mentor checks it.</span>
-    <span>elmagoct.github.io/brophy-fpv-club/clearance/terms/</span>
+  <div class="sigs">
+    <h2>Signatures</h2>
+    <p class="lead">By signing, the pilot and the parent or guardian agree to this paper and the full terms on the website.</p>
+    <div class="lines">
+      <div class="f"><small>Pilot signature</small><i></i></div>
+      <div class="f"><small>Date</small><i></i></div>
+    </div>
+    <div class="lines" style="margin-top:10px">
+      <div class="f"><small>Parent or guardian signature</small><i></i></div>
+      <div class="f"><small>Date</small><i></i></div>
+    </div>
+    <div class="foot">
+      <span><b>Then:</b> photograph this whole page and submit it on Flight Clearance &rarr; Pilot Agreement.</span>
+      <span>elmagoct.github.io/brophy-fpv-club/clearance/terms/</span>
+    </div>
   </div>
 </div>
 </body>
