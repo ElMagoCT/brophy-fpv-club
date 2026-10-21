@@ -35,11 +35,11 @@ p{margin:0 0 6px}
 .f small{font-family:'Share Tech Mono',monospace;font-size:8.5pt;letter-spacing:.1em;text-transform:uppercase;color:var(--soft)}
 .f i{display:block;height:30px;border-bottom:1.5px solid #000}
 .boxes{display:flex;flex-direction:column;gap:9px;position:relative}
-.box.pad{padding-right:96px}   /* the QR code sits outside the cards, over the right edge of the first two */
+.box.pad{width:calc(100% - 120px)}   /* the first two boxes stop where the QR code starts */
 .box{display:flex;gap:12px;align-items:flex-start;border:1.5px solid #000;border-radius:6px;padding:9px 11px;font-size:12pt;line-height:1.32}
 .box::before{content:'';width:22px;height:22px;flex:none;border:2.5px solid #000;border-radius:3px;margin-top:2px}
 .box b{font-weight:600}
-.qr{position:absolute;right:-16px;top:20px;width:104px;background:#fff;padding:5px 6px 3px;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:8pt;letter-spacing:.06em;color:var(--soft);text-align:center}
+.qr{position:absolute;right:0;top:2px;width:104px;background:#fff;padding:0 6px 3px;display:flex;flex-direction:column;align-items:center;gap:3px;font-family:'Share Tech Mono',monospace;font-size:8pt;letter-spacing:.06em;color:var(--soft);text-align:center}
 .qr img{width:88px;height:88px;display:block}
 .qr span{white-space:nowrap}
 .sigs{break-inside:avoid}
@@ -51,7 +51,7 @@ p{margin:0 0 6px}
   .bar{display:none}
   .page{box-shadow:none;margin:0;width:auto;min-height:0;padding:0}
 }
-@media (max-width:620px){.page{width:auto;margin:10px 8px 30px;padding:20px 18px}.lines,.lines.three{grid-template-columns:1fr}.qr{display:none}.box.pad{padding-right:11px}}
+@media (max-width:620px){.page{width:auto;margin:10px 8px 30px;padding:20px 18px}.lines,.lines.three{grid-template-columns:1fr}.qr{display:none}.box.pad{width:auto}}
 </style>
 </head>
 <body>
