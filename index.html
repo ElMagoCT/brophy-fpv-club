@@ -836,13 +836,13 @@ var LADDER_SHOW = 8;
 /* what each tier is - these were their own row of cards above the boards
    until 2026-10-10, now folded into the ladder */
 var TIER_DESC = [
-  'The five sims in the IC. Everyone starts here: just the drone things - the Battery Care quiz, rebuild and set up a Meteor, fly it line of sight, and fly Sim Flight (about 5 sim hours of practice is typical). One community period, then the Meteor 75 Pro Certification: your first real flight.',
-  'Certified on the Meteor 75 Pro. Then solder, Betaflight, diagnose, freestyle.',
-  'Pavo 20 Pro and larger drones at Brophy. Spotter, Event Ops, filming and racing.',
+  'The five sims in the IC. Everyone starts here with just the drone things: the Battery Care quiz, rebuilding and setting up a Meteor, flying it line of sight, and Sim Flight (about 5 sim hours of practice is typical). About one community period, then the Meteor 75 Pro Certification, which is your first real flight.',
+  'Certified on the Meteor 75 Pro. From here it\'s soldering, Betaflight, diagnosing faults and freestyle.',
+  'Pavo 20 Pro and larger drones at Brophy: spotting, Event Ops, filming and racing.',
   'Earned by flying at a school event or a race, with a spotter. The top of the path.'
 ];
 function renderLadder(){
-  if (!window.FS){ $('ladder').innerHTML = '<div class="msg">Badge list did not load.</div>'; return; }
+  if (!window.FS){ $('ladder').innerHTML = '<div class="msg">Badge list didn\'t load.</div>'; return; }
   var pilots = (DATA.pilots || []).filter(function (p) { return p.tier != null; });
   var tiers = FS.TIERS.filter(function (t) { return t.n >= 0; }).slice().reverse();
   /* Mentors first: the people who sign your badges off. A Tier 2 pilot with
@@ -930,7 +930,7 @@ function renderHours(){
   if (t < 0){
     $('hours').innerHTML =
       '<div class="msg">This snapshot was taken on ' + esc(days[0].label) +
-      ' and no longer covers today. The kiosk has not published since then.</div>';
+      ' and no longer covers today. The kiosk hasn\'t published since then.</div>';
     $('hoursHint').textContent = 'snapshot out of date';
     return;
   }

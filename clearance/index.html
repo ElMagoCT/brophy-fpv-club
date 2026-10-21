@@ -283,9 +283,9 @@ footer a{color:var(--ink)}
     <summary class="eyebrow"><h2>How it works</h2><span class="line"></span><span class="hint">certification once, permission every flight</span></summary>
     <div class="how">
       <div class="card h"><div class="k">1 &middot; Get certified</div><div class="v">The <a href="#badges">Brophy Drone Certification</a>: four badges - FAA TRUST, Safe Flight, the Pilot Agreement - and a drone in your portfolio. About <b>45 minutes</b>, at home. It never expires.</div></div>
-      <div class="card h"><div class="k">2 &middot; Ask Mr. Burr</div><div class="v">Fill in his form at least <b>24 hours</b> before you want to fly. One flight, one request. A club meeting is one request for the group, filed by a mentor; a personal flight is your own.</div></div>
+      <div class="card h"><div class="k">2 &middot; Ask Mr. Burr</div><div class="v">Fill in his form at least <b>24 hours</b> before you want to fly. One flight, one request. A club meeting is one request for the whole group, filed by a mentor. A personal flight is your own request.</div></div>
       <div class="card h"><div class="k">3 &middot; Spotter</div><div class="v">Every flight has a spotter with eyes on the aircraft. Your own drone: anyone you name on the form. A club drone: a <b>mentor</b> is there for the session.</div></div>
-      <div class="card h"><div class="k">4 &middot; Wait for the yes</div><div class="v">Fly only after Mr. Burr approves, and <b>only as requested</b>. No answer is a no.</div></div>
+      <div class="card h"><div class="k">4 &middot; Wait for the yes</div><div class="v">Fly once Mr. Burr approves, and <b>only what you asked for</b>. No answer means no.</div></div>
     </div>
   </details>
 
@@ -296,7 +296,7 @@ footer a{color:var(--ink)}
       <div id="permission"></div>
       <div class="eyebrow"><h2 id="formHead">Permission from Mr. Burr</h2><span class="line"></span><a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">Open the form in a new tab &nearr;</a></div>
       <div class="notyet" id="notYet" hidden></div>
-      <p class="fallback">His Google Form, at least 24 hours before every flight; he answers by email. It needs a Brophy Google sign-in - if it will not show here, open it in a new tab.</p>
+      <p class="fallback">His Google Form, at least 24 hours before every flight, and he answers by email. It needs a Brophy Google sign-in, so if it won't show here, open it in a new tab.</p>
       <div class="card formbox">
         <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform?embedded=true" title="Flight request form" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write">Loading&hellip;</iframe>
       </div>
@@ -315,7 +315,7 @@ footer a{color:var(--ink)}
   </div>
 
   <footer>
-    <span>Badges come from the kiosk and the <a href="../admin/" rel="nofollow">instructor console</a>; what you do here is saved for the pilot you picked.</span>
+    <span>Badges come from the kiosk and the <a href="../admin/" rel="nofollow">console</a>, and what you do here is saved for the pilot you picked.</span>
     <span>mtucker27@ for questions</span>
   </footer>
 </div>
@@ -373,7 +373,7 @@ function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 var COL = { flight: 'var(--sky)', build: 'var(--amber)', know: 'var(--green)', crew: 'var(--violet)' };
 var QUAD = '<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="32" r="6"/><path d="M16 16l11 11M48 16L37 27M16 48l11-11M48 48L37 37"/><circle cx="13" cy="13" r="7"/><circle cx="51" cy="13" r="7"/><circle cx="13" cy="51" r="7"/><circle cx="51" cy="51" r="7"/></g></svg>';
-var DD_HINT = 'About a minute: take off, fly, land safely. Upload it to Google Drive, share it as <b>&nbsp;Anyone with the link&nbsp;</b>, paste the link here - it is checked before you send.';
+var DD_HINT = 'About a minute: take off, fly, land safely. Upload it to Google Drive, share it as <b>&nbsp;Anyone with the link&nbsp;</b>, paste the link here and it gets checked before you send.';
 
 /* ---------- banner + order ---------- */
 function drawTop(st) {
@@ -397,12 +397,12 @@ function drawTop(st) {
   perm.className = 'stat ' + c2;
   perm.innerHTML = '<div class="k">2 &middot; Permission from Mr. Burr</div>' +
     '<div class="nm">' + (!p ? 'Every flight' : st.cleared ? 'Ask before every flight' : 'Locked') + '</div>' +
-    '<div class="v">' + (!p ? 'His form, at least 24 hours ahead. You fly only after a yes.' : st.cleared ? 'Send his form at least <b>24 hours ahead</b>; he answers by email. Fly only after a yes, as requested.' : 'Get certified first. A request from an uncertified pilot will not be approved.') + '</div>';
+    '<div class="v">' + (!p ? 'His form, at least 24 hours ahead. You fly once you have a yes.' : st.cleared ? 'Send his form at least <b>24 hours ahead</b> and he answers by email. Fly once you have a yes, and only what you asked for.' : 'Get certified first, a request from an uncertified pilot won\'t be approved.') + '</div>';
 }
 function picker() {
   var names = ST.data && ST.data.pilots ? ST.data.pilots.map(function (p) { return p.name; }).sort() : [];
   return '<div class="card gate"><div class="k">Who is asking?</div><h3>Select your profile</h3>' +
-    '<p>Pick your name - the same one you use at the kiosk - and the page shows your certification, your drones and Mr. Burr\'s form.</p>' +
+    '<p>Pick your name (the same one you use on the kiosk) and the page shows your certification, your drones and Mr. Burr\'s form.</p>' +
     '<input type="text" id="gateName" list="gateNames" placeholder="First name and last initial, e.g. Micah T." autocomplete="off" spellcheck="false" maxlength="28">' +
     '<datalist id="gateNames">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
     '<div class="row"><button type="button" class="btn primary" id="gateGo">That\'s me</button></div>' +
@@ -598,7 +598,7 @@ function camOpen(badgeId) {
 function camLive() {
   cam.data = null; camStop();
   var view = $('camView');
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { view.textContent = 'This browser cannot open the camera here - choose a file instead.'; camShow(['camPick']); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { view.textContent = 'This browser can\'t open the camera here, so choose a file instead.'; camShow(['camPick']); return; }
   view.textContent = 'Allow the camera when your browser asks…'; camShow(['camPick']);
   navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false }).then(function (st) {
     if (!$('cam').classList.contains('open')) { st.getTracks().forEach(function (t) { t.stop(); }); return; }
@@ -632,7 +632,7 @@ $('camShoot').onclick = function () {
 $('camPick').onclick = function () { $('camFile').click(); };
 $('camFile').onchange = function () {
   var f = this.files && this.files[0]; this.value = ''; if (!f) return;
-  if (isPaper()) { CL.fileToJpeg(f, function (d, img) { if (img) camUse(cropLetter(img, img.naturalWidth, img.naturalHeight)); else $('camMsg').textContent = 'That file is not a photo this browser can read.'; }); return; }
+  if (isPaper()) { CL.fileToJpeg(f, function (d, img) { if (img) camUse(cropLetter(img, img.naturalWidth, img.naturalHeight)); else $('camMsg').textContent = 'That file isn\'t a photo this browser can read.'; }); return; }
   CL.fileToData(f, function (d, err) { if (d) camUse(d); else $('camMsg').textContent = err || 'Could not read that file.'; });
 };
 $('camRetake').onclick = camLive;
@@ -662,7 +662,7 @@ $('ddPick').onclick = function () { $('ddFile').click(); };
 $('ddFile').onchange = function () {
   var f = this.files && this.files[0]; this.value = ''; if (!f) return;
   CL.fileToJpeg(f, function (d) {
-    if (!d) { $('ddMsg').textContent = 'That file is not a picture this browser can read.'; return; }
+    if (!d) { $('ddMsg').textContent = 'That file isn\'t a picture this browser can read.'; return; }
     dd.pic = d; var img = new Image(); img.src = d; img.alt = 'the drone'; $('ddPick').innerHTML = ''; $('ddPick').appendChild(img); ddReady();
   });
 };
@@ -671,14 +671,14 @@ $('ddVideo').addEventListener('input', function () {
   clearTimeout(dd.timer); dd.ok = false; ddReady();
   var id = CL.driveId(this.value.trim());
   if (!this.value.trim()) { ddChk(DD_HINT, ''); return; }
-  if (!id) { ddChk('That is not a Google Drive file link. In Drive: right-click the video &rarr; Share &rarr; Copy link. It looks like drive.google.com/file/d/&hellip;/view', 'bad'); return; }
+  if (!id) { ddChk('That isn\'t a Google Drive file link. In Drive: right-click the video &rarr; Share &rarr; Copy link. It looks like drive.google.com/file/d/&hellip;/view', 'bad'); return; }
   ddChk('Checking the link&hellip;', '');
   dd.timer = setTimeout(function () {
     CL.driveCheck(id, function (pub) {
       if (CL.driveId($('ddVideo').value.trim()) !== id) return;
       if (pub === true) { dd.drive = id; dd.ok = true; ddChk('<img src="' + CL.driveThumb(id) + '" alt="" referrerpolicy="no-referrer"><span><b>Public</b> - a mentor can watch it. <a href="' + CL.driveOpen(id) + '" target="_blank" rel="noopener">Open it &#8599;</a></span>', 'ok'); }
       else if (pub === false) ddChk('<b>Not public.</b> In Drive: Share &rarr; General access &rarr; <b>Anyone with the link</b>, then paste the link again.', 'bad');
-      else ddChk('Could not check the link (no answer from Drive). Make sure it is shared as <b>Anyone with the link</b>; a mentor will see if it opens.', '');
+      else ddChk('Couldn\'t check the link (no answer from Drive). Make sure it\'s shared as <b>Anyone with the link</b> and a mentor will see if it opens.', '');
       if (pub !== true) { dd.drive = null; dd.ok = false; }
       ddReady();
     });

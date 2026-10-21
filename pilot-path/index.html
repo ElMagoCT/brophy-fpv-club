@@ -252,10 +252,10 @@ footer a{color:var(--ink)}
   <details class="howbox">
     <summary class="eyebrow"><h2>How it works</h2><span class="rule"></span><span class="hint">quiz, bench and witnessed badges &middot; checkpoints</span></summary>
     <div class="how">
-      <div class="card h"><div class="k">Quiz badges</div><div class="v">Short lessons, then a 10-question quiz - all opened right here from the badge card, with <b>Proceed to next</b> when each one ends. <b>80 % passes.</b> Retake as often as you like; your best score counts. The kiosk awards these by itself.</div></div>
-      <div class="card h"><div class="k">Bench badges</div><div class="v">Step-by-step instructions on the kiosk or here. Tick the boxes as you go, then <b>submit a photo</b> of your work right from the card &mdash; a mentor reviews it and passes or fails it.</div></div>
-      <div class="card h"><div class="k">Witnessed badges</div><div class="v">Each card lists its <b>requirements</b> as boxes, with a lesson and a video where there is one. Practise until you can tick them all, then a mentor who holds the badge watches you. <b>Event Ops</b> starts with a short quiz.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is just the drone things, short on purpose: five quick parts, doable in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it; when they are all done it gets a <b>big green &#10003;</b> and you may attempt it with a mentor watching. Pass it and <b>you are on that tier.</b> Passing <b>never grants permission to fly</b>: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr before every campus flight, 24 h ahead. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total &mdash; <b>Mentor</b> is for Tier 2 pilots.</div></div>
+      <div class="card h"><div class="k">Quiz badges</div><div class="v">Short lessons, then a 10-question quiz - all opened right here from the badge card, with <b>Proceed to next</b> when each one ends. <b>80 % passes.</b> Retake as much as you want, your best score counts, and the badge is awarded automatically.</div></div>
+      <div class="card h"><div class="k">Bench badges</div><div class="v">Step-by-step instructions, here or on the kiosk. Tick the boxes as you go, then <b>submit a photo</b> of your work right from the card and a mentor checks it.</div></div>
+      <div class="card h"><div class="k">Witnessed badges</div><div class="v">Each card lists its <b>requirements</b> as boxes, with a lesson and a video where there is one. Practice until you can tick them all, then a mentor who holds the badge watches you. <b>Event Ops</b> starts with a short quiz.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is on purpose just the drone things: five quick parts you can do in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it. Once they're all done it gets a <b>big green &#10003;</b> and you can try it with a mentor watching. Pass it and <b>you're on that tier.</b> Passing a checkpoint <b>isn't permission to fly</b> by itself: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr before every campus flight, 24 h ahead. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total. <b>Mentor</b> is for Tier 2 pilots.</div></div>
     </div>
   </details>
 
@@ -265,7 +265,7 @@ footer a{color:var(--ink)}
   </section>
 
   <footer>
-    <span>Kiosk hours and earned badges come from the lab kiosk. Lessons and ticks you do here are saved for the pilot you picked and mirrored to the club, forward-only; the kiosk is the record of truth. Instructors approve badges in the <a href="../admin/#approvals" rel="nofollow">instructor console</a>.</span>
+    <span>Sim hours and earned badges come from the club kiosk. Lessons and ticks you do here are saved for the pilot you picked and synced to the club (they only ever go up, and the kiosk has the final say). Mentors approve badges in the <a href="../admin/#approvals" rel="nofollow">console</a>.</span>
     <span>mtucker27@ for questions</span>
   </footer>
 </div>
@@ -614,7 +614,7 @@ function card(b, open) {
    Clearance, and a passed checkpoint unlocks that club drone in the
    pilot's Drone Portfolio there. */
 function permitLine(b) {
-  var what = b.id === 'tiny-whoop' ? 'Passing this certification <b>never grants permission to fly</b>.' : 'Passing this <b>never grants permission to fly</b>.';
+  var what = b.id === 'tiny-whoop' ? 'Passing this certification <b>isn\'t permission to fly</b> by itself.' : 'Passing this <b>isn\'t permission to fly</b> by itself.';
   var drone = { 'tiny-whoop': 'the club Meteor 75 Pro', 'pavo-flight': 'the club Pavo 20 Pro' }[b.id];
   return '<div class="permit">' + what + ' Get <a href="../clearance/">Flight Clearance</a>' + (drone ? ' (passing adds ' + drone + ' to your portfolio)' : '') + ', then ask Mr. Burr before <b>every</b> flight, <b>24 hours ahead</b>.</div>';
 }
@@ -628,7 +628,7 @@ function prereqPanel(b) {
   }).join('');
   var all = pilot && done === mates.length;
   var msg = !pilot ? 'Pick your name and each box ticks itself as you earn the badge.'
-    : (all ? '<b>All done.</b> You may attempt the checkpoint: ask a mentor to watch.' : (mates.length - done) + ' to go. Once every box is ticked you get the big check and may attempt the checkpoint.');
+    : (all ? '<b>All done.</b> You can try the checkpoint, just ask a mentor to watch.' : (mates.length - done) + ' to go. Once every box is ticked you get the big check and can try the checkpoint.');
   return '<div class="pre"><div class="ph">Prerequisites' + (pilot ? ' · ' + done + ' of ' + mates.length : ' · ' + mates.length + ' badges') + '</div>' +
     '<ul>' + li + '</ul><div class="big' + (all ? ' on' : '') + '" title="' + (all ? 'Ready to attempt' : 'Not yet') + '">✓</div>' +
     '<div class="pmsg">' + msg + '</div></div>';
@@ -653,7 +653,7 @@ function more(b, s) {
       h += '<li class="req step" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(FS.stepText(t)) + '</span><span class="rls">' + vidLink(t && t.v) + '</span></li>';
     });
     h += '</ul>';
-    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done — passed by a mentor.' : 'submit a photo of your work below; a mentor reviews it and passes or fails it. A pass shows here within a minute.') + '</div>';
+    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done — passed by a mentor.' : 'submit a photo of your work below and a mentor checks it. A pass shows here within a minute.') + '</div>';
   } else if (b.type === 'witnessed') {
     if (b.reqs) {
       var kp2 = kioskPilot(), kh2 = kp2 ? (kp2.totalMs || 0) / 3600000 : 0;
@@ -661,7 +661,7 @@ function more(b, s) {
       if (b.rule) h += '<div class="rule1">' + esc(b.rule) + '</div>';
       if (badgeItems(b).length) h += startBtn(b);
     }
-    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + 'a mentor who holds this badge watches you, then signs it off in the instructor console.') + '</div>';
+    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + 'a mentor who holds this badge watches you, then signs it off.') + '</div>';
   }
   if (b.res && b.res.length) {
     h += '<div class="res"><b>Optional resources</b><ul>' + b.res.map(function (r) {
