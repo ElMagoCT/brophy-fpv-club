@@ -714,6 +714,9 @@ function celebrate() {
 /* ---------- boot ---------- */
 CL.on(render);
 render();
+/* picking or switching a profile reloads the page (2026-10-20, Micah: things
+   did not always load otherwise); signing out just re-renders */
+document.addEventListener('site:pilot', function (e) { if (e.detail && e.detail.name) setTimeout(function () { location.reload(); }, 50); });
 if (location.hash && /^#(badges|droneSec|permission|faa-trust|safe-flight|pilot-agreement|drone-portfolio)$/.test(location.hash)) setTimeout(function () {
   var id = location.hash.slice(1), el = $(id) || document.querySelector('.badge[data-id="' + id + '"]');
   if (el && el.classList.contains('badge')) el.classList.add('open');
