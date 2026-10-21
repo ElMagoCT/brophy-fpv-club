@@ -218,6 +218,9 @@ section{margin-top:26px}
 .dlg .ttl{font-family:var(--font-sketch);font-weight:700;font-size:24px}
 .dlg .view{background:#111;border-radius:9px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center;color:#f2ece0;font-size:14px;text-align:center;padding:12px}
 .dlg video,.dlg .view img{width:100%;height:100%;object-fit:contain;display:block}
+/* the signed paper: a Letter-shaped frame; what you see in it is what is sent (2026-10-20) */
+.dlg .view.letter{aspect-ratio:8.5/11;max-height:62vh;margin:0 auto}
+.dlg .view.letter video,.dlg .view.letter img{object-fit:cover}
 .dlg textarea,.dlg input[type=text],.dlg input[type=url]{font:15px var(--font-body);color:var(--ink);border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 10px;width:100%;background:#fff}
 .dlg textarea{min-height:56px;resize:vertical}
 .dlg label{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:4px}
@@ -585,6 +588,7 @@ function camOpen(badgeId) {
   var pdfOk = b.id === 'faa-trust';
   $('camFile').accept = pdfOk ? 'image/*,application/pdf,.pdf' : 'image/*';
   $('camTitle').textContent = b.kind === 'paper' ? 'Photo of the signed paper' : (pdfOk ? 'Your TRUST certificate (photo or PDF)' : 'Photo for ' + b.name);
+  $('camView').classList.toggle('letter', b.kind === 'paper');
   $('camNote').value = ''; $('camMsg').textContent = '';
   $('cam').classList.add('open'); camLive();
 }
@@ -600,6 +604,16 @@ function camLive() {
     view.innerHTML = ''; view.appendChild(v); camShow(['camShoot', 'camPick']);
   }).catch(function () { view.textContent = 'No camera permission - choose a file instead.'; camShow(['camPick']); });
 }
+/* the signed paper is cropped to 8.5 x 11, centred, before it is shrunk - the
+   frame in the dialog shows exactly that part */
+function cropLetter(src, w, h) {
+  var R = 8.5 / 11, cw = w, ch = h;
+  if (w / h > R) cw = Math.round(h * R); else ch = Math.round(w / R);
+  var max = 1600, k = Math.min(1, max / Math.max(cw, ch));
+  var c = document.createElement('canvas'); c.width = Math.round(cw * k); c.height = Math.round(ch * k);
+  c.getContext('2d').drawImage(src, Math.round((w - cw) / 2), Math.round((h - ch) / 2), cw, ch, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.8);
+}
 function camUse(data) {
   cam.data = data; camStop();
   var view = $('camView'); view.innerHTML = '';
@@ -607,10 +621,15 @@ function camUse(data) {
   else { var img = new Image(); img.src = data; img.alt = 'your photo'; view.appendChild(img); }
   camShow(['camSend', 'camRetake']); $('camMsg').textContent = 'Happy with it? Submit it for review.';
 }
-$('camShoot').onclick = function () { var v = $('camView').querySelector('video'); if (!v || !v.videoWidth) return; camUse(CL.shrink(v, v.videoWidth, v.videoHeight)); };
+function isPaper() { return !!(cam.badge && cam.badge.kind === 'paper'); }
+$('camShoot').onclick = function () {
+  var v = $('camView').querySelector('video'); if (!v || !v.videoWidth) return;
+  camUse(isPaper() ? cropLetter(v, v.videoWidth, v.videoHeight) : CL.shrink(v, v.videoWidth, v.videoHeight));
+};
 $('camPick').onclick = function () { $('camFile').click(); };
 $('camFile').onchange = function () {
   var f = this.files && this.files[0]; this.value = ''; if (!f) return;
+  if (isPaper()) { CL.fileToJpeg(f, function (d, img) { if (img) camUse(cropLetter(img, img.naturalWidth, img.naturalHeight)); else $('camMsg').textContent = 'That file is not a photo this browser can read.'; }); return; }
   CL.fileToData(f, function (d, err) { if (d) camUse(d); else $('camMsg').textContent = err || 'Could not read that file.'; });
 };
 $('camRetake').onclick = camLive;
