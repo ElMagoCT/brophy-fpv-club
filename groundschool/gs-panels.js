@@ -145,8 +145,6 @@ var GSPanels = (function(){
       a:1, why:'That pack never flies again - swap to a good one, then go. A puffed cell has already vented gas inside itself.' },
     { text:'The flags on the field are moving in a steady breeze.',
       a:1, why:'A steady breeze is "not yet" for a whoop. Wait for it to drop, or ask a mentor whether it\'s fine for what you\'re flying.' },
-    { text:'Your video is clean everywhere except the far end of the field, where it picks up light static.',
-      a:0, why:'That\'s analog working exactly as designed, and it has just told you where your range ends. Nothing needs fixing. Fly, and treat that spot as the boundary.' },
     { text:'Two others are already flying on Raceband R1 and R5. You\'re set to R8.',
       a:0, why:'R8 is 5917 MHz, R5 is 5806 and R1 is 5658 - your nearest neighbor is 111 MHz away, which is plenty. Go.' },
     { text:'Your pack is charged, the props are clean, your spotter is ready and the area is clear.',
