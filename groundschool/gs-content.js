@@ -242,51 +242,47 @@ var GS_ART = {
       '<path d="M-14 0 L-14 -5 M14 0 L14 -5"/>' +
     '</g>' +
     '<text x="160" y="26" text-anchor="middle" font-family="var(--font-mono)" font-size="11.5" fill="var(--ink)" letter-spacing="2.2">TWO JOBS, EVERY FLIGHT</text>' +
-    '<text x="160" y="200" text-anchor="middle" font-family="var(--font-hand)" font-size="15" fill="var(--ink-soft)">nobody walks out until DISARMED is called</text>' +
+    '<text x="160" y="200" text-anchor="middle" font-family="var(--font-hand)" font-size="15" fill="var(--ink-soft)">nobody walks out until the props have stopped</text>' +
     '</svg>',
 
-  /* the four calls, as a strip */
-  callouts: '<svg viewBox="0 0 320 170">' +
+  /* the two calls, as a strip */
+  callouts: '<svg viewBox="0 0 320 130">' +
     '<g font-family="var(--font-mono)" font-size="12" letter-spacing="2">' +
-      '<rect x="16" y="20" width="288" height="26" fill="none" stroke="var(--rust)" stroke-width="1.8"/>' +
-      '<text x="26" y="38" fill="var(--rust)">ARMING</text>' +
-      '<text x="300" y="38" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="var(--ink-soft)">before the props spin</text>' +
-      '<rect x="16" y="54" width="288" height="26" fill="none" stroke="var(--amber)" stroke-width="1.8"/>' +
-      '<text x="26" y="72" fill="var(--amber)">TAKEOFF</text>' +
-      '<text x="300" y="72" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="var(--ink-soft)">leaving the ground</text>' +
-      '<rect x="16" y="88" width="288" height="26" fill="none" stroke="var(--amber)" stroke-width="1.8"/>' +
-      '<text x="26" y="106" fill="var(--amber)">LANDING</text>' +
-      '<text x="300" y="106" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="var(--ink-soft)">before you descend</text>' +
-      '<rect x="16" y="122" width="288" height="26" fill="var(--green)" stroke="var(--green)" stroke-width="1.8"/>' +
-      '<text x="26" y="140" fill="#fff">DISARMED</text>' +
-      '<text x="300" y="140" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="#fff">props stopped. walk.</text>' +
+      '<rect x="16" y="22" width="288" height="34" fill="none" stroke="var(--amber)" stroke-width="2"/>' +
+      '<text x="26" y="44" fill="var(--amber)">TAKEOFF</text>' +
+      '<text x="296" y="44" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="var(--ink-soft)">leaving the ground</text>' +
+      '<rect x="16" y="72" width="288" height="34" fill="var(--green)" stroke="var(--green)" stroke-width="2"/>' +
+      '<text x="26" y="94" fill="#fff">LANDING</text>' +
+      '<text x="296" y="94" text-anchor="end" font-family="var(--font-hand)" font-size="14" fill="#fff">before you descend</text>' +
     '</g>' +
     '</svg>',
 
-  /* props off the bench */
-  propsOff: '<svg viewBox="0 0 300 180">' +
-    '<rect x="20" y="112" width="260" height="12" fill="var(--paper-2)" stroke="var(--ink)" stroke-width="2"/>' +
-    '<path d="M40 124 L40 158 M260 124 L260 158" stroke="var(--ink)" stroke-width="2"/>' +
-    /* quad body on the bench, no props */
-    '<g transform="translate(150,96)">' +
-      '<path d="M-30 0 L30 0 M-30 -8 L-30 0 M30 -8 L30 0" stroke="var(--ink)" stroke-width="3" fill="none"/>' +
-      '<rect x="-13" y="-7" width="26" height="10" rx="2" fill="var(--paper-2)" stroke="var(--ink)" stroke-width="2"/>' +
-      '<circle cx="-30" cy="-11" r="4.5" fill="none" stroke="var(--ink-soft)" stroke-width="1.8"/>' +
-      '<circle cx="30" cy="-11" r="4.5" fill="none" stroke="var(--ink-soft)" stroke-width="1.8"/>' +
+  /* the rules sheet on the wall by the sims */
+  rulesSheet: '<svg viewBox="0 0 300 180">' +
+    '<rect x="88" y="14" width="124" height="156" rx="3" fill="var(--paper-2)" stroke="var(--ink)" stroke-width="2.2"/>' +
+    '<rect x="136" y="8" width="28" height="12" rx="2" fill="var(--ink)"/>' +
+    '<text x="150" y="42" text-anchor="middle" font-family="var(--font-mono)" font-size="9.5" fill="var(--ink)" letter-spacing="1.6">FLIGHT RULES</text>' +
+    '<g stroke="var(--ink-soft)" stroke-width="2" stroke-linecap="round">' +
+      '<path d="M104 60 L196 60 M104 74 L196 74 M104 88 L196 88 M104 102 L196 102 M104 116 L196 116 M104 130 L196 130"/>' +
     '</g>' +
-    /* the two props, set aside, circled */
-    '<g transform="translate(66,52)">' +
-      '<ellipse cx="0" cy="0" rx="22" ry="5" fill="var(--rust)" opacity=".85"/>' +
-      '<ellipse cx="0" cy="0" rx="5" ry="22" fill="var(--rust-soft)" opacity=".7"/>' +
-      '<circle cx="0" cy="0" r="26" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4"/>' +
+    '<path d="M104 144 L196 144" stroke="var(--rust)" stroke-width="2.6" stroke-linecap="round"/>' +
+    '<text x="150" y="160" text-anchor="middle" font-family="var(--font-mono)" font-size="8" fill="var(--rust)" letter-spacing="1.2">LAND MEANS LAND</text>' +
+    '<text x="46" y="100" text-anchor="middle" font-family="var(--font-hand)" font-size="14" fill="var(--ink-soft)">seven</text>' +
+    '<text x="254" y="100" text-anchor="middle" font-family="var(--font-hand)" font-size="14" fill="var(--ink-soft)">rules</text>' +
+    '</svg>',
+
+  /* the flight request form, a day ahead */
+  askFirst: '<svg viewBox="0 0 300 180">' +
+    '<rect x="40" y="30" width="130" height="130" rx="4" fill="var(--paper-2)" stroke="var(--ink)" stroke-width="2.2"/>' +
+    '<text x="105" y="54" text-anchor="middle" font-family="var(--font-mono)" font-size="9" fill="var(--ink)" letter-spacing="1.4">FLIGHT REQUEST</text>' +
+    '<g stroke="var(--ink-soft)" stroke-width="1.8" stroke-linecap="round">' +
+      '<path d="M56 74 L154 74 M56 92 L154 92 M56 110 L154 110 M56 128 L120 128"/>' +
     '</g>' +
-    '<g transform="translate(234,52)">' +
-      '<ellipse cx="0" cy="0" rx="22" ry="5" fill="var(--rust)" opacity=".85"/>' +
-      '<ellipse cx="0" cy="0" rx="5" ry="22" fill="var(--rust-soft)" opacity=".7"/>' +
-      '<circle cx="0" cy="0" r="26" fill="none" stroke="var(--green)" stroke-width="2" stroke-dasharray="5 4"/>' +
-    '</g>' +
-    '<text x="150" y="24" text-anchor="middle" font-family="var(--font-mono)" font-size="11.5" fill="var(--green)" letter-spacing="2">PROPS OFF. EVERY TIME.</text>' +
-    '<text x="150" y="174" text-anchor="middle" font-family="var(--font-hand)" font-size="15" fill="var(--ink-soft)">a quad with props on is a loaded tool</text>' +
+    '<circle cx="222" cy="95" r="42" fill="none" stroke="var(--ink)" stroke-width="2.4"/>' +
+    '<path d="M222 95 L222 62 M222 95 L244 95" stroke="var(--rust)" stroke-width="2.8" stroke-linecap="round"/>' +
+    '<circle cx="222" cy="95" r="3" fill="var(--rust)"/>' +
+    '<text x="222" y="156" text-anchor="middle" font-family="var(--font-mono)" font-size="11" fill="var(--rust)" letter-spacing="2">24 H AHEAD</text>' +
+    '<text x="150" y="20" text-anchor="middle" font-family="var(--font-mono)" font-size="11.5" fill="var(--green)" letter-spacing="2">ASK FIRST. EVERY FLIGHT.</text>' +
     '</svg>',
 
   /* LiPo safety: bag, hard surface, never unattended */
@@ -777,7 +773,7 @@ var GS_MODULES = [
      lesson-id stem; badge is the catalogue id in config.json / badges.js.
      FLY has no badge: it holds the drills the witnessed flight badges use. */
   { code:'SAF', badge:'safe-flight',           tier:0, name:'Safe Flight',           mins:10,
-    blurb:'Who flies, who watches, the four calls, the rules sheet by the sims, and the go / no-go call. Pass the quiz, earn the badge.' },
+    blurb:'Who flies, who watches, the two calls, the rules sheet by the sims, and the go / no-go call. Pass the quiz, earn the badge.' },
   { code:'SPT', badge:'spotter',               tier:2, name:'Spotter',               mins:5,
     blurb:'The spotter\'s job, the check before the battery goes in, and what to call. Pass the quiz, earn the badge.' },
   { code:'BAT', badge:'battery-care',          tier:0, name:'Battery Care',          mins:12,
@@ -809,29 +805,26 @@ var GS_COURSE = [
         { n:'SPOTTER', l:'eyes on the aircraft', c:'sky' }
       ],
       art:'threeJobs', cap:'one flies. one watches.' },
-    { h:'Say it out loud', tab:'The four calls',
-      p:['Four calls, every flight. They are for your spotter - you always need one to fly - and for everyone around you. Nobody walks out to the aircraft until they have <b>heard</b> DISARMED.'],
+    { h:'Say it out loud', tab:'The two calls',
+      p:['Two calls, every flight. They are for your spotter - you always need one to fly - and for everyone around you. Nobody walks out to the aircraft until it is on the ground with the props <b>stopped</b>.'],
       steps:[
-        { t:'Arming',   d:'before the props spin' },
         { t:'Takeoff',  d:'as you leave the ground' },
-        { t:'Landing',  d:'before you descend' },
-        { t:'Disarmed', d:'props stopped. now you may walk' }
+        { t:'Landing',  d:'before you descend' }
       ],
-      art:'callouts', cap:'four words. say all of them.',
+      art:'callouts', cap:'two words. say both of them.',
       note:'If you are not sure whether someone is flying, ask. Out loud. Every time.' },
-    { h:'Props off at the Brophy bench', tab:'Props off',
-      p:['A quad on a bench with props fitted is dangerous. One wrong button or one wrong click in Betaflight and you, or someone else, gets really hurt.'],
-      cols:{ tone:'dd', ha:'Props come off when', hb:'Not an excuse',
-        a:['The battery is plugged in','Arming inside','Spinning motors in Betaflight'],
-        b:['"I\'ll be quick"','"It\'s only a setting"','"It isn\'t armed"'] },
-      exceptions:['A tiny whoop can keep its props on as long as you are holding it down','Anything bigger can too, if someone with the Mentor badge is supervising and the drone is held or strapped down'],
-      art:'propsOff', cap:'off the aircraft, not just idle' },
+    { h:'Off or unplugged to move it', tab:'Moving it',
+      p:['A powered-up quad in your hand is one switch away from spinning. Whenever a drone is being carried - bench to pad, pad to case, across the room - it is <b>off or unplugged</b>.'],
+      cols:{ tone:'dd', ha:'Always', hb:'Not an excuse',
+        a:['Powered off, or the battery out','Packs in their box or bag','Props clear of fingers and straps'],
+        b:['"I\'ll be quick"','"It isn\'t armed"','"It\'s only across the room"'] },
+      note:'Off, unplugged, then walk.' },
     { h:'Where the people are',
       p:['<b>Default flight rules.</b> If somebody walks into the flying area, you <b>land</b>. You do not fly around them, and you do not hover and wait to see what they do.'],
-      cols:{ tone:'dd', ha:'Always', hb:'Never',
+      cols:{ tone:'dd', ha:'Always', hb:'Don\'t',
         a:['Where your spotter can see it','Within a one-minute walk','Land the moment someone wanders in'],
-        b:['Over people','Over a road','Over 400 ft'] },
-      exceptions:['The people have given their consent','A mentor has given you special permission'],
+        b:['Fly over people','Fly over a road','Fly over 400 ft'] },
+      exceptions:['The people know the drone is up and have agreed to it','A mentor has given you special permission'],
       art:'ceiling', cap:'400 ft, in sight, and out of everybody\'s way' },
     { h:'The battery lives on the ground', tab:'Battery on the ground',
       p:['Packs travel in a fire-resistant bag, charge on a hard surface with nothing stacked on top, and are <b>never</b> left charging unattended.'],
@@ -1323,15 +1316,15 @@ var GS_COURSE = [
     { h:'Seven flight rules. Know them. Follow them.', tab:'The sheet',
       p:['This is the sheet on the wall by the simulators. Safe Flight is the badge that says you know it and you follow it - at all times you are with the Brophy FPV Club.'],
       steps:[
-        { t:'Permission before every campus flight', d:'the Brophy Drone Certification first, then Mr. Burr\'s permission - his form on the website\'s Flight Clearance page, 24 hours ahead, with a yes - a badge is never permission' },
+        { t:'Permission before every campus flight', d:'the Brophy Drone Certification first, then Mr. Burr\'s form on the website\'s Flight Clearance page - filed at least 24 hours ahead, answered with a yes. A badge is never permission' },
         { t:'Spotter for every goggle flight', d:'eyes on the aircraft the whole battery - that is the law, not a club habit' },
-        { t:'Never over people',           d:'and never between you and the aircraft' },
-        { t:'Call out your arm',           d:'in the flight zone, facing away, after the ARMING call' },
-        { t:'Battery out to carry it',     d:'and packs live in their box or bag' },
-        { t:'Props off on the bench',      d:'every time before a quad is plugged into a battery' },
-        { t:'The instructor\'s word ends the flight', d:'"LAND" means now' }
+        { t:'Don\'t fly over people',       d:'unless they know the drone is up and have agreed to it - and never between you and the aircraft' },
+        { t:'Call TAKEOFF and LANDING',    d:'out loud, every flight, for your spotter and everyone near you' },
+        { t:'Off or unplugged to move it', d:'a drone being carried is powered off or has its battery out - and packs live in their box or bag' },
+        { t:'Inspect before, report after', d:'check the drone, props, frame, battery and video link before you fly; every crash or incident goes to a mentor at once, even with no visible damage' },
+        { t:'"LAND" means land',           d:'from your spotter, a mentor or a faculty member - now, no questions until the props stop' }
       ],
-      art:'propsOff', cap:'the sheet by the sims' },
+      art:'rulesSheet', cap:'the sheet by the sims' },
     { h:'Who may fly what', tab:'Tiers',
       p:['The badges are not decoration. They are the club\'s answer to <b>who may touch which drone</b>, and that answer is checked before gear comes out of the case. Tiers 1, 2 and 3 each open with a <b>checkpoint</b>: a flight a mentor watches once every one of its <b>prerequisite</b> badges is ticked. Pass it and you are on that tier.'],
       cols:{ tone:'vs', ha:'You may', hb:'Once',
@@ -1348,12 +1341,12 @@ var GS_COURSE = [
         { t:'Meetings and events are filed by a mentor', d:'the mentor fills the form for the club and tells everyone who needs to know' }
       ],
       note:'The simulators never need a form. Changing the plan - a different day, place or drone - is a new request.',
-      art:'propsOff', cap:'ask first, every time' },
+      art:'askFirst', cap:'ask first, every time' },
     { h:'Fine, and not fine', tab:'Edge cases',
       p:['Most rule breaks are shortcuts, not rebellion. These are the ones the club actually sees.'],
       cols:{ tone:'dd', ha:'Fine', hb:'Not fine',
-        a:['Calling ARMING, then a hover check on the pad','Spinning a tiny whoop\'s motors with props on, held down','Props on at the bench with a mentor supervising and the drone held or strapped down','A quick battery on the field, approved yesterday on the form for today'],
-        b:['Props on, battery in, nobody holding it','Arming without calling it out','Flying in goggles with nobody watching the aircraft','"Just one battery" with no request filed, or before the yes came back'] },
+        a:['Calling TAKEOFF, then a hover check on the pad','A pass over a friend who knows you are up and said yes','Reporting a bump that left no visible damage','A quick battery on the field, approved yesterday on the form for today'],
+        b:['Carrying a powered-up quad across the room','Taking off without calling it','Flying in goggles with nobody watching the aircraft','"Just one battery" with no request filed, or before the yes came back'] },
       note:'Not sure whether something is allowed? Ask a mentor first.' }
   ]
 },
@@ -1393,15 +1386,13 @@ var GS_COURSE = [
 {
   id:'gs-spt-02', mod:'SPT', ord:20, title:'What to call', mins:1, kind:'read',
   cards:[
-    { h:'The four calls', tab:'The four calls',
-      p:['The pilot says them; you listen for them and repeat them if anyone nearby did not hear. Nobody walks out to the aircraft until they have heard DISARMED.'],
+    { h:'The two calls', tab:'The two calls',
+      p:['The pilot says them; you listen for them and repeat them if anyone nearby did not hear. Nobody walks out to the aircraft until it is on the ground with the props stopped.'],
       steps:[
-        { t:'Arming',   d:'before the props spin' },
         { t:'Takeoff',  d:'as it leaves the ground' },
-        { t:'Landing',  d:'before it descends' },
-        { t:'Disarmed', d:'props stopped. now people may walk' }
+        { t:'Landing',  d:'before it descends' }
       ],
-      art:'callouts', cap:'four words. hear all of them.' },
+      art:'callouts', cap:'two words. hear both of them.' },
     { h:'What you call out', tab:'Your calls',
       p:['Short words, loud and early. "Person left" beats a full sentence.'],
       steps:[
@@ -1778,8 +1769,8 @@ var GS_COURSE = [
 {
   id:'gs-evt-03', mod:'EVT', ord:30, title:'Pilot and spotter call-outs', mins:2, kind:'read',
   cards:[
-    { h:'The same four calls, louder', tab:'Calls',
-      p:['ARMING, TAKEOFF, LANDING, DISARMED - the four calls from Safe Flight - at an event, said loudly enough for the crew table to hear over a crowd. Plus three the spotter owns.'],
+    { h:'The same two calls, louder', tab:'Calls',
+      p:['TAKEOFF and LANDING - the two calls from Safe Flight - at an event, said loudly enough for the crew table to hear over a crowd. Plus the calls the crew owns.'],
       steps:[
         { t:'"CLEAR"',      d:'spotter: the zone is empty, you may arm' },
         { t:'"PERSON"',     d:'spotter: someone is near or over the line - pilot holds or lands' },
@@ -1788,7 +1779,7 @@ var GS_COURSE = [
       ],
       art:'callouts', cap:'words, not hand signals - the pilot cannot see you' },
     { h:'The handover', tab:'Handover',
-      p:['Two pilots sharing a zone swap on the ground, never in the air. DISARMED from the first, pack out, CLEAR from the spotter, then ARMING from the second. One aircraft in the zone at a time unless the event was planned as a race with its own gates and marshals.'],
+      p:['Two pilots sharing a zone swap on the ground, never in the air. LANDING from the first, props stopped, pack out, CLEAR from the spotter, then TAKEOFF from the second. One aircraft in the zone at a time unless the event was planned as a race with its own gates and marshals.'],
       tip:'Practise the calls at the field until they are boring. At the rally there will be a thousand people and a PA system, and the only thing that will cut through is a habit.' }
   ]
 },
@@ -1827,11 +1818,11 @@ var GS_QUIZ = [
   opts:['Fly around them and keep going','Hover in place until they leave','Land','Climb above them'], a:2,
   why:'You land. Flying around a person keeps a moving aircraft near them, and hovering just makes the decision later.' },
 { mod:'SAF', q:'When may somebody walk downrange?',
-  opts:['When the aircraft looks like it has landed','After they hear the "Disarmed" call','When the pilot takes their goggles off','As soon as it touches the ground'], a:1,
-  why:'The "Disarmed" call means props stopped. Anything you infer by looking is a guess, and props are still turning for a while after touchdown.' },
-{ mod:'SAF', q:'You need to change a Betaflight setting on a larger drone at the Brophy bench, battery plugged in. What comes off first?',
-  opts:['The battery','The props','The antenna','Nothing, it is only a setting'], a:1,
-  why:'Props come off whenever the battery is plugged in on the bench. One wrong click in Betaflight and somebody gets hurt.' },
+  opts:['When the aircraft looks like it has landed','Once it is on the ground and the props have stopped','When the pilot takes their goggles off','As soon as it touches the ground'], a:1,
+  why:'Down, props stopped, then walk. Props are still turning for a while after touchdown, and anything you infer from a distance is a guess.' },
+{ mod:'SAF', q:'Your pre-flight check finds a cracked prop on a club drone. What do you do?',
+  opts:['Fly it gently','Report it to a mentor before you fly','Fly it, then mention it at check-in','Swap it yourself and say nothing'], a:1,
+  why:'Inspect before you fly and report any defect to a mentor first. Starting the flight says the gear was fine - after that, the damage is yours.' },
 /* --- permission to fly (2026-10-16: the school's condition on the grant) --- */
 { mod:'SAF', q:'You passed your Meteor 75 Pro Certification yesterday. May you fly the Meteor on the field after school today?',
   opts:['Yes - the badge is your permission','Only if a mentor is standing next to you','Only if you are certified and asked Mr. Burr 24 hours ahead and got a yes','Yes, anything under 250 g is fine'], a:2,
@@ -1947,24 +1938,24 @@ var GS_QUIZ = [
 { mod:'FLY', q:'Why practise nose-in deliberately instead of avoiding it?',
   opts:['It looks better','It is the only way it stops being a calculation','It uses less battery','It is required for Part 107'], a:1,
   why:'The trick of imagining yourself in the aircraft works, slowly. Slowly is no use at speed. Repetition is what makes it instant.' },
-{ mod:'SAF', q:'You want to check that a larger drone\'s motors spin the right way, and no mentor is around. Where do the props go?',
-  opts:['On, but on low throttle','Off','On, if you are quick','On, if the quad is not armed'], a:1,
-  why:'Spinning motors in Betaflight is a props-off job. The exceptions are a tiny whoop held down, or a bigger quad held or strapped down with a mentor supervising.' },
-{ mod:'SAF', q:'You want to spin the motors on a tiny whoop in Betaflight. Can the props stay on?',
-  opts:['Never','Yes, as long as you are holding it down','Yes, if it sits on the bench by itself','Only outdoors'], a:1,
-  why:'A tiny whoop is the exception: props can stay on as long as you are holding it down.' },
-{ mod:'SAF', q:'Before you arm, you:',
-  opts:['Arm first, then tell people','Call out ARMING, in the flight zone, facing away','Arm on the bench to walk it to the pad','Wait for the spotter to arm it'], a:1,
-  why:'Call out your arm: in the flight zone, facing away, after the ARMING call. Everyone nearby then knows the props are about to spin.' },
+{ mod:'SAF', q:'You clip a wall with a club drone. Nothing looks broken. What now?',
+  opts:['Keep flying, no harm done','Report it to a mentor at once, even with no visible damage','Mention it if someone asks','Check it over yourself after the session'], a:1,
+  why:'Every crash, damage or incident goes to a mentor at once, even with no visible damage. Hidden cracks and bent shafts show up on the next flight.' },
+{ mod:'SAF', q:'Who may fly a drone on Brophy property?',
+  opts:['Anyone with their own drone','Club members only','Anyone who holds the Brophy Drone Certification and has a yes from Mr. Burr for that flight','Anyone with a TRUST certificate'], a:2,
+  why:'Club member or not, club drone or your own: the certification first, then a request for each flight, filed at least 24 hours ahead and answered with a yes.' },
+{ mod:'SAF', q:'Your aircraft is about to leave the ground. What do you say?',
+  opts:['Nothing - the spotter can see it','"TAKEOFF", out loud','A thumbs-up','"CLEAR"'], a:1,
+  why:'Two calls, every flight: TAKEOFF as you leave the ground, LANDING before you descend. Out loud, for your spotter and everyone near you.' },
 { mod:'SAF', q:'A pilot has ticked every prerequisite for the Meteor 75 Pro Certification. What may they fly?',
   opts:['Anything in the club case','The Meteor 75, for their checkpoint flight with a mentor','The Pavo 20 Pro at an event','Nothing until an officer signs a form'], a:1,
   why:'The ticked prerequisites open the checkpoint: a first real Meteor flight with a mentor watching. Pass it and you are Tier 1; the Pavo checkpoint opens Tier 2.' },
-{ mod:'SAF', q:'The instructor says "LAND" while you are halfway through a line. You:',
-  opts:['Finish the line, then land','Ask why over the noise','Land now','Hover and wait for a second call'], a:2,
-  why:'LAND means now. The reason comes after the props stop.' },
+{ mod:'SAF', q:'Your spotter says "LAND" while you are halfway through a line. You:',
+  opts:['Finish the line, then land','Ask why over the noise','Land now','Hover and wait for a mentor to confirm'], a:2,
+  why:'"LAND" means land - from your spotter, a mentor or a faculty member. Now. The reason comes after the props stop.' },
 { mod:'SAF', q:'How do you carry a quad from the bench to the pad?',
-  opts:['Armed, at idle','Battery in, disarmed','Battery out','Props off'], a:2,
-  why:'Battery out to carry it. A disarmed quad with a battery in is one switch away from spinning.' },
+  opts:['Armed, at idle','Battery in, powered up','Powered off, or the battery out','Props off'], a:2,
+  why:'Off or unplugged to move it. A powered-up quad with a battery in is one switch away from spinning.' },
 { mod:'SAF', q:'Flying in goggles with no spotter is:',
   opts:['Fine if the area is clear','Fine for short flights','Not allowed - a visual observer is required','Fine indoors'], a:2,
   why:'Goggles mean you cannot see the aircraft. A spotter watching it is a legal requirement and a club rule.' },
@@ -1976,7 +1967,7 @@ var GS_QUIZ = [
   why:'Never over 400 ft - and always where your spotter can see it.' },
 { mod:'SAF', q:'When may you fly over people?',
   opts:['Never, no exceptions','When they have given consent, or a mentor has given you special permission','When you are higher than 50 ft','When you are flying fast'], a:1,
-  why:'The default is never. The exceptions are people who have agreed to it, or special permission from a mentor.' },
+  why:'Don\'t fly over people. The exceptions are people who know the drone is up and have agreed to it, or special permission from a mentor.' },
 { mod:'SAF', q:'You are not sure whether something is allowed. What is the rule?',
   opts:['If nobody says no, it is fine','Ask first','Try it once and see','Check the website later'], a:1,
   why:'Not being sure is the answer. Ask an instructor or a mentor before you do it.' },
@@ -1997,8 +1988,8 @@ var GS_QUIZ = [
   opts:['Agreeing where the pad is and which way is "away"','Flashing the firmware','Charging the next pack','Picking the music for the video'], a:0,
   why:'Ask a mentor, look around, agree the pad and "away", check props, strap and goggles.' },
 { mod:'SPT', q:'When may somebody walk out to pick up the aircraft?',
-  opts:['When it looks like it has landed','After the "Disarmed" call','When the pilot stands up','When the props slow down'], a:1,
-  why:'Nobody walks out until they have heard DISARMED. Props keep turning for a moment after touchdown.' },
+  opts:['When it looks like it has landed','Once it is on the ground and the props have stopped','When the pilot stands up','When the props slow down'], a:1,
+  why:'Nobody walks out until it is down with the props stopped. Props keep turning for a moment after touchdown.' },
 { mod:'SPT', q:'You do not like something - you are not even sure what. Can you call LAND?',
   opts:['Only with a good reason','Yes - you never need a reason','Only a mentor can call LAND','Only if the battery is low'], a:1,
   why:'Saying LAND is never wrong. A flight can always go again.' },
@@ -2006,7 +1997,7 @@ var GS_QUIZ = [
   opts:['The pilot keeps flying until the battery runs out','The pilot lands - nobody flies goggles without a spotter','You leave quietly','You hand your phone to the pilot'], a:1,
   why:'A goggle flight needs a spotter. If you go, the pilot lands - unless someone else takes over the job.' },
 { mod:'SPT', q:'The aircraft is drifting up and away, getting hard to see. What do you call?',
-  opts:['"HIGH" or "FAR"','"PERSON"','"DISARMED"','Nothing yet'], a:0,
+  opts:['"HIGH" or "FAR"','"PERSON"','"LANDING"','Nothing yet'], a:0,
   why:'Call "HIGH" or "FAR" before it leaves your sight or gets near 400 ft.' },
 { mod:'SPT', q:'What does a good call sound like?',
   opts:['A full sentence, so nothing is missed','Short, loud and early: "Person left"','A hand signal','A quiet word so you do not distract the pilot'], a:1,
@@ -2120,12 +2111,12 @@ var GS_QUIZ = [
   opts:['Only the instructor','Only the spotter','Anyone','Only the pilot'], a:2,
   why:'Anyone who sees a problem ends the flight. No questions until the props stop.' },
 { mod:'EVT', q:'Two pilots share a zone. How do they swap?',
-  opts:['Second pilot takes off as the first lands','First lands, DISARMED, packs out, CLEAR, then the second arms','Both fly, one high one low','The spotter decides in the air'], a:1,
+  opts:['Second pilot takes off as the first lands','First lands, props stopped, packs out, CLEAR, then the second takes off','Both fly, one high one low','The spotter decides in the air'], a:1,
   why:'One aircraft in the zone at a time. Swap on the ground, through the calls.' },
 { mod:'EVT', q:'Before power-up at an event with three pilots, what is agreed first?',
   opts:['Who flies longest','Video channels, one per pilot, written down','Who holds the goggles','The music'], a:1,
   why:'Control links share; video does not. Channels agreed and written before anyone powers up.' },
 { mod:'EVT', q:'What does the pilot call with thirty seconds of battery left?',
-  opts:['LANDING','BATTERY','DISARMED','CLEAR'], a:1,
-  why:'BATTERY tells the spotter the quad is coming home now, before LANDING and DISARMED.' }
+  opts:['LANDING','BATTERY','PERSON','CLEAR'], a:1,
+  why:'BATTERY tells the spotter the quad is coming home now, before the LANDING call.' }
 ];

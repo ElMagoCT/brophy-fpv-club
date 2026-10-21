@@ -196,7 +196,7 @@
 
     // ---------------- Tier 2 · Full-size -> checkpoint Event Pilot
     { id: 'spotter', quiz: 'gs-spt-quiz', tier: 't2', track: 'crew', type: 'knowledge', name: 'Spotter', est: 'about 5 min',
-      do: 'Short course and quiz: the spotter’s job and the four calls.', why: 'FPV pilots can’t see around themselves; at an event a spotter stands beside every pilot.',
+      do: 'Short course and quiz: the spotter’s job and the two calls.', why: 'FPV pilots can’t see around themselves; at an event a spotter stands beside every pilot.',
       lessons: [{ id: 'gs-spt-01', t: 'The spotter’s job' }, { id: 'gs-spt-02', t: 'What to call' }] },
     { id: 'event-ops', quiz: 'gs-evt-quiz', tier: 't2', track: 'know', type: 'witnessed', name: 'Event Ops', est: 'about 40 min',
       do: 'Course and quiz, then run a real flight-zone setup.', why: 'Flying at a game or rally, and a plan for when it goes wrong.',

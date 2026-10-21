@@ -150,7 +150,7 @@ var GSPanels = (function(){
     { text:'Two others are already flying on Raceband R1 and R5. You are set to R8.',
       a:0, why:'R8 is 5917 MHz, R5 is 5806 and R1 is 5658 - your nearest neighbour is 111 MHz away, which is plenty. Go.' },
     { text:'Your pack is charged, the props are clean, your spotter is ready and the area is clear.',
-      a:0, why:'Nothing to change. Part of pre-flight is being able to say "this is fine" and mean it. Call ARMING and go.' },
+      a:0, why:'Nothing to change. Part of pre-flight is being able to say "this is fine" and mean it. Call TAKEOFF and go.' },
     { text:'Indoors, calm air, a full pack, and your spotter has just said the room is clear.',
       a:0, why:'Everything is in place. Fly.' },
     { text:'One prop has a small nick out of the trailing edge.',
