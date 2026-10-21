@@ -627,8 +627,11 @@
       row.appendChild(pass); row.appendChild(fail);
       [frame, who, meta].concat(extra ? [extra] : []).concat(warn ? [warn] : []).concat([note, row]).forEach(function (n) { card.appendChild(n); });
       api('GET', '/api/submission?photo=' + encodeURIComponent(it.photo), null, reviewHeaders()).then(function (j) {
-        var img = document.createElement('img'); img.alt = 'photo from ' + it.pilot; img.src = 'data:' + (j.type || 'image/jpeg') + ';base64,' + j.base64;
-        img.draggable = false;
+        var img;
+        if (j.type === 'application/pdf') {   // 2026-10-20: a TRUST certificate sent as a PDF
+          img = document.createElement('embed'); img.type = 'application/pdf'; img.className = 'pdf';
+        } else { img = document.createElement('img'); img.alt = 'photo from ' + it.pilot; img.draggable = false; }
+        img.src = 'data:' + (j.type || 'image/jpeg') + ';base64,' + j.base64;
         phMsg.remove(); ph.insertBefore(img, ph.firstChild);
         if (card === RV.stage) card.rvZoom(1);
       }).catch(function (e) { phMsg.textContent = 'Could not load the photo: ' + e.message; });

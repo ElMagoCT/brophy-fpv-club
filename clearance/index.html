@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Flight Clearance — Brophy FPV Club</title>
-<meta name="description" content="Brophy FPV Club Flight Clearance: the Brophy Drone Certification in four parts - FAA TRUST, Safe Flight, the Pilot Agreement and your Drone Portfolio.">
+<meta name="description" content="Brophy FPV Club Flight Clearance: the Brophy Drone Certification (four badges and your drone portfolio) and permission from Mr. Burr - every campus flight is requested at least 24 hours ahead and approved before anyone flies.">
 <meta name="color-scheme" content="light dark">
 <meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23f2ece0'/><g stroke='%231f3350' stroke-width='2.4' fill='none' stroke-linecap='round'><circle cx='16' cy='16' r='3.4'/><path d='M8 8 13 13M24 8 19 13M8 24 13 19M24 24 19 19'/><circle cx='7' cy='7' r='3.2'/><circle cx='25' cy='7' r='3.2'/><circle cx='7' cy='25' r='3.2'/><circle cx='25' cy='25' r='3.2'/></g></svg>">
@@ -14,10 +14,16 @@
 <script src="../theme.js"></script>
 <style>
 /* Same design system as ../index.html and ../pilot-path/: the grid is the
-   desk, the boxes on it are white, pencil faces for the wordmark only,
-   nothing under 13px. 2026-10-20: Flight Clearance - the Brophy Drone
-   Certification split out of the old FPV Certification Test (see
-   ../flightschool/badges.js). The dark palette comes from ../site.css. */
+   desk, the boxes on it are white, pencil faces for the wordmark only.
+   2026-10-20: FLIGHT CLEARANCE = two things, each a status card under the
+   title that changes colour: the BROPHY DRONE CERTIFICATION (four badges,
+   compact and collapsed like the Pilot Path's, each tinted amber while a
+   submission waits and green once approved, plus the Drone Portfolio) and
+   PERMISSION FROM MR. BURR (his Google Form, 24 h before every flight). A
+   certified pilot sees the form first, then drones, then badges; everyone
+   else the other way round (the form is still the real gate, never hidden).
+   ../fly/ (the old Request to fly) redirects here.
+   The dark palette comes from ../site.css. */
 :root{
   --paper:#f2ece0;--paper-2:#eae2d1;--ink:#2d4565;--ink-soft:#62768e;
   --rust:#b0532a;--amber:#98701c;--green:#2d7045;--sky:#2a72a0;--violet:#6450ab;--gold:#f0a91a;
@@ -36,140 +42,166 @@ body{margin:0;background-color:var(--paper);color:var(--ink);font-family:var(--f
 
 header.title{background-color:var(--glass);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px;display:flex;flex-wrap:wrap;gap:18px 24px;align-items:stretch;justify-content:space-between}
 .title>div:first-child{align-self:flex-end;margin-right:auto}
-.title h1{font-family:var(--font-sketch);font-weight:700;font-size:clamp(34px,7vw,58px);line-height:.95;margin:0;letter-spacing:.5px}
+.title h1{font-family:var(--font-sketch);font-weight:700;font-size:clamp(34px,7vw,56px);line-height:.95;margin:0;letter-spacing:.5px}
 .title h1 .a{color:var(--rust)}
 .title .sub{font-family:var(--font-mono);font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
 .stamp{font-family:var(--font-hand);font-size:19px;color:var(--rust);transform:rotate(-3deg);border:2.5px solid var(--rust);border-radius:6px;padding:3px 11px;display:inline-block;margin-top:12px;opacity:.9}
-
-/* flying as + status, in the banner (as on the Pilot Path) */
-.pilot{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 18px;min-width:280px;flex:1;max-width:400px}
-.pilot .k,.stat .k{font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
-.pilot .who{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:4px}
-.pilot .nm{font-family:var(--font-sketch);font-weight:700;font-size:30px;line-height:1}
-.pilot .nm.none{font-family:var(--font-body);font-weight:500;font-size:17px;color:var(--ink-soft)}
-.pilot .next{font-size:14.5px;color:var(--ink-soft);margin-top:8px;line-height:1.35}
-.pilot .next b{color:var(--ink);font-weight:600}
-.linkbtn{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;background:none;border:0;color:var(--rust);cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0}
-.stat{background-color:var(--glass-2);border:1.5px solid var(--rust);border-radius:var(--r);box-shadow:var(--shadow);padding:14px 18px;min-width:260px;flex:1;max-width:380px;display:flex;flex-direction:column;gap:4px}
-.stat .k{color:var(--rust)}
-.stat .big{font-family:var(--font-sketch);font-weight:700;font-size:28px;line-height:1.05}
-.stat .big.ok{color:var(--green)}
-.stat .v{font-size:14.5px;color:var(--ink-soft);line-height:1.35}
+/* the two status cards under the title: grey = not started, amber = in
+   progress / ask, green = done. --c is the card's colour */
+.cards2{display:grid;grid-template-columns:1fr 1fr;gap:12px;flex:1 1 560px;max-width:680px}
+.stat{--c:var(--line-hard);background-color:var(--glass-2);border:1.5px solid var(--c);border-left-width:6px;border-radius:var(--r);box-shadow:var(--shadow);padding:13px 16px;display:flex;flex-direction:column;gap:4px;text-decoration:none;color:inherit;min-width:0}
+.stat:hover{filter:brightness(1.02)}
+.stat .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.stat .nm{font-family:var(--font-sketch);font-weight:700;font-size:23px;line-height:1.05;color:var(--c)}
+.stat.none .nm{color:var(--ink-soft)}
+.stat .v{font-size:14px;color:var(--ink-soft);line-height:1.35}
 .stat .v b{color:var(--ink);font-weight:600}
-.stat .meter{margin-top:6px;height:7px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
-.stat .meter i{display:block;height:100%;background:var(--rust)}
-.stat.ok{border-color:var(--green)} .stat.ok .k{color:var(--green)} .stat.ok .meter i{background:var(--green)}
-.ubtn{align-self:flex-start;margin-top:8px;font-family:var(--font-mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:#fff;background:var(--rust);border:0;border-radius:7px;padding:8px 14px;cursor:pointer;text-decoration:none;display:inline-block}
-.ubtn:hover{filter:brightness(1.08)}
-.stat.ok .ubtn{background:var(--green)}
+.stat .meter{margin-top:4px;height:7px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
+.stat .meter i{display:block;height:100%;background:var(--c)}
+.stat.amber{--c:var(--amber);background-color:rgba(152,112,28,.07)}
+.stat.green{--c:var(--green);background-color:rgba(45,112,69,.08)}
+.stat.rust{--c:var(--rust)}
+.who{font-size:14px;color:var(--ink-soft);margin-top:8px}
+.who b{color:var(--ink);font-weight:600}
+.linkbtn{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;background:none;border:0;color:var(--rust);cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:0;margin-left:8px}
 
-section{margin-top:30px}
+section{margin-top:26px}
 .eyebrow{display:flex;align-items:baseline;gap:12px;margin:0 2px 12px;flex-wrap:wrap}
 .eyebrow h2{font-family:var(--font-mono);font-size:15px;letter-spacing:.18em;text-transform:uppercase;font-weight:400;color:var(--ink);margin:0}
-.eyebrow .rule{flex:1;height:1px;background:var(--line-hard);opacity:.75}
-.eyebrow .hint{font-size:13.5px;color:var(--ink-soft)}
+.eyebrow .line{flex:1;height:1px;background:var(--line-hard);opacity:.75}
 .eyebrow a{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);text-decoration:underline;text-underline-offset:3px}
+.eyebrow .hint{font-size:13.5px;color:var(--ink-soft)}
 .card{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow)}
-
-/* the four parts at a glance + the rule */
 .how{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-.how .h{padding:14px 16px;cursor:pointer;text-decoration:none;color:inherit;display:block}
-.how .h:hover{border-color:var(--rust)}
+.how .h{padding:12px 15px}
 .how .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)}
-.how .n{font-family:var(--font-sketch);font-weight:700;font-size:22px;line-height:1.05;margin-top:4px;display:flex;align-items:center;gap:8px}
-.how .v{font-size:14.5px;margin-top:5px;line-height:1.4;color:var(--ink-soft)}
-.how .v b{font-weight:600;color:var(--ink)}
-.how .h.done{border-color:var(--green)} .how .h.done .k{color:var(--green)}
-.st{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;padding:2px 7px;background:var(--paper-2);border:1px solid var(--line-hard);color:var(--ink-soft);font-weight:400;white-space:nowrap}
-.st.earned{background:rgba(31,82,48,.12);border-color:var(--green);color:var(--green)}
-.st.progress{background:rgba(125,88,16,.10);border-color:var(--amber);color:var(--amber)}
-.st.fail{background:rgba(176,83,42,.10);border-color:var(--rust);color:var(--rust)}
-.permit{margin-top:14px;border:1.5px solid var(--rust);border-radius:var(--r);padding:12px 16px;font-size:15px;line-height:1.45;background-color:rgba(176,83,42,.06)}
-.permit b{color:var(--rust);font-weight:600}
-.permit a{color:var(--rust);font-weight:600}
+.how .v{font-size:14.5px;margin-top:4px;line-height:1.4}
+.how .v b{font-weight:600}
+.how .v a{color:var(--rust);font-weight:600}
 
-/* ---------- a part ---------- */
-.part{margin-top:22px;padding:16px 18px 16px;border-left:6px solid var(--t);display:flex;flex-direction:column;gap:8px;scroll-margin-top:16px}
-.part.done{border-left-color:var(--green)}
-.part .lab{display:flex;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
-.part .lab .type{color:var(--rust)}
-.part .nm{font-family:var(--font-sketch);font-weight:700;font-size:26px;line-height:1;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.part .do{font-size:15.5px;line-height:1.4}
-.part .why{font-size:14px;color:var(--ink-soft);line-height:1.4}
-.part .why b{color:var(--ink);font-weight:600}
-.part .est{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.06em;color:var(--ink-soft)}
-.part .meter{height:7px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
-.part .meter i{display:block;height:100%;background:var(--t)}
-.part.done .meter i{background:var(--green)}
-.part .reqh{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-top:6px}
-.part ul{margin:4px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px}
-.part li{display:flex;gap:8px;align-items:flex-start;border-radius:5px;padding:2px 3px;margin:0 -3px}
-.part li .tick{width:18px;height:18px;flex:none;border:1.5px solid var(--line-hard);border-radius:4px;display:grid;place-items:center;font-size:12px;color:var(--green);margin-top:3px;background:var(--glass)}
-.part li .tick.on{border-color:var(--green);background:rgba(31,82,48,.12)}
-.part li.step,.part li.les{cursor:pointer}
-.part li.step:hover,.part li.les:hover{background:var(--paper-2)}
-.part li .rt{flex:1;min-width:0;font-size:15px;line-height:1.35}
-.part li.on .rt{color:var(--ink-soft)}
-.part li .go{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
-.part li.on .go{color:var(--ink-soft)}
-.part a.rl{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap;margin-left:8px}
-.part a.rl:hover{text-decoration:underline}
-.part .act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
-.btn{font-family:var(--font-mono);font-size:13.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--glass-2);color:var(--ink);text-decoration:none;border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+/* the three sections swap places: cleared = form, drones, badges */
+#halves{display:flex;flex-direction:column}
+#badgeSec{order:1} #droneSec{order:2} #formSec{order:3}
+#halves.cleared #formSec{order:1} #halves.cleared #droneSec{order:2} #halves.cleared #badgeSec{order:3}
+#halves.nobody #gateSec{order:0} #halves.nobody #formSec{order:1}
+
+/* the form: Google's frame does not report its height, so it gets a tall
+   frame and scrolls inside; the link above it is the way out if the frame
+   will not show (a Google sign-in cannot be shown inside a frame) */
+.formbox{padding:10px;overflow:hidden}
+.formbox iframe{display:block;width:100%;height:min(1900px,calc(100vh - 40px));border:0;border-radius:6px;background:#fff}
+.fallback{font-size:14.5px;color:var(--ink-soft);line-height:1.4;margin:0 2px 10px}
+.fallback a{color:var(--rust);font-weight:600}
+.notyet{border:1.5px solid var(--amber);border-radius:var(--r);background-color:rgba(152,112,28,.07);padding:10px 14px;font-size:14.5px;line-height:1.4;margin-bottom:10px}
+.notyet b{color:var(--amber);font-weight:600}
+.notyet a{color:var(--rust);font-weight:600}
+
+/* profile picker (nobody signed in) */
+.gate{padding:20px 22px}
+.gate .k{font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-bottom:6px}
+.gate h3{font-family:var(--font-sketch);font-weight:700;font-size:28px;line-height:1.05;margin:0 0 8px}
+.gate p{margin:0 0 12px;font-size:15px;line-height:1.45;max-width:620px}
+.gate input{width:100%;max-width:420px;font:inherit;color:var(--ink);background:#fff;border:1.5px solid var(--line-hard);border-radius:7px;padding:9px 11px;display:block;margin-bottom:10px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.gate .hint{font-size:13.5px;color:var(--ink-soft);margin-top:8px}
+.btn{font-family:var(--font-mono);font-size:13.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--glass-2);color:var(--ink);text-decoration:none;border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
 .btn:hover{background:var(--paper-2)}
 .btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .btn.primary:hover{background:#182740}
 .btn[disabled]{opacity:.5;cursor:default}
-.part .res{border:1px dashed var(--line-hard);border-radius:7px;padding:7px 10px;margin-top:6px;font-size:13.5px}
-.part .res b{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--ink-soft)}
-.part .res ul{display:block;margin:4px 0 0;padding-left:16px;list-style:disc}
-.part .res li{display:list-item;padding:0;margin:0}
-.part .res a{color:var(--sky)}
-.approve{font-size:13.5px;color:var(--ink-soft);margin-top:4px;line-height:1.4}
+
+/* ---------- badges: compact, collapsed, as on the Pilot Path ---------- */
+.badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.badge{padding:13px 15px;border-left:6px solid var(--t);display:flex;flex-direction:column;gap:6px;cursor:pointer;position:relative}
+.badge .lab{display:flex;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
+.badge .lab .type{color:var(--rust)}
+.badge .nm{font-family:var(--font-sketch);font-weight:700;font-size:23px;line-height:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.st{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;padding:2px 7px;background:var(--paper-2);border:1px solid var(--line-hard);color:var(--ink-soft);font-weight:400;white-space:nowrap}
+.st.earned{background:rgba(31,82,48,.12);border-color:var(--green);color:var(--green)}
+.st.progress{background:rgba(125,88,16,.10);border-color:var(--amber);color:var(--amber)}
+.st.fail{background:rgba(176,83,42,.10);border-color:var(--rust);color:var(--rust)}
+.badge .body{display:flex;flex-direction:column;gap:6px}
+.badge .est{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.06em;color:var(--ink-soft)}
+.badge .do{font-size:15px;line-height:1.35}
+.badge:not(.open) .do{display:none}
+.badge .meter{height:7px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
+.badge .meter i{display:block;height:100%;background:var(--t)}
+.badge .more{display:none;border-top:1px dashed var(--line);padding-top:8px;margin-top:2px;font-size:14px;line-height:1.4}
+.badge.open .more{display:block}
+.badge .why{color:var(--ink-soft)} .badge .why b{color:var(--ink);font-weight:600}
+.badge .reqh{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-top:8px}
+.badge ul{margin:6px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px}
+.badge li{display:flex;gap:8px;align-items:flex-start;border-radius:5px;padding:2px 3px;margin:0 -3px}
+.badge li .tick{width:18px;height:18px;flex:none;border:1.5px solid var(--line-hard);border-radius:4px;display:grid;place-items:center;font-size:12px;color:var(--green);margin-top:2px;background:var(--glass)}
+.badge li .tick.on{border-color:var(--green);background:rgba(31,82,48,.12)}
+.badge li.step,.badge li.les{cursor:pointer}
+.badge li.step:hover,.badge li.les:hover{background:var(--paper-2)}
+.badge li .rt{flex:1;min-width:0}
+.badge li.on .rt{color:var(--ink-soft)}
+.badge li .go{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
+.badge li.on .go{color:var(--ink-soft)}
+.badge a.rl{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap;margin-left:8px}
+.badge .act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.badge .res{border:1px dashed var(--line-hard);border-radius:7px;padding:7px 10px;margin-top:8px;font-size:13.5px}
+.badge .res b{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--ink-soft)}
+.badge .res ul{display:block;margin:4px 0 0;padding-left:16px;list-style:disc}
+.badge .res li{display:list-item;padding:0;margin:0}
+.badge .res a{color:var(--sky)}
+.approve{font-size:13.5px;color:var(--ink-soft);margin-top:8px;line-height:1.4}
 .approve b{color:var(--ink);font-weight:600}
-.subs{margin-top:4px;display:flex;flex-direction:column;gap:5px}
+.subs{margin-top:8px;display:flex;flex-direction:column;gap:5px}
 .sub{font-size:13.5px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background-color:var(--glass)}
 .sub b{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:400}
 .sub.pending b{color:var(--amber)} .sub.pass b{color:var(--green)} .sub.fail b{color:var(--rust)}
-
+/* a submission on file: the card is tinted, the rest of it fades back */
+.badge.pending{border-color:var(--amber);background-color:rgba(152,112,28,.10)}
+.badge.pending .body,.badge.pending .lab{opacity:.55}
+.badge.earned{border-color:var(--green);background-color:rgba(45,112,69,.10)}
+.badge.earned .body,.badge.earned .lab{opacity:.5}
+.badge.earned .nm{color:var(--green)}
+.badge.failed{border-color:var(--rust)}
 /* the terms (Pilot Agreement) */
 details.terms{border:1px solid var(--line-hard);border-radius:8px;background-color:var(--glass);margin-top:6px}
-details.terms>summary{cursor:pointer;padding:10px 14px;font-family:var(--font-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--rust);list-style:none;display:flex;justify-content:space-between;gap:10px}
+details.terms>summary{cursor:pointer;padding:9px 12px;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--rust);list-style:none;display:flex;justify-content:space-between;gap:10px}
 details.terms>summary::-webkit-details-marker{display:none}
 details.terms>summary::after{content:'open';color:var(--ink-soft)}
 details.terms[open]>summary::after{content:'close'}
-.terms .body{padding:4px 16px 14px;font-size:14.5px;line-height:1.5;max-height:520px;overflow:auto}
-.terms h4{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--rust);margin:14px 0 4px}
+.terms .tb{padding:2px 14px 12px;font-size:14px;line-height:1.5;max-height:460px;overflow:auto}
+.terms h4{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--rust);margin:12px 0 4px}
 .terms p{margin:0 0 6px}
-.terms .body ul{list-style:disc;padding-left:18px;display:block;margin:2px 0 6px}
-.terms .body li{display:list-item;padding:0;margin:0 0 2px}
+.terms .tb ul{list-style:disc;padding-left:18px;display:block;margin:2px 0 6px}
+.terms .tb li{display:list-item;padding:0;margin:0 0 2px}
 .terms .lead{color:var(--ink-soft);font-style:italic}
-.boxes{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:6px}
-.boxes div{border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 10px;font-size:14px;line-height:1.35;display:flex;gap:9px;align-items:flex-start;background-color:var(--glass)}
-.boxes div::before{content:'';width:16px;height:16px;flex:none;border:2px solid var(--ink);border-radius:3px;margin-top:2px}
-.boxes b{font-weight:600}
 
-/* the drone portfolio */
-.drones{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-top:6px}
-.drone{border:1.5px solid var(--line-hard);border-radius:8px;background-color:var(--glass);padding:12px 13px;display:flex;flex-direction:column;gap:6px;position:relative;min-width:0}
+/* ---------- the Pilot Path checkpoints, one line ---------- */
+.cps{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center;font-size:14px;color:var(--ink-soft)}
+.cps span{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:4px 11px;background-color:var(--glass)}
+.cps span.on{border-color:var(--green);color:var(--green)}
+.cps a{color:var(--rust);font-family:var(--font-mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase}
+
+/* ---------- drones ---------- */
+.drones{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.drone{border:1.5px solid var(--line-hard);border-radius:8px;background-color:var(--glass-2);box-shadow:var(--shadow);padding:12px 13px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .drone .pic{aspect-ratio:4/3;border-radius:6px;background:var(--paper-2);display:grid;place-items:center;overflow:hidden;color:var(--ink-soft)}
 .drone .pic img{width:100%;height:100%;object-fit:cover;display:block}
-.drone .pic svg{width:58%;height:58%;opacity:.7}
+.drone .pic svg{width:56%;height:56%;opacity:.7}
 .drone .dn{font-family:var(--font-sketch);font-weight:700;font-size:21px;line-height:1.05;display:flex;align-items:center;justify-content:space-between;gap:8px}
 .drone .ds{font-size:13.5px;color:var(--ink-soft);line-height:1.35}
 .drone .dk{font-family:var(--font-mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--rust)}
 .drone .dv{font-size:13.5px;line-height:1.35}
 .drone .dv a{color:var(--sky)}
-.drone.locked{opacity:.45;border-style:dashed}
-.drone.locked .dn::after{content:'🔒';font-size:15px}
+.drone.locked{border-style:dashed}
+.drone.locked .pic,.drone.locked .dn,.drone.locked .ds{opacity:.45}
+.drone.locked .dk{color:var(--ink-soft)}
 .drone.ok{border-color:var(--green)} .drone.ok .dk{color:var(--green)}
 .drone.pending{border-color:var(--amber)} .drone.pending .dk{color:var(--amber)}
 .drone.fail{border-color:var(--rust)}
-.drone.add{border-style:dashed;align-items:center;justify-content:center;text-align:center;cursor:pointer;min-height:180px;color:var(--rust);font-family:var(--font-mono);font-size:13.5px;letter-spacing:.12em;text-transform:uppercase}
+.drone.add{border-style:dashed;align-items:center;justify-content:center;text-align:center;cursor:pointer;min-height:200px;color:var(--rust);font-family:var(--font-mono);font-size:13.5px;letter-spacing:.12em;text-transform:uppercase;background-color:var(--glass)}
 .drone.add:hover{background-color:var(--glass-2);border-color:var(--rust)}
 .drone.add .plus{font-size:40px;line-height:1;font-family:var(--font-sketch)}
+.drone .act{margin-top:auto;padding-top:4px}
 
-/* dialogs: lesson frame, camera, add-a-drone (as on the Pilot Path) */
+/* ---------- dialogs: lesson frame, photo, add-a-drone ---------- */
 #lp{position:fixed;inset:0;z-index:60;background:var(--paper);display:none;flex-direction:column}
 #lp.open{display:flex}
 #lp .bar{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1.5px solid var(--line-hard);background:var(--glass)}
@@ -180,17 +212,17 @@ details.terms[open]>summary::after{content:'close'}
 #lpDone .box{background:#fffdf7;border:2px solid var(--ink);border-radius:14px;max-width:520px;width:100%;padding:22px;text-align:center;box-shadow:4px 4px 0 var(--ink)}
 #lpDone .big{font-family:var(--font-sketch);font-weight:700;font-size:30px;line-height:1.05}
 #lpDone .lpsub{color:var(--ink-soft);margin-top:6px;font-size:15px}
-#lpDone .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+#lpDone .row{justify-content:center;margin-top:16px}
 .dlg{position:fixed;inset:0;z-index:50;background:rgba(16,24,38,.55);display:none;align-items:center;justify-content:center;padding:16px}
 .dlg.open{display:flex}
 .dlg .box{background:#fffdf7;border:2px solid var(--ink);border-radius:14px;width:100%;max-width:560px;padding:16px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 32px);overflow:auto}
 .dlg .ttl{font-family:var(--font-sketch);font-weight:700;font-size:24px}
-.dlg .view{background:#111;border-radius:9px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center;color:#f2ece0;font-size:14px;text-align:center}
+.dlg .view{background:#111;border-radius:9px;overflow:hidden;aspect-ratio:4/3;display:grid;place-items:center;color:#f2ece0;font-size:14px;text-align:center;padding:12px}
 .dlg video,.dlg .view img{width:100%;height:100%;object-fit:contain;display:block}
 .dlg textarea,.dlg input[type=text],.dlg input[type=url]{font:15px var(--font-body);color:var(--ink);border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 10px;width:100%;background:#fff}
 .dlg textarea{min-height:56px;resize:vertical}
 .dlg label{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);display:flex;flex-direction:column;gap:4px}
-.dlg .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+.dlg .row{justify-content:flex-end;gap:8px}
 .dlg .msg{font-size:14px;color:var(--ink-soft);min-height:1.2em}
 .dlg [hidden]{display:none!important}
 .dlg .pick{aspect-ratio:4/3;border:2px dashed var(--line-hard);border-radius:9px;display:grid;place-items:center;cursor:pointer;color:var(--ink-soft);font-size:14px;text-align:center;overflow:hidden;background:var(--glass)}
@@ -198,20 +230,33 @@ details.terms[open]>summary::after{content:'close'}
 .dlg .chk{font-size:14px;line-height:1.35;display:flex;gap:8px;align-items:flex-start;padding:8px 10px;border-radius:7px;border:1.5px solid var(--line-hard);background:var(--glass)}
 .dlg .chk.ok{border-color:var(--green);color:var(--green)} .dlg .chk.bad{border-color:var(--rust);color:var(--rust)}
 .dlg .chk img{width:64px;height:48px;object-fit:cover;border-radius:4px;flex:none}
-
-/* dark scheme (../site.css sets the palette): the dialogs' hard-coded paper */
 [data-theme=dark] .dlg .box,[data-theme=dark] #lpDone .box{background:var(--glass-2)}
-[data-theme=dark] .dlg input[type=text],[data-theme=dark] .dlg input[type=url],[data-theme=dark] .dlg textarea{background:var(--glass);color:var(--ink)}
-footer{margin-top:34px;padding:16px 18px;background-color:var(--glass);border:1.5px solid var(--line-hard);border-radius:var(--r);font-size:13.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between}
-footer a{color:var(--ink)}
+[data-theme=dark] .dlg input[type=text],[data-theme=dark] .dlg input[type=url],[data-theme=dark] .dlg textarea,[data-theme=dark] .gate input{background:var(--glass);color:var(--ink)}
+[data-theme=dark] .badge.pending{background-color:rgba(217,171,69,.12)}
+[data-theme=dark] .badge.earned{background-color:rgba(95,189,125,.12)}
 
+footer{margin-top:40px;padding:16px 18px;background-color:var(--glass);border:1.5px solid var(--line-hard);border-radius:var(--r);font-size:13.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between}
+footer a{color:var(--ink)}
 @media (max-width:900px){.how{grid-template-columns:repeat(2,1fr)}}
-@media (max-width:600px){.wrap{padding:18px 13px 52px}header.title{padding:18px 16px}.how{grid-template-columns:1fr}.pilot,.stat{min-width:0;max-width:none;flex-basis:100%}.title>div:first-child{flex-basis:100%}.boxes{grid-template-columns:1fr}}
+@media (max-width:700px){
+  .how{grid-template-columns:1fr}
+  .wrap{padding:16px 14px 48px}
+  .formbox{padding:6px}
+  .formbox iframe{height:calc(100vh - 24px)}
+  .cards2{grid-template-columns:1fr;flex-basis:100%;max-width:none}
+  .title>div:first-child{flex-basis:100%}
+}
 </style>
 <link rel="stylesheet" href="../site.css">
 </head>
 <body>
-<div id="paper-bg" aria-hidden="true"><div class="grid"></div><div class="grid-fine"></div><div class="vignette"></div></div>
+
+<div id="paper-bg" aria-hidden="true">
+  <div class="grid"></div>
+  <div class="grid-fine"></div>
+  <div class="vignette"></div>
+</div>
+
 <div class="wrap">
 
   <nav class="crumbs" aria-label="Site"></nav>
@@ -221,37 +266,59 @@ footer a{color:var(--ink)}
   <header class="title">
     <div>
       <h1>Flight <span class="a">Clearance</span></h1>
-      <div class="sub">Brophy Drone Certification &middot; four parts</div>
-      <div class="stamp">then ask before every flight</div>
+      <div class="sub">Certification &middot; then permission, every flight</div>
+      <div class="stamp">no badge is permission</div>
+      <div class="who" id="who"></div>
     </div>
-    <div class="pilot" id="pilot">
-      <div class="k">Flying as</div>
-      <div class="who"><span class="nm none" id="pName">nobody yet</span><button class="linkbtn" id="pChange" type="button">pick a pilot</button></div>
-      <div class="next" id="pNext">Pick your name and this page remembers where you are.</div>
+    <div class="cards2">
+      <a class="stat none" id="statCert" href="#badges"></a>
+      <a class="stat none" id="statPerm" href="#permission"></a>
     </div>
-    <div class="stat" id="stat"></div>
   </header>
 
-  <section aria-label="The four parts">
-    <div class="how" id="how"></div>
-    <div class="permit"><b>Clearance is not permission.</b> It says you may <b>ask</b>. Before <b>every</b> flight on campus, send a request on
-      <a href="../fly/">Brophy Flight</a> at least <b>24 hours ahead</b>; Mr. Burr approves it. Fly only after a yes, and only as requested.
-      The <a href="../pilot-path/">Pilot Path</a> is separate: its checkpoints certify you on the club's drones and add them to your portfolio here.</div>
+  <section aria-label="How it works">
+    <div class="how">
+      <div class="card h"><div class="k">1 &middot; Get certified</div><div class="v">The <a href="#badges">Brophy Drone Certification</a>: four badges - FAA TRUST, Safe Flight, the Pilot Agreement - and a drone in your portfolio.</div></div>
+      <div class="card h"><div class="k">2 &middot; Ask Mr. Burr</div><div class="v">Fill in his form at least <b>24 hours</b> before you want to fly. One flight, one request: that drone, that place, that time.</div></div>
+      <div class="card h"><div class="k">3 &middot; Spotter</div><div class="v">Every flight has a spotter. If you are not a <b>Mentor</b> yet, your spotter must be one.</div></div>
+      <div class="card h"><div class="k">4 &middot; Wait for the yes</div><div class="v">Fly only after Mr. Burr approves, and <b>only as requested</b>. No answer is a no.</div></div>
+    </div>
   </section>
 
-  <section aria-labelledby="pHead">
-    <div class="eyebrow"><h2 id="pHead">The four parts</h2><span class="rule"></span><span class="hint" id="srcHint">any order &middot; a mentor checks the photos and videos</span></div>
-    <div id="parts"></div>
-  </section>
+  <div id="halves">
+    <section aria-label="Who is asking" id="gateSec" hidden></section>
+
+    <section aria-labelledby="formHead" id="formSec">
+      <div id="permission"></div>
+      <div class="eyebrow"><h2 id="formHead">Permission from Mr. Burr</h2><span class="line"></span><a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">Open the form in a new tab &nearr;</a></div>
+      <div class="notyet" id="notYet" hidden></div>
+      <p class="fallback">The form is Mr. Burr's Google Form and asks for a Brophy Google sign-in. If it does not appear below, or asks you to sign in,
+        <a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">open it in a new tab</a>.</p>
+      <div class="card formbox">
+        <iframe src="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform?embedded=true" title="Flight request form" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="clipboard-write">Loading&hellip;</iframe>
+      </div>
+    </section>
+
+    <section aria-labelledby="droneHead" id="droneSec">
+      <div class="eyebrow"><h2 id="droneHead">Drone portfolio</h2><span class="line"></span><span class="hint" id="droneHint">part of the certification &middot; every drone you may request</span></div>
+      <div class="drones" id="drones"></div>
+    </section>
+
+    <section aria-labelledby="badgeHead" id="badgeSec">
+      <div class="eyebrow"><h2 id="badgeHead">Brophy Drone Certification</h2><span class="line"></span><span class="hint" id="badgeHint">tap a badge for details &middot; a mentor checks photos and videos</span></div>
+      <div class="badges" id="badges"></div>
+      <div class="cps" id="cps"></div>
+    </section>
+  </div>
 
   <footer>
-    <span>Earned parts come from the kiosk and the instructor console. Ticks, lessons and the quiz you do here are saved for the pilot you picked and mirrored to the club, forward-only. Mentors review photos and drone videos in the <a href="../admin/" rel="nofollow">instructor console</a>.</span>
+    <span>Permission comes from Mr. Burr through his form, by email; this page shows where you stand. Earned badges come from the kiosk and the instructor console; ticks and lessons you do here are saved for the pilot you picked. Mentors review photos and drone videos in the <a href="../admin/" rel="nofollow">instructor console</a>.</span>
     <span>mtucker27@ for questions</span>
   </footer>
 </div>
 
 <div id="lp" role="dialog" aria-modal="true" aria-labelledby="lpTitle">
-  <div class="bar"><span class="t" id="lpTitle">Lesson</span><button class="btn" type="button" id="lpClose">&larr; Back to clearance</button></div>
+  <div class="bar"><span class="t" id="lpTitle">Lesson</span><button class="btn" type="button" id="lpClose">&larr; Back</button></div>
   <iframe id="lpFrame" title="Lesson"></iframe>
   <div id="lpDone"><div class="box">
     <div class="big" id="lpDoneBig">Done</div>
@@ -264,7 +331,7 @@ footer a{color:var(--ink)}
   <div class="box">
     <div class="ttl" id="camTitle">Submit a photo</div>
     <div class="view" id="camView">Starting the camera…</div>
-    <input id="camFile" type="file" accept="image/*" capture="environment" hidden>
+    <input id="camFile" type="file" accept="image/*" hidden>
     <textarea id="camNote" maxlength="300" placeholder="Anything the mentor should know? (optional)"></textarea>
     <div class="msg" id="camMsg"></div>
     <div class="row">
@@ -285,7 +352,7 @@ footer a{color:var(--ink)}
     <label>Name <input type="text" id="ddName" maxlength="60" placeholder="DJI Mini 4 Pro, Mobula 7, Avata 2…" autocomplete="off"></label>
     <label>Specs <input type="text" id="ddSpecs" maxlength="160" placeholder="size, weight, battery, video system - e.g. 3-inch, 4S, 240 g, O4" autocomplete="off"></label>
     <label>Flight video &middot; Google Drive link <input type="url" id="ddVideo" placeholder="https://drive.google.com/file/d/…/view" autocomplete="off" spellcheck="false"></label>
-    <div class="chk" id="ddChk">About a minute: take off, fly, land safely. Upload it to Google Drive, share it as <b>&nbsp;Anyone with the link&nbsp;</b>, paste the link here - it is checked before you send.</div>
+    <div class="chk" id="ddChk"></div>
     <div class="msg" id="ddMsg"></div>
     <div class="row">
       <button class="btn" type="button" id="ddCancel">Cancel</button>
@@ -301,83 +368,107 @@ footer a{color:var(--ink)}
 var FS = window.FS, CL = window.Clearance, ST = CL.state;
 function $(id) { return document.getElementById(id); }
 function esc(s) { return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-var COL = { 'faa-trust': 'var(--sky)', 'safe-flight': 'var(--green)', 'pilot-agreement': 'var(--violet)', 'drone-portfolio': 'var(--amber)' };
-var NUM = { 'faa-trust': '1', 'safe-flight': '2', 'pilot-agreement': '3', 'drone-portfolio': '4' };
+var COL = { flight: 'var(--sky)', build: 'var(--amber)', know: 'var(--green)', crew: 'var(--violet)' };
 var QUAD = '<svg viewBox="0 0 64 64" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><circle cx="32" cy="32" r="6"/><path d="M16 16l11 11M48 16L37 27M16 48l11-11M48 48L37 37"/><circle cx="13" cy="13" r="7"/><circle cx="51" cy="13" r="7"/><circle cx="13" cy="51" r="7"/><circle cx="51" cy="51" r="7"/></g></svg>';
+var DD_HINT = 'About a minute: take off, fly, land safely. Upload it to Google Drive, share it as <b>&nbsp;Anyone with the link&nbsp;</b>, paste the link here - it is checked before you send.';
 
-/* ---------- the banner ---------- */
+/* ---------- banner + order ---------- */
 function drawTop(st) {
-  var p = ST.pilot;
-  $('pName').textContent = p ? p.name : 'nobody yet';
-  $('pName').className = 'nm' + (p ? '' : ' none');
-  $('pChange').textContent = p ? 'change' : 'pick a pilot';
-  var box = $('stat');
-  if (!p) {
-    $('pNext').innerHTML = 'Pick your name and this page remembers where you are.';
-    box.className = 'stat';
-    box.innerHTML = '<div class="k">Your clearance</div><div class="big" style="font-family:var(--font-body);font-weight:500;font-size:16px;color:var(--ink-soft)">Pick your profile to see where you stand.</div><button type="button" class="ubtn" data-up="pick">Select profile</button>';
-    return;
-  }
-  if (st.cleared) {
-    $('pNext').innerHTML = '<b>Cleared.</b> Every part done - ask on Brophy Flight before each campus flight.';
-    box.className = 'stat ok';
-    box.innerHTML = '<div class="k">Your clearance</div><div class="big ok">Cleared &#10003;</div><div class="v">Brophy Drone Certification: <b>' + st.done + ' of ' + st.of + '</b> parts. You may ask to fly.</div>' +
-      '<div class="meter"><i style="width:100%"></i></div><a class="ubtn" href="../fly/">Request a flight &rarr;</a>';
-    return;
-  }
-  var n = st.next;
-  $('pNext').innerHTML = '<b>Flight Clearance · ' + st.done + ' of ' + st.of + ' parts</b>';
-  box.className = 'stat';
-  box.innerHTML = '<div class="k">Your clearance</div><div class="big">' + (st.pending ? 'Checking&hellip;' : 'Not cleared yet') + '</div>' +
-    '<div class="v">' + st.done + ' of ' + st.of + ' parts done' + (n ? ' &middot; next: <b>' + esc(n.badge.name) + '</b>' : '') + '</div>' +
-    '<div class="meter"><i style="width:' + Math.round(st.done / st.of * 100) + '%"></i></div>' +
-    (n ? '<button type="button" class="ubtn" data-up="' + n.badge.id + '">Open it &darr;</button>' : '');
+  var p = ST.pilot, cert = $('statCert'), perm = $('statPerm');
+  $('who').innerHTML = p ? 'Flying as <b>' + esc(p.name) + '</b><button type="button" class="linkbtn" id="pickBtn">change</button>'
+                         : 'Flying as <b>nobody yet</b><button type="button" class="linkbtn" id="pickBtn">select profile</button>';
+  $('pickBtn').onclick = function () { SiteNav.open(); };
+  /* card 1: the certification - grey until something is done, amber while in
+     progress or a submission waits, green once all four badges are in */
+  var waiting = st.parts.filter(function (x) { return x.s.pending; }).length;
+  var c1 = !p ? 'none' : st.cleared ? 'green' : (st.done || waiting || st.parts.some(function (x) { return x.s.pct > 0; })) ? 'amber' : 'none';
+  cert.className = 'stat ' + c1;
+  cert.innerHTML = '<div class="k">1 &middot; Brophy Drone Certification</div>' +
+    '<div class="nm">' + (!p ? 'Pick your profile' : st.pending ? 'Checking&hellip;' : st.cleared ? 'Certified &#10003;' : st.done || waiting ? 'In progress' : 'Not started') + '</div>' +
+    '<div class="v">' + (!p ? 'Four badges and a drone in your portfolio.' : st.cleared ? '<b>' + st.done + ' of ' + st.of + ' badges.</b> You may ask to fly.' :
+      '<b>' + st.done + ' of ' + st.of + ' badges</b>' + (waiting ? ' &middot; ' + waiting + ' pending review' : '') + (st.next ? ' &middot; next: ' + esc(st.next.badge.name) : '')) + '</div>' +
+    (p ? '<div class="meter"><i style="width:' + Math.round(st.done / st.of * 100) + '%"></i></div>' : '');
+  /* card 2: permission - locked until certified, then amber: ask before every
+     flight (Mr. Burr answers by email, so this page never shows a yes) */
+  var c2 = !p ? 'none' : st.cleared ? 'amber' : 'rust';
+  perm.className = 'stat ' + c2;
+  perm.innerHTML = '<div class="k">2 &middot; Permission from Mr. Burr</div>' +
+    '<div class="nm">' + (!p ? 'Every flight' : st.cleared ? 'Ask before every flight' : 'Locked') + '</div>' +
+    '<div class="v">' + (!p ? 'His form, at least 24 hours ahead. You fly only after a yes.' : st.cleared ? 'Send his form at least <b>24 hours ahead</b>; he answers by email. Fly only after a yes, as requested.' : 'Get certified first. A request from an uncertified pilot will not be approved.') + '</div>';
 }
-function drawHow(st) {
-  $('how').innerHTML = st.parts.map(function (p) {
-    var b = p.badge, s = p.s, chip = chipFor(s);
-    var v = { 'faa-trust': 'The FAA\'s free online test for recreational flyers. About 20 minutes, cannot be failed. Send a photo of the certificate.',
-              'safe-flight': 'Three short lessons and a 10-question quiz on the Brophy FPV rules sheet. <b>80 % passes</b>, no sign-off needed.',
-              'pilot-agreement': 'Read the terms, print the one-page signing paper, sign it with a parent or guardian, send a photo.',
-              'drone-portfolio': 'Every drone you may fly at Brophy. Add your own with a minute of flight video; the club\'s unlock with their checkpoints.' }[b.id];
-    return '<a class="card h' + (s.earned ? ' done' : '') + '" href="#' + b.id + '"><div class="k">Part ' + NUM[b.id] + '</div><div class="n">' + esc(b.name) + chip + '</div><div class="v">' + v + '</div></a>';
-  }).join('');
+function picker() {
+  var names = ST.data && ST.data.pilots ? ST.data.pilots.map(function (p) { return p.name; }).sort() : [];
+  return '<div class="card gate"><div class="k">Who is asking?</div><h3>Select your profile</h3>' +
+    '<p>Pick your name - the same one you use at the kiosk - and the page shows your certification, your drones and Mr. Burr\'s form.</p>' +
+    '<input type="text" id="gateName" list="gateNames" placeholder="First name and last initial, e.g. Micah T." autocomplete="off" spellcheck="false" maxlength="28">' +
+    '<datalist id="gateNames">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
+    '<div class="row"><button type="button" class="btn primary" id="gateGo">That\'s me</button></div>' +
+    '<div class="hint">No password: picking a name is signing in. ' + (ST.loaded.data ? '' : 'Loading the roster&hellip;') + '</div></div>';
 }
+function render() {
+  var st = CL.status(), p = ST.pilot;
+  drawTop(st);
+  $('halves').className = !p ? 'nobody' : (st.cleared ? 'cleared' : '');
+  $('gateSec').hidden = !!p;
+  if (!p) { $('gateSec').innerHTML = picker(); var go = $('gateGo'), inp = $('gateName'); go.onclick = function () { var v = inp.value.trim(); if (v.length >= 2) SiteNav.set(v); }; inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); }); }
+  var ny = $('notYet');
+  if (!p) { ny.hidden = false; ny.innerHTML = '<b>Pick your profile above first.</b> The form is for certified pilots; you can still open it.'; }
+  else if (st.cleared) ny.hidden = true;
+  else { ny.hidden = false; ny.innerHTML = '<b>' + esc(p.name) + ', you are not certified yet</b> (' + st.done + ' of ' + st.of + ' badges). Finish the <a href="#badges">Brophy Drone Certification</a> first; a request from an uncertified pilot will not be approved.'; }
+  drawDrones(); drawBadges(st);
+  setTimeout(celebrate, 0);
+}
+
+/* ---------- drones ---------- */
+function drawDrones() {
+  var pf = CL.portfolio(), ok = pf.club.filter(function (d) { return d.unlocked; }).length + pf.mine.filter(function (d) { return d.status === 'pass'; }).length;
+  $('droneHint').textContent = ST.pilot ? (ok ? ok + (ok === 1 ? ' drone' : ' drones') + ' you may request' : 'no drone yet - add yours, or earn a club drone on the Pilot Path') : 'pick your profile to add a drone';
+  var h = '<div class="drone add" data-add="1"><span class="plus">+</span>Add a drone<small style="text-transform:none;letter-spacing:0;font-family:var(--font-body);font-size:13px;color:var(--ink-soft)">name, specs, a picture and a minute of flight video</small></div>';
+  pf.club.forEach(function (d) {
+    h += '<div class="drone ' + (d.unlocked ? 'ok' : 'locked') + '"><div class="pic">' + QUAD + '</div>' +
+      '<div class="dn">' + esc(d.name) + (d.unlocked ? '' : ' <span aria-label="locked">&#128274;</span>') + '</div><div class="ds">' + esc(d.specs) + '</div>' +
+      '<div class="dk">' + (d.unlocked ? 'Club drone · certified &#10003;' : 'Club drone · locked') + '</div>' +
+      (d.unlocked ? '' : '<div class="act"><a class="btn primary" href="../pilot-path/#' + (d.badge === 'tiny-whoop' ? 't1' : 't2') + '">Earn badge &rarr;</a></div>') + '</div>';
+  });
+  pf.mine.forEach(function (d) {
+    var id = CL.driveId(d.video), cls = d.status === 'pass' ? 'ok' : d.status;
+    h += '<div class="drone ' + cls + '"><div class="pic">' + (id ? '<img src="' + CL.driveThumb(id) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createElement(\'span\'));">' : QUAD) + '</div>' +
+      '<div class="dn">' + esc(d.name) + '</div><div class="ds">' + esc(d.specs) + '</div>' +
+      '<div class="dk">' + (d.status === 'pass' ? 'Approved &#10003;' : d.status === 'fail' ? 'Not approved' : 'Pending review') + '</div>' +
+      (d.reviewNote ? '<div class="dv">Mentor: ' + esc(d.reviewNote) + '</div>' : '') +
+      (id ? '<div class="dv"><a href="' + CL.driveOpen(id) + '" target="_blank" rel="noopener">Flight video &#8599;</a></div>' : '') + '</div>';
+  });
+  $('drones').innerHTML = h;
+}
+
+/* ---------- badges ---------- */
 function chipFor(s) {
   if (!ST.pilot) return '';
-  if (s.earned) return '<span class="st earned">done</span>';
-  if (s.pending) return '<span class="st progress">waiting</span>';
+  if (s.earned) return '<span class="st earned">approved</span>';
+  if (s.pending) return '<span class="st progress">pending</span>';
   if (s.failed) return '<span class="st fail">not passed</span>';
   return s.pct > 0 ? '<span class="st progress">' + s.pct + '%</span>' : '';
 }
-
-/* ---------- the parts ---------- */
-function render() {
-  var st = CL.status();
-  drawTop(st); drawHow(st);
-  var kp = CL.kioskRow();
-  $('srcHint').textContent = !ST.pilot ? 'any order · a mentor checks the photos and videos' :
-    (kp ? 'earned parts from the kiosk and the console · ticks saved here' : 'this name has not flown at the kiosk yet · everything here is saved on this device');
-  $('parts').innerHTML = st.parts.map(function (p) { return part(p.badge, p.s); }).join('');
-  setTimeout(celebrate, 0);
+function drawBadges(st) {
+  var open = {}; document.querySelectorAll('.badge.open').forEach(function (c) { open[c.getAttribute('data-id')] = true; });
+  $('badgeHint').textContent = ST.pilot ? st.done + ' of ' + st.of + ' · tap a badge for details' : 'tap a badge for details · a mentor checks photos and videos';
+  $('badges').innerHTML = st.parts.map(function (p) { return card(p.badge, p.s, open[p.badge.id]); }).join('');
+  /* the Pilot Path checkpoints: what unlocks the club drones */
+  var kp = CL.kioskRow(), cps = FS.BADGES.filter(function (b) { return b.checkpoint; });
+  $('cps').innerHTML = '<b style="font-family:var(--font-mono);font-weight:400;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase">Pilot Path' + (kp && kp.tier != null ? ' · Tier ' + kp.tier : '') + '</b>' +
+    cps.map(function (b, i) { var on = !!CL.onFile(b.id); return '<span class="' + (on ? 'on' : '') + '">' + (on ? '&#10003; ' : '') + esc(b.name) + '</span>'; }).join('') +
+    '<a href="../pilot-path/">open &rarr;</a>';
 }
-function part(b, s) {
-  var h = '<div class="lab"><span class="type">Part ' + NUM[b.id] + ' · ' + ({ knowledge: 'Quiz', bench: 'Photo review' }[b.type] || b.type) + (b.kind === 'drone' ? ' · video' : '') + '</span><span>' + esc(FS.TRACK[b.track]) + '</span></div>' +
+function card(b, s, isOpen) {
+  var state = s.earned ? ' earned' : (s.pending ? ' pending' : (s.failed ? ' failed' : ''));
+  var type = b.type === 'knowledge' ? 'Quiz' : (b.kind === 'drone' ? 'Video review' : 'Photo review');
+  var h = '<div class="lab"><span class="type">' + type + '</span><span>' + esc(FS.TRACK[b.track]) + '</span></div>' +
     '<div class="nm">' + esc(b.name) + chipFor(s) + '</div>' +
-    '<div class="do">' + esc(b.do) + '</div>' +
-    '<div class="why"><b>Why:</b> ' + esc(b.why) + '</div>' +
+    '<div class="body"><div class="do">' + esc(b.do) + '</div>' +
     (b.est ? '<div class="est">Time: ' + esc(b.est) + '</div>' : '') +
-    (ST.pilot ? '<div class="meter"><i style="width:' + (s.earned ? 100 : s.pct) + '%"></i></div>' : '');
-  if (b.type === 'knowledge') h += knowledge(b, s);
-  else if (b.kind === 'drone') h += drones(b, s);
-  else if (b.kind === 'paper') h += paper(b, s);
-  else h += bench(b, s);
-  if (b.res && b.res.length) {
-    h += '<div class="res"><b>Optional resources</b><ul>' + b.res.map(function (r) {
-      return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>';
-    }).join('') + '</ul></div>';
-  }
-  return '<div class="card part' + (s.earned ? ' done' : '') + '" id="' + b.id + '" data-id="' + b.id + '" style="--t:' + COL[b.id] + '">' + h + '</div>';
+    (ST.pilot ? '<div class="meter"><i style="width:' + (s.earned ? 100 : s.pct) + '%"></i></div>' : '') +
+    '<div class="more">' + more(b, s) + '</div></div>';
+  return '<div class="card badge' + state + (isOpen ? ' open' : '') + '" data-id="' + b.id + '" style="--t:' + COL[b.track] + '">' + h + '</div>';
 }
 function stepsList(b) {
   var pr = CL.progress()[b.id] || {};
@@ -390,70 +481,53 @@ function stepsList(b) {
 function subsList(b, s, label) {
   var mine = CL.mySubs(b.id).slice(0, 3);
   var h = '<div class="subs">' + mine.map(function (x) {
-    var head = x.status === 'pass' ? 'Passed' : (x.status === 'fail' ? 'Not passed' : 'Waiting for review');
-    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · photo sent ' + esc(new Date(x.at).toLocaleDateString()) + (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
+    var head = x.status === 'pass' ? 'Approved' : (x.status === 'fail' ? 'Not passed' : 'Pending review');
+    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · sent ' + esc(new Date(x.at).toLocaleDateString()) + (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
   }).join('') + '</div>';
-  if (!s.earned) h += '<div class="act"><button class="btn primary" type="button" data-photo="' + b.id + '">' + (mine.length && mine[0].status === 'fail' ? 'Try again: submit a new photo' : label) + '</button></div>';
+  if (!s.earned && !s.pending) h += '<div class="act"><button class="btn primary" type="button" data-photo="' + b.id + '">' + (mine.length && mine[0].status === 'fail' ? 'Try again: ' + label : label) + '</button></div>';
   return h;
 }
-function bench(b, s) {
-  return stepsList(b) + '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done - passed by a mentor.' : 'submit a photo of your TRUST certificate below, your name readable; a mentor passes or fails it in the console. A pass shows here within a minute.') + '</div>' + subsList(b, s, 'Submit a photo of the certificate');
+function resources(b) {
+  if (!b.res || !b.res.length) return '';
+  return '<div class="res"><b>Optional resources</b><ul>' + b.res.map(function (r) {
+    return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>';
+  }).join('') + '</ul></div>';
 }
-function knowledge(b, s) {
-  var h = '<div class="reqh">Lessons</div><ul>';
-  (b.lessons || []).forEach(function (l) {
-    var on = CL.lessonDone(l.id);
-    h += '<li class="les' + (on ? ' on' : '') + '" data-lesson="' + esc(l.id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(l.t) + (l.drill ? ' <span class="st">drill</span>' : '') + '</span><span class="go">' + (on ? 'review' : 'start &rsaquo;') + '</span></li>';
-  });
-  var best = CL.quizBest(b), qon = best >= FS.PASS || s.earned;   // on file from the kiosk/console counts as passed
-  h += '<li class="les' + (qon ? ' on' : '') + '" data-lesson="' + esc(b.quiz) + '"><span class="tick' + (qon ? ' on' : '') + '">' + (qon ? '✓' : '') + '</span><span class="rt">Quiz · 10 questions · ' + FS.PASS + ' % to pass' + (best > 0 ? ' · best ' + best : '') + '</span><span class="go">' + (qon ? 'review' : 'start &rsaquo;') + '</span></li></ul>';
-  var items = (b.lessons || []).map(function (l) { return l.id; }).concat([b.quiz]), next = items.filter(function (id) { return !CL.lessonDone(id) && !(id === b.quiz && qon); })[0];
-  h += '<div class="act"><button class="btn primary" type="button" data-lesson="' + esc(next || items[0]) + '">' + (next ? (next === items[0] ? 'Start the lessons' : 'Continue') : 'Review the lessons') + ' &rarr;</button></div>';
-  h += '<div class="approve">Lessons tick off here as you finish them. Pass the quiz and this part is done, no sign-off needed.' + (s.earned && s.source !== 'quiz' ? ' On file from the ' + esc(s.source) + '.' : '') + '</div>';
-  return h;
-}
-function paper(b, s) {
-  return stepsList(b) + TERMS +
-    '<div class="reqh">The signing paper</div><div class="why">One page: a short version of the terms, these four boxes to tick, and the signatures - yours and a parent or guardian\'s.</div>' +
-    '<div class="boxes"><div><span><b>I know the local FAA rules</b> - TRUST, line of sight, never over people, airspace and altitude limits.</span></div>' +
-    '<div><span><b>I know the Brophy flight guidelines</b> - the Safe Flight rules sheet, and I follow them every time.</span></div>' +
-    '<div><span><b>I will submit the flight form before every flight</b> - on Brophy Flight, 24 hours ahead, and fly only after a yes.</span></div>' +
-    '<div><span><b>I am liable for any and all damages</b> - to club equipment, property or people, from my flying.</span></div></div>' +
-    '<div class="act"><a class="btn" href="agreement.html" target="_blank" rel="noopener">Print the signing paper &nearr;</a></div>' +
-    '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done - the signed paper is on file.' : 'sign it, a parent or guardian signs it, then submit a photo of the whole page, every line readable; a mentor checks it in the console.') + '</div>' +
-    subsList(b, s, 'Submit a photo of the signed paper');
-}
-function drones(b, s) {
-  var pf = CL.portfolio(), h = stepsList(b);
-  h += '<div class="reqh">Your drones' + (ST.pilot ? ' · ' + (pf.club.filter(function (d) { return d.unlocked; }).length + pf.mine.filter(function (d) { return d.status === 'pass'; }).length) + ' approved' : '') + '</div>';
-  h += '<div class="drones">';
-  pf.club.forEach(function (d) {
-    h += '<div class="drone ' + (d.unlocked ? 'ok' : 'locked') + '" title="' + esc(d.unlocked ? 'Club drone · certified' : 'Unlocks with the ' + d.unlock) + '"><div class="pic">' + QUAD + '</div>' +
-      '<div class="dn">' + esc(d.name) + '</div><div class="ds">' + esc(d.specs) + '</div>' +
-      '<div class="dk">' + (d.unlocked ? 'Club drone · certified &#10003;' : 'Club drone · locked') + '</div>' +
-      (d.unlocked ? '' : '<div class="dv">Unlocks when you pass the <a href="../pilot-path/#' + (d.badge === 'tiny-whoop' ? 't1' : 't2') + '">' + esc(d.unlock) + '</a>.</div>') + '</div>';
-  });
-  pf.mine.forEach(function (d) {
-    var id = CL.driveId(d.video), cls = d.status === 'pass' ? 'ok' : d.status;
-    h += '<div class="drone ' + cls + '"><div class="pic">' + (id ? '<img src="' + CL.driveThumb(id) + '" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.replaceWith(document.createElement(\'span\'));">' : QUAD) + '</div>' +
-      '<div class="dn">' + esc(d.name) + '</div><div class="ds">' + esc(d.specs) + '</div>' +
-      '<div class="dk">' + (d.status === 'pass' ? 'Approved &#10003;' : d.status === 'fail' ? 'Not approved' : 'Waiting for review') + '</div>' +
-      (d.reviewNote ? '<div class="dv">Mentor: ' + esc(d.reviewNote) + '</div>' : '') +
-      (id ? '<div class="dv"><a href="' + CL.driveOpen(id) + '" target="_blank" rel="noopener">Flight video &#8599;</a></div>' : '') + '</div>';
-  });
-  h += '<div class="drone add" data-add="1"><span class="plus">+</span>Add a drone</div></div>';
-  h += '<div class="approve"><b>Approval:</b> a mentor watches each video from the console and approves the drone. ' + (ST.pilot ? '' : 'Pick your profile to add one. ') +
-    'A club drone counts as soon as its checkpoint is on file.</div>';
-  return h;
+function more(b, s) {
+  var h = '<div class="why"><b>Why:</b> ' + esc(b.why) + '</div>';
+  if (b.type === 'knowledge') {
+    h += '<div class="reqh">Lessons</div><ul>';
+    var qon = CL.quizBest(b) >= FS.PASS || s.earned, best = CL.quizBest(b);
+    (b.lessons || []).forEach(function (l) {
+      var on = CL.lessonDone(l.id);
+      h += '<li class="les' + (on ? ' on' : '') + '" data-lesson="' + esc(l.id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(l.t) + (l.drill ? ' <span class="st">drill</span>' : '') + '</span><span class="go">' + (on ? 'review' : 'start &rsaquo;') + '</span></li>';
+    });
+    h += '<li class="les' + (qon ? ' on' : '') + '" data-lesson="' + esc(b.quiz) + '"><span class="tick' + (qon ? ' on' : '') + '">' + (qon ? '✓' : '') + '</span><span class="rt">Quiz · 10 questions · ' + FS.PASS + ' % to pass' + (best > 0 ? ' · best ' + best : '') + '</span><span class="go">' + (qon ? 'review' : 'start &rsaquo;') + '</span></li></ul>';
+    var items = (b.lessons || []).map(function (l) { return l.id; }).concat([b.quiz]), next = items.filter(function (id) { return !CL.lessonDone(id) && !(id === b.quiz && qon); })[0];
+    h += '<div class="act"><button class="btn primary" type="button" data-lesson="' + esc(next || items[0]) + '">' + (next ? (next === items[0] ? 'Start the lessons' : 'Continue') : 'Review the lessons') + ' &rarr;</button></div>';
+    h += '<div class="approve">Pass the quiz and the badge is yours, no sign-off needed.</div>';
+  } else if (b.kind === 'drone') {
+    h += stepsList(b) + '<div class="approve"><b>Approval:</b> a mentor watches the video from the console and approves the drone. A club drone counts as soon as its checkpoint is on file.</div>' +
+      '<div class="act"><button class="btn primary" type="button" data-add="1">Add a drone</button><a class="btn" href="#droneSec">Your drones &uarr;</a></div>';
+  } else if (b.kind === 'paper') {
+    h += stepsList(b) + TERMS +
+      '<div class="act"><a class="btn" href="agreement.html" target="_blank" rel="noopener">Print the signing paper &nearr;</a></div>' +
+      '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'the signed paper is on file.' : 'submit a photo of the whole signed page, every line readable; a mentor checks it.') + '</div>' +
+      subsList(b, s, 'Submit a photo of the signed paper');
+  } else {
+    h += stepsList(b) + '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'on file.' : 'submit a photo or PDF of your certificate, name readable; a mentor passes or fails it.') + '</div>' +
+      subsList(b, s, 'Submit the certificate (photo or PDF)');
+  }
+  return h + resources(b);
 }
 
 /* The Pilot Agreement terms - the club's draft of 2026-10-19, kept simple
    as Mr. Burr asked (2026-10-20): a plain reminder of responsibility, not a
-   legal contract. Mr. Reasy's point stands: as minors, pilots sign it WITH
-   a parent or guardian. Edit here and in agreement.html together. */
-var TERMS = '<details class="terms"><summary>Pilot Agreement · the terms</summary><div class="body">' +
-  '<p class="lead">Kept simple on purpose: this is a plain reminder that you are flying expensive equipment and are responsible for how you use it, signed by you and a parent or guardian. It is not a legal contract.</p>' +
-  '<p>This agreement is between the student pilot ("you"), your parent or guardian, and the Brophy FPV Club ("the club"). Signing it is part of Flight Clearance (the Brophy Drone Certification).</p>' +
+   legal contract; as minors, pilots sign it WITH a parent or guardian. Edit
+   here and in agreement.html together. */
+var TERMS = '<details class="terms"><summary>The terms</summary><div class="tb">' +
+  '<p class="lead">Kept simple on purpose: a plain reminder that you are flying expensive equipment and are responsible for how you use it, signed by you and a parent or guardian. Not a legal contract.</p>' +
+  '<p>This agreement is between the student pilot ("you"), your parent or guardian, and the Brophy FPV Club ("the club"). Signing it is part of Flight Clearance.</p>' +
   '<h4>1 · Words used here</h4><ul>' +
   '<li><b>Club equipment:</b> every drone (the Meteor 75 Pro and Pavo 20 Pro included), air units, goggles, radios, batteries, chargers, props, spares, and anything else the club owns or bought with grant money.</li>' +
   '<li><b>Mentor:</b> a member holding the Mentor badge whose clearance is in good standing. Sign-offs are recorded on the club website.</li>' +
@@ -484,7 +558,7 @@ var TERMS = '<details class="terms"><summary>Pilot Agreement · the terms</summa
   '<li>You alone are responsible for following FAA regulations and state and local law: a valid TRUST certificate shown on request; visual line of sight, with a visual observer when flying FPV; never over people or moving vehicles; airspace and altitude limits.</li>' +
   '<li>Any fines or legal consequences are yours. The club does not give legal advice.</li></ul>' +
   '<h4>8 · Flying on Brophy property</h4><ul>' +
-  '<li>Only in approved areas, at approved times, with a mentor and spotter present, and only after a request on Brophy Flight has been approved.</li>' +
+  '<li>Only in approved areas, at approved times, with a mentor and spotter present, and only after Mr. Burr has approved the request.</li>' +
   '<li>Never over or near non-participants, windows, vehicles or areas not set aside for flight. No reckless flying, no stunts outside approved areas, no flying while distracted.</li>' +
   '<li>No modifications, firmware updates or settings changes to club equipment without a mentor\'s approval. A mentor may end any flight session at any time.</li></ul>' +
   '<h4>9 · Release</h4><ul>' +
@@ -494,9 +568,10 @@ var TERMS = '<details class="terms"><summary>Pilot Agreement · the terms</summa
   '<p class="lead">Draft of 2026-10-19, simplified 2026-10-20 after review by the Director of Student Activities and the club moderator. Not reviewed by legal counsel.</p>' +
   '</div></details>';
 
-/* ---------- lessons in a frame (the Ground School course app, as on the Pilot Path) ---------- */
+/* ---------- lessons in a frame (the Ground School course app) ---------- */
 var LP = { id: null };
-function lesName(id) { var b = FS.BADGES.filter(function (x) { return x.id === 'safe-flight'; })[0]; if (id === b.quiz) return 'Safe Flight quiz'; var l = b.lessons.filter(function (x) { return x.id === id; })[0]; return l ? l.t : (FS.LESSON_TITLES[id] || id); }
+function safeBadge() { return FS.BADGES.filter(function (x) { return x.id === 'safe-flight'; })[0]; }
+function lesName(id) { var b = safeBadge(); if (id === b.quiz) return 'Safe Flight quiz'; var l = b.lessons.filter(function (x) { return x.id === id; })[0]; return l ? l.t : (FS.LESSON_TITLES[id] || id); }
 function openLesson(id) {
   LP.id = id; $('lpTitle').textContent = 'Safe Flight · ' + lesName(id);
   $('lpDone').classList.remove('show');
@@ -506,15 +581,15 @@ function openLesson(id) {
 function closeLP() { $('lp').classList.remove('open'); $('lpDone').classList.remove('show'); $('lpFrame').src = 'about:blank'; LP.id = null; document.body.style.overflow = ''; render(); CL.pullMine(); }
 function lessonEnded(id, how) {
   if (how === 'exit') { closeLP(); return; }
-  var b = FS.BADGES.filter(function (x) { return x.id === 'safe-flight'; })[0], items = b.lessons.map(function (l) { return l.id; }).concat([b.quiz]);
+  var b = safeBadge(), items = b.lessons.map(function (l) { return l.id; }).concat([b.quiz]);
   var isQuiz = id === b.quiz, passed = how === 'complete';
   var nx = items.filter(function (x) { return x !== id && !CL.lessonDone(x) && !(x === b.quiz && CL.quizBest(b) >= FS.PASS); })[0] || null;
   $('lpDoneBig').textContent = passed ? (isQuiz ? 'Quiz passed ✓' : 'Done ✓') : 'Not passed yet';
-  $('lpDoneSub').textContent = passed ? (isQuiz ? 'Safe Flight is done - part 2 of your clearance.' : lesName(id)) : 'Your best score is kept. The questions reshuffle every try.';
+  $('lpDoneSub').textContent = passed ? (isQuiz ? 'Safe Flight is yours.' : lesName(id)) : 'Your best score is kept. The questions reshuffle every try.';
   var btns = '';
   if (!passed) btns += '<button class="btn primary" type="button" data-lp="retry">Try again</button>';
   if (nx) btns += '<button class="btn' + (passed ? ' primary' : '') + '" type="button" data-lp="next">Next: ' + esc(lesName(nx)) + ' &rarr;</button>';
-  btns += '<button class="btn" type="button" data-lp="close">Back to clearance</button>';
+  btns += '<button class="btn" type="button" data-lp="close">Back</button>';
   $('lpBtns').innerHTML = btns; LP.next = nx;
   $('lpDone').classList.add('show'); render();
 }
@@ -531,32 +606,21 @@ $('lpBtns').addEventListener('click', function (e) {
 });
 
 /* ---------- clicks ---------- */
-$('parts').addEventListener('click', function (e) {
+document.addEventListener('click', function (e) {
   var les = e.target.closest('[data-lesson]');
   if (les) { e.preventDefault(); if (!ST.pilot) { SiteNav.open(); return; } openLesson(les.getAttribute('data-lesson')); return; }
-  if (e.target.closest('a')) return;
   var ph = e.target.closest('[data-photo]');
   if (ph) { camOpen(ph.getAttribute('data-photo')); return; }
   if (e.target.closest('[data-add]')) { ddOpen(); return; }
-  var step = e.target.closest('li.step'), card = e.target.closest('.part');
-  if (step && card) {
-    if (!ST.pilot) { SiteNav.open(); return; }
-    CL.tickStep(card.getAttribute('data-id'), +step.getAttribute('data-step'));
-  }
-});
-$('pChange').onclick = function () { SiteNav.open(); };
-$('stat').addEventListener('click', function (e) {
-  var b = e.target.closest('[data-up]'); if (!b) return;
-  var id = b.getAttribute('data-up');
-  if (id === 'pick') { SiteNav.open(); return; }
-  var to = $(id); if (to) to.scrollIntoView({ behavior: 'smooth', block: 'start' });
-});
-$('how').addEventListener('click', function (e) {
-  var a = e.target.closest('a[href^="#"]'); if (!a) return;
-  var to = $(a.getAttribute('href').slice(1)); if (to) { e.preventDefault(); to.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
+  var step = e.target.closest('li.step'), card = e.target.closest('.badge');
+  if (step && card) { if (!ST.pilot) { SiteNav.open(); return; } CL.tickStep(card.getAttribute('data-id'), +step.getAttribute('data-step')); return; }
+  if (!card || e.target.closest('a,button,details,input,textarea')) return;
+  /* open or close the whole visual row, as on the Pilot Path */
+  var want = !card.classList.contains('open'), top = card.offsetTop, sib = card.parentNode.children;
+  for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) sib[k].classList.toggle('open', want);
 });
 
-/* ---------- photo submissions (the Pilot Path's camera, for TRUST and the signed paper) ---------- */
+/* ---------- photo / PDF submissions ---------- */
 var cam = { badge: null, stream: null, data: null };
 function camShow(which) { ['camShoot', 'camSend', 'camRetake', 'camPick'].forEach(function (id) { $(id).hidden = which.indexOf(id) < 0; }); }
 function camStop() { if (cam.stream) { cam.stream.getTracks().forEach(function (t) { t.stop(); }); cam.stream = null; } }
@@ -564,32 +628,36 @@ function camOpen(badgeId) {
   if (!ST.pilot) { SiteNav.open(); return; }
   var b = FS.BADGES.filter(function (x) { return x.id === badgeId; })[0]; if (!b) return;
   cam.badge = b; cam.data = null;
-  $('camTitle').textContent = b.kind === 'paper' ? 'Photo of the signed paper' : 'Photo for ' + b.name; $('camNote').value = ''; $('camMsg').textContent = '';
+  var pdfOk = b.id === 'faa-trust';
+  $('camFile').accept = pdfOk ? 'image/*,application/pdf,.pdf' : 'image/*';
+  $('camTitle').textContent = b.kind === 'paper' ? 'Photo of the signed paper' : (pdfOk ? 'Your TRUST certificate (photo or PDF)' : 'Photo for ' + b.name);
+  $('camNote').value = ''; $('camMsg').textContent = '';
   $('cam').classList.add('open'); camLive();
 }
 function camLive() {
   cam.data = null; camStop();
   var view = $('camView');
-  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { view.textContent = 'This browser cannot open the camera here - choose a photo file instead.'; camShow(['camPick']); return; }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) { view.textContent = 'This browser cannot open the camera here - choose a file instead.'; camShow(['camPick']); return; }
   view.textContent = 'Allow the camera when your browser asks…'; camShow(['camPick']);
   navigator.mediaDevices.getUserMedia({ video: { facingMode: { ideal: 'environment' }, width: { ideal: 1920 }, height: { ideal: 1440 } }, audio: false }).then(function (st) {
     if (!$('cam').classList.contains('open')) { st.getTracks().forEach(function (t) { t.stop(); }); return; }
     cam.stream = st;
     var v = document.createElement('video'); v.autoplay = true; v.playsInline = true; v.muted = true; v.srcObject = st;
     view.innerHTML = ''; view.appendChild(v); camShow(['camShoot', 'camPick']);
-  }).catch(function () { view.textContent = 'No camera permission - you can choose a photo file instead.'; camShow(['camPick']); });
+  }).catch(function () { view.textContent = 'No camera permission - choose a file instead.'; camShow(['camPick']); });
 }
 function camUse(data) {
   cam.data = data; camStop();
-  var img = new Image(); img.src = data; img.alt = 'your photo';
-  $('camView').innerHTML = ''; $('camView').appendChild(img);
+  var view = $('camView'); view.innerHTML = '';
+  if (/^data:application\/pdf/.test(data)) view.textContent = 'PDF ready to send.';
+  else { var img = new Image(); img.src = data; img.alt = 'your photo'; view.appendChild(img); }
   camShow(['camSend', 'camRetake']); $('camMsg').textContent = 'Happy with it? Submit it for review.';
 }
 $('camShoot').onclick = function () { var v = $('camView').querySelector('video'); if (!v || !v.videoWidth) return; camUse(CL.shrink(v, v.videoWidth, v.videoHeight)); };
 $('camPick').onclick = function () { $('camFile').click(); };
 $('camFile').onchange = function () {
   var f = this.files && this.files[0]; this.value = ''; if (!f) return;
-  CL.fileToJpeg(f, function (d) { if (d) camUse(d); else $('camMsg').textContent = 'That file is not a photo this browser can read.'; });
+  CL.fileToData(f, function (d, err) { if (d) camUse(d); else $('camMsg').textContent = err || 'Could not read that file.'; });
 };
 $('camRetake').onclick = camLive;
 function camClose() { camStop(); $('cam').classList.remove('open'); cam.badge = null; cam.data = null; }
@@ -609,8 +677,7 @@ function ddOpen() {
   dd.pic = null; dd.drive = null; dd.ok = false;
   $('ddPick').innerHTML = 'Tap to add a picture of the drone<br><small>camera or a file</small>';
   $('ddName').value = ''; $('ddSpecs').value = ''; $('ddVideo').value = ''; $('ddMsg').textContent = '';
-  ddChk('About a minute: take off, fly, land safely. Upload it to Google Drive, share it as <b>&nbsp;Anyone with the link&nbsp;</b>, paste the link here - it is checked before you send.', '');
-  ddReady(); $('dd').classList.add('open'); setTimeout(function () { $('ddName').focus(); }, 0);
+  ddChk(DD_HINT, ''); ddReady(); $('dd').classList.add('open'); setTimeout(function () { $('ddName').focus(); }, 0);
 }
 function ddChk(html, cls) { var c = $('ddChk'); c.className = 'chk' + (cls ? ' ' + cls : ''); c.innerHTML = html; }
 function ddReady() { $('ddSend').disabled = !(dd.pic && dd.ok && $('ddName').value.trim().length >= 2); }
@@ -627,7 +694,7 @@ $('ddName').addEventListener('input', ddReady);
 $('ddVideo').addEventListener('input', function () {
   clearTimeout(dd.timer); dd.ok = false; ddReady();
   var id = CL.driveId(this.value.trim());
-  if (!this.value.trim()) { ddChk('Paste the Google Drive link of your flight video.', ''); return; }
+  if (!this.value.trim()) { ddChk(DD_HINT, ''); return; }
   if (!id) { ddChk('That is not a Google Drive file link. In Drive: right-click the video &rarr; Share &rarr; Copy link. It looks like drive.google.com/file/d/&hellip;/view', 'bad'); return; }
   ddChk('Checking the link&hellip;', '');
   dd.timer = setTimeout(function () {
@@ -665,13 +732,17 @@ function celebrate() {
   if (all[ST.pilot.slug]) return;
   all[ST.pilot.slug] = Date.now(); try { localStorage.setItem(LS_CEL, JSON.stringify(all)); } catch (e) {}
   celBusy = true;
-  FPVConfetti.congrats('Cleared!', [ST.pilot.name + ' · Brophy Drone Certification', 'Ask on Brophy Flight before every campus flight.'], function () { celBusy = false; });
+  FPVConfetti.congrats('Certified!', [ST.pilot.name + ' · Brophy Drone Certification', 'Ask Mr. Burr before every campus flight.'], function () { celBusy = false; });
 }
 
 /* ---------- boot ---------- */
 CL.on(render);
 render();
-if (location.hash && /^#(faa-trust|safe-flight|pilot-agreement|drone-portfolio)$/.test(location.hash)) setTimeout(function () { var el = document.querySelector(location.hash); if (el) el.scrollIntoView(); }, 50);
+if (location.hash && /^#(badges|droneSec|permission|faa-trust|safe-flight|pilot-agreement|drone-portfolio)$/.test(location.hash)) setTimeout(function () {
+  var id = location.hash.slice(1), el = $(id) || document.querySelector('.badge[data-id="' + id + '"]');
+  if (el && el.classList.contains('badge')) el.classList.add('open');
+  if (el) el.scrollIntoView();
+}, 80);
 </script>
 </body>
 </html>

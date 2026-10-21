@@ -1,6 +1,7 @@
 /* Site bar (2026-10-10): the same top bar on every page - Home / Pilot Path /
-   Flight Clearance (2026-10-20) / Brophy Flight (was Request to fly,
-   2026-10-15) / Resources, and the profile button top right.
+   Flight Clearance (2026-10-20: the Brophy Drone Certification and Mr.
+   Burr's permission form on one page at clearance/; fly/ redirects there) /
+   Resources, and the profile button top right.
 
    The profile is the pilot NAME, saved in localStorage under fs.pilot.v1 -
    the key Flight School has always used, so picking a name on any page is
@@ -42,8 +43,7 @@
   }
 
   var page = /\/(pilot-path|progression|flightschool)\//.test(location.pathname) ? 'prog'
-           : /\/clearance\//.test(location.pathname) ? 'clear'
-           : /\/fly\//.test(location.pathname) ? 'fly'
+           : /\/(fly|clearance)\//.test(location.pathname) ? 'fly'
            : /\/posters\//.test(location.pathname) ? 'res' : 'home';
 
   var bar = document.createElement('header');
@@ -52,8 +52,7 @@
     '<nav class="sitenav" aria-label="Site">' +
       '<a href="' + BASE + '"' + (page === 'home' ? ' aria-current="page"' : '') + '>Home</a>' +
       '<a href="' + BASE + 'pilot-path/"' + (page === 'prog' ? ' aria-current="page"' : '') + '>Pilot Path</a>' +
-      '<a href="' + BASE + 'clearance/"' + (page === 'clear' ? ' aria-current="page"' : '') + '>Flight Clearance</a>' +
-      '<a href="' + BASE + 'fly/"' + (page === 'fly' ? ' aria-current="page"' : '') + '>Brophy Flight</a>' +
+      '<a href="' + BASE + 'clearance/"' + (page === 'fly' ? ' aria-current="page"' : '') + '>Flight Clearance</a>' +
       '<a href="' + BASE + 'posters/"' + (page === 'res' ? ' aria-current="page"' : '') + '>Resources</a>' +
     '</nav>' +
     '<div class="sitme">' +

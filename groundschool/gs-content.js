@@ -1323,7 +1323,7 @@ var GS_COURSE = [
     { h:'Seven flight rules. Know them. Follow them.', tab:'The sheet',
       p:['This is the sheet on the wall by the simulators. Safe Flight is the badge that says you know it and you follow it - at all times you are with the Brophy FPV Club.'],
       steps:[
-        { t:'Permission before every campus flight', d:'Flight Clearance first, then a request on Brophy Flight (the website), 24 hours ahead, with a yes from Mr. Burr - a badge is never permission' },
+        { t:'Permission before every campus flight', d:'the Brophy Drone Certification first, then Mr. Burr\'s permission - his form on the website\'s Flight Clearance page, 24 hours ahead, with a yes - a badge is never permission' },
         { t:'Spotter for every goggle flight', d:'eyes on the aircraft the whole battery - that is the law, not a club habit' },
         { t:'Never over people',           d:'and never between you and the aircraft' },
         { t:'Call out your arm',           d:'in the flight zone, facing away, after the ARMING call' },
@@ -1337,9 +1337,9 @@ var GS_COURSE = [
       cols:{ tone:'vs', ha:'You may', hb:'Once',
         a:['Fly any sim, any day','Fly the Meteor 75 for your Meteor 75 Pro Certification','Fly the Meteor 75 with the club','Fly the Pavo for your Pavo checkpoint','Fly the Pavo with the club, or any FPV drone at school','Fly at a school event or a race'],
         b:['You have a name at the kiosk','Its five prerequisites are ticked - a mentor watches','You passed the Meteor 75 Pro Certification: you are Tier 1','Its five prerequisites are ticked - a mentor watches','You passed the Pavo 20 Pro Flight: you are Tier 2','Your five Event Pilot prerequisites are ticked - with a spotter and a mentor'] },
-      tip:'Ask before you assume. A mentor can look you up on the kiosk in ten seconds. And every one of those real flights still needs Flight Clearance and a yes on the Brophy Flight form first.' },
+      tip:'Ask before you assume. A mentor can look you up on the kiosk in ten seconds. And every one of those real flights still needs the Brophy Drone Certification and a yes from Mr. Burr first.' },
     { h:'Permission to fly', tab:'Permission',
-      p:['Passing a checkpoint says you <b>can</b> fly. It never says you <b>may</b>. First you hold <b>Flight Clearance</b> (the Brophy Drone Certification: FAA TRUST, Safe Flight, the Pilot Agreement, a drone in your portfolio). Then every flight on campus - whoop, Pavo, anything with props - goes on Mr. Burr\'s form first (<b>Brophy Flight</b> on the website) and happens only after the school says yes.'],
+      p:['Passing a checkpoint says you <b>can</b> fly. It never says you <b>may</b>. First you hold the <b>Brophy Drone Certification</b> (FAA TRUST, Safe Flight, the Pilot Agreement, a drone in your portfolio). Then every flight on campus - whoop, Pavo, anything with props - goes on Mr. Burr\'s form first (<b>Flight Clearance</b> on the website) and happens only after the school says yes.'],
       steps:[
         { t:'File it 24 hours ahead',        d:'at least a full day before you fly - sooner and it will not be approved in time' },
         { t:'Say exactly what you will do',   d:'when, where on campus, which aircraft, who spots' },
@@ -1834,9 +1834,9 @@ var GS_QUIZ = [
   why:'Props come off whenever the battery is plugged in on the bench. One wrong click in Betaflight and somebody gets hurt.' },
 /* --- permission to fly (2026-10-16: the school's condition on the grant) --- */
 { mod:'SAF', q:'You passed your Meteor 75 Pro Certification yesterday. May you fly the Meteor on the field after school today?',
-  opts:['Yes - the badge is your permission','Only if a mentor is standing next to you','Only if you are cleared and filed a request on Brophy Flight 24 hours ahead and got a yes','Yes, anything under 250 g is fine'], a:2,
-  why:'A checkpoint says you can fly. Permission for each campus flight comes from the Brophy Flight form, filed a day ahead by a cleared pilot and answered with a yes.' },
-{ mod:'SAF', q:'How far ahead must a flight request on Brophy Flight be filed?',
+  opts:['Yes - the badge is your permission','Only if a mentor is standing next to you','Only if you are certified and asked Mr. Burr 24 hours ahead and got a yes','Yes, anything under 250 g is fine'], a:2,
+  why:'A checkpoint says you can fly. Permission for each campus flight comes from Mr. Burr\'s form on Flight Clearance, filed a day ahead by a certified pilot and answered with a yes.' },
+{ mod:'SAF', q:'How far ahead must a flight request to Mr. Burr be filed?',
   opts:['Right before you arm','The same morning','At least 24 hours before the flight','A week before'], a:2,
   why:'24 hours, so the school can answer before you fly.' },
 { mod:'SAF', q:'You are not a mentor. Who has to be your spotter for a campus flight?',

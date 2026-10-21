@@ -70,6 +70,7 @@ button.primary.flush{margin-top:0}
 .rv{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:6px;background:var(--bg)}
 .rv .ph{aspect-ratio:4/3;background:var(--chip);border-radius:7px;overflow:hidden;display:grid;place-items:center;color:var(--muted);font-size:13.5px}
 .rv .ph img{width:100%;height:100%;object-fit:contain;display:block}
+.rv .ph embed.pdf{width:100%;height:100%;display:block;background:#fff}
 .rv b{font-weight:600}
 .rv .meta{font-size:13.5px;color:var(--muted)}
 .rv .warn{font-size:13.5px;color:var(--warn)}

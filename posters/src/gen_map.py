@@ -209,7 +209,7 @@ def render(s, fs, prev_count):
   </div>
 
   <div class="legend">{legend}<span class="how"><b>Quiz</b> badges: pass at {fs['PASS']} %, no sign-off &middot; <b>Bench</b> and <b>witnessed</b> badges: a mentor who holds the badge signs it off &middot; demonstration, not attendance</span></div>
-  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; FAA TRUST &middot; Safe Flight &middot; the Pilot Agreement (signed with a parent) &middot; your Drone Portfolio &middot; then a request on Brophy Flight 24 h before every flight &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
+  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; the Brophy Drone Certification: FAA TRUST &middot; Safe Flight &middot; the Pilot Agreement (signed with a parent) &middot; your Drone Portfolio &middot; then permission from Mr. Burr 24 h before every flight &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
   <div class="qrmini qr"><svg viewBox="0 0 370 370"><use href="qr-path.svg#q"/></svg><div class="say"><b>Full badge list</b>scan</div></div>
   <div class="foot"><span><b>Brophy FPV Club</b> &middot; Pilot Path &middot; Tier {tier_n} of 3</span><span>mtucker27@ for questions</span></div>
 </div>

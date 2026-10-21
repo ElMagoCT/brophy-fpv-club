@@ -1,10 +1,10 @@
 /* Flight Clearance - shared by ../clearance/ (the four parts) and ../fly/
-   (Brophy Flight: the request form plus "where you stand"). 2026-10-20.
+   (Flight Clearance: the certification, the drones and Mr. Burr's form). 2026-10-20.
 
    The Brophy Drone Certification is four parts (tier 'cl' in
    flightschool/badges.js): FAA TRUST, Safe Flight, Pilot Agreement, Drone
    Portfolio. A pilot is CLEARED when all four are done. Cleared is still not
-   permission: every campus flight is requested on Brophy Flight 24 h ahead.
+   permission: every campus flight is requested from Mr. Burr 24 h ahead.
 
    Sources, merged per part - the same three the Pilot Path uses, nothing new:
      1. the kiosk snapshot (../data.json): earned badges per pilot;
@@ -171,6 +171,17 @@
     c.getContext('2d').drawImage(src, 0, 0, c.width, c.height);
     return c.toDataURL('image/jpeg', 0.8);
   }
+  /* a certificate may be a PDF (2026-10-20): sent as-is, base64, if small enough */
+  function fileToData(file, cb) {
+    if (file && /pdf$/i.test(file.type || '') || /\.pdf$/i.test(file.name || '')) {
+      if (file.size > 1400000) return cb(null, 'That PDF is too big (over 1.4 MB) - a photo of it works too.');
+      var fr = new FileReader();
+      fr.onload = function () { cb(String(fr.result).replace(/^data:[^;]*;/, 'data:application/pdf;')); };
+      fr.onerror = function () { cb(null, 'Could not read that PDF.'); };
+      fr.readAsDataURL(file); return;
+    }
+    fileToJpeg(file, function (d) { cb(d, d ? '' : 'That file is not a photo this browser can read.'); });
+  }
   function fileToJpeg(file, cb) {
     var img = new Image(), url = URL.createObjectURL(file);
     img.onload = function () { var d = shrink(img, img.naturalWidth, img.naturalHeight); URL.revokeObjectURL(url); cb(d, img); };
@@ -214,7 +225,7 @@
     on: function (f) { C.listeners.push(f); },
     status: status, partStatus: partStatus, portfolio: portfolio, onFile: onFile, kioskRow: kioskRow,
     quizBest: quizBest, lessonDone: lessonDone, progress: progress, tickStep: tickStep,
-    shrink: shrink, fileToJpeg: fileToJpeg, submit: submit, mySubs: mySubs,
+    shrink: shrink, fileToJpeg: fileToJpeg, fileToData: fileToData, submit: submit, mySubs: mySubs,
     driveId: driveId, driveCheck: driveCheck, driveThumb: driveThumb, drivePreview: drivePreview, driveOpen: driveOpen
   };
 

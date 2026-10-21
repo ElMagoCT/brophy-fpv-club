@@ -41,7 +41,7 @@
        flight video on Google Drive a mentor approves in the console; the
        club's, unlocked by its checkpoint). Never counted, no tier. Clearance
        is still not permission: every campus flight is requested on
-       ../fly/ ("Brophy Flight", Mr. Burr's Google Form) 24 h ahead.
+       Mr. Burr's Google Form, on the same page, 24 h ahead.
      - Tier 1 = the "Meteor 75 Pro Certification" (id tiny-whoop kept): just
        the drone things - Battery Care, Building, Betaflight, Line of Sight,
        Sim Flight, then the checkpoint flight.
@@ -73,9 +73,9 @@
     { id: 't2', n: 2, name: 'Full-size',   gear: 'Pavo 20 Pro · larger drones at Brophy',          color: 'var(--rust)',   gate: 'Checkpoint: Event Pilot' },
     { id: 't3', n: 3, name: 'Event Pilot', gear: 'Any Tier 2 airframe at a school event, with a spotter', color: 'var(--green)', gate: 'The top' },
     { id: 'el', n: -1, name: 'Bonus badges', gear: 'Any order, any time · not counted toward your total', color: 'var(--amber)', gate: '' },
-    /* 2026-10-20: Flight Clearance - the Brophy Drone Certification. Its own
-       page (../clearance/), never a tier, never counted. n = -2 keeps it out
-       of every "n >= 0" tier loop. */
+    /* 2026-10-20: Flight Clearance - the Brophy Drone Certification. Shown on
+       ../clearance/ (../fly/ redirects there), never a tier,
+       never counted. n = -2 keeps it out of every "n >= 0" tier loop. */
     { id: 'cl', n: -2, name: 'Flight Clearance', gear: 'Brophy Drone Certification · four parts, then ask before every flight', color: 'var(--rust)', gate: '' }
   ];
   /* The club's drones (2026-10-20). Each sits in every pilot's Drone
@@ -228,18 +228,18 @@
     // Four parts on ../clearance/; never a tier, never counted. Order here is the page order.
     { id: 'faa-trust', tier: 'cl', track: 'know', type: 'bench', name: 'FAA TRUST', est: 'about 20 min',
       do: 'Take the free TRUST test and send a photo of the certificate.', why: 'Federal requirement for every recreational flyer, before the first real flight.',
-      steps: [{ t: 'Take the free TRUST test (link below - about 20 min, cannot be failed)', v: VID.trust }, 'Save the certificate; keep a copy on your phone', 'Submit a photo of it, name readable - a mentor passes or fails it.'] },
+      steps: [{ t: 'Take the free TRUST test (link below - about 20 min, cannot be failed)', v: VID.trust }, 'Submit a photo or PDF of the certificate, name readable'] },
     { id: 'safe-flight', quiz: 'gs-saf-quiz', tier: 'cl', track: 'know', type: 'knowledge', name: 'Safe Flight', est: 'about 10 min',
       do: 'Know and follow the Brophy FPV safe-flight rules.', why: 'The baseline code of conduct for real hardware.',
       lessons: [{ id: 'gs-saf-01', t: "Who's flying, who's watching" }, { id: 'gs-saf-02', t: 'The Brophy FPV rules sheet' }, { id: 'gs-saf-03', t: 'Go / No-Go', drill: true }] },
     { id: 'pilot-agreement', tier: 'cl', track: 'know', type: 'bench', kind: 'paper', name: 'Pilot Agreement', est: 'about 10 min, plus a parent',
       do: 'Read the terms, print the signing paper, sign it with a parent, send a photo of it.',
       why: 'A simple, clear reminder that you are flying expensive equipment and are responsible for how you use it - signed by you and a parent or guardian, as Mr. Reasy and Mr. Burr asked.',
-      steps: ['Read the Pilot Agreement terms on the Flight Clearance page', 'Print the signing paper (one page)', 'Tick the four boxes: the FAA rules, the Brophy flight guidelines, the flight form before every flight, liable for any damage', 'Sign it, and a parent or guardian signs it', 'Submit a photo of the signed paper, every line readable - a mentor checks it.'] },
+      steps: ['Read the terms', 'Print the signing paper (one page) and sign it with a parent or guardian', 'Submit a photo of the signed paper'] },
     { id: 'drone-portfolio', tier: 'cl', track: 'flight', type: 'bench', kind: 'drone', name: 'Drone Portfolio', est: 'a minute of video per drone',
       do: 'Every drone you may fly at Brophy: yours, each with a short flight video a mentor approves, and the club\'s, unlocked by their checkpoints.',
       why: 'Clearance is per aircraft: the club knows what you fly and has seen you fly it safely.',
-      steps: ['Add the drone: its name, specs and a picture', 'Record about a minute: take off, fly, land safely', 'Upload the video to Google Drive, share it as "Anyone with the link", paste the link', 'A mentor watches it from the console and approves the drone.'] },
+      steps: ['Record about a minute: take off, fly, land safely', 'Upload it to Google Drive, shared as "Anyone with the link"', 'Add the drone: name, specs, a picture and the link'] },
 
     // ---------------- Bonus badges (tier 'el') - never counted toward the total or the tier
     { id: 'editing', tier: 'el', track: 'crew', type: 'witnessed', name: 'Editing', est: 'about 1 h',
