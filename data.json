@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792781316780,
-    "generatedIso":  "2026-10-23T11:48:37-07:00",
+    "generated":  1792781678958,
+    "generatedIso":  "2026-10-23T11:54:39-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -83,13 +83,14 @@
                                       "radio-protocol",
                                       "field-repair",
                                       "freestyle-flight",
+                                      "pavo-flight",
                                       "spotter",
                                       "faa-trust",
                                       "event-ops",
                                       "indoor-proximity",
                                       "racing"
                                   ],
-                       "tier":  1
+                       "tier":  2
                    },
                    {
                        "name":  "Cyrus G.",
@@ -158,12 +159,13 @@
                                       "radio-protocol",
                                       "field-repair",
                                       "freestyle-flight",
+                                      "pavo-flight",
                                       "spotter",
                                       "faa-trust",
                                       "event-ops",
                                       "indoor-proximity"
                                   ],
-                       "tier":  1
+                       "tier":  2
                    },
                    {
                        "name":  "Bryson E.",
