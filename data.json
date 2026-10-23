@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792780834431,
-    "generatedIso":  "2026-10-23T11:40:34-07:00",
+    "generated":  1792781075363,
+    "generatedIso":  "2026-10-23T11:44:35-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -75,17 +75,20 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
+                                      "betaflight",
                                       "line-of-sight",
+                                      "tiny-whoop",
                                       "soldering",
                                       "electrical-components",
                                       "radio-protocol",
+                                      "field-repair",
                                       "freestyle-flight",
                                       "spotter",
                                       "faa-trust",
                                       "event-ops",
                                       "indoor-proximity"
                                   ],
-                       "tier":  0
+                       "tier":  1
                    },
                    {
                        "name":  "Cyrus G.",
