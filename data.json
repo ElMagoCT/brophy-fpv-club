@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792134002139,
-    "generatedIso":  "2026-10-16T00:00:02-07:00",
+    "generated":  1792778659706,
+    "generatedIso":  "2026-10-23T11:04:20-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,18 +9,18 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  394356072,
+                   "clubMs":  421833109,
                    "pilots":  40,
-                   "activePilots7":  8,
-                   "clubWeekMs":  13366925,
-                   "weekBasis":  "calendar",
+                   "activePilots7":  13,
+                   "clubWeekMs":  38272167,
+                   "weekBasis":  "rolling7",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  269770539.01669967,
-                                    "microdrones":  120793479.01300021,
-                                    "skydive":  2660747.560299987,
+                                    "liftoff":  297991996.56529939,
+                                    "microdrones":  121942022.76530042,
+                                    "skydive":  757990.89219998755,
                                     "fpvlabs":  316778.85469998,
-                                    "picasim":  814526.99810002092
+                                    "picasim":  824319.99810002092
                                 }
                },
     "sims":  [
@@ -58,18 +58,18 @@
     "pilots":  [
                    {
                        "name":  "Josiah T.",
-                       "totalMs":  56284743,
-                       "weekMs":  1352022,
+                       "totalMs":  60630760,
+                       "weekMs":  4346017,
                        "perSimMs":  {
-                                        "liftoff":  42460834,
-                                        "microdrones":  13761879,
+                                        "liftoff":  43316629,
+                                        "microdrones":  17252101,
                                         "skydive":  0,
                                         "fpvlabs":  62030,
                                         "picasim":  0
                                     },
                        "gsPct":  20,
                        "gsLessons":  9,
-                       "lastSeen":  1792088941507,
+                       "lastSeen":  1792620507850,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -81,6 +81,7 @@
                                       "radio-protocol",
                                       "freestyle-flight",
                                       "spotter",
+                                      "faa-trust",
                                       "event-ops"
                                   ],
                        "tier":  0
@@ -88,7 +89,7 @@
                    {
                        "name":  "Cyrus G.",
                        "totalMs":  46515432,
-                       "weekMs":  7841923,
+                       "weekMs":  0,
                        "perSimMs":  {
                                         "liftoff":  22407496,
                                         "microdrones":  24091708,
@@ -106,20 +107,77 @@
                    },
                    {
                        "name":  "Bode K.",
-                       "totalMs":  36322812,
-                       "weekMs":  0,
+                       "totalMs":  37178601,
+                       "weekMs":  855789,
                        "perSimMs":  {
-                                        "liftoff":  24440055,
+                                        "liftoff":  25295845,
                                         "microdrones":  11569388,
                                         "skydive":  280231,
                                         "fpvlabs":  0,
                                         "picasim":  33137
                                     },
-                       "gsPct":  0,
-                       "gsLessons":  7,
-                       "lastSeen":  1792103808944,
+                       "gsPct":  30,
+                       "gsLessons":  21,
+                       "lastSeen":  1792168807110,
                        "badges":  [
-
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care"
+                                  ],
+                       "tier":  0
+                   },
+                   {
+                       "name":  "Zane R.",
+                       "totalMs":  31740592,
+                       "weekMs":  5331735,
+                       "perSimMs":  {
+                                        "liftoff":  21831899,
+                                        "microdrones":  9908693,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  74,
+                       "gsLessons":  45,
+                       "lastSeen":  1792705883369,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "building",
+                                      "betaflight",
+                                      "line-of-sight",
+                                      "tiny-whoop",
+                                      "soldering",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "freestyle-flight",
+                                      "spotter",
+                                      "faa-trust",
+                                      "event-ops",
+                                      "indoor-proximity"
+                                  ],
+                       "tier":  1
+                   },
+                   {
+                       "name":  "Bryson E.",
+                       "totalMs":  29694668,
+                       "weekMs":  2771574,
+                       "perSimMs":  {
+                                        "liftoff":  14787461,
+                                        "microdrones":  14907207,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  43,
+                       "gsLessons":  20,
+                       "lastSeen":  1792766607416,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "faa-trust"
                                   ],
                        "tier":  0
                    },
@@ -136,7 +194,7 @@
                                     },
                        "gsPct":  33,
                        "gsLessons":  20,
-                       "lastSeen":  1791311781417,
+                       "lastSeen":  1792518607019,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -164,55 +222,6 @@
                        "tier":  3
                    },
                    {
-                       "name":  "Bryson E.",
-                       "totalMs":  26923094,
-                       "weekMs":  3805722,
-                       "perSimMs":  {
-                                        "liftoff":  13506774,
-                                        "microdrones":  13416320,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1792089325879,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Zane R.",
-                       "totalMs":  26408857,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  17382347,
-                                        "microdrones":  9026510,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  74,
-                       "gsLessons":  45,
-                       "lastSeen":  1791398342018,
-                       "badges":  [
-                                      "proficient-flight",
-                                      "safe-flight",
-                                      "battery-care",
-                                      "building",
-                                      "betaflight",
-                                      "line-of-sight",
-                                      "tiny-whoop",
-                                      "electrical-components",
-                                      "radio-protocol",
-                                      "spotter",
-                                      "faa-trust",
-                                      "event-ops"
-                                  ],
-                       "tier":  1
-                   },
-                   {
                        "name":  "Colton O.",
                        "totalMs":  23664610,
                        "weekMs":  0,
@@ -223,11 +232,31 @@
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  0,
-                       "gsLessons":  0,
+                       "gsPct":  9,
+                       "gsLessons":  4,
                        "lastSeen":  1791215621582,
                        "badges":  [
-
+                                      "safe-flight"
+                                  ],
+                       "tier":  0
+                   },
+                   {
+                       "name":  "Aeson T.",
+                       "totalMs":  22380103,
+                       "weekMs":  1473014,
+                       "perSimMs":  {
+                                        "liftoff":  10951613,
+                                        "microdrones":  11206343,
+                                        "skydive":  222147,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  39,
+                       "gsLessons":  18,
+                       "lastSeen":  1792682536415,
+                       "badges":  [
+                                      "safe-flight",
+                                      "battery-care"
                                   ],
                        "tier":  0
                    },
@@ -244,7 +273,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1791439161968,
+                       "lastSeen":  1792166074215,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -273,40 +302,64 @@
                        "tier":  3
                    },
                    {
-                       "name":  "Aeson T.",
-                       "totalMs":  20907089,
-                       "weekMs":  367257,
+                       "name":  "Jameson S.",
+                       "totalMs":  20431733,
+                       "weekMs":  2907296,
                        "perSimMs":  {
-                                        "liftoff":  9649576,
-                                        "microdrones":  11035366,
-                                        "skydive":  222147,
+                                        "liftoff":  16404679,
+                                        "microdrones":  4017261,
+                                        "skydive":  0,
                                         "fpvlabs":  0,
-                                        "picasim":  0
+                                        "picasim":  9793
                                     },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1792076194754,
+                       "gsPct":  4,
+                       "gsLessons":  2,
+                       "lastSeen":  1792608000440,
                        "badges":  [
 
                                   ],
                        "tier":  0
                    },
                    {
-                       "name":  "Jameson S.",
-                       "totalMs":  17524437,
-                       "weekMs":  0,
+                       "name":  "AYAan",
+                       "totalMs":  11387870,
+                       "weekMs":  11387870,
                        "perSimMs":  {
-                                        "liftoff":  15775377,
-                                        "microdrones":  1749060,
+                                        "liftoff":  11248077,
+                                        "microdrones":  139793,
                                         "skydive":  0,
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1791397012960,
+                       "lastSeen":  1792191600935,
                        "badges":  [
 
+                                  ],
+                       "tier":  0
+                   },
+                   {
+                       "name":  "Bruno A.",
+                       "totalMs":  9891645,
+                       "weekMs":  2914639,
+                       "perSimMs":  {
+                                        "liftoff":  8359245,
+                                        "microdrones":  1532400,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  100,
+                       "gsLessons":  46,
+                       "lastSeen":  1792767338050,
+                       "badges":  [
+                                      "safe-flight",
+                                      "battery-care",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "spotter",
+                                      "faa-trust"
                                   ],
                        "tier":  0
                    },
@@ -358,11 +411,31 @@
                                       "freestyle-flight",
                                       "pavo-flight",
                                       "spotter",
+                                      "faa-trust",
                                       "event-ops",
                                       "fleet-steward",
                                       "mentor"
                                   ],
                        "tier":  2
+                   },
+                   {
+                       "name":  "Micah T",
+                       "totalMs":  8516024,
+                       "weekMs":  905447,
+                       "perSimMs":  {
+                                        "liftoff":  8516024,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1792300469741,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
                    },
                    {
                        "name":  "Mr. Lewkowitz",
@@ -403,30 +476,31 @@
                        "tier":  0
                    },
                    {
-                       "name":  "V (message micah plz)",
-                       "totalMs":  8097105,
-                       "weekMs":  0,
+                       "name":  "Carter.B",
+                       "totalMs":  5644742,
+                       "weekMs":  1334498,
                        "perSimMs":  {
-                                        "liftoff":  0,
-                                        "microdrones":  8097105,
+                                        "liftoff":  1685226,
+                                        "microdrones":  3959516,
                                         "skydive":  0,
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1790807862502,
+                       "gsPct":  30,
+                       "gsLessons":  14,
+                       "lastSeen":  1792171969477,
                        "badges":  [
-
+                                      "safe-flight",
+                                      "battery-care"
                                   ],
                        "tier":  0
                    },
                    {
-                       "name":  "Micah T",
-                       "totalMs":  7610577,
-                       "weekMs":  0,
+                       "name":  "Sawyer M.",
+                       "totalMs":  3538136,
+                       "weekMs":  3538136,
                        "perSimMs":  {
-                                        "liftoff":  7610577,
+                                        "liftoff":  3538136,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -434,45 +508,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1791391220582,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Bruno A.",
-                       "totalMs":  6977006,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  5444606,
-                                        "microdrones":  1532400,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  9,
-                       "gsLessons":  4,
-                       "lastSeen":  1791477908492,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Carter.B",
-                       "totalMs":  4310244,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  1154114,
-                                        "microdrones":  3156130,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  2,
-                       "gsLessons":  1,
-                       "lastSeen":  1791490267389,
+                       "lastSeen":  1792518568287,
                        "badges":  [
 
                                   ],
@@ -491,7 +527,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1791396358110,
+                       "lastSeen":  1792685286212,
                        "badges":  [
 
                                   ],
@@ -517,25 +553,6 @@
                        "tier":  0
                    },
                    {
-                       "name":  "Ayaan (message Micah plz)",
-                       "totalMs":  2698025,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  795269,
-                                        "microdrones":  0,
-                                        "skydive":  1902757,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1792001137595,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
                        "name":  "Loic B.",
                        "totalMs":  2643202,
                        "weekMs":  0,
@@ -548,7 +565,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1790966325037,
+                       "lastSeen":  1792606547251,
                        "badges":  [
 
                                   ],
@@ -764,6 +781,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Marco E.",
+                       "totalMs":  377211,
+                       "weekMs":  377211,
+                       "perSimMs":  {
+                                        "liftoff":  377211,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1792605580219,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Jaxson C.",
                        "totalMs":  352792,
                        "weekMs":  0,
@@ -840,6 +876,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Eli M",
+                       "totalMs":  128941,
+                       "weekMs":  128941,
+                       "perSimMs":  {
+                                        "liftoff":  128941,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1792619069773,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Leo T.",
                        "totalMs":  101454,
                        "weekMs":  0,
@@ -857,254 +912,12 @@
 
                                   ],
                        "tier":  0
-                   },
-                   {
-                       "name":  "jo",
-                       "totalMs":  0,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  0,
-                                        "microdrones":  0,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1792001440350,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "loic b",
-                       "totalMs":  0,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  0,
-                                        "microdrones":  0,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1789661674048,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
                    }
                ],
     "schedule":  {
                      "closedLabel":  "Class in session",
                      "source":  "imported 2026-08-31 09:01",
                      "days":  [
-                                  {
-                                      "date":  "2026-10-16",
-                                      "dow":  "Fri",
-                                      "dowFull":  "Friday",
-                                      "label":  "Oct 16",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "08:00",
-                                                          "startIso":  "2026-10-16T07:00:00-07:00",
-                                                          "endIso":  "2026-10-16T08:00:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "09:20",
-                                                          "to":  "09:45",
-                                                          "startIso":  "2026-10-16T09:20:00-07:00",
-                                                          "endIso":  "2026-10-16T09:45:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "11:05",
-                                                          "to":  "11:15",
-                                                          "startIso":  "2026-10-16T11:05:00-07:00",
-                                                          "endIso":  "2026-10-16T11:15:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "12:35",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-16T12:35:00-07:00",
-                                                          "endIso":  "2026-10-16T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
-                                      "date":  "2026-10-17",
-                                      "dow":  "Sat",
-                                      "dowFull":  "Saturday",
-                                      "label":  "Oct 17",
-                                      "open":  false,
-                                      "note":  "",
-                                      "windows":  [
-
-                                                  ]
-                                  },
-                                  {
-                                      "date":  "2026-10-18",
-                                      "dow":  "Sun",
-                                      "dowFull":  "Sunday",
-                                      "label":  "Oct 18",
-                                      "open":  false,
-                                      "note":  "",
-                                      "windows":  [
-
-                                                  ]
-                                  },
-                                  {
-                                      "date":  "2026-10-19",
-                                      "dow":  "Mon",
-                                      "dowFull":  "Monday",
-                                      "label":  "Oct 19",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "08:00",
-                                                          "startIso":  "2026-10-19T07:00:00-07:00",
-                                                          "endIso":  "2026-10-19T08:00:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "09:20",
-                                                          "to":  "09:30",
-                                                          "startIso":  "2026-10-19T09:20:00-07:00",
-                                                          "endIso":  "2026-10-19T09:30:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "10:50",
-                                                          "to":  "11:40",
-                                                          "startIso":  "2026-10-19T10:50:00-07:00",
-                                                          "endIso":  "2026-10-19T11:40:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "13:00",
-                                                          "to":  "13:10",
-                                                          "startIso":  "2026-10-19T13:00:00-07:00",
-                                                          "endIso":  "2026-10-19T13:10:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "14:30",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-19T14:30:00-07:00",
-                                                          "endIso":  "2026-10-19T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
-                                      "date":  "2026-10-20",
-                                      "dow":  "Tue",
-                                      "dowFull":  "Tuesday",
-                                      "label":  "Oct 20",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "08:00",
-                                                          "startIso":  "2026-10-20T07:00:00-07:00",
-                                                          "endIso":  "2026-10-20T08:00:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "09:20",
-                                                          "to":  "11:40",
-                                                          "startIso":  "2026-10-20T09:20:00-07:00",
-                                                          "endIso":  "2026-10-20T11:40:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "13:00",
-                                                          "to":  "13:10",
-                                                          "startIso":  "2026-10-20T13:00:00-07:00",
-                                                          "endIso":  "2026-10-20T13:10:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "14:30",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-20T14:30:00-07:00",
-                                                          "endIso":  "2026-10-20T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
-                                      "date":  "2026-10-21",
-                                      "dow":  "Wed",
-                                      "dowFull":  "Wednesday",
-                                      "label":  "Oct 21",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "08:00",
-                                                          "startIso":  "2026-10-21T07:00:00-07:00",
-                                                          "endIso":  "2026-10-21T08:00:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "09:20",
-                                                          "to":  "09:30",
-                                                          "startIso":  "2026-10-21T09:20:00-07:00",
-                                                          "endIso":  "2026-10-21T09:30:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "10:50",
-                                                          "to":  "11:40",
-                                                          "startIso":  "2026-10-21T10:50:00-07:00",
-                                                          "endIso":  "2026-10-21T11:40:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "13:00",
-                                                          "to":  "13:10",
-                                                          "startIso":  "2026-10-21T13:00:00-07:00",
-                                                          "endIso":  "2026-10-21T13:10:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "14:30",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-21T14:30:00-07:00",
-                                                          "endIso":  "2026-10-21T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
-                                      "date":  "2026-10-22",
-                                      "dow":  "Thu",
-                                      "dowFull":  "Thursday",
-                                      "label":  "Oct 22",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "09:30",
-                                                          "startIso":  "2026-10-22T07:00:00-07:00",
-                                                          "endIso":  "2026-10-22T09:30:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "10:50",
-                                                          "to":  "11:40",
-                                                          "startIso":  "2026-10-22T10:50:00-07:00",
-                                                          "endIso":  "2026-10-22T11:40:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "13:00",
-                                                          "to":  "13:10",
-                                                          "startIso":  "2026-10-22T13:00:00-07:00",
-                                                          "endIso":  "2026-10-22T13:10:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "14:30",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-22T14:30:00-07:00",
-                                                          "endIso":  "2026-10-22T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
                                   {
                                       "date":  "2026-10-23",
                                       "dow":  "Fri",
@@ -1726,6 +1539,210 @@
                                                           "to":  "16:00",
                                                           "startIso":  "2026-11-12T14:30:00-07:00",
                                                           "endIso":  "2026-11-12T16:00:00-07:00"
+                                                      }
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-13",
+                                      "dow":  "Fri",
+                                      "dowFull":  "Friday",
+                                      "label":  "Nov 13",
+                                      "open":  true,
+                                      "note":  "",
+                                      "windows":  [
+                                                      {
+                                                          "from":  "07:00",
+                                                          "to":  "08:00",
+                                                          "startIso":  "2026-11-13T07:00:00-07:00",
+                                                          "endIso":  "2026-11-13T08:00:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "09:20",
+                                                          "to":  "09:45",
+                                                          "startIso":  "2026-11-13T09:20:00-07:00",
+                                                          "endIso":  "2026-11-13T09:45:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "11:05",
+                                                          "to":  "11:15",
+                                                          "startIso":  "2026-11-13T11:05:00-07:00",
+                                                          "endIso":  "2026-11-13T11:15:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "12:35",
+                                                          "to":  "16:00",
+                                                          "startIso":  "2026-11-13T12:35:00-07:00",
+                                                          "endIso":  "2026-11-13T16:00:00-07:00"
+                                                      }
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-14",
+                                      "dow":  "Sat",
+                                      "dowFull":  "Saturday",
+                                      "label":  "Nov 14",
+                                      "open":  false,
+                                      "note":  "",
+                                      "windows":  [
+
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-15",
+                                      "dow":  "Sun",
+                                      "dowFull":  "Sunday",
+                                      "label":  "Nov 15",
+                                      "open":  false,
+                                      "note":  "",
+                                      "windows":  [
+
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-16",
+                                      "dow":  "Mon",
+                                      "dowFull":  "Monday",
+                                      "label":  "Nov 16",
+                                      "open":  true,
+                                      "note":  "",
+                                      "windows":  [
+                                                      {
+                                                          "from":  "07:00",
+                                                          "to":  "08:00",
+                                                          "startIso":  "2026-11-16T07:00:00-07:00",
+                                                          "endIso":  "2026-11-16T08:00:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "09:20",
+                                                          "to":  "09:30",
+                                                          "startIso":  "2026-11-16T09:20:00-07:00",
+                                                          "endIso":  "2026-11-16T09:30:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "10:50",
+                                                          "to":  "11:40",
+                                                          "startIso":  "2026-11-16T10:50:00-07:00",
+                                                          "endIso":  "2026-11-16T11:40:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "13:00",
+                                                          "to":  "13:10",
+                                                          "startIso":  "2026-11-16T13:00:00-07:00",
+                                                          "endIso":  "2026-11-16T13:10:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "14:30",
+                                                          "to":  "16:00",
+                                                          "startIso":  "2026-11-16T14:30:00-07:00",
+                                                          "endIso":  "2026-11-16T16:00:00-07:00"
+                                                      }
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-17",
+                                      "dow":  "Tue",
+                                      "dowFull":  "Tuesday",
+                                      "label":  "Nov 17",
+                                      "open":  true,
+                                      "note":  "",
+                                      "windows":  [
+                                                      {
+                                                          "from":  "07:00",
+                                                          "to":  "08:00",
+                                                          "startIso":  "2026-11-17T07:00:00-07:00",
+                                                          "endIso":  "2026-11-17T08:00:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "09:20",
+                                                          "to":  "11:40",
+                                                          "startIso":  "2026-11-17T09:20:00-07:00",
+                                                          "endIso":  "2026-11-17T11:40:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "13:00",
+                                                          "to":  "13:10",
+                                                          "startIso":  "2026-11-17T13:00:00-07:00",
+                                                          "endIso":  "2026-11-17T13:10:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "14:30",
+                                                          "to":  "16:00",
+                                                          "startIso":  "2026-11-17T14:30:00-07:00",
+                                                          "endIso":  "2026-11-17T16:00:00-07:00"
+                                                      }
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-18",
+                                      "dow":  "Wed",
+                                      "dowFull":  "Wednesday",
+                                      "label":  "Nov 18",
+                                      "open":  true,
+                                      "note":  "",
+                                      "windows":  [
+                                                      {
+                                                          "from":  "07:00",
+                                                          "to":  "08:00",
+                                                          "startIso":  "2026-11-18T07:00:00-07:00",
+                                                          "endIso":  "2026-11-18T08:00:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "09:20",
+                                                          "to":  "09:30",
+                                                          "startIso":  "2026-11-18T09:20:00-07:00",
+                                                          "endIso":  "2026-11-18T09:30:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "10:50",
+                                                          "to":  "11:40",
+                                                          "startIso":  "2026-11-18T10:50:00-07:00",
+                                                          "endIso":  "2026-11-18T11:40:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "13:00",
+                                                          "to":  "13:10",
+                                                          "startIso":  "2026-11-18T13:00:00-07:00",
+                                                          "endIso":  "2026-11-18T13:10:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "14:30",
+                                                          "to":  "16:00",
+                                                          "startIso":  "2026-11-18T14:30:00-07:00",
+                                                          "endIso":  "2026-11-18T16:00:00-07:00"
+                                                      }
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-19",
+                                      "dow":  "Thu",
+                                      "dowFull":  "Thursday",
+                                      "label":  "Nov 19",
+                                      "open":  true,
+                                      "note":  "",
+                                      "windows":  [
+                                                      {
+                                                          "from":  "07:00",
+                                                          "to":  "09:30",
+                                                          "startIso":  "2026-11-19T07:00:00-07:00",
+                                                          "endIso":  "2026-11-19T09:30:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "10:50",
+                                                          "to":  "11:40",
+                                                          "startIso":  "2026-11-19T10:50:00-07:00",
+                                                          "endIso":  "2026-11-19T11:40:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "13:00",
+                                                          "to":  "13:10",
+                                                          "startIso":  "2026-11-19T13:00:00-07:00",
+                                                          "endIso":  "2026-11-19T13:10:00-07:00"
+                                                      },
+                                                      {
+                                                          "from":  "14:30",
+                                                          "to":  "16:00",
+                                                          "startIso":  "2026-11-19T14:30:00-07:00",
+                                                          "endIso":  "2026-11-19T16:00:00-07:00"
                                                       }
                                                   ]
                                   }
