@@ -5,29 +5,27 @@
     python3 build.py 03-map-tier0 04-map-tier1 05-map-tier2 06-map-tier3
 
 Every word on a badge card comes from ../../flightschool/badges.js (read with
-node), so the posters can never drift from the website again. Change a badge
-there, rerun this, rebuild.
+node), so the posters can never drift from the website. Change a badge there,
+rerun this, rebuild.
 
-Layout (2026-10-07): an organic winding trail. Sheets alternate direction so
-they join when hung side by side: Tier 0 and Tier 2 run DOWN from the top-left
-to a gate at the bottom-right; Tier 1 and the Event Pilot sheet climb UP from
-the bottom-left (Tier 1 to a gate at the top-right, Tier 3 to the summit).
-Cards hang off the trail on alternating sides, staggered, varied in width,
-drifted outward and slightly tilted (fixed pseudo-random per sheet, so every
-rebuild looks the same). The trail S-curves through a clear centre channel
-and makes one loop in the biggest gap.
+Layout (2026-10-23 rewrite, after Micah's "it is not clear what the flow is"):
+  - every sheet reads the same way, TOP TO BOTTOM. Badge cards alternate left /
+    right down a dotted trail with numbered pins and direction chevrons.
+  - a tier's checkpoint is drawn as a race GATE at the foot of the sheet, with
+    the drone it unlocks flying through it (img/gate-N.svg, from drones.py).
+    The gate card lists only the checkpoint's own requirements - no
+    prerequisite tick list; the badges above it ARE the way to the gate.
+  - the header shows what you fly in this tier (img/drone-*.svg): the drones
+    get bigger sheet by sheet - radio, Meteor whoop, Pavo, then the 5-inch and
+    the Cinebot.
+  - a "the whole path" strip under the header repeats the four tiers and the
+    three gates on every sheet, with YOU ARE HERE on the current tier.
+  - cards list only what passes the badge: the quiz, the bench steps, or the
+    witnessed requirements. Sheet 4's cards are labelled BONUS BADGE.
 
-Checkpoints (2026-10-07): a tier's badges are the PREREQUISITES of the next
-tier's checkpoint. Each checkpoint is NOT a trail card: it is a full-width box
-on the sheet of the tier it opens - the Meteor 75 Pro Certification at the foot of sheet 2, the
-Pavo 20 Pro Flight at the head of sheet 3, Event Pilot as the summit of sheet
-4 - with a tick box per prerequisite and a big check for when all are done.
-
-The sheet's own script does the layout with real card heights: it keeps
-cards clear of every label, spreads spare height between cards, scales the
-card text down a step if a sheet is crowded, draws the trail through the
-pins, and sets <body data-trail> to "ok k=..." or "overflow Npx". Headless
-Chrome runs it before printing (build.py's virtual time budget).
+The sheet's own script spaces the cards with their real heights, scales the
+text down a step if a sheet is crowded, draws the trail through the pins and
+sets <body data-trail> to "ok k=..." or "overflow Npx" (build.py waits for it).
 """
 import html, json, os, shutil, subprocess, sys
 
@@ -46,27 +44,31 @@ def load_fs():
 
 TRACK_COLOR = {'flight': 'var(--sky)', 'build': 'var(--amber)', 'know': 'var(--green)', 'crew': 'var(--violet)'}
 TYPE_NAME = {'knowledge': 'Quiz', 'bench': 'Bench', 'witnessed': 'Witnessed', 'auto': 'Automatic'}
-TAGS = {'cinematography': 'Filming', 'indoor-proximity': 'Racing', 'racing': 'Racing'}
-WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']
+
+# the four tiers as they appear in the flow strip, and the drone each one flies
+TIERS = [
+  dict(id='t0', n=0, short='Simulator', fly='The five FPV sims', drones=[('radio', 118)], color='var(--sky)'),
+  dict(id='t1', n=1, short='Meteor 75 Pro', fly='Meteor 75 Pro · sub-250 g whoop · indoors', drones=[('whoop', 132)], color='var(--violet)'),
+  dict(id='t2', n=2, short='Pavo 20 Pro', fly='Pavo 20 Pro · 2-inch cinewhoop · the first full-size airframe', drones=[('pavo', 152)], color='var(--rust)'),
+  dict(id='t3', n=3, short='Event Pilot', fly='Any Tier 2 airframe at a school event · 5-inch, Cinebot · always with a spotter', drones=[('cinebot', 124), ('five', 168)], color='var(--green)'),
+]
+GATES = ['Meteor 75 Pro Certification', 'Pavo 20 Pro Flight', 'Event Pilot']   # the checkpoints, by name, gate 1..3
 
 # Poster-only text (the website has its own shorter versions).
 SHEETS = [
-  dict(file='03-map-tier0', sheet=1, tier='t0', name='SIMULATOR', color='var(--sky)', dir='down',
-       gear='FPV sim rigs in the IC · Liftoff · Micro Drones · SkyDive · FPV Labs · PicaSim',
-       start=('START', 'Add your name at the kiosk'),
-       sticker='Bonus Challenge: do this all in one CP and get to fly!',   # 2026-10-15, Micah
-       gate=('NEXT', 'Tier 1 checkpoint', 'Meteor 75 Pro Certification · sheet 2')),
-  dict(file='04-map-tier1', sheet=2, tier='t1', name='METEOR 75 PRO<br>CERTIFICATION', long=True, color='var(--violet)', dir='up',   # two short lines: the full name is too wide for one
-       gear='Meteor 75 Pro · sub-250 g · safe indoors',
-       checkpoint='t0',
-       gate=('NEXT', 'Tier 2 checkpoint', 'Pavo 20 Pro Flight · sheet 3')),
-  dict(file='05-map-tier2', sheet=3, tier='t2', name='FULL-SIZE', color='var(--rust)', dir='down',
-       gear='Pavo 20 Pro · larger drones at Brophy',
-       checkpoint='t1',
-       gate=('NEXT', 'Tier 3 checkpoint', 'Event Pilot · sheet 4')),
-  dict(file='06-map-tier3', sheet=4, tier='el', name='EVENT PILOT', color='var(--green)', dir='up',
-       gear='Any Tier 2 airframe at a school event · always with a spotter',
-       entry='From Tier 2', checkpoint='t2'),
+  dict(file='03-map-tier0', sheet=1, tier='t0', name='SIMULATOR', dir_label='Start here',
+       start=('START', 'Add your name at the sim kiosk · then fly'),
+       sticker='Bonus challenge: do all five in one community period and you fly that day',   # 2026-10-15, Micah
+       gate=1),
+  dict(file='04-map-tier1', sheet=2, tier='t1', name='METEOR 75 PRO<br>CERTIFICATION', long=True,
+       came=('Gate 1 passed', 'Meteor 75 Pro Certification · you fly the club Meteor'),
+       gate=2),
+  dict(file='05-map-tier2', sheet=3, tier='t2', name='FULL-SIZE',
+       came=('Gate 2 passed', 'Pavo 20 Pro Flight · you fly the Pavo'),
+       gate=3),
+  dict(file='06-map-tier3', sheet=4, tier='t3', badges_from='el', name='EVENT PILOT', long=True,
+       came=('Gate 3 passed', 'Event Pilot · you fly for the school'),
+       gate=None),
 ]
 
 # ----------------------------------------------------------------- helpers
@@ -81,281 +83,243 @@ def short_step(s):
         if 0 < k < cut: cut = k
     return s[:cut].strip().rstrip('.')
 
-def card_html(b, label, fs, pin):
+def requirements(b, fs):
+    """what passes the badge, as (items, footnote) - and nothing else"""
     t = b['type']
-    head = ('<div class="lab"><span>%s</span><span class="ty ty-%s">%s</span></div>'
-            % (esc(label), t, TYPE_NAME[t]))
-    body = '<div class="nm">%s</div><div class="ds">%s</div>' % (esc(b['name']), esc(b['do']))
     if t == 'knowledge':
-        ls = b.get('lessons') or []
-        items = ''.join('<li>%s%s</li>' % (esc(l['t']), ' <em>drill</em>' if l.get('drill') else '') for l in ls)
-        how = ('<div class="how"><b>%d lessons, then the quiz</b><ol>%s</ol>'
-               '<div class="ft">10 questions · %d %% passes · no sign-off needed · retake any time</div></div>'
-               % (len(ls), items, fs['PASS']))
-    elif t == 'bench':
-        steps = [short_step(s if isinstance(s, str) else s.get('t', '')) for s in (b.get('steps') or [])]
+        items = ['Pass the %s quiz · %d %% or better · no sign-off needed' % (b['name'], fs['PASS'])]
+        foot = 'Covers: ' + ' · '.join(l['t'] for l in b.get('lessons', []))
+        return items, foot, ''
+    if t == 'bench':
+        steps = [(s if isinstance(s, str) else s.get('t', '')).strip().rstrip('.') for s in (b.get('steps') or [])]
         steps = [x for x in steps if not x.startswith('DM a photo') and not x.startswith('Take a photo') and not x.startswith('Submit a photo')]
-        seq = ' <i>›</i> '.join(esc(s) for s in steps)
-        note = '<div class="nt">%s</div>' % esc(b['note']) if b.get('note') else ''
-        how = ('<div class="how"><b>At the bench · %d steps</b><div class="seq">%s</div>%s'
-               '<div class="ft">Then a photo, submitted on the website · a mentor passes or fails it</div></div>'
-               % (len(steps), seq, note))
-    elif t == 'witnessed' and b.get('reqs'):
-        items = ''.join('<li>%s%s</li>' % (esc(r['t']), (' - %s' % esc(r['d'])) if r.get('d') else '') for r in b['reqs'])
-        rule = '<div class="ft"><b style="display:inline;color:inherit;font-family:inherit;letter-spacing:0;text-transform:none">%s</b></div>' % esc(b['rule']) if b.get('rule') else ''
-        how = '<div class="how"><b>Requirements</b><ol>%s</ol>%s<div class="ft">Lessons and videos for each: scan for the Pilot Path</div></div>' % (items, rule)
-    elif t == 'witnessed':
-        prep = b.get('prep') or []
-        pp = ('<div class="ft">Practise first on the Pilot Path: %s</div>'
-              % esc(' · '.join(fs['LESSON_TITLES'].get(p, p) for p in prep))) if prep else ''
-        rule = '<div class="ft"><b style="display:inline;color:inherit;font-family:inherit;letter-spacing:0;text-transform:none">%s</b></div>' % esc(b['rule']) if b.get('rule') else ''
-        how = '<div class="how"><b>The standard</b><div class="seq">%s</div>%s%s</div>' % (esc(b.get('standard')), rule, pp)
-    else:
-        how = '<div class="how"><b>Automatic</b><div class="seq">%s</div></div>' % esc(b.get('standard'))
-    why = '<div class="why"><b>Why</b> %s</div>' % esc(b['why'])
-    return ('<div class="card" data-id="%s" style="--t:%s"><span class="pin"><span>%s</span></span>%s%s%s%s</div>'
-            % (b['id'], TRACK_COLOR[b['track']], esc(pin), head, body, how, why))  # data-i added in render()
+        steps.append('Photo of your work on the website · a mentor passes it')
+        return steps, '', b.get('note', '')
+    if t == 'witnessed' and b.get('reqs'):
+        items = [r['t'] + ((' · ' + r['d']) if r.get('d') else '') for r in b['reqs']]
+        return items, '', b.get('rule', '')
+    if t == 'witnessed':
+        return [b.get('standard', '')], '', b.get('rule', '')
+    return [b.get('standard', '')], '', ''
 
-def checkpoint_html(cp, mates, tier_n, at, d):
-    """The full-width checkpoint box: the badge on the left, its prerequisites
-    on the right (a box each) and the big check."""
-    lis = ''.join('<li><span class="bx"></span>%s</li>' % esc(m['name']) for m in mates)
-    return ('<div class="cpbox cp-%s" data-at="%s"><div class="cpl">'
-            '<div class="lab">Tier %d checkpoint · %s</div><div class="nm">%s</div><div class="ds">%s</div>'
-            '<div class="how"><b>Requirements</b><div class="seq">%s</div></div></div>'
-            '<div class="cpr"><div class="ph">Prerequisites · %d badges</div><ul>%s</ul>'
-            '<div class="ck"><span class="bigck">&#10003;</span><span>All ticked? That is the big check: '
-            'attempt the checkpoint with a mentor watching.</span></div></div></div>'
-            % ('top' if (at == 'start') == (d == 'down') else 'bottom', at, tier_n, TYPE_NAME[cp['type']],
-               esc(cp['name']), esc(cp['do']), (esc(cp.get('standard')) if cp.get('standard') else esc(' · '.join(r['t'] for r in cp.get('reqs', [])))) + (' <b style="display:inline;color:var(--rust);font-family:inherit;letter-spacing:0;text-transform:none;font-size:1em">' + esc(cp['rule']) + '</b>' if cp.get('rule') else ''), len(mates), lis))
+def card_html(b, i, fs, bonus=False):
+    items, foot, rule = requirements(b, fs)
+    lis = ''.join('<li>%s</li>' % esc(x) for x in items)
+    track = fs['TRACK'][b['track']]
+    lab = 'Bonus badge · %s' % track if bonus else track
+    if b.get('minTier'): lab += ' · Tier %d pilots' % b['minTier']
+    return ('<div class="card" data-i="%d" style="--t:%s"><span class="pin"><span>%s</span></span>'
+            '<div class="lab"><span>%s</span><span class="ty ty-%s">%s</span></div>'
+            '<div class="nm">%s</div><ol>%s</ol>%s%s</div>'
+            % (i, TRACK_COLOR[b['track']], '★' if bonus else str(i), esc(lab), b['type'], TYPE_NAME[b['type']], esc(b['name']), lis,
+               ('<div class="ft">%s</div>' % esc(foot)) if foot else '',
+               ('<div class="rl">%s</div>' % esc(rule)) if rule else ''))
+
+def gate_html(n, cp, nxt):
+    """the gate at the foot of a sheet: the checkpoint's own requirements, no prerequisites"""
+    items = [r['t'] + ((' · ' + r['d']) if r.get('d') else '') for r in cp.get('reqs', [])] or [cp.get('standard', '')]
+    lis = ''.join('<li>%s</li>' % esc(x) for x in items)
+    rule = ('<div class="rl">%s</div>' % esc(cp['rule'])) if cp.get('rule') else ''
+    return ('<div class="gatebox" id="gatebox" style="--g:%s">'
+            '<div class="gl"><img src="img/gate-%d.svg" alt=""><div class="cap">Gate %d &middot; through it, you fly the %s</div></div>'
+            '<div class="gr"><div class="lab">Gate %d &middot; the Tier %d checkpoint &middot; %s</div>'
+            '<div class="nm">%s</div><div class="ds">%s</div>'
+            '<div class="req"><b>To pass</b><ol>%s</ol>%s</div>'
+            '<div class="next">&rarr; Sheet %d &middot; Tier %d &middot; %s</div></div></div>'
+            % (nxt['color'], n, n, esc(nxt['short']), n, nxt['n'], TYPE_NAME[cp['type']],
+               esc(cp['name']), esc(cp['do']), lis, rule, n + 1, nxt['n'], esc(nxt['short'])))
+
+GATE_GLYPH = ('<svg viewBox="0 0 40 40" class="gg" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="%s" stroke-width="4"/>'
+              '<path d="M2 38h10M28 38h10" stroke="%s" stroke-width="3.5" stroke-linecap="round"/></svg>')
+
+def flow_html(cur):
+    """the whole path, four tiers and three gates, with YOU ARE HERE"""
+    parts = []
+    for i, t in enumerate(TIERS):
+        here = t['id'] == cur
+        parts.append('<div class="node%s" style="--c:%s"><span class="tn">Tier %d</span><span class="nn">%s</span>%s</div>'
+                     % (' here' if here else '', t['color'], t['n'], esc(t['short']), '<span class="you">You are here</span>' if here else ''))
+        if i < 3:
+            nxt = TIERS[i + 1]
+            parts.append('<div class="gate">%s<span>Gate %d</span></div>' % (GATE_GLYPH % (nxt['color'], nxt['color']), i + 1))
+    return '<div class="flow"><div class="fl">The whole<br>path</div>%s</div>' % ''.join(parts)
 
 # ----------------------------------------------------------------- render
-def render(s, fs, prev_count):
-    badges = [b for b in fs['BADGES'] if b['tier'] == s['tier'] and not b.get('checkpoint')]
-    tier_n = {'t0': 0, 't1': 1, 't2': 2, 'el': 3}[s['tier']]
-    electives = s['tier'] == 'el'
-    n = len(badges)
-    n_left = (n + 1) // 2
-    cards = []
-    for i, b in enumerate(badges, 1):
-        label = 'Bonus' if electives else 'To Tier %d · pt. %d' % (tier_n + 1, i)
-        if b['id'] in TAGS: label += ' · ' + TAGS[b['id']]
-        if b.get('minTier'): label += ' · Tier %d pilots' % b['minTier']
-        if b.get('minHours'): label += ' · after %g sim h' % b['minHours']
-        cards.append(card_html(b, label, fs, '★' if electives else str(i)).replace('<div class="card" ', '<div class="card" data-i="%d" ' % i, 1))
-    d = s['dir']
+def render(s, fs):
+    tier = next(t for t in TIERS if t['id'] == s['tier'])
+    src = s.get('badges_from', s['tier'])
+    badges = [b for b in fs['BADGES'] if b['tier'] == src and not b.get('checkpoint')]
+    bonus = src == 'el'
+    cards = ''.join(card_html(b, i, fs, bonus) for i, b in enumerate(badges, 1))
+    if bonus:
+        cards += ('<div class="card p107" data-i="%d"><div class="lab"><span>Beyond the club</span></div><div class="nm">Part 107</div>'
+                  '<ol><li>The FAA commercial licence &middot; the club runs a study group</li><li>You pay the exam, we supply the prep</li></ol></div>' % (len(badges) + 1))
     gate = ''
     if s.get('gate'):
-        g, big, sub = s['gate']
-        gate = ('<div class="gate gate-%s"><div class="txt"><div class="g">%s</div><div class="b">%s</div>'
-                '<div class="s">%s &rarr;</div></div><div class="arch"></div></div>' % (d, g, big, sub))
-    lead = ''
+        cp = next(b for b in fs['BADGES'] if b.get('checkpoint') and b['name'] == GATES[s['gate'] - 1])
+        gate = gate_html(s['gate'], cp, TIERS[tier['n'] + 1])
     if s.get('start'):
-        lead = '<div class="start"><span class="go">GO</span><div><b>%s</b>%s</div></div>' % s['start']
-    elif s.get('entry'):
-        lead = '<div class="entry entry-%s">&larr; %s</div>' % ('top' if d == 'down' else 'bottom', esc(s['entry']))
-    summit = ''
-    cp = None
-    if s.get('checkpoint'):
-        cp = [b for b in fs['BADGES'] if b['tier'] == s['checkpoint'] and b.get('checkpoint')][0]
-        mates = [b for b in fs['BADGES'] if b['tier'] == s['checkpoint'] and not b.get('checkpoint')]
-        at = 'end' if electives else 'start'          # sheet 4: the summit; sheets 2-3: where you arrive
-        summit = checkpoint_html(cp, mates, tier_n, at, d)
-        if electives:
-            summit += '<div class="sidequest">Bonus badges &middot; any order, any time &middot; not counted</div>'
-            lead = '<div class="entry entry-bottom">&larr; %s</div>' % esc(s['entry'])
-        else:
-            lead = ''
-    extra = ''
-    if electives:
-        extra = ('<div class="p107"><b>PART 107</b>Want the real commercial licence? The club runs a study group. '
-                 'You pay the exam; we supply the prep.</div>')
-    if s['tier'] == 't0':
-        prereq = 'Have a name'
+        lead = ('<div class="start"><span class="go">GO</span><div><b>%s</b>%s</div></div>' % s['start'])
+        if s.get('sticker'): lead += '<div class="sticker">%s</div>' % esc(s['sticker'])
     else:
-        prereq = 'Pass the %s checkpoint (%s) · its %s prerequisites first' % (
-            cp['name'], 'top of this sheet' if (electives or d == 'down') else 'foot of this sheet', WORDS[prev_count])
-    onsheet = ('The Event Pilot checkpoint · plus %d bonus badges, any order' % n) if electives else \
-              ('%d prerequisites for the Tier %d checkpoint' % (n, tier_n + 1)) if s['tier'] == 't0' else \
-              ('Your checkpoint · then %d prerequisites for Tier %d' % (n, tier_n + 1))
-    kinds = {}
-    for b in badges: kinds[b['type']] = kinds.get(b['type'], 0) + 1
-    mix = ' · '.join('%d %s' % (kinds[k], TYPE_NAME[k].lower()) for k in ('knowledge', 'bench', 'witnessed', 'auto') if kinds.get(k))
-
+        g = s['came']
+        lead = ('<div class="start came" style="--c:%s"><span class="go">%s<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="currentColor" stroke-width="4"/>'
+                '<path d="M2 38h10M28 38h10" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></span><div><b>%s &#10003;</b>%s</div></div>'
+                % (tier['color'], '', esc(g[0]), esc(g[1])))
+    heading = ''
+    if bonus:
+        heading = ('<div class="summit"><div class="sl">The top of the path</div><div class="st">You fly for the school</div>'
+                   '<div class="sd">Pep-rally race &middot; Best of Brophy footage &middot; any Tier 2 airframe &middot; a spotter beside you &middot; Flight Clearance and Mr. Burr&rsquo;s yes for every flight</div></div>'
+                   '<div class="bonushead"><span>Bonus badges</span><span>after Event Pilot &middot; any order, any time &middot; not counted</span></div>'
+                   '<div class="finish" id="finish"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 38V4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>'
+                   '<path d="M8 5h28l-5 9 5 9H8Z" fill="#fff" stroke="currentColor" stroke-width="2"/>'
+                   '<path d="M8 5h7v6H8zM22 5h7v6h-7zM15 11h7v6h-7zM29 11h7v6h-7zM8 17h7v6H8zM22 17h7v6h-7z" fill="currentColor" opacity=".9"/></svg>'
+                   '<div><b>That is the whole path</b>Keep flying. Keep signing people off.</div></div>')
+    drones = ''.join('<img src="img/drone-%s.svg" alt="" style="height:%dpx">' % d for d in tier['drones'])
     legend = ''.join('<span><i style="background:%s"></i>%s</span>' % (TRACK_COLOR[k], esc(v)) for k, v in fs['TRACK'].items())
-    title_tier = 'Tier %d' % tier_n
-    return f'''<!doctype html>
+    onsheet = ('%d bonus badges' % len(badges)) if bonus else ('%d badges, then Gate %d' % (len(badges), s['gate']))
+    page = TEMPLATE
+    for k, v in {
+        '@@TITLE@@': 'Pilot Path — sheet %d of 4 — Tier %d %s' % (s['sheet'], tier['n'], s['name'].replace('<br>', ' ').title()),
+        '@@TIERCOLOR@@': tier['color'], '@@SHEET@@': str(s['sheet']), '@@TIERN@@': str(tier['n']),
+        '@@NAME@@': s['name'], '@@LONG@@': ' long' if s.get('long') else '', '@@BONUS@@': ' bonus' if bonus else '',
+        '@@FLY@@': esc(tier['fly']), '@@ONSHEET@@': onsheet, '@@DRONES@@': drones, '@@FLOW@@': flow_html(s['tier']),
+        '@@LEAD@@': lead, '@@HEADING@@': heading, '@@CARDS@@': cards, '@@GATE@@': gate, '@@LEGEND@@': legend,
+        '@@PASS@@': str(fs['PASS']),
+    }.items(): page = page.replace(k, v)
+    return page
+
+TEMPLATE = '''<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>Pilot Path — sheet {s['sheet']} of 4 — {title_tier} {s['name'].replace('<br>', ' ').title()}</title>
+<title>@@TITLE@@</title>
 <link rel="stylesheet" href="poster.css">
 <link rel="stylesheet" href="map.css">
 </head>
 <body>
 <div class="bg"><div class="grid"></div><div class="fine"></div><div class="vig"></div></div>
-<div class="sheet{' electives' if electives else ''}" style="--tier:{s['color']}" data-dir="{s['dir']}" data-sheet="{s['sheet']}">
+<div class="sheet@@BONUS@@" style="--tier:@@TIERCOLOR@@" data-sheet="@@SHEET@@">
   <div class="stamp"><b>BROPHY</b>FPV CLUB<br>PILOT PATH</div>
-  <div class="eyebrow"><h2>The pilot path &middot; sheet {s['sheet']} of 4 &middot; badges unlock the gear</h2><span class="rule"></span></div>
-  <div class="tierhead"><div class="tn">TIER {tier_n}</div><div class="tname{' long' if s.get('long') else ''}">{s['name']}</div></div>
-  <div class="facts">
-    <div class="f"><div class="k">You fly</div><div class="v">{esc(s['gear'])}</div></div>
-    <div class="f"><div class="k">To get here</div><div class="v">{esc(prereq)}</div>{'<div class="bonus">' + esc(s['sticker']) + '</div>' if s.get('sticker') else ''}</div>
-    <div class="f"><div class="k">On this sheet</div><div class="v">{esc(onsheet)}<small>{esc(mix)}</small></div></div>
+  <div class="eyebrow"><h2>The pilot path &middot; sheet @@SHEET@@ of 4 &middot; read top to bottom</h2><span class="rule"></span></div>
+  <div class="tierhead">
+    <div class="tt"><div class="row"><div class="tn">TIER @@TIERN@@</div><div class="tname@@LONG@@">@@NAME@@</div></div>
+      <div class="fly"><b>You fly</b> @@FLY@@</div>
+      <div class="fly"><b>On this sheet</b> @@ONSHEET@@</div></div>
+    <div class="drones">@@DRONES@@</div>
   </div>
+  @@FLOW@@
 
   <div class="map" id="map">
     <svg class="trail" id="trail"></svg>
-    {lead}{gate}{summit}
-    <div class="cards" id="cards">{''.join(cards)}{extra}</div>
+    @@LEAD@@@@HEADING@@
+    <div class="cards" id="cards">@@CARDS@@</div>
+    @@GATE@@
   </div>
 
-  <div class="legend">{legend}<span class="how"><b>Quiz</b> badges: pass at {fs['PASS']} %, no sign-off &middot; <b>Bench</b> and <b>witnessed</b> badges: a mentor who holds the badge signs it off &middot; demonstration, not attendance</span></div>
-  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; the Brophy Drone Certification: FAA TRUST &middot; Safe Flight &middot; the Pilot Agreement (signed with a parent) &middot; your Drone Portfolio &middot; then permission from Mr. Burr 24 h before every flight &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
+  <div class="legend">@@LEGEND@@<span class="how"><b>Quiz</b> badges: pass at @@PASS@@ %, no sign-off &middot; <b>Bench</b> and <b>witnessed</b> badges: a mentor who holds the badge signs it off &middot; demonstration, not attendance</span></div>
+  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; the Brophy Drone Certification and Mr. Burr&rsquo;s yes before every flight &middot; see the Flight Clearance sheet &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
   <div class="qrmini qr"><svg viewBox="0 0 370 370"><use href="qr-path.svg#q"/></svg><div class="say"><b>Full badge list</b>scan</div></div>
-  <div class="foot"><span><b>Brophy FPV Club</b> &middot; Pilot Path &middot; Tier {tier_n} of 3</span><span>mtucker27@ for questions</span></div>
+  <div class="foot"><span><b>Brophy FPV Club</b> &middot; Pilot Path &middot; Tier @@TIERN@@ of 3</span><span>mtucker27@ for questions</span></div>
 </div>
 <script>
-/* Organic layout, done in the page so it uses real card heights.
-   - Cards hang off a winding trail on alternating sides (masonry: each card
-     goes to the side that is shorter so far), staggered, a little narrower or
-     wider and tilted by a fixed pseudo-random amount.
-   - 'down' sheets start at the top-left and leave through a gate at the
-     bottom-right; 'up' sheets come in at the bottom-left and climb to the
-     top-right. Exits and entries share heights, so the four sheets join.
-   - If the cards do not fit, the text is scaled down a step and laid out
-     again. <body data-trail> says "ok", or "overflow Npx" if even the
-     smallest step did not fit. */
-(function () {{
-  var sheet = document.querySelector('.sheet'), DIR = sheet.getAttribute('data-dir'), SEED = +sheet.getAttribute('data-sheet');
-  var map = document.getElementById('map'), W = map.clientWidth, H = map.clientHeight;
-  var MID = W / 2, CH = 184, MARGIN = 30, GAP = 20, YT = 50, YB = H - 46;
-  function rnd(i, k) {{ var x = Math.sin((i + 1) * 12.9898 + SEED * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x); }}
-  function box(el) {{ var r = el.getBoundingClientRect(), m = map.getBoundingClientRect(); return {{x: r.left - m.left, y: r.top - m.top, w: r.width, h: r.height}}; }}
+/* Top-to-bottom layout with real card heights. Cards alternate left / right in
+   badge order; the right column starts half a card lower so the pins step
+   down like stairs. If the columns do not fit above the gate, the card text is
+   scaled down a step and laid out again. <body data-trail> says "ok", or
+   "overflow Npx" if even the smallest step did not fit. */
+(function () {
+  var sheet = document.querySelector('.sheet'), map = document.getElementById('map');
+  var W = map.clientWidth, H = map.clientHeight, PADX = 56, CW = 418, GAPMIN = 14, GAPMAX = sheet.classList.contains('bonus') ? 190 : 64;
+  var XL = PADX, XR = W - PADX - CW;
+  function box(el) { var r = el.getBoundingClientRect(), m = map.getBoundingClientRect(); return {x: r.left - m.left, y: r.top - m.top, w: r.width, h: r.height}; }
+  var lead = document.querySelector('.start'), sticker = document.querySelector('.sticker'), summit = document.querySelector('.summit'), bh = document.querySelector('.bonushead'), gate = document.getElementById('gatebox');
+  var topL = 0, topR = 0;
+  if (lead) { var b = box(lead); topL = Math.max(topL, b.y + b.h + 16); topR = Math.max(topR, 24); }
+  if (sticker) { var b2 = box(sticker); topR = Math.max(topR, b2.y + b2.h + 14); }
+  if (summit) { var b3 = box(summit); topL = topR = b3.y + b3.h + 16; }
+  if (bh) { bh.style.top = (topL + 2) + 'px'; var b4 = box(bh); topL = topR = b4.y + b4.h + 14; }
+  var bottom = gate ? box(gate).y - 22 : H - 30;
 
-  // vertical room per side: start at the whole map, then step clear of every
-  // label (start, entry, gate, summit, side-quest heading) on that side
-  var lim = {{ L: [24, H - 24], R: [24, H - 24] }};
-  // sheet 4: the bonus heading sits just under the summit box
-  var cpb = document.querySelector('.cpbox'), sq = document.querySelector('.sidequest');
-  if (cpb && sq) sq.style.top = (cpb.offsetTop + cpb.offsetHeight + 34) + 'px';
-  ['.start', '.entry', '.gate .txt', '.gate .arch', '.cpbox', '.sidequest'].forEach(function (sel) {{
-    document.querySelectorAll(sel).forEach(function (el) {{
-      var b = box(el), top = b.y + b.h / 2 < H / 2;
-      ['L', 'R'].forEach(function (sd) {{
-        var x0 = sd === 'L' ? 0 : MID - CH / 2, x1 = sd === 'L' ? MID + CH / 2 : W;
-        if (b.x > x1 || b.x + b.w < x0) return;
-        if (top) lim[sd][0] = Math.max(lim[sd][0], b.y + b.h + 18);
-        else lim[sd][1] = Math.min(lim[sd][1], b.y - 18);
-      }});
-    }});
-  }});
-  // the trail needs a lane at the entry / exit edges too
-  if (DIR === 'down') {{ lim.R[1] = Math.min(lim.R[1], YB - 40); lim.L[0] = Math.max(lim.L[0], YT + 44); }}
-  else {{ lim.L[1] = Math.min(lim.L[1], YB - 40); lim.R[0] = Math.max(lim.R[0], YT + 44); }}
-
-  function layout(k, gap0) {{
+  function layout(k) {
     sheet.style.setProperty('--k', k);
-    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card, #cards .p107'));
-    var base = (W - 2 * MARGIN - CH) / 2, y = {{ L: 0, R: 0 }}, over = 0, used = {{ L: 0, R: 0 }}, cnt = {{ L: 0, R: 0 }};
-    y.L = DIR === 'down' ? lim.L[0] : lim.L[1];
-    y.R = DIR === 'down' ? lim.R[0] + 80 : lim.R[1] - 80;       // stagger the two sides
-    cards.forEach(function (c, i) {{
-      var w = Math.round(base - 58 * rnd(i, 1));
-      c.style.width = w + 'px'; c.style.transform = 'none';
-      var h = c.offsetHeight;
-      var room = function (sd) {{ return DIR === 'down' ? lim[sd][1] - y[sd] : y[sd] - lim[sd][0]; }};
-      var sd = DIR === 'down' ? (y.L <= y.R ? 'L' : 'R') : (y.L >= y.R ? 'L' : 'R');
-      if (room(sd) < h && room(sd === 'L' ? 'R' : 'L') >= h) sd = sd === 'L' ? 'R' : 'L';
-      var top = DIR === 'down' ? y[sd] : y[sd] - h;
-      var drift = Math.round((base - w) * rnd(i, 2));               // outward only: the channel stays clear
-      var x = sd === 'L' ? MID - CH / 2 - w - drift : MID + CH / 2 + drift;
-      c.style.left = x + 'px'; c.style.top = top + 'px';
-      c.classList.remove('side-L', 'side-R'); c.classList.add('side-' + sd);
-      c.style.transform = 'rotate(' + ((rnd(i, 3) - .5) * 1.8).toFixed(2) + 'deg)';
-      var gap = gap0 + Math.round(16 * rnd(i, 4));
-      y[sd] = DIR === 'down' ? top + h + gap : top - gap;
-      used[sd] += h + gap; cnt[sd]++;
-      over = Math.max(over, DIR === 'down' ? (top + h) - lim[sd][1] : lim[sd][0] - top);
-    }});
-    var spare = Math.min((lim.L[1] - lim.L[0]) - used.L - (DIR === 'down' ? 0 : 0), (lim.R[1] - lim.R[0] - 80) - used.R);
-    return {{ over: over, spare: spare, per: Math.max(cnt.L, cnt.R) }};
-  }}
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card')), STEP = 56;
+    cards.forEach(function (c, i) { c.style.width = CW + 'px'; c.style.left = (i % 2 ? XR : XL) + 'px'; c.classList.toggle('side-R', !!(i % 2)); c.classList.toggle('side-L', !(i % 2)); });
+    var off = cards.length ? Math.min(Math.round(cards[0].offsetHeight * 0.55), 110) : 0;
+    function place(gap) {                                   // alternate sides; every card starts lower than the one before
+      var yL = topL, yR = Math.max(topR, topL + off), prev = -1e9, low = 0;
+      cards.forEach(function (c, i) {
+        var y = Math.max(i % 2 ? yR : yL, prev + STEP);
+        c.style.top = y + 'px'; prev = y;
+        if (i % 2) yR = y + c.offsetHeight + gap; else yL = y + c.offsetHeight + gap;
+        low = Math.max(low, y + c.offsetHeight);
+      });
+      return low - bottom;                                  // > 0 means the lowest card runs into the gate
+    }
+    var over = 0;
+    for (var gap = GAPMAX; gap >= GAPMIN; gap -= 2) { over = place(gap); if (over <= 0) break; }
+    return Math.max(0, over);
+  }
 
-  function catmull(p) {{
+  function catmull(p) {
     var d = 'M' + p[0][0].toFixed(1) + ' ' + p[0][1].toFixed(1), q = [p[0]].concat(p, [p[p.length - 1]]);
-    for (var i = 1; i < q.length - 2; i++) {{
+    for (var i = 1; i < q.length - 2; i++) {
       var a = q[i - 1], b = q[i], c = q[i + 1], e = q[i + 2], t = 1 / 6;
       d += ' C' + (b[0] + (c[0] - a[0]) * t).toFixed(1) + ' ' + (b[1] + (c[1] - a[1]) * t).toFixed(1) + ',' +
            (c[0] - (e[0] - b[0]) * t).toFixed(1) + ' ' + (c[1] - (e[1] - b[1]) * t).toFixed(1) + ',' + c[0].toFixed(1) + ' ' + c[1].toFixed(1);
-    }}
+    }
     return d;
-  }}
+  }
 
-  function trail() {{
-    var m = map.getBoundingClientRect();
-    function ctr(el) {{ var r = el.getBoundingClientRect(); return [r.left - m.left + r.width / 2, r.top - m.top + r.height / 2]; }}
+  function trail() {
+    function ctr(el) { var b = box(el); return [b.x + b.w / 2, b.y + b.h / 2]; }
     var pins = Array.prototype.slice.call(document.querySelectorAll('#cards .card .pin')).map(ctr);
-    var pts = [], go = document.querySelector('.go'), cpb = document.querySelector('.cpbox'), peak = null;
-    var cpAt = cpb ? cpb.getAttribute('data-at') : '', cb = cpb ? box(cpb) : null;
-    if (cpAt === 'end') peak = cpb;
-    if (go) pts.push(ctr(go), [ctr(go)[0] + 70, ctr(go)[1] + 50]);
-    else if (cpAt === 'start' && DIR === 'down') pts.push([MID - 140, cb.y + cb.h - 8], [MID - 110, cb.y + cb.h + 46]);
-    else if (cpAt === 'start') pts.push([MID - 140, cb.y + 8], [MID - 110, cb.y - 46]);
-    else if (DIR === 'down') pts.push([-30, YT], [70, YT + 6], [MID - 120, YT + 40]);
-    else pts.push([-30, YB], [80, YB - 4], [MID - 90, YB - 40]);
-    // the biggest vertical gap between consecutive pins gets a proper loop
-    var gi = -1, gbest = 0;
-    for (var j = 1; j < pins.length; j++) {{ var g = Math.abs(pins[j][1] - pins[j - 1][1]); if (g > gbest) {{ gbest = g; gi = j; }} }}
-    var swing = 1;
-    pins.forEach(function (p, i) {{
-      if (pts.length) {{
-        var a = pts[pts.length - 1], my = (a[1] + p[1]) / 2;
-        var cx = MID + swing * (30 + 26 * rnd(i, 5));
-        if (i === gi && gbest > 170) {{
-          var r = 40, s = DIR === 'down' ? 1 : -1, cy = my;
-          pts.push([MID + swing * 46, cy - s * 70]);
-          for (var t = 0; t <= 8; t++) {{                         // once around, entering and leaving on the same side
-            var ang = (-Math.PI / 2) * s + swing * s * t * (2 * Math.PI / 8);
-            pts.push([MID + Math.cos(ang) * r, cy + Math.sin(ang) * r]);
-          }}
-          pts.push([MID - swing * 40, cy + s * 70]);
-        }} else pts.push([cx, my]);
-        swing = -swing;
-      }}
+    var pts = [], MID = W / 2;
+    if (lead) { var g = ctr(lead.querySelector('.go')); pts.push(g, [g[0] + 70, g[1] + 34]); }
+    else if (summit) { var sb = box(summit); pts.push([MID, sb.y + sb.h - 6], [MID - 30, sb.y + sb.h + 40]); }
+    pins.forEach(function (p, i) {
+      if (pts.length) { var a = pts[pts.length - 1]; pts.push([MID + (p[0] < MID ? 22 : -22), (a[1] + p[1]) / 2]); }
       pts.push(p);
-    }});
-    if (peak) pts.push([MID + 110, cb.y + cb.h + 70], [MID + 90, cb.y + cb.h - 8]);
-    else if (DIR === 'down') pts.push([MID + 60, YB - 30], [W - 150, YB + 2], [W + 30, YB]);
-    else pts.push([MID + 70, YT + 60], [W - 150, YT - 2], [W + 30, YT]);
+    });
+    if (gate) { var gb = box(gate); pts.push([MID - 10, gb.y - 40], [MID, gb.y + 6]); }
+    else { var last = pts[pts.length - 1], fin = document.getElementById('finish'), low = 0;
+           document.querySelectorAll('#cards .card').forEach(function (c) { low = Math.max(low, c.offsetTop + c.offsetHeight); });
+           var fy = Math.max(last[1] + 130, low + 40);
+           pts.push([MID - 20, (last[1] + fy) / 2], [MID, fy]);
+           if (fin) { fin.style.left = (MID - fin.offsetWidth / 2) + 'px'; fin.style.top = (fy - 12) + 'px'; } }
     var svg = document.getElementById('trail'), d = catmull(pts);
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', W); svg.setAttribute('height', H);
-    svg.innerHTML = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
-  }}
+    var inner = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
+    // a direction chevron between every pair of pins, pointing along the trail
+    var probe = document.createElementNS('http://www.w3.org/2000/svg', 'path'); probe.setAttribute('d', d); svg.appendChild(probe);
+    var len = probe.getTotalLength(), marks = [];
+    for (var i = 1; i < pins.length; i++) marks.push([(pins[i - 1][0] + pins[i][0]) / 2, (pins[i - 1][1] + pins[i][1]) / 2]);
+    if (gate && pins.length) marks.push([MID - 4, (pins[pins.length - 1][1] + box(gate).y) / 2]);
+    marks.forEach(function (m) {
+      var best = 0, bd = 1e9;                              // nearest point on the path to the midpoint
+      for (var s = 0; s <= len; s += 6) { var q = probe.getPointAtLength(s), dd = (q.x - m[0]) * (q.x - m[0]) + (q.y - m[1]) * (q.y - m[1]); if (dd < bd) { bd = dd; best = s; } }
+      var p0 = probe.getPointAtLength(Math.max(0, best - 4)), p1 = probe.getPointAtLength(Math.min(len, best + 4));
+      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI, pm = probe.getPointAtLength(best);
+      inner += '<g class="chev" transform="translate(' + pm.x.toFixed(1) + ' ' + pm.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')"><circle r="15"/><path d="M-6 -8L8 0L-6 8Z"/></g>';
+    });
+    svg.innerHTML = inner;
+  }
 
-  function run() {{
-    var ks = [1, .96, .92, .88, .84, .80, .76], r = null;   // .80/.76 added 2026-10-20 for the six-card Tier 2 sheet
-    for (var i = 0; i < ks.length; i++) {{ r = layout(ks[i], GAP); if (r.over <= 0) break; }}
-    if (r.over <= 0 && r.spare > 40) {{                    // spread the spare height between the cards
-      var g2 = GAP + Math.min(130, Math.floor(r.spare / Math.max(1, r.per)));
-      var r2 = layout(+sheet.style.getPropertyValue('--k'), g2);
-      if (r2.over > 0) layout(+sheet.style.getPropertyValue('--k'), GAP); else r = r2;
-    }}
-    var over = r.over;
+  function run() {
+    var ks = [1, .96, .92, .88, .84, .80, .76], over = 0;
+    for (var i = 0; i < ks.length; i++) { over = layout(ks[i]); if (over <= 0) break; }
     trail();
     document.body.setAttribute('data-trail', over > 0 ? 'overflow ' + Math.round(over) + 'px' : 'ok k=' + sheet.style.getPropertyValue('--k'));
-  }}
+  }
   run();
   if (document.fonts && document.fonts.ready) document.fonts.ready.then(run);
-}})();
+})();
 </script>
 </body></html>
 '''
 
 if __name__ == '__main__':
     fs = load_fs()
-    counts = {t['id']: sum(1 for b in fs['BADGES'] if b['tier'] == t['id'] and not b.get('checkpoint')) for t in fs['TIERS']}
-    prev = {'t0': 0, 't1': counts['t0'], 't2': counts['t1'], 'el': counts['t2']}
-    print('badges.js: %d badges, prerequisites per tier (%s)' % (len(fs['BADGES']), ', '.join('%s %d' % (k, v) for k, v in counts.items())))
+    print('badges.js: %d badges' % len(fs['BADGES']))
     for s in SHEETS:
         with open(os.path.join(HERE, s['file'] + '.html'), 'w', encoding='utf-8') as f:
-            f.write(render(s, fs, prev[s['tier']]))
+            f.write(render(s, fs))
         print('wrote', s['file'] + '.html')

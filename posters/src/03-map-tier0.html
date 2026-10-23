@@ -6,92 +6,66 @@
 </head>
 <body>
 <div class="bg"><div class="grid"></div><div class="fine"></div><div class="vig"></div></div>
-<div class="sheet" style="--tier:var(--sky)" data-dir="down" data-sheet="1">
+<div class="sheet" style="--tier:var(--sky)" data-sheet="1">
   <div class="stamp"><b>BROPHY</b>FPV CLUB<br>PILOT PATH</div>
-  <div class="eyebrow"><h2>The pilot path &middot; sheet 1 of 4 &middot; badges unlock the gear</h2><span class="rule"></span></div>
-  <div class="tierhead"><div class="tn">TIER 0</div><div class="tname">SIMULATOR</div></div>
-  <div class="facts">
-    <div class="f"><div class="k">You fly</div><div class="v">FPV sim rigs in the IC · Liftoff · Micro Drones · SkyDive · FPV Labs · PicaSim</div></div>
-    <div class="f"><div class="k">To get here</div><div class="v">Have a name</div><div class="bonus">Bonus Challenge: do this all in one CP and get to fly!</div></div>
-    <div class="f"><div class="k">On this sheet</div><div class="v">5 prerequisites for the Tier 1 checkpoint<small>1 quiz · 2 bench · 2 witnessed</small></div></div>
+  <div class="eyebrow"><h2>The pilot path &middot; sheet 1 of 4 &middot; read top to bottom</h2><span class="rule"></span></div>
+  <div class="tierhead">
+    <div class="tt"><div class="row"><div class="tn">TIER 0</div><div class="tname">SIMULATOR</div></div>
+      <div class="fly"><b>You fly</b> The five FPV sims</div>
+      <div class="fly"><b>On this sheet</b> 5 badges, then Gate 1</div></div>
+    <div class="drones"><img src="img/drone-radio.svg" alt="" style="height:118px"></div>
   </div>
+  <div class="flow"><div class="fl">The whole<br>path</div><div class="node here" style="--c:var(--sky)"><span class="tn">Tier 0</span><span class="nn">Simulator</span><span class="you">You are here</span></div><div class="gate"><svg viewBox="0 0 40 40" class="gg" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--violet)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--violet)" stroke-width="3.5" stroke-linecap="round"/></svg><span>Gate 1</span></div><div class="node" style="--c:var(--violet)"><span class="tn">Tier 1</span><span class="nn">Meteor 75 Pro</span></div><div class="gate"><svg viewBox="0 0 40 40" class="gg" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--rust)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--rust)" stroke-width="3.5" stroke-linecap="round"/></svg><span>Gate 2</span></div><div class="node" style="--c:var(--rust)"><span class="tn">Tier 2</span><span class="nn">Pavo 20 Pro</span></div><div class="gate"><svg viewBox="0 0 40 40" class="gg" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--green)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round"/></svg><span>Gate 3</span></div><div class="node" style="--c:var(--green)"><span class="tn">Tier 3</span><span class="nn">Event Pilot</span></div></div>
 
   <div class="map" id="map">
     <svg class="trail" id="trail"></svg>
-    <div class="start"><span class="go">GO</span><div><b>START</b>Add your name at the kiosk</div></div><div class="gate gate-down"><div class="txt"><div class="g">NEXT</div><div class="b">Tier 1 checkpoint</div><div class="s">Meteor 75 Pro Certification · sheet 2 &rarr;</div></div><div class="arch"></div></div>
-    <div class="cards" id="cards"><div class="card" data-i="1" data-id="proficient-flight" style="--t:var(--sky)"><span class="pin"><span>1</span></span><div class="lab"><span>To Tier 1 · pt. 1</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Sim Flight</div><div class="ds">Fly a short checkride in Liftoff: an orbit, a Split-S, three gaps.</div><div class="how"><b>Requirements</b><ol><li>Stick basics - four channels, rate vs angle, hover, throttle</li><li>A clean orbit around a gate</li><li>A Split-S</li><li>Three gaps without a crash</li></ol><div class="ft"><b style="display:inline;color:inherit;font-family:inherit;letter-spacing:0;text-transform:none">In person with a mentor, everything in one flight, one attempt per day.</b></div><div class="ft">Lessons and videos for each: scan for the Pilot Path</div></div><div class="why"><b>Why</b> Acro muscle memory where crashes are free.</div></div><div class="card" data-i="2" data-id="battery-care" style="--t:var(--amber)"><span class="pin"><span>2</span></span><div class="lab"><span>To Tier 1 · pt. 2</span><span class="ty ty-knowledge">Quiz</span></div><div class="nm">Battery Care</div><div class="ds">Charging, storage, puffed packs and disposal.</div><div class="how"><b>4 lessons, then the quiz</b><ol><li>LiPo basics</li><li>Battery math <em>drill</em></li><li>Charging, storage and disposal</li><li>When a pack goes bad</li></ol><div class="ft">10 questions · 80 % passes · no sign-off needed · retake any time</div></div><div class="why"><b>Why</b> LiPos are the biggest real fire risk in the hobby.</div></div><div class="card" data-i="3" data-id="building" style="--t:var(--amber)"><span class="pin"><span>3</span></span><div class="lab"><span>To Tier 1 · pt. 3</span><span class="ty ty-bench">Bench</span></div><div class="nm">Building</div><div class="ds">Rebuild a disassembled Meteor 75 Pro.</div><div class="how"><b>At the bench · 7 steps</b><div class="seq">Parts check <i>›</i> Motors on <i>›</i> Plug in the motors <i>›</i> Assemble it and put the canopy on <i>›</i> Plug in the canopy <i>›</i> Test <i>›</i> Props</div><div class="ft">Then a photo, submitted on the website · a mentor passes or fails it</div></div><div class="why"><b>Why</b> Members can fix what they break.</div></div><div class="card" data-i="4" data-id="betaflight-intro" style="--t:var(--amber)"><span class="pin"><span>4</span></span><div class="lab"><span>To Tier 1 · pt. 4</span><span class="ty ty-bench">Bench</span></div><div class="nm">Betaflight Intro</div><div class="ds">Calibrate the accelerometer and bind the receiver.</div><div class="how"><b>At the bench · 4 steps</b><div class="seq">Props OFF <i>›</i> Connect <i>›</i> Setup tab <i>›</i> Bind the receiver</div><div class="nt">Practised on the club Meteor 75 Pro at the kiosk, right after Building. The rest of Betaflight is a Tier 2 badge (2026-10-20).</div><div class="ft">Then a photo, submitted on the website · a mentor passes or fails it</div></div><div class="why"><b>Why</b> The two things every Meteor needs before its first flight.</div></div><div class="card" data-i="5" data-id="line-of-sight" style="--t:var(--sky)"><span class="pin"><span>5</span></span><div class="lab"><span>To Tier 1 · pt. 5</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Line of Sight</div><div class="ds">No goggles: fly a whoop in angle mode.</div><div class="how"><b>Requirements</b><ol><li>Take-off to head height</li><li>A 20-second steady hover</li><li>A lap around a tree</li><li>A smooth landing</li></ol><div class="ft"><b style="display:inline;color:inherit;font-family:inherit;letter-spacing:0;text-transform:none">In person with a mentor, everything in one flight, one attempt per day.</b></div><div class="ft">Lessons and videos for each: scan for the Pilot Path</div></div><div class="why"><b>Why</b> If video cuts out you can still land.</div></div></div>
+    <div class="start"><span class="go">GO</span><div><b>START</b>Add your name at the sim kiosk · then fly</div></div><div class="sticker">Bonus challenge: do all five in one community period and you fly that day</div>
+    <div class="cards" id="cards"><div class="card" data-i="1" style="--t:var(--sky)"><span class="pin"><span>1</span></span><div class="lab"><span>Flight</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Sim Flight</div><ol><li>Stick basics · four channels, rate vs angle, hover, throttle</li><li>A clean orbit around a gate</li><li>A Split-S</li><li>Three gaps without a crash</li></ol><div class="rl">In person with a mentor, everything in one flight, one attempt per day.</div></div><div class="card" data-i="2" style="--t:var(--amber)"><span class="pin"><span>2</span></span><div class="lab"><span>Build &amp; tech</span><span class="ty ty-knowledge">Quiz</span></div><div class="nm">Battery Care</div><ol><li>Pass the Battery Care quiz · 80 % or better · no sign-off needed</li></ol><div class="ft">Covers: LiPo basics · Battery math · Charging, storage and disposal · When a pack goes bad</div></div><div class="card" data-i="3" style="--t:var(--amber)"><span class="pin"><span>3</span></span><div class="lab"><span>Build &amp; tech</span><span class="ty ty-bench">Bench</span></div><div class="nm">Building</div><ol><li>Parts check: frame, FC/ESC, motors, RX, VTX, camera, antenna, props, strap</li><li>Motors on - right screw length, nothing touching a winding</li><li>Plug in the motors</li><li>Assemble it and put the canopy on</li><li>Plug in the canopy</li><li>Test: motors beep, camera turns on</li><li>Props: each matches its motor&#x27;s spin (props in or out, as set in Betaflight), leading edge first</li><li>Photo of your work on the website · a mentor passes it</li></ol></div><div class="card" data-i="4" style="--t:var(--amber)"><span class="pin"><span>4</span></span><div class="lab"><span>Build &amp; tech</span><span class="ty ty-bench">Bench</span></div><div class="nm">Betaflight Intro</div><ol><li>Props OFF, battery OUT, USB only</li><li>Connect to Betaflight (the kiosk reads the board)</li><li>Setup tab: calibrate the accelerometer, the drone flat and still</li><li>Bind the receiver (plug/unplug method)</li><li>Photo of your work on the website · a mentor passes it</li></ol><div class="rl">Done on the club Meteor 75 Pro at the kiosk, right after Building. The rest of Betaflight is its own badge on the Tier 2 path.</div></div><div class="card" data-i="5" style="--t:var(--sky)"><span class="pin"><span>5</span></span><div class="lab"><span>Flight</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Line of Sight</div><ol><li>Takeoff to head height</li><li>A 20-second steady hover</li><li>A lap around a tree</li><li>A smooth landing</li></ol><div class="rl">In person with a mentor, everything in one flight, one attempt per day.</div></div></div>
+    <div class="gatebox" id="gatebox" style="--g:var(--violet)"><div class="gl"><img src="img/gate-1.svg" alt=""><div class="cap">Gate 1 &middot; through it, you fly the Meteor 75 Pro</div></div><div class="gr"><div class="lab">Gate 1 &middot; the Tier 1 checkpoint &middot; Witnessed</div><div class="nm">Meteor 75 Pro Certification</div><div class="ds">Checkpoint into Tier 1: the Meteor 75 Pro in goggles.</div><div class="req"><b>To pass</b><ol><li>A controlled takeoff</li><li>A figure-eight through two gates</li><li>An orbit</li><li>A landing on the pad, no wall contact</li></ol><div class="rl">In person with a mentor, everything in one flight, one attempt per day.</div></div><div class="next">&rarr; Sheet 2 &middot; Tier 1 &middot; Meteor 75 Pro</div></div></div>
   </div>
 
   <div class="legend"><span><i style="background:var(--sky)"></i>Flight</span><span><i style="background:var(--amber)"></i>Build &amp; tech</span><span><i style="background:var(--green)"></i>Knowledge &amp; safety</span><span><i style="background:var(--violet)"></i>Crew &amp; leadership</span><span class="how"><b>Quiz</b> badges: pass at 80 %, no sign-off &middot; <b>Bench</b> and <b>witnessed</b> badges: a mentor who holds the badge signs it off &middot; demonstration, not attendance</span></div>
-  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; the Brophy Drone Certification: FAA TRUST &middot; Safe Flight &middot; the Pilot Agreement (signed with a parent) &middot; your Drone Portfolio &middot; then permission from Mr. Burr 24 h before every flight &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
+  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; the Brophy Drone Certification and Mr. Burr&rsquo;s yes before every flight &middot; see the Flight Clearance sheet &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
   <div class="qrmini qr"><svg viewBox="0 0 370 370"><use href="qr-path.svg#q"/></svg><div class="say"><b>Full badge list</b>scan</div></div>
   <div class="foot"><span><b>Brophy FPV Club</b> &middot; Pilot Path &middot; Tier 0 of 3</span><span>mtucker27@ for questions</span></div>
 </div>
 <script>
-/* Organic layout, done in the page so it uses real card heights.
-   - Cards hang off a winding trail on alternating sides (masonry: each card
-     goes to the side that is shorter so far), staggered, a little narrower or
-     wider and tilted by a fixed pseudo-random amount.
-   - 'down' sheets start at the top-left and leave through a gate at the
-     bottom-right; 'up' sheets come in at the bottom-left and climb to the
-     top-right. Exits and entries share heights, so the four sheets join.
-   - If the cards do not fit, the text is scaled down a step and laid out
-     again. <body data-trail> says "ok", or "overflow Npx" if even the
-     smallest step did not fit. */
+/* Top-to-bottom layout with real card heights. Cards alternate left / right in
+   badge order; the right column starts half a card lower so the pins step
+   down like stairs. If the columns do not fit above the gate, the card text is
+   scaled down a step and laid out again. <body data-trail> says "ok", or
+   "overflow Npx" if even the smallest step did not fit. */
 (function () {
-  var sheet = document.querySelector('.sheet'), DIR = sheet.getAttribute('data-dir'), SEED = +sheet.getAttribute('data-sheet');
-  var map = document.getElementById('map'), W = map.clientWidth, H = map.clientHeight;
-  var MID = W / 2, CH = 184, MARGIN = 30, GAP = 20, YT = 50, YB = H - 46;
-  function rnd(i, k) { var x = Math.sin((i + 1) * 12.9898 + SEED * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x); }
+  var sheet = document.querySelector('.sheet'), map = document.getElementById('map');
+  var W = map.clientWidth, H = map.clientHeight, PADX = 56, CW = 418, GAPMIN = 14, GAPMAX = sheet.classList.contains('bonus') ? 190 : 64;
+  var XL = PADX, XR = W - PADX - CW;
   function box(el) { var r = el.getBoundingClientRect(), m = map.getBoundingClientRect(); return {x: r.left - m.left, y: r.top - m.top, w: r.width, h: r.height}; }
+  var lead = document.querySelector('.start'), sticker = document.querySelector('.sticker'), summit = document.querySelector('.summit'), bh = document.querySelector('.bonushead'), gate = document.getElementById('gatebox');
+  var topL = 0, topR = 0;
+  if (lead) { var b = box(lead); topL = Math.max(topL, b.y + b.h + 16); topR = Math.max(topR, 24); }
+  if (sticker) { var b2 = box(sticker); topR = Math.max(topR, b2.y + b2.h + 14); }
+  if (summit) { var b3 = box(summit); topL = topR = b3.y + b3.h + 16; }
+  if (bh) { bh.style.top = (topL + 2) + 'px'; var b4 = box(bh); topL = topR = b4.y + b4.h + 14; }
+  var bottom = gate ? box(gate).y - 22 : H - 30;
 
-  // vertical room per side: start at the whole map, then step clear of every
-  // label (start, entry, gate, summit, side-quest heading) on that side
-  var lim = { L: [24, H - 24], R: [24, H - 24] };
-  // sheet 4: the bonus heading sits just under the summit box
-  var cpb = document.querySelector('.cpbox'), sq = document.querySelector('.sidequest');
-  if (cpb && sq) sq.style.top = (cpb.offsetTop + cpb.offsetHeight + 34) + 'px';
-  ['.start', '.entry', '.gate .txt', '.gate .arch', '.cpbox', '.sidequest'].forEach(function (sel) {
-    document.querySelectorAll(sel).forEach(function (el) {
-      var b = box(el), top = b.y + b.h / 2 < H / 2;
-      ['L', 'R'].forEach(function (sd) {
-        var x0 = sd === 'L' ? 0 : MID - CH / 2, x1 = sd === 'L' ? MID + CH / 2 : W;
-        if (b.x > x1 || b.x + b.w < x0) return;
-        if (top) lim[sd][0] = Math.max(lim[sd][0], b.y + b.h + 18);
-        else lim[sd][1] = Math.min(lim[sd][1], b.y - 18);
-      });
-    });
-  });
-  // the trail needs a lane at the entry / exit edges too
-  if (DIR === 'down') { lim.R[1] = Math.min(lim.R[1], YB - 40); lim.L[0] = Math.max(lim.L[0], YT + 44); }
-  else { lim.L[1] = Math.min(lim.L[1], YB - 40); lim.R[0] = Math.max(lim.R[0], YT + 44); }
-
-  function layout(k, gap0) {
+  function layout(k) {
     sheet.style.setProperty('--k', k);
-    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card, #cards .p107'));
-    var base = (W - 2 * MARGIN - CH) / 2, y = { L: 0, R: 0 }, over = 0, used = { L: 0, R: 0 }, cnt = { L: 0, R: 0 };
-    y.L = DIR === 'down' ? lim.L[0] : lim.L[1];
-    y.R = DIR === 'down' ? lim.R[0] + 80 : lim.R[1] - 80;       // stagger the two sides
-    cards.forEach(function (c, i) {
-      var w = Math.round(base - 58 * rnd(i, 1));
-      c.style.width = w + 'px'; c.style.transform = 'none';
-      var h = c.offsetHeight;
-      var room = function (sd) { return DIR === 'down' ? lim[sd][1] - y[sd] : y[sd] - lim[sd][0]; };
-      var sd = DIR === 'down' ? (y.L <= y.R ? 'L' : 'R') : (y.L >= y.R ? 'L' : 'R');
-      if (room(sd) < h && room(sd === 'L' ? 'R' : 'L') >= h) sd = sd === 'L' ? 'R' : 'L';
-      var top = DIR === 'down' ? y[sd] : y[sd] - h;
-      var drift = Math.round((base - w) * rnd(i, 2));               // outward only: the channel stays clear
-      var x = sd === 'L' ? MID - CH / 2 - w - drift : MID + CH / 2 + drift;
-      c.style.left = x + 'px'; c.style.top = top + 'px';
-      c.classList.remove('side-L', 'side-R'); c.classList.add('side-' + sd);
-      c.style.transform = 'rotate(' + ((rnd(i, 3) - .5) * 1.8).toFixed(2) + 'deg)';
-      var gap = gap0 + Math.round(16 * rnd(i, 4));
-      y[sd] = DIR === 'down' ? top + h + gap : top - gap;
-      used[sd] += h + gap; cnt[sd]++;
-      over = Math.max(over, DIR === 'down' ? (top + h) - lim[sd][1] : lim[sd][0] - top);
-    });
-    var spare = Math.min((lim.L[1] - lim.L[0]) - used.L - (DIR === 'down' ? 0 : 0), (lim.R[1] - lim.R[0] - 80) - used.R);
-    return { over: over, spare: spare, per: Math.max(cnt.L, cnt.R) };
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card')), STEP = 56;
+    cards.forEach(function (c, i) { c.style.width = CW + 'px'; c.style.left = (i % 2 ? XR : XL) + 'px'; c.classList.toggle('side-R', !!(i % 2)); c.classList.toggle('side-L', !(i % 2)); });
+    var off = cards.length ? Math.min(Math.round(cards[0].offsetHeight * 0.55), 110) : 0;
+    function place(gap) {                                   // alternate sides; every card starts lower than the one before
+      var yL = topL, yR = Math.max(topR, topL + off), prev = -1e9, low = 0;
+      cards.forEach(function (c, i) {
+        var y = Math.max(i % 2 ? yR : yL, prev + STEP);
+        c.style.top = y + 'px'; prev = y;
+        if (i % 2) yR = y + c.offsetHeight + gap; else yL = y + c.offsetHeight + gap;
+        low = Math.max(low, y + c.offsetHeight);
+      });
+      return low - bottom;                                  // > 0 means the lowest card runs into the gate
+    }
+    var over = 0;
+    for (var gap = GAPMAX; gap >= GAPMIN; gap -= 2) { over = place(gap); if (over <= 0) break; }
+    return Math.max(0, over);
   }
 
   function catmull(p) {
@@ -105,55 +79,42 @@
   }
 
   function trail() {
-    var m = map.getBoundingClientRect();
-    function ctr(el) { var r = el.getBoundingClientRect(); return [r.left - m.left + r.width / 2, r.top - m.top + r.height / 2]; }
+    function ctr(el) { var b = box(el); return [b.x + b.w / 2, b.y + b.h / 2]; }
     var pins = Array.prototype.slice.call(document.querySelectorAll('#cards .card .pin')).map(ctr);
-    var pts = [], go = document.querySelector('.go'), cpb = document.querySelector('.cpbox'), peak = null;
-    var cpAt = cpb ? cpb.getAttribute('data-at') : '', cb = cpb ? box(cpb) : null;
-    if (cpAt === 'end') peak = cpb;
-    if (go) pts.push(ctr(go), [ctr(go)[0] + 70, ctr(go)[1] + 50]);
-    else if (cpAt === 'start' && DIR === 'down') pts.push([MID - 140, cb.y + cb.h - 8], [MID - 110, cb.y + cb.h + 46]);
-    else if (cpAt === 'start') pts.push([MID - 140, cb.y + 8], [MID - 110, cb.y - 46]);
-    else if (DIR === 'down') pts.push([-30, YT], [70, YT + 6], [MID - 120, YT + 40]);
-    else pts.push([-30, YB], [80, YB - 4], [MID - 90, YB - 40]);
-    // the biggest vertical gap between consecutive pins gets a proper loop
-    var gi = -1, gbest = 0;
-    for (var j = 1; j < pins.length; j++) { var g = Math.abs(pins[j][1] - pins[j - 1][1]); if (g > gbest) { gbest = g; gi = j; } }
-    var swing = 1;
+    var pts = [], MID = W / 2;
+    if (lead) { var g = ctr(lead.querySelector('.go')); pts.push(g, [g[0] + 70, g[1] + 34]); }
+    else if (summit) { var sb = box(summit); pts.push([MID, sb.y + sb.h - 6], [MID - 30, sb.y + sb.h + 40]); }
     pins.forEach(function (p, i) {
-      if (pts.length) {
-        var a = pts[pts.length - 1], my = (a[1] + p[1]) / 2;
-        var cx = MID + swing * (30 + 26 * rnd(i, 5));
-        if (i === gi && gbest > 170) {
-          var r = 40, s = DIR === 'down' ? 1 : -1, cy = my;
-          pts.push([MID + swing * 46, cy - s * 70]);
-          for (var t = 0; t <= 8; t++) {                         // once around, entering and leaving on the same side
-            var ang = (-Math.PI / 2) * s + swing * s * t * (2 * Math.PI / 8);
-            pts.push([MID + Math.cos(ang) * r, cy + Math.sin(ang) * r]);
-          }
-          pts.push([MID - swing * 40, cy + s * 70]);
-        } else pts.push([cx, my]);
-        swing = -swing;
-      }
+      if (pts.length) { var a = pts[pts.length - 1]; pts.push([MID + (p[0] < MID ? 22 : -22), (a[1] + p[1]) / 2]); }
       pts.push(p);
     });
-    if (peak) pts.push([MID + 110, cb.y + cb.h + 70], [MID + 90, cb.y + cb.h - 8]);
-    else if (DIR === 'down') pts.push([MID + 60, YB - 30], [W - 150, YB + 2], [W + 30, YB]);
-    else pts.push([MID + 70, YT + 60], [W - 150, YT - 2], [W + 30, YT]);
+    if (gate) { var gb = box(gate); pts.push([MID - 10, gb.y - 40], [MID, gb.y + 6]); }
+    else { var last = pts[pts.length - 1], fin = document.getElementById('finish'), low = 0;
+           document.querySelectorAll('#cards .card').forEach(function (c) { low = Math.max(low, c.offsetTop + c.offsetHeight); });
+           var fy = Math.max(last[1] + 130, low + 40);
+           pts.push([MID - 20, (last[1] + fy) / 2], [MID, fy]);
+           if (fin) { fin.style.left = (MID - fin.offsetWidth / 2) + 'px'; fin.style.top = (fy - 12) + 'px'; } }
     var svg = document.getElementById('trail'), d = catmull(pts);
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', W); svg.setAttribute('height', H);
-    svg.innerHTML = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
+    var inner = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
+    // a direction chevron between every pair of pins, pointing along the trail
+    var probe = document.createElementNS('http://www.w3.org/2000/svg', 'path'); probe.setAttribute('d', d); svg.appendChild(probe);
+    var len = probe.getTotalLength(), marks = [];
+    for (var i = 1; i < pins.length; i++) marks.push([(pins[i - 1][0] + pins[i][0]) / 2, (pins[i - 1][1] + pins[i][1]) / 2]);
+    if (gate && pins.length) marks.push([MID - 4, (pins[pins.length - 1][1] + box(gate).y) / 2]);
+    marks.forEach(function (m) {
+      var best = 0, bd = 1e9;                              // nearest point on the path to the midpoint
+      for (var s = 0; s <= len; s += 6) { var q = probe.getPointAtLength(s), dd = (q.x - m[0]) * (q.x - m[0]) + (q.y - m[1]) * (q.y - m[1]); if (dd < bd) { bd = dd; best = s; } }
+      var p0 = probe.getPointAtLength(Math.max(0, best - 4)), p1 = probe.getPointAtLength(Math.min(len, best + 4));
+      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI, pm = probe.getPointAtLength(best);
+      inner += '<g class="chev" transform="translate(' + pm.x.toFixed(1) + ' ' + pm.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')"><circle r="15"/><path d="M-6 -8L8 0L-6 8Z"/></g>';
+    });
+    svg.innerHTML = inner;
   }
 
   function run() {
-    var ks = [1, .96, .92, .88, .84, .80, .76], r = null;   // .80/.76 added 2026-10-20 for the six-card Tier 2 sheet
-    for (var i = 0; i < ks.length; i++) { r = layout(ks[i], GAP); if (r.over <= 0) break; }
-    if (r.over <= 0 && r.spare > 40) {                    // spread the spare height between the cards
-      var g2 = GAP + Math.min(130, Math.floor(r.spare / Math.max(1, r.per)));
-      var r2 = layout(+sheet.style.getPropertyValue('--k'), g2);
-      if (r2.over > 0) layout(+sheet.style.getPropertyValue('--k'), GAP); else r = r2;
-    }
-    var over = r.over;
+    var ks = [1, .96, .92, .88, .84, .80, .76], over = 0;
+    for (var i = 0; i < ks.length; i++) { over = layout(ks[i]); if (over <= 0) break; }
     trail();
     document.body.setAttribute('data-trail', over > 0 ? 'overflow ' + Math.round(over) + 'px' : 'ok k=' + sheet.style.getPropertyValue('--k'));
   }

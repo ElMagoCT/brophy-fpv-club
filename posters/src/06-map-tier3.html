@@ -6,92 +6,66 @@
 </head>
 <body>
 <div class="bg"><div class="grid"></div><div class="fine"></div><div class="vig"></div></div>
-<div class="sheet electives" style="--tier:var(--green)" data-dir="up" data-sheet="4">
+<div class="sheet bonus" style="--tier:var(--green)" data-sheet="4">
   <div class="stamp"><b>BROPHY</b>FPV CLUB<br>PILOT PATH</div>
-  <div class="eyebrow"><h2>The pilot path &middot; sheet 4 of 4 &middot; badges unlock the gear</h2><span class="rule"></span></div>
-  <div class="tierhead"><div class="tn">TIER 3</div><div class="tname">EVENT PILOT</div></div>
-  <div class="facts">
-    <div class="f"><div class="k">You fly</div><div class="v">Any Tier 2 airframe at a school event · always with a spotter</div></div>
-    <div class="f"><div class="k">To get here</div><div class="v">Pass the Event Pilot checkpoint (top of this sheet) · its five prerequisites first</div></div>
-    <div class="f"><div class="k">On this sheet</div><div class="v">The Event Pilot checkpoint · plus 4 bonus badges, any order<small>1 bench · 3 witnessed</small></div></div>
+  <div class="eyebrow"><h2>The pilot path &middot; sheet 4 of 4 &middot; read top to bottom</h2><span class="rule"></span></div>
+  <div class="tierhead">
+    <div class="tt"><div class="row"><div class="tn">TIER 3</div><div class="tname long">EVENT PILOT</div></div>
+      <div class="fly"><b>You fly</b> Any Tier 2 airframe at a school event · 5-inch, Cinebot · always with a spotter</div>
+      <div class="fly"><b>On this sheet</b> 4 bonus badges</div></div>
+    <div class="drones"><img src="img/drone-cinebot.svg" alt="" style="height:124px"><img src="img/drone-five.svg" alt="" style="height:168px"></div>
   </div>
+  <div class="flow"><div class="fl">The whole<br>path</div><div class="node" style="--c:var(--sky)"><span class="tn">Tier 0</span><span class="nn">Simulator</span></div><div class="gate"><svg viewBox="0 0 40 40" class="gg" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--violet)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--violet)" stroke-width="3.5" stroke-linecap="round"/></svg><span>Gate 1</span></div><div class="node" style="--c:var(--violet)"><span class="tn">Tier 1</span><span class="nn">Meteor 75 Pro</span></div><div class="gate"><svg viewBox="0 0 40 40" class="gg" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--rust)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--rust)" stroke-width="3.5" stroke-linecap="round"/></svg><span>Gate 2</span></div><div class="node" style="--c:var(--rust)"><span class="tn">Tier 2</span><span class="nn">Pavo 20 Pro</span></div><div class="gate"><svg viewBox="0 0 40 40" class="gg" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--green)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round"/></svg><span>Gate 3</span></div><div class="node here" style="--c:var(--green)"><span class="tn">Tier 3</span><span class="nn">Event Pilot</span><span class="you">You are here</span></div></div>
 
   <div class="map" id="map">
     <svg class="trail" id="trail"></svg>
-    <div class="entry entry-bottom">&larr; From Tier 2</div><div class="cpbox cp-top" data-at="end"><div class="cpl"><div class="lab">Tier 3 checkpoint · Witnessed</div><div class="nm">Event Pilot</div><div class="ds">Checkpoint into Tier 3: fly at a school event or a race.</div><div class="how"><b>Requirements</b><div class="seq">Zone set up and briefed · A spotter beside you · A mentor on site signs it off</div></div></div><div class="cpr"><div class="ph">Prerequisites · 5 badges</div><ul><li><span class="bx"></span>Spotter</li><li><span class="bx"></span>Event Ops</li><li><span class="bx"></span>Cinematography</li><li><span class="bx"></span>Indoor Proximity</li><li><span class="bx"></span>Racing</li></ul><div class="ck"><span class="bigck">&#10003;</span><span>All ticked? That is the big check: attempt the checkpoint with a mentor watching.</span></div></div></div><div class="sidequest">Bonus badges &middot; any order, any time &middot; not counted</div>
-    <div class="cards" id="cards"><div class="card" data-i="1" data-id="editing" style="--t:var(--violet)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Editing</div><div class="ds">Cut and grade a 30–60 s clip from D-log.</div><div class="how"><b>Requirements</b><ol><li>Cut to 30–60 seconds</li><li>Colour-graded from D-log</li><li>Delivered to the editor</li></ol><div class="ft">Lessons and videos for each: scan for the Pilot Path</div></div><div class="why"><b>Why</b> Best of Brophy doesn’t depend on one editor.</div></div><div class="card" data-i="2" data-id="tuning" style="--t:var(--amber)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus</span><span class="ty ty-bench">Bench</span></div><div class="nm">Tuning</div><div class="ds">Fix an oscillation, with before/after footage.</div><div class="how"><b>At the bench · 4 steps</b><div class="seq">Before footage of the oscillation <i>›</i> P <i>›</i> One change at a time <i>›</i> After footage</div><div class="ft">Then a photo, submitted on the website · a mentor passes or fails it</div></div><div class="why"><b>Why</b> The skill behind smooth cinematic footage.</div></div><div class="card" data-i="3" data-id="fleet-steward" style="--t:var(--violet)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Fleet Steward</div><div class="ds">Run equipment check-in/out for a semester.</div><div class="how"><b>Requirements</b><ol><li>Check-in/out sheet, every session</li><li>A maintenance log</li><li>A full semester, reviewed by a mentor</li></ol><div class="ft">Lessons and videos for each: scan for the Pilot Path</div></div><div class="why"><b>Why</b> Accountability for school-funded gear.</div></div><div class="card" data-i="4" data-id="mentor" style="--t:var(--violet)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus · Tier 2 pilots</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Mentor</div><div class="ds">Coach a new member through two badges.</div><div class="how"><b>Requirements</b><ol><li>A Tier 2 pilot</li><li>Deep knowledge of the FAA rules - an officer judges it, no quiz</li><li>Two badges earned by someone you coached</li><li>Officer approval - then you may sign off badges you hold</li></ol><div class="ft">Lessons and videos for each: scan for the Pilot Path</div></div><div class="why"><b>Why</b> The club trains its own replacements.</div></div><div class="p107"><b>PART 107</b>Want the real commercial licence? The club runs a study group. You pay the exam; we supply the prep.</div></div>
+    <div class="start came" style="--c:var(--green)"><span class="go"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="currentColor" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/></svg></span><div><b>Gate 3 passed &#10003;</b>Event Pilot · you fly for the school</div></div><div class="summit"><div class="sl">The top of the path</div><div class="st">You fly for the school</div><div class="sd">Pep-rally race &middot; Best of Brophy footage &middot; any Tier 2 airframe &middot; a spotter beside you &middot; Flight Clearance and Mr. Burr&rsquo;s yes for every flight</div></div><div class="bonushead"><span>Bonus badges</span><span>after Event Pilot &middot; any order, any time &middot; not counted</span></div><div class="finish" id="finish"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 38V4" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><path d="M8 5h28l-5 9 5 9H8Z" fill="#fff" stroke="currentColor" stroke-width="2"/><path d="M8 5h7v6H8zM22 5h7v6h-7zM15 11h7v6h-7zM29 11h7v6h-7zM8 17h7v6H8zM22 17h7v6h-7z" fill="currentColor" opacity=".9"/></svg><div><b>That is the whole path</b>Keep flying. Keep signing people off.</div></div>
+    <div class="cards" id="cards"><div class="card" data-i="1" style="--t:var(--violet)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus badge · Crew &amp; leadership</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Editing</div><ol><li>Cut to 30–60 seconds</li><li>Color-graded from D-log</li><li>Delivered to the editor</li></ol></div><div class="card" data-i="2" style="--t:var(--amber)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus badge · Build &amp; tech</span><span class="ty ty-bench">Bench</span></div><div class="nm">Tuning</div><ol><li>Before footage of the oscillation</li><li>P, D or filters? (Blackbox or reasoning)</li><li>One change at a time, test flight</li><li>After footage, clean</li><li>Photo of your work on the website · a mentor passes it</li></ol></div><div class="card" data-i="3" style="--t:var(--violet)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus badge · Crew &amp; leadership</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Fleet Steward</div><ol><li>Check-in/out sheet, every session</li><li>A maintenance log</li><li>A full semester, reviewed by a mentor</li></ol></div><div class="card" data-i="4" style="--t:var(--violet)"><span class="pin"><span>★</span></span><div class="lab"><span>Bonus badge · Crew &amp; leadership · Tier 2 pilots</span><span class="ty ty-witnessed">Witnessed</span></div><div class="nm">Mentor</div><ol><li>A Tier 2 pilot</li><li>Deep knowledge of the FAA rules · an officer judges it, no quiz</li><li>Two badges earned by someone you coached</li><li>Officer approval · then you may sign off badges you hold</li></ol></div><div class="card p107" data-i="5"><div class="lab"><span>Beyond the club</span></div><div class="nm">Part 107</div><ol><li>The FAA commercial licence &middot; the club runs a study group</li><li>You pay the exam, we supply the prep</li></ol></div></div>
+    
   </div>
 
   <div class="legend"><span><i style="background:var(--sky)"></i>Flight</span><span><i style="background:var(--amber)"></i>Build &amp; tech</span><span><i style="background:var(--green)"></i>Knowledge &amp; safety</span><span><i style="background:var(--violet)"></i>Crew &amp; leadership</span><span class="how"><b>Quiz</b> badges: pass at 80 %, no sign-off &middot; <b>Bench</b> and <b>witnessed</b> badges: a mentor who holds the badge signs it off &middot; demonstration, not attendance</span></div>
-  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; the Brophy Drone Certification: FAA TRUST &middot; Safe Flight &middot; the Pilot Agreement (signed with a parent) &middot; your Drone Portfolio &middot; then permission from Mr. Burr 24 h before every flight &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
+  <div class="clearance"><b>To fly at Brophy you also need Flight Clearance</b> &middot; the Brophy Drone Certification and Mr. Burr&rsquo;s yes before every flight &middot; see the Flight Clearance sheet &middot; <span class="url">elmagoct.github.io/brophy-fpv-club/clearance/</span></div>
   <div class="qrmini qr"><svg viewBox="0 0 370 370"><use href="qr-path.svg#q"/></svg><div class="say"><b>Full badge list</b>scan</div></div>
   <div class="foot"><span><b>Brophy FPV Club</b> &middot; Pilot Path &middot; Tier 3 of 3</span><span>mtucker27@ for questions</span></div>
 </div>
 <script>
-/* Organic layout, done in the page so it uses real card heights.
-   - Cards hang off a winding trail on alternating sides (masonry: each card
-     goes to the side that is shorter so far), staggered, a little narrower or
-     wider and tilted by a fixed pseudo-random amount.
-   - 'down' sheets start at the top-left and leave through a gate at the
-     bottom-right; 'up' sheets come in at the bottom-left and climb to the
-     top-right. Exits and entries share heights, so the four sheets join.
-   - If the cards do not fit, the text is scaled down a step and laid out
-     again. <body data-trail> says "ok", or "overflow Npx" if even the
-     smallest step did not fit. */
+/* Top-to-bottom layout with real card heights. Cards alternate left / right in
+   badge order; the right column starts half a card lower so the pins step
+   down like stairs. If the columns do not fit above the gate, the card text is
+   scaled down a step and laid out again. <body data-trail> says "ok", or
+   "overflow Npx" if even the smallest step did not fit. */
 (function () {
-  var sheet = document.querySelector('.sheet'), DIR = sheet.getAttribute('data-dir'), SEED = +sheet.getAttribute('data-sheet');
-  var map = document.getElementById('map'), W = map.clientWidth, H = map.clientHeight;
-  var MID = W / 2, CH = 184, MARGIN = 30, GAP = 20, YT = 50, YB = H - 46;
-  function rnd(i, k) { var x = Math.sin((i + 1) * 12.9898 + SEED * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x); }
+  var sheet = document.querySelector('.sheet'), map = document.getElementById('map');
+  var W = map.clientWidth, H = map.clientHeight, PADX = 56, CW = 418, GAPMIN = 14, GAPMAX = sheet.classList.contains('bonus') ? 190 : 64;
+  var XL = PADX, XR = W - PADX - CW;
   function box(el) { var r = el.getBoundingClientRect(), m = map.getBoundingClientRect(); return {x: r.left - m.left, y: r.top - m.top, w: r.width, h: r.height}; }
+  var lead = document.querySelector('.start'), sticker = document.querySelector('.sticker'), summit = document.querySelector('.summit'), bh = document.querySelector('.bonushead'), gate = document.getElementById('gatebox');
+  var topL = 0, topR = 0;
+  if (lead) { var b = box(lead); topL = Math.max(topL, b.y + b.h + 16); topR = Math.max(topR, 24); }
+  if (sticker) { var b2 = box(sticker); topR = Math.max(topR, b2.y + b2.h + 14); }
+  if (summit) { var b3 = box(summit); topL = topR = b3.y + b3.h + 16; }
+  if (bh) { bh.style.top = (topL + 2) + 'px'; var b4 = box(bh); topL = topR = b4.y + b4.h + 14; }
+  var bottom = gate ? box(gate).y - 22 : H - 30;
 
-  // vertical room per side: start at the whole map, then step clear of every
-  // label (start, entry, gate, summit, side-quest heading) on that side
-  var lim = { L: [24, H - 24], R: [24, H - 24] };
-  // sheet 4: the bonus heading sits just under the summit box
-  var cpb = document.querySelector('.cpbox'), sq = document.querySelector('.sidequest');
-  if (cpb && sq) sq.style.top = (cpb.offsetTop + cpb.offsetHeight + 34) + 'px';
-  ['.start', '.entry', '.gate .txt', '.gate .arch', '.cpbox', '.sidequest'].forEach(function (sel) {
-    document.querySelectorAll(sel).forEach(function (el) {
-      var b = box(el), top = b.y + b.h / 2 < H / 2;
-      ['L', 'R'].forEach(function (sd) {
-        var x0 = sd === 'L' ? 0 : MID - CH / 2, x1 = sd === 'L' ? MID + CH / 2 : W;
-        if (b.x > x1 || b.x + b.w < x0) return;
-        if (top) lim[sd][0] = Math.max(lim[sd][0], b.y + b.h + 18);
-        else lim[sd][1] = Math.min(lim[sd][1], b.y - 18);
-      });
-    });
-  });
-  // the trail needs a lane at the entry / exit edges too
-  if (DIR === 'down') { lim.R[1] = Math.min(lim.R[1], YB - 40); lim.L[0] = Math.max(lim.L[0], YT + 44); }
-  else { lim.L[1] = Math.min(lim.L[1], YB - 40); lim.R[0] = Math.max(lim.R[0], YT + 44); }
-
-  function layout(k, gap0) {
+  function layout(k) {
     sheet.style.setProperty('--k', k);
-    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card, #cards .p107'));
-    var base = (W - 2 * MARGIN - CH) / 2, y = { L: 0, R: 0 }, over = 0, used = { L: 0, R: 0 }, cnt = { L: 0, R: 0 };
-    y.L = DIR === 'down' ? lim.L[0] : lim.L[1];
-    y.R = DIR === 'down' ? lim.R[0] + 80 : lim.R[1] - 80;       // stagger the two sides
-    cards.forEach(function (c, i) {
-      var w = Math.round(base - 58 * rnd(i, 1));
-      c.style.width = w + 'px'; c.style.transform = 'none';
-      var h = c.offsetHeight;
-      var room = function (sd) { return DIR === 'down' ? lim[sd][1] - y[sd] : y[sd] - lim[sd][0]; };
-      var sd = DIR === 'down' ? (y.L <= y.R ? 'L' : 'R') : (y.L >= y.R ? 'L' : 'R');
-      if (room(sd) < h && room(sd === 'L' ? 'R' : 'L') >= h) sd = sd === 'L' ? 'R' : 'L';
-      var top = DIR === 'down' ? y[sd] : y[sd] - h;
-      var drift = Math.round((base - w) * rnd(i, 2));               // outward only: the channel stays clear
-      var x = sd === 'L' ? MID - CH / 2 - w - drift : MID + CH / 2 + drift;
-      c.style.left = x + 'px'; c.style.top = top + 'px';
-      c.classList.remove('side-L', 'side-R'); c.classList.add('side-' + sd);
-      c.style.transform = 'rotate(' + ((rnd(i, 3) - .5) * 1.8).toFixed(2) + 'deg)';
-      var gap = gap0 + Math.round(16 * rnd(i, 4));
-      y[sd] = DIR === 'down' ? top + h + gap : top - gap;
-      used[sd] += h + gap; cnt[sd]++;
-      over = Math.max(over, DIR === 'down' ? (top + h) - lim[sd][1] : lim[sd][0] - top);
-    });
-    var spare = Math.min((lim.L[1] - lim.L[0]) - used.L - (DIR === 'down' ? 0 : 0), (lim.R[1] - lim.R[0] - 80) - used.R);
-    return { over: over, spare: spare, per: Math.max(cnt.L, cnt.R) };
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card')), STEP = 56;
+    cards.forEach(function (c, i) { c.style.width = CW + 'px'; c.style.left = (i % 2 ? XR : XL) + 'px'; c.classList.toggle('side-R', !!(i % 2)); c.classList.toggle('side-L', !(i % 2)); });
+    var off = cards.length ? Math.min(Math.round(cards[0].offsetHeight * 0.55), 110) : 0;
+    function place(gap) {                                   // alternate sides; every card starts lower than the one before
+      var yL = topL, yR = Math.max(topR, topL + off), prev = -1e9, low = 0;
+      cards.forEach(function (c, i) {
+        var y = Math.max(i % 2 ? yR : yL, prev + STEP);
+        c.style.top = y + 'px'; prev = y;
+        if (i % 2) yR = y + c.offsetHeight + gap; else yL = y + c.offsetHeight + gap;
+        low = Math.max(low, y + c.offsetHeight);
+      });
+      return low - bottom;                                  // > 0 means the lowest card runs into the gate
+    }
+    var over = 0;
+    for (var gap = GAPMAX; gap >= GAPMIN; gap -= 2) { over = place(gap); if (over <= 0) break; }
+    return Math.max(0, over);
   }
 
   function catmull(p) {
@@ -105,55 +79,42 @@
   }
 
   function trail() {
-    var m = map.getBoundingClientRect();
-    function ctr(el) { var r = el.getBoundingClientRect(); return [r.left - m.left + r.width / 2, r.top - m.top + r.height / 2]; }
+    function ctr(el) { var b = box(el); return [b.x + b.w / 2, b.y + b.h / 2]; }
     var pins = Array.prototype.slice.call(document.querySelectorAll('#cards .card .pin')).map(ctr);
-    var pts = [], go = document.querySelector('.go'), cpb = document.querySelector('.cpbox'), peak = null;
-    var cpAt = cpb ? cpb.getAttribute('data-at') : '', cb = cpb ? box(cpb) : null;
-    if (cpAt === 'end') peak = cpb;
-    if (go) pts.push(ctr(go), [ctr(go)[0] + 70, ctr(go)[1] + 50]);
-    else if (cpAt === 'start' && DIR === 'down') pts.push([MID - 140, cb.y + cb.h - 8], [MID - 110, cb.y + cb.h + 46]);
-    else if (cpAt === 'start') pts.push([MID - 140, cb.y + 8], [MID - 110, cb.y - 46]);
-    else if (DIR === 'down') pts.push([-30, YT], [70, YT + 6], [MID - 120, YT + 40]);
-    else pts.push([-30, YB], [80, YB - 4], [MID - 90, YB - 40]);
-    // the biggest vertical gap between consecutive pins gets a proper loop
-    var gi = -1, gbest = 0;
-    for (var j = 1; j < pins.length; j++) { var g = Math.abs(pins[j][1] - pins[j - 1][1]); if (g > gbest) { gbest = g; gi = j; } }
-    var swing = 1;
+    var pts = [], MID = W / 2;
+    if (lead) { var g = ctr(lead.querySelector('.go')); pts.push(g, [g[0] + 70, g[1] + 34]); }
+    else if (summit) { var sb = box(summit); pts.push([MID, sb.y + sb.h - 6], [MID - 30, sb.y + sb.h + 40]); }
     pins.forEach(function (p, i) {
-      if (pts.length) {
-        var a = pts[pts.length - 1], my = (a[1] + p[1]) / 2;
-        var cx = MID + swing * (30 + 26 * rnd(i, 5));
-        if (i === gi && gbest > 170) {
-          var r = 40, s = DIR === 'down' ? 1 : -1, cy = my;
-          pts.push([MID + swing * 46, cy - s * 70]);
-          for (var t = 0; t <= 8; t++) {                         // once around, entering and leaving on the same side
-            var ang = (-Math.PI / 2) * s + swing * s * t * (2 * Math.PI / 8);
-            pts.push([MID + Math.cos(ang) * r, cy + Math.sin(ang) * r]);
-          }
-          pts.push([MID - swing * 40, cy + s * 70]);
-        } else pts.push([cx, my]);
-        swing = -swing;
-      }
+      if (pts.length) { var a = pts[pts.length - 1]; pts.push([MID + (p[0] < MID ? 22 : -22), (a[1] + p[1]) / 2]); }
       pts.push(p);
     });
-    if (peak) pts.push([MID + 110, cb.y + cb.h + 70], [MID + 90, cb.y + cb.h - 8]);
-    else if (DIR === 'down') pts.push([MID + 60, YB - 30], [W - 150, YB + 2], [W + 30, YB]);
-    else pts.push([MID + 70, YT + 60], [W - 150, YT - 2], [W + 30, YT]);
+    if (gate) { var gb = box(gate); pts.push([MID - 10, gb.y - 40], [MID, gb.y + 6]); }
+    else { var last = pts[pts.length - 1], fin = document.getElementById('finish'), low = 0;
+           document.querySelectorAll('#cards .card').forEach(function (c) { low = Math.max(low, c.offsetTop + c.offsetHeight); });
+           var fy = Math.max(last[1] + 130, low + 40);
+           pts.push([MID - 20, (last[1] + fy) / 2], [MID, fy]);
+           if (fin) { fin.style.left = (MID - fin.offsetWidth / 2) + 'px'; fin.style.top = (fy - 12) + 'px'; } }
     var svg = document.getElementById('trail'), d = catmull(pts);
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', W); svg.setAttribute('height', H);
-    svg.innerHTML = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
+    var inner = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
+    // a direction chevron between every pair of pins, pointing along the trail
+    var probe = document.createElementNS('http://www.w3.org/2000/svg', 'path'); probe.setAttribute('d', d); svg.appendChild(probe);
+    var len = probe.getTotalLength(), marks = [];
+    for (var i = 1; i < pins.length; i++) marks.push([(pins[i - 1][0] + pins[i][0]) / 2, (pins[i - 1][1] + pins[i][1]) / 2]);
+    if (gate && pins.length) marks.push([MID - 4, (pins[pins.length - 1][1] + box(gate).y) / 2]);
+    marks.forEach(function (m) {
+      var best = 0, bd = 1e9;                              // nearest point on the path to the midpoint
+      for (var s = 0; s <= len; s += 6) { var q = probe.getPointAtLength(s), dd = (q.x - m[0]) * (q.x - m[0]) + (q.y - m[1]) * (q.y - m[1]); if (dd < bd) { bd = dd; best = s; } }
+      var p0 = probe.getPointAtLength(Math.max(0, best - 4)), p1 = probe.getPointAtLength(Math.min(len, best + 4));
+      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI, pm = probe.getPointAtLength(best);
+      inner += '<g class="chev" transform="translate(' + pm.x.toFixed(1) + ' ' + pm.y.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')"><circle r="15"/><path d="M-6 -8L8 0L-6 8Z"/></g>';
+    });
+    svg.innerHTML = inner;
   }
 
   function run() {
-    var ks = [1, .96, .92, .88, .84, .80, .76], r = null;   // .80/.76 added 2026-10-20 for the six-card Tier 2 sheet
-    for (var i = 0; i < ks.length; i++) { r = layout(ks[i], GAP); if (r.over <= 0) break; }
-    if (r.over <= 0 && r.spare > 40) {                    // spread the spare height between the cards
-      var g2 = GAP + Math.min(130, Math.floor(r.spare / Math.max(1, r.per)));
-      var r2 = layout(+sheet.style.getPropertyValue('--k'), g2);
-      if (r2.over > 0) layout(+sheet.style.getPropertyValue('--k'), GAP); else r = r2;
-    }
-    var over = r.over;
+    var ks = [1, .96, .92, .88, .84, .80, .76], over = 0;
+    for (var i = 0; i < ks.length; i++) { over = layout(ks[i]); if (over <= 0) break; }
     trail();
     document.body.setAttribute('data-trail', over > 0 ? 'overflow ' + Math.round(over) + 'px' : 'ok k=' + sheet.style.getPropertyValue('--k'));
   }

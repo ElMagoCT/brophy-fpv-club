@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Poster 1 — Fly FPV. Anytime.</title>
+<link rel="stylesheet" href="poster.css">
+<style>
+  /* 2026-10-23: the old poster 1's title with the old poster 2's content, simplified, on white */
+  :root{--paper:#ffffff;--paper-2:#f3f4f6;--glass:#f6f7f9}
+  body{background-color:#fff}
+  .box{border-color:rgba(31,51,80,.3)}
+  .stamp{top:62px;right:60px;background-color:#fff}
+  h1{font-family:var(--sketch);font-weight:700;font-size:150px;line-height:.9;margin-top:26px;letter-spacing:.5px}
+  h1 .rust{color:var(--rust)}
+  .lede{font-family:var(--hand);font-size:30px;color:var(--ink-soft);margin-top:20px;max-width:900px;line-height:1.25}
+
+  /* the path: four tiers with a gate between each */
+  .path{margin-top:34px;display:grid;grid-template-columns:1fr 54px 1fr 54px 1fr 54px 1fr;gap:0;align-items:stretch}
+  .tier{padding:16px 16px 16px;position:relative;border-top:7px solid var(--c);display:flex;flex-direction:column}
+  .tier .tn{font-family:var(--mono);font-size:13px;letter-spacing:.24em;text-transform:uppercase;color:var(--c)}
+  .tier .nm{font-family:var(--sketch);font-weight:700;font-size:30px;line-height:.95;margin-top:5px;min-height:58px}
+  .tier .pic{height:128px;display:flex;align-items:flex-end;justify-content:center;margin:6px 0 10px}
+  .tier .pic img{display:block;max-width:100%}
+  .tier .gear{font-size:15.5px;font-weight:600;line-height:1.25;flex:1}
+  .tier .req{font-family:var(--mono);font-size:12.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-top:10px;line-height:1.5}
+  .tier .req b{display:inline-block;background:var(--paper-2);border:1px solid var(--line-hard);border-radius:5px;padding:1px 7px;color:var(--ink);font-weight:400}
+  .gate{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-family:var(--mono);font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+  .gate svg{width:40px;height:40px;display:block}
+  .count{font-family:var(--hand);font-size:21px;color:var(--rust);margin-top:12px;text-align:center;line-height:1.3}
+  .count b{font-weight:400;color:var(--ink)}
+
+  .does{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:26px}
+  .do{padding:13px 18px 12px}
+  .do .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--rust)}
+  .do .v{font-family:var(--sketch);font-weight:700;font-size:27px;line-height:1;margin-top:6px}
+  .do .s{font-size:15px;color:var(--ink-soft);margin-top:7px;line-height:1.3}
+
+  .when{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:14px}
+  .when .w{padding:13px 18px}
+  .when .k{font-family:var(--mono);font-size:12.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft)}
+  .when .v{font-size:19px;font-weight:600;margin-top:5px;line-height:1.25}
+  .when .v small{display:block;font-weight:400;font-size:14.5px;color:var(--ink-soft);margin-top:3px}
+
+  .bottom{position:absolute;left:56px;right:56px;bottom:118px;display:flex;justify-content:space-between;align-items:flex-end}
+  .bottom .qr svg{width:188px;height:188px}
+  .bottom .qr .say{font-size:15px}
+  .bottom .qr .say b{font-size:20px;margin-bottom:6px}
+  .note{text-align:right;font-family:var(--hand);font-size:31px;color:var(--rust);line-height:1.25;transform:rotate(-2deg);max-width:440px}
+  .note small{display:block;font-family:var(--mono);font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);margin-top:12px;transform:none}
+</style></head>
+<body>
+<div class="sheet">
+  <div class="stamp"><b>BROPHY</b>FPV CLUB<br>FLIGHT LAB</div>
+
+  <div class="eyebrow"><h2>Brophy FPV Club &middot; the sim lab in the IC &middot; the pilot path</h2><span class="rule"></span></div>
+  <h1>FLY <span class="rust">FPV.</span><br>ANYTIME.</h1>
+  <div class="lede">Five simulators, open every school day. Earn badges, pass the gates, fly bigger drones &mdash; then fly for the school.</div>
+
+  <div class="path">
+    <div class="box tier" style="--c:var(--sky)">
+      <div class="tn">Tier 0</div><div class="nm">SIMULATOR</div>
+      <div class="pic"><img src="img/drone-radio.svg" alt="" style="height:100px"></div>
+      <div class="gear">Five FPV sims on one PC &middot; anyone, any school day &middot; crashes cost nothing</div>
+      <div class="req"><b>Needs</b> a name &middot; nothing else</div>
+    </div>
+    <div class="gate"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--violet)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--violet)" stroke-width="3.5" stroke-linecap="round"/></svg>Gate 1</div>
+    <div class="box tier" style="--c:var(--violet)">
+      <div class="tn">Tier 1</div><div class="nm">METEOR 75 PRO</div>
+      <div class="pic"><img src="img/drone-whoop.svg" alt="" style="height:112px"></div>
+      <div class="gear">The club whoop &middot; sub-250 g &middot; your first real flight, indoors</div>
+      <div class="req"><b>Needs</b> 5 sim badges &middot; the Meteor checkride</div>
+    </div>
+    <div class="gate"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--rust)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--rust)" stroke-width="3.5" stroke-linecap="round"/></svg>Gate 2</div>
+    <div class="box tier" style="--c:var(--rust)">
+      <div class="tn">Tier 2</div><div class="nm">FULL-SIZE</div>
+      <div class="pic"><img src="img/drone-pavo.svg" alt="" style="height:126px"></div>
+      <div class="gear">Pavo 20 Pro cinewhoop &middot; larger drones at Brophy &middot; broadcast footage</div>
+      <div class="req"><b>Needs</b> 6 Tier 1 badges &middot; the Pavo checkride</div>
+    </div>
+    <div class="gate"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="5" y="4" width="30" height="30" rx="8" fill="none" stroke="var(--green)" stroke-width="4"/><path d="M2 38h10M28 38h10" stroke="var(--green)" stroke-width="3.5" stroke-linecap="round"/></svg>Gate 3</div>
+    <div class="box tier" style="--c:var(--green)">
+      <div class="tn">Tier 3</div><div class="nm">EVENT PILOT</div>
+      <div class="pic"><img src="img/drone-five.svg" alt="" style="height:128px"></div>
+      <div class="gear">5-inch and Cinebot at a game, dance or rally &middot; always with a spotter</div>
+      <div class="req"><b>Needs</b> 5 Tier 2 badges &middot; one event, signed off</div>
+    </div>
+  </div>
+  <div class="count"><b>19 badges + 4 bonus</b> &middot; quizzes, bench work and checkrides, signed off by mentors who hold them</div>
+
+  <div class="does">
+    <div class="box do"><div class="k">Every spring</div><div class="v">PEP-RALLY RACE</div><div class="s">Live FPV race through gates, pilot&rsquo;s-eye feed on the big screen</div></div>
+    <div class="box do"><div class="k">Every semester</div><div class="v">BEST OF BROPHY</div><div class="s">Aerial films of games, dances and clubs, cut by the club</div></div>
+    <div class="box do"><div class="k">Always</div><div class="v">BUILD &amp; FIX</div><div class="s">Solder, flash Betaflight, tune &mdash; break it, then fix it</div></div>
+  </div>
+
+  <div class="when">
+    <div class="box w"><div class="k">When</div><div class="v">Community period &middot; joint with RC Club<small>C1 = flight sim &middot; C2 = outdoor RC on the front lawn</small></div></div>
+    <div class="box w"><div class="k">Where</div><div class="v">The sim lab in the IC<small>Open 7 AM&ndash;4 PM every school day</small></div></div>
+    <div class="box w"><div class="k">Who</div><div class="v">Anyone. Zero experience is fine.<small>Start at Tier 0 today &mdash; the sim is already on</small></div></div>
+  </div>
+
+  <div class="bottom">
+    <div class="qr">
+      <svg viewBox="0 0 370 370"><use href="qr-path.svg#q"/></svg>
+      <div class="say" style="max-width:380px"><b>Scan for the full pilot path</b>Every badge, every gate,<br>your hours and the leaderboard.</div>
+    </div>
+    <div class="note">Your Sim Checkride is 5 hours away.<br>The sim is right here.
+      <small>Add your name at the kiosk &rarr; pick a sim &rarr; fly</small></div>
+  </div>
+
+  <div class="foot"><span><b>Brophy FPV Club</b> &times; RC Club</span><span>mtucker27@ for questions</span></div>
+</div>
+</body></html>
