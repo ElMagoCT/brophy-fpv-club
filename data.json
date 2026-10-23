@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792781075363,
-    "generatedIso":  "2026-10-23T11:44:35-07:00",
+    "generated":  1792781316780,
+    "generatedIso":  "2026-10-23T11:48:37-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -86,7 +86,8 @@
                                       "spotter",
                                       "faa-trust",
                                       "event-ops",
-                                      "indoor-proximity"
+                                      "indoor-proximity",
+                                      "racing"
                                   ],
                        "tier":  1
                    },
