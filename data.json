@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792780532945,
-    "generatedIso":  "2026-10-23T11:35:33-07:00",
+    "generated":  1792780834431,
+    "generatedIso":  "2026-10-23T11:40:34-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -152,6 +152,7 @@
                                       "soldering",
                                       "electrical-components",
                                       "radio-protocol",
+                                      "field-repair",
                                       "freestyle-flight",
                                       "spotter",
                                       "faa-trust",
