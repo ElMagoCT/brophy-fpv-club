@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1792778659706,
-    "generatedIso":  "2026-10-23T11:04:20-07:00",
+    "generated":  1792778720179,
+    "generatedIso":  "2026-10-23T11:05:20-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -11,9 +11,9 @@
     "totals":  {
                    "clubMs":  421833109,
                    "pilots":  40,
-                   "activePilots7":  13,
-                   "clubWeekMs":  38272167,
-                   "weekBasis":  "rolling7",
+                   "activePilots7":  14,
+                   "clubWeekMs":  20738093,
+                   "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  297991996.56529939,
@@ -59,7 +59,7 @@
                    {
                        "name":  "Josiah T.",
                        "totalMs":  60630760,
-                       "weekMs":  4346017,
+                       "weekMs":  1295547,
                        "perSimMs":  {
                                         "liftoff":  43316629,
                                         "microdrones":  17252101,
@@ -108,7 +108,7 @@
                    {
                        "name":  "Bode K.",
                        "totalMs":  37178601,
-                       "weekMs":  855789,
+                       "weekMs":  0,
                        "perSimMs":  {
                                         "liftoff":  25295845,
                                         "microdrones":  11569388,
@@ -323,7 +323,7 @@
                    {
                        "name":  "AYAan",
                        "totalMs":  11387870,
-                       "weekMs":  11387870,
+                       "weekMs":  0,
                        "perSimMs":  {
                                         "liftoff":  11248077,
                                         "microdrones":  139793,
@@ -421,7 +421,7 @@
                    {
                        "name":  "Micah T",
                        "totalMs":  8516024,
-                       "weekMs":  905447,
+                       "weekMs":  0,
                        "perSimMs":  {
                                         "liftoff":  8516024,
                                         "microdrones":  0,
@@ -478,7 +478,7 @@
                    {
                        "name":  "Carter.B",
                        "totalMs":  5644742,
-                       "weekMs":  1334498,
+                       "weekMs":  0,
                        "perSimMs":  {
                                         "liftoff":  1685226,
                                         "microdrones":  3959516,
