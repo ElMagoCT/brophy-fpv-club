@@ -92,6 +92,8 @@ section{margin-top:26px}
 @media (max-width:900px){.how{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:700px){.how{grid-template-columns:1fr}}
 
+.loadnote{margin-top:26px;font-size:14.5px;color:var(--ink-soft)}
+#halves[hidden]{display:none}
 /* the three sections swap places: cleared = form, drones, badges */
 #halves{display:flex;flex-direction:column}
 #badgeSec{order:1} #droneSec{order:2} #formSec{order:3}
@@ -289,6 +291,7 @@ footer a{color:var(--ink)}
     </div>
   </details>
 
+  <div class="loadnote" id="loadNote" hidden>Checking your badges&hellip;</div>
   <div id="halves">
     <section aria-label="Who is asking" id="gateSec" hidden></section>
 
@@ -416,6 +419,12 @@ $('howbox').addEventListener('toggle', function () { if ($('howbox').open !== ho
 function render() {
   var st = CL.status(), p = ST.pilot;
   drawTop(st);
+  /* 2026-10-22: with a pilot picked, nothing below the status cards is drawn until
+     the kiosk snapshot, the awards and the submissions have all answered - the
+     page used to say "not done" for a few seconds and then flip. */
+  var loading = !!(p && st.pending);
+  $('loadNote').hidden = !loading; $('halves').hidden = loading;
+  if (loading) return;
   if (!howTouched && !st.pending) { howWant = !(p && st.cleared); $('howbox').open = howWant; }
   $('halves').className = !p ? 'nobody' : (st.cleared ? 'cleared' : '');
   $('gateSec').hidden = !!p;

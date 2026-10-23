@@ -862,6 +862,7 @@ function certParts(p){ var b = p.badges || []; return CERT_PARTS.map(function (x
 /* 2026-10-21: certified pilots as a list, and everyone part-way as a line with a
    marker per part - above the weekly board */
 function renderCerts(){
+  if (AWARDS === null){ $('certs').innerHTML = '<div class="none">Checking the latest approvals&hellip;</div>'; return; }   // 2026-10-22: no flash of "not done"
   var pilots = DATA.pilots || [];
   var done = pilots.filter(certified).sort(function (a, b) { return a.name < b.name ? -1 : 1; });
   var wip = pilots.filter(function (p) { return !certified(p) && certParts(p).some(Boolean); })
@@ -1176,9 +1177,9 @@ function loadAwards(){
     .then(function (r){ return r.json(); })
     .then(function (j){
       if (!j || !j.pilots) return;
-      AWARDS = j.pilots; mergeAwards();
+      AWARDS = j.pilots || {}; mergeAwards();
       if (DATA){ renderBoard(); renderLadder(); renderCerts(); }
-    }).catch(function (){});
+    }).catch(function (){ if (AWARDS === null){ AWARDS = {}; if (DATA) renderCerts(); } });
 }
 function load(refresh){
   /* cache-bust so a CDN edge cache can never pin an old leaderboard */
