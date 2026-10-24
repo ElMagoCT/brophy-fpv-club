@@ -77,10 +77,10 @@ SHEETS = [
        gate=2, extras=['fly-pavo', 'fly-whoop']),
   dict(file='05-map-tier2', sheet=3, tier='t2', dir='down', scene=(.5, .75),
        came=('From sheet 2', 'Gate 2 passed: you fly the Pavo'),
-       gate=3, extras=['fly-cinebot', 'fly-pavo-2']),
+       gate=3, extras=['fly-five', 'fly-cinebot']),            # the 5-inch rides the trail; the event gate itself is the Cinebot
   dict(file='06-map-tier3', sheet=4, tier='t3', badges_from='el', dir='up', scene=(.75, 1),
        came=('From sheet 3', 'Gate 3 passed: you fly for the school'),
-       finish=True, extras=[('fly-cinebot-led', .9), 'fly-cinebot-2']),
+       finish=True, extras=[('fly-five-b', .9), 'fly-cinebot-led']),
 ]
 
 # ----------------------------------------------------------------- helpers
