@@ -63,7 +63,7 @@ TIERS = [
   dict(id='t0', n=0, short='Simulator', fly='the five FPV sims in the IC, on the club radio', drones=['radio'], color='var(--sky)'),
   dict(id='t1', n=1, short='Meteor 75 Pro', fly='the club Meteor 75 Pro · sub-250 g whoop · indoors', drones=['whoop'], color='var(--violet)'),
   dict(id='t2', n=2, short='Pavo 20 Pro', fly='the Pavo 20 Pro · 2-inch cinewhoop · the first full-size airframe', drones=['pavo'], color='var(--rust)'),
-  dict(id='t3', n=3, short='Event Pilot', fly='any Tier 2 airframe at a school event · Cinebot, 5-inch · always with a spotter', drones=['cinebot', 'five'], color='var(--green)'),
+  dict(id='t3', n=3, short='Event Pilot', fly='the Cinebot at a school event · always with a spotter', drones=['cinebot_led'], color='var(--green)'),
 ]
 GATES = ['Meteor 75 Pro Certification', 'Pavo 20 Pro Flight', 'Event Pilot']   # the checkpoints, by name, gate 1..3
 
@@ -80,7 +80,7 @@ SHEETS = [
        gate=3, extras=['fly-cinebot', 'fly-pavo-2']),
   dict(file='06-map-tier3', sheet=4, tier='t3', badges_from='el', dir='up', scene=(.75, 1),
        came=('From sheet 3', 'Gate 3 passed: you fly for the school'),
-       finish=True, extras=[('fly-five-b', .9), 'fly-cinebot-2']),
+       finish=True, extras=[('fly-cinebot-led', .9), 'fly-cinebot-2']),
 ]
 
 # ----------------------------------------------------------------- helpers

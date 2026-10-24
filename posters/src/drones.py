@@ -425,9 +425,11 @@ def pavo(s):
         s.cyl(sx * 15, -36, 4.2, 58, 70, '#2f3338')
     return s
 
-def cinebot(s):
+def cinebot(s, leds=False):
     """GEPRC Cinebot (25 / 30 class): black ducts with orange accents and a green
-    rim stripe, carbon plates, battery on top under a strap, camera in a cage"""
+    rim stripe, carbon plates, battery on top under a strap, camera in a cage.
+    leds=True adds the event LED strips: a glowing ring on every duct rim and a
+    bar under the tail, the way the club dresses it for a game or a rally."""
     a = 127 / (2 * math.sqrt(2))
     ro, ri, zd = 42.5, 40.0, 16
     BK = '#33373c'; OR = '#e8792a'
@@ -445,6 +447,13 @@ def cinebot(s):
         s.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="none" stroke="#7fb36a" stroke-opacity=".8" stroke-width=".9"/>' % (f2(X), f2(Y), f2(ro - .6), f2((ro - .6) * K)))
         ax, ay = x + (x / abs(x)) * (ro - 1.4), y + (y / abs(y)) * 2
         s.out.append('<path d="M%s %sl%s %sl%s %sz" transform="%s" fill="%s"/>' % (f2(ax), f2(ay), f2(-(x / abs(x)) * 6), f2(-4), 0, f2(8), s.layer(zd + 4.2), OR))
+        if leds:
+            if 'ledglow' not in s._grad:
+                s._grad['ledglow'] = 1
+                s.defs.append('<filter id="ledglow" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>')
+            T = s.layer(zd + 4.6, x, y); rr = f2((ro + ri) / 2)
+            s.out.append('<circle r="%s" transform="%s" fill="none" stroke="#38e07a" stroke-opacity=".7" stroke-width="4" filter="url(#ledglow)"/>' % (rr, T))
+            s.out.append('<circle r="%s" transform="%s" fill="none" stroke="#b9ffd1" stroke-width="1.3"/>' % (rr, T))
     s.rbox(0, -10, 30, 30, 6, 21, '#3c4047', r=2)
     for x, y in ((-22, -40), (22, -40), (-22, 38), (22, 38)): s.cyl(x, y, 2.6, 4, 24, ALU)
     s.plate(0, 0, 60, 98, 24, 27, r=8)
@@ -455,7 +464,12 @@ def cinebot(s):
     s.lens(0, 55, 17, 0, 1, 7)
     s.antenna(-12, -48, 25, -22, -66, 72, w=2.2, tube=0, col='#2a2d32')
     s.cyl(-22, -66, 4.6, 72, 86, '#2f3338')
+    if leds:                                                     # the tail bar, under the rear of the top plate
+        s.rbox(0, -46, 44, 5, 22.5, 24.5, '#38e07a', r=1)
+        s.out.append('<rect x="-24" y="-2.5" width="48" height="5" rx="2" transform="%s" fill="#38e07a" opacity=".7" filter="url(#ledglow)"/>' % s.layer(27, 0, -46))
     return s
+
+def cinebot_led(s): return cinebot(s, leds=True)
 
 def five(s, variant='a'):
     """a 5-inch freestyle quad. 'a': Axis Flying style, black carbon true-X with
@@ -523,7 +537,7 @@ def radio(s):
         s.ellipse_wh(x, -21, 48.2, 2.2, 2.2, '#d2d6db')
     return s
 
-MODELS = dict(radio=radio, whoop=whoop, pavo=pavo, cinebot=cinebot, five=five, five_b=five_b)
+MODELS = dict(radio=radio, whoop=whoop, pavo=pavo, cinebot=cinebot, cinebot_led=cinebot_led, five=five, five_b=five_b)
 # projected widths of the finished drawings (mm), filled in by render()
 SPAN_MM = {}
 
@@ -611,12 +625,13 @@ def gate(color, drone, scale=1.0, yaw_deg=-45, neon=None, name=None):
 
 # the gate scenes: (file, gate colour, drone, yaw deg, streak colour). Different headings on purpose.
 GATES = [('gate-1', '#6b4bc4', 'whoop', -45, '#22d3ee'), ('gate-2', '#c4521a', 'pavo', -150, '#f052a0'),
-         ('gate-3', '#2f8a4a', 'five', -28, '#38e07a'), ('gate-c', '#c4521a', 'cinebot', -40, '#f0a91a')]
+         ('gate-3', '#2f8a4a', 'cinebot_led', -28, '#38e07a'), ('gate-c', '#c4521a', 'cinebot', -40, '#f0a91a')]   # events: the Cinebot with its LEDs, never a 5-inch
 # drones in flight for the open parts of the sheets: (file, model, yaw deg, streak colour)
 FLIES = [('fly-five-b', 'five_b', -90, '#7c5cff'),                                          # the finish sheet's big 5-inch, on the trail
          ('fly-whoop', 'whoop', -90, '#22d3ee'), ('fly-pavo', 'pavo', -90, '#f052a0'),           # trail drones: nose screen-right,
          ('fly-cinebot', 'cinebot', -90, '#f0a91a'), ('fly-cinebot-2', 'cinebot', -90, '#38e07a'),  # the sheet rotates them onto the trail
-         ('fly-five', 'five', -90, '#7c5cff'), ('fly-whoop-2', 'whoop', -90, '#f052a0'), ('fly-pavo-2', 'pavo', -90, '#f0a91a')]
+         ('fly-five', 'five', -90, '#7c5cff'), ('fly-whoop-2', 'whoop', -90, '#f052a0'), ('fly-pavo-2', 'pavo', -90, '#f0a91a'),
+         ('fly-cinebot-led', 'cinebot_led', -90, '#38e07a')]
 PX_PER_MM = 1.15   # one scale for every <img> on the posters, so the fleet grows like the real one
 
 if __name__ == '__main__':
