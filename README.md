@@ -117,6 +117,7 @@ python3 drones.py              # draws img/drone-*.svg and img/gate-*.svg (the a
 #   scenery.py is imported by gen_map.py: the city-to-mountains backdrop behind the trail
 python3 gen_map.py             # writes 03..06, the four Pilot Path sheets
 python3 gen_cert.py            # writes 02-cert, the Flight Clearance poster (clean white page, not the trail style)
+#   16-qr-codes.html is hand-written: every QR code with its address (qr-*.svg, python segno, path id="q")
 python3 gen_dock.py            # writes 08..15, the drone dock sheets (4 drone classes x 8.5x11 and 7x11)
 python3 build.py               # renders every NN-*.html to ../NN.pdf and ../preview/NN.png
 ```

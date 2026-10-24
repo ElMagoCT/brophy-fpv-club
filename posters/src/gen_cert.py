@@ -7,7 +7,7 @@ Flight Clearance page's.
     python3 gen_cert.py && python3 build.py 02-cert
 """
 import os
-from gen_map import load_fs, requirements, esc, HERE
+from gen_map import load_fs, esc, HERE
 
 STEPS = [
   ('Ask Mr. Burr', 'His Google Form, at least 24 hours before you want to fly. One flight, one request. A club meeting is one request for the whole group, filed by a mentor; a personal flight is your own.'),
@@ -15,84 +15,94 @@ STEPS = [
   ('Wait for the yes', 'He answers by email. Fly once he approves, and only what you asked for. No answer means no.'),
 ]
 
-def card(b, fs, n):
-    items, foot, rule = requirements(b, fs)
-    lis = ''.join('<li>%s</li>' % esc(x) for x in items)
-    return ('<div class="bc"><div class="bn">%02d</div><div class="bt"><h3>%s</h3><p>%s</p><ol>%s</ol>%s<div class="est">%s</div></div></div>'
-            % (n, esc(b['name']), esc(b['do']), lis, ('<div class="ft">%s</div>' % esc(foot)) if foot else '', esc(b.get('est', ''))))
+SIMPLE = {   # one line per badge for the big card (the website has the detail)
+  'faa-trust': 'Take the free FAA TRUST test online (20 min) and send a photo of the certificate.',
+  'safe-flight': 'Pass the Safe Flight quiz: the Brophy rules, who flies, who watches, go / no-go.',
+  'pilot-agreement': 'Read the terms, print the one-page agreement, sign it with a parent, send a photo.',
+  'drone-portfolio': 'Add the drone you will fly: a picture, its specs and a one-minute flight video.',
+}
 
 def render(fs):
     cl = [b for b in fs['BADGES'] if b['tier'] == 'cl']
-    cards = ''.join(card(b, fs, i) for i, b in enumerate(cl, 1))
-    steps = ''.join('<div class="st"><div class="sn">%d</div><h3>%s</h3><p>%s</p></div>' % (i, esc(t), esc(d)) for i, (t, d) in enumerate(STEPS, 1))
-    return TEMPLATE.replace('@@CARDS@@', cards).replace('@@STEPS@@', steps)
+    steps = ''.join('<li><b>%s</b><span>%s</span></li>' % (esc(b['name']), esc(SIMPLE.get(b['id'], b['do']))) for b in cl)
+    return TEMPLATE.replace('@@STEPS@@', steps)
+
+FORM = 'https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform'
 
 TEMPLATE = '''<!doctype html>
 <html lang="en"><head><meta charset="utf-8">
-<title>Flight Clearance</title>
+<title>Permission to fly on campus</title>
 <link rel="stylesheet" href="poster.css">
 <style>
-  :root{--ink:#14213d;--soft:#5b6b82;--line:#e3e7ee;--accent:#b0532a;--accent-2:#1c5578}
+  :root{--ink:#14213d;--soft:#5b6b82;--line:#e3e7ee;--accent:#b0532a}
   html,body{background:#fff}
   body{color:var(--ink);font-family:var(--body)}
-  .page{position:relative;width:1056px;height:1632px;padding:72px 72px 60px}
+  .page{position:relative;width:1056px;height:1632px;padding:64px 72px 56px;display:flex;flex-direction:column}
   .kicker{font-family:var(--mono);font-size:13px;letter-spacing:.3em;text-transform:uppercase;color:var(--accent)}
-  .hero{display:grid;grid-template-columns:1fr 360px;gap:24px;align-items:center;margin-top:14px}
-  h1{font-weight:700;font-size:96px;line-height:.92;letter-spacing:-.025em;margin-top:4px}
+  .hero{display:grid;grid-template-columns:1fr 250px;gap:30px;align-items:start;margin-top:14px}
+  h1{font-weight:700;font-size:96px;line-height:.92;letter-spacing:-.025em}
   h1 span{color:var(--accent)}
-  .sub{font-size:22px;line-height:1.35;color:var(--soft);margin-top:18px;max-width:520px;font-weight:400}
-  .hero img{display:block;width:360px;justify-self:end}
+  .sub{font-size:24px;line-height:1.35;color:var(--ink);margin-top:20px;font-weight:500}
+  .sub b{font-weight:700}
+  .hqr{text-align:center}
+  .hqr svg{display:block;width:250px;height:250px;border:1.5px solid var(--line);border-radius:14px;padding:12px;background:#fff}
+  .hqr .l{font-family:var(--mono);font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);margin-top:10px;line-height:1.5}
+  .hqr .l b{display:block;color:var(--ink);font-weight:600;font-family:var(--body);font-size:16px;letter-spacing:0;text-transform:none}
 
-  .sec{display:flex;align-items:baseline;gap:16px;margin-top:26px;padding-top:16px;border-top:2px solid var(--ink)}
-  .sec .n{font-family:var(--mono);font-size:18px;letter-spacing:.2em;color:var(--accent)}
-  .sec h2{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1}
-  .sec .hint{margin-left:auto;font-size:15px;color:var(--soft)}
+  .card{margin-top:34px;border:3px solid var(--ink);border-radius:22px;padding:30px 36px 32px;background:#fff;position:relative}
+  .card .n{position:absolute;left:36px;top:-18px;background:var(--accent);color:#fff;font-family:var(--mono);font-size:14px;letter-spacing:.26em;text-transform:uppercase;padding:7px 14px;border-radius:8px}
+  .card h2{font-weight:700;font-size:64px;line-height:1;letter-spacing:-.02em;margin-top:6px}
+  .card h2 span{color:var(--accent)}
+  .card .lead{font-size:20px;line-height:1.35;color:var(--soft);margin-top:10px}
+  .card ol{list-style:none;margin:22px 0 0;padding:0;display:grid;gap:14px;counter-reset:s}
+  .card li{display:grid;grid-template-columns:60px 1fr;gap:4px 18px;align-items:baseline;counter-increment:s;border-top:1.5px solid var(--line);padding-top:14px}
+  .card li::before{content:counter(s,decimal-leading-zero);font-family:var(--mono);font-size:30px;color:var(--accent);grid-row:1/3;line-height:1}
+  .card li b{font-size:27px;font-weight:700;letter-spacing:-.01em;line-height:1.1}
+  .card li span{font-size:18px;line-height:1.35;color:var(--ink)}
+  .card .foot{position:static;border:0;padding:0;margin-top:22px;font-family:var(--body);font-size:16px;letter-spacing:0;text-transform:none;color:var(--soft);display:block;line-height:1.4}
+  .card .foot b{color:var(--ink);font-weight:600}
 
-  .badges{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}
-  .bc{display:grid;grid-template-columns:56px 1fr;gap:4px;border:1.5px solid var(--line);border-radius:16px;padding:14px 18px 13px 14px;background:#fff}
-  .bn{font-family:var(--mono);font-size:22px;color:var(--accent);line-height:1}
-  .bt h3{font-size:26px;font-weight:600;line-height:1.05;letter-spacing:-.01em}
-  .bt p{font-size:15px;line-height:1.35;color:var(--ink);margin-top:6px}
-  .bt ol{margin:10px 0 0;padding-left:1.3em;font-size:14.5px;line-height:1.35;color:var(--ink)}
-  .bt ol li::marker{color:var(--soft);font-family:var(--mono);font-size:.9em}
-  .bt .ft{font-size:13px;color:var(--soft);line-height:1.3;margin-top:8px}
-  .bt .est{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-top:10px}
+  .form{margin-top:26px;display:grid;grid-template-columns:1fr 210px;gap:28px;align-items:center;border:1.5px solid var(--line);border-radius:22px;padding:26px 32px;background:#fff;position:relative}
+  .form .n{position:absolute;left:32px;top:-16px;background:#fff;border:1.5px solid var(--line);color:var(--accent);font-family:var(--mono);font-size:13px;letter-spacing:.26em;text-transform:uppercase;padding:6px 12px;border-radius:8px}
+  .form h2{font-weight:700;font-size:44px;line-height:1;letter-spacing:-.02em;margin-top:4px}
+  .form p{font-size:18px;line-height:1.4;color:var(--ink);margin-top:10px}
+  .form p b{font-weight:600}
+  .form svg{display:block;width:210px;height:210px;border:1.5px solid var(--line);border-radius:14px;padding:10px;background:#fff}
+  .form .l{font-family:var(--mono);font-size:11.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--soft);text-align:center;margin-top:8px}
 
-  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:14px}
-  .st{border-top:4px solid var(--accent);padding-top:14px}
-  .sn{font-family:var(--mono);font-size:34px;line-height:1;color:var(--accent)}
-  .st h3{font-size:24px;font-weight:600;margin-top:8px;letter-spacing:-.01em}
-  .st p{font-size:14.5px;line-height:1.4;color:var(--ink);margin-top:8px}
-
-  .bottom{position:absolute;left:72px;right:72px;bottom:56px;display:flex;justify-content:space-between;align-items:flex-end;gap:30px}
-  .bottom .qr{display:flex;align-items:center;gap:18px}
-  .bottom .qr svg{width:124px;height:124px;display:block;border:1.5px solid var(--line);border-radius:12px;padding:8px;background:#fff}
-  .bottom .say{font-size:15px;line-height:1.4;color:var(--soft);max-width:300px}
-  .bottom .say b{display:block;color:var(--ink);font-size:18px;font-weight:600;margin-bottom:4px}
-  .who{text-align:right;font-size:17px;line-height:1.4;color:var(--ink);max-width:400px;font-weight:500}
-  .who small{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-top:8px}
+  .bottom{margin-top:auto;display:flex;justify-content:space-between;align-items:flex-end;gap:30px;font-size:17px;line-height:1.4;color:var(--ink);font-weight:500}
+  .bottom small{display:block;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--soft);margin-top:6px;font-weight:400}
 </style></head>
 <body>
 <div class="page">
   <div class="kicker">Brophy FPV Club &middot; Flight Clearance</div>
   <div class="hero">
     <div>
-      <h1>Cleared<br>to <span>fly.</span></h1>
-      <p class="sub">Certification once, permission every flight. For anyone flying any drone at Brophy, for any purpose.</p>
+      <h1>Want permission to fly <span>on campus?</span></h1>
+      <p class="sub"><b>Every drone, every pilot, every flight.</b> Club or personal, FPV or DJI, a whoop or a 5-inch: nothing flies at Brophy without the certification below and a yes from Mr. Burr.</p>
     </div>
-    <img src="img/gate-c.svg" alt="">
+    <div class="hqr"><svg viewBox="0 0 330 330"><use href="qr-clearance.svg#q"/></svg><div class="l"><b>Flight Clearance page</b>badges &middot; portfolio &middot; form</div></div>
   </div>
 
-  <div class="sec"><span class="n">01</span><h2>The Brophy Drone Certification</h2><span class="hint">once &middot; about 45 minutes, at home &middot; never expires</span></div>
-  <div class="badges">@@CARDS@@</div>
+  <div class="card">
+    <div class="n">Step 1 &middot; once &middot; never expires</div>
+    <h2>Get <span>Brophy Drone Certified</span></h2>
+    <p class="lead">Four badges on the Flight Clearance page. About 45 minutes, at home, all four reviewed by a mentor.</p>
+    <ol>@@STEPS@@</ol>
+    <div class="foot"><b>Done?</b> You are Brophy Drone Certified for every drone in your portfolio. Club drones are added when you pass their checkpoint on the Pilot Path.</div>
+  </div>
 
-  <div class="sec"><span class="n">02</span><h2>Permission</h2><span class="hint">every flight</span></div>
-  <div class="steps">@@STEPS@@</div>
+  <div class="form">
+    <div class="n">Step 2 &middot; every flight</div>
+    <div>
+      <h2>Ask Mr. Burr, 24 hours ahead</h2>
+      <p>His Google Form, once per flight. A club meeting is one request for the whole group, filed by a mentor; a personal flight is your own. <b>Bring a spotter.</b> He answers by email: fly only what he approved. <b>No answer means no.</b></p>
+    </div>
+    <div><svg viewBox="0 0 410 410"><use href="qr-form.svg#q"/></svg><div class="l">The permission form</div></div>
+  </div>
 
   <div class="bottom">
-    <div class="qr"><svg viewBox="0 0 370 370"><use href="qr-clearance.svg#q"/></svg>
-      <div class="say"><b>Scan for Flight Clearance</b>The four badges, your drone portfolio and Mr. Burr&rsquo;s form, in one place.</div></div>
-    <div class="who">Club or personal, FPV or not, DJI or whoop: everyone. Clearance is per pilot and per drone.<small>elmagoct.github.io/brophy-fpv-club/clearance/</small></div>
+    <div>Clearance is per pilot and per drone. Certified once; permission every time.<small>elmagoct.github.io/brophy-fpv-club/clearance/</small></div>
   </div>
 </div>
 </body></html>
