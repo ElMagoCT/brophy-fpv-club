@@ -15,7 +15,7 @@ sheets are one continuous panorama when hung in a row.
 import math
 
 W, H = 1056, 1632
-GY = H - 92                      # the ground line
+GY = H - 4                       # the ground line: the page edge, no strip (Micah, 2026-10-23)
 INK = '#1f3350'
 NEON = ['#22d3ee', '#f052a0', '#f0a91a', '#7c5cff', '#38e07a']
 
@@ -180,10 +180,6 @@ def scenery(t0, t1, gx, peak=None, seed=1, spot=None):
     if spot:
         sx, sy, sr = spot
         o.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="#f2ece0" opacity=".72" filter="url(#glow2)"/>' % (f2(sx), f2(sy), f2(sr), f2(sr * .8)))
-    # the ground
-    o.append('<rect x="0" y="%s" width="%d" height="%s" fill="%s" opacity=".5"/>' % (f2(GY), W, f2(H - GY), INK))
-    o.append('<path d="M0 %sH%d" stroke="#22d3ee" stroke-opacity=".55" stroke-width="2" filter="url(#glow)"/>' % (f2(GY + 1), W))
-    o.append('<path d="M0 %sH%d" stroke="#bff3fb" stroke-opacity=".7" stroke-width="1.2"/>' % (f2(GY + 1), W))
     o.append('</svg>')
     return ''.join(o)
 

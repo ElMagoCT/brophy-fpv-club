@@ -80,7 +80,7 @@ SHEETS = [
        gate=3, extras=['fly-cinebot', 'fly-pavo-2']),
   dict(file='06-map-tier3', sheet=4, tier='t3', badges_from='el', dir='up', scene=(.75, 1),
        came=('From sheet 3', 'Gate 3 passed: you fly for the school'),
-       finish=True, extras=['fly-five-b', 'fly-cinebot-2']),
+       finish=True, extras=[('fly-five-b', .9), 'fly-cinebot-2']),
 ]
 
 # ----------------------------------------------------------------- helpers
@@ -206,18 +206,19 @@ def render(s, fs):
     vb = [float(v) for v in re.search(r'viewBox="([^"]+)"', open(os.path.join(HERE, pic)).read()).group(1).split()]
     pw, ph = round(vb[2] * PX_PER_MM), round(vb[3] * PX_PER_MM)
     px_right = 36
-    ptop = GY - ph + 6 if d == 'down' else 48
+    ptop = GY - ph - 44 if d == 'down' else 48      # the gate's feet clear of the page edge
     pcx = 1056 - px_right - pw / 2
     pcy = ptop + ph / 2
     peak = (pcx, ptop + ph - 8) if d == 'up' and not s.get('finish') else ((760, 300) if s.get('finish') else None)
     c = CENTERS[os.path.basename(pic)[:-4]]
     picture = '' if s.get('finish') else ('<img class="pic" src="%s" alt="" data-cx="%d" data-cy="%d" data-r="%d" style="right:%dpx;top:%dpx;width:%dpx;height:%dpx">'
                % (pic, round(c[0] * PX_PER_MM), round(c[1] * PX_PER_MM), round(c[2] * PX_PER_MM), px_right, ptop, pw, ph))
-    for fname in s.get('extras', []):
+    for ex in s.get('extras', []):
+        fname, crab = (ex, .6) if isinstance(ex, str) else ex      # crab: how far the drone turns toward the trail (1 = straight along it)
         vb2 = [float(v) for v in re.search(r'viewBox="([^"]+)"', open(os.path.join(HERE, 'img', fname + '.svg')).read()).group(1).split()]
         c = CENTERS[fname]
-        picture += ('<img class="extra" src="img/%s.svg" alt="" data-cx="%d" data-cy="%d" data-r="%d" style="width:%dpx;height:%dpx">'
-                    % (fname, round(c[0] * PX_PER_MM), round(c[1] * PX_PER_MM), round(c[2] * PX_PER_MM), round(vb2[2] * PX_PER_MM), round(vb2[3] * PX_PER_MM)))
+        picture += ('<img class="extra" src="img/%s.svg" alt="" data-cx="%d" data-cy="%d" data-r="%d" data-crab="%s" style="width:%dpx;height:%dpx">'
+                    % (fname, round(c[0] * PX_PER_MM), round(c[1] * PX_PER_MM), round(c[2] * PX_PER_MM), crab, round(vb2[2] * PX_PER_MM), round(vb2[3] * PX_PER_MM)))
     # the flight line of the gate drone on screen (unit vector), so the exit trail follows it
     fdx, fdy = 0.78, 0.62
     if not s.get('finish'):
@@ -380,7 +381,7 @@ TEMPLATE = '''<!doctype html>
       if (found < 0) { img.style.display = 'none'; return; }
       best = found;
       var p0 = probe.getPointAtLength(Math.max(0, best - 12)), p1 = probe.getPointAtLength(Math.min(len, best + 12)), pm = probe.getPointAtLength(best);
-      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI * 0.6;   // crab: part-way between nose-right and the trail's direction
+      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI * (+img.getAttribute('data-crab') || .6);   // crab: part-way between nose-right and the trail's direction
       var cx = +img.getAttribute('data-cx'), cy = +img.getAttribute('data-cy');
       img.style.display = 'block'; img.style.left = (pm.x - cx) + 'px'; img.style.top = (pm.y - cy) + 'px';
       img.style.transformOrigin = cx + 'px ' + cy + 'px'; img.style.transform = 'rotate(' + ang.toFixed(1) + 'deg)';

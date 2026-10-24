@@ -43,9 +43,9 @@ TEMPLATE = '''<!doctype html>
   .sub{font-size:22px;line-height:1.35;color:var(--soft);margin-top:18px;max-width:520px;font-weight:400}
   .hero img{display:block;width:360px;justify-self:end}
 
-  .sec{display:flex;align-items:baseline;gap:16px;margin-top:30px;padding-top:14px;border-top:2px solid var(--ink)}
-  .sec .n{font-family:var(--mono);font-size:15px;letter-spacing:.2em;color:var(--accent)}
-  .sec h2{font-size:28px;font-weight:600;letter-spacing:-.01em}
+  .sec{display:flex;align-items:baseline;gap:16px;margin-top:26px;padding-top:16px;border-top:2px solid var(--ink)}
+  .sec .n{font-family:var(--mono);font-size:18px;letter-spacing:.2em;color:var(--accent)}
+  .sec h2{font-size:40px;font-weight:700;letter-spacing:-.02em;line-height:1}
   .sec .hint{margin-left:auto;font-size:15px;color:var(--soft)}
 
   .badges{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:14px}

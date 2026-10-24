@@ -3,6 +3,11 @@
 <title>Poster 7 — How the sim works</title>
 <link rel="stylesheet" href="poster.css">
 <style>
+  /* 2026-10-23: same white theme as posters 1 and 2 */
+  :root{--paper:#ffffff;--paper-2:#f3f4f6;--glass:#f6f7f9}
+  body{background-color:#fff}
+  .box{border-color:rgba(31,51,80,.3)}
+  .stamp{background-color:#fff}
   h1{font-family:var(--sketch);font-weight:700;font-size:60px;line-height:.92;margin-top:10px}
   .sub{font-family:var(--mono);font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:var(--ink-soft);margin-top:10px}
   .stamp{top:62px;right:60px}
@@ -26,13 +31,12 @@
   svg.arrows path{fill:none;stroke:var(--rust);stroke-width:4;stroke-linecap:round;stroke-dasharray:1 10}
   svg.arrows .tip{fill:var(--rust);stroke:none}
 
-  .rules{position:absolute;left:56px;right:56px;bottom:98px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .rules{position:absolute;left:56px;right:56px;bottom:60px;display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
   .rule-c{padding:12px 14px;border-left:6px solid var(--rust)}
   .rule-c .k{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
   .rule-c .v{font-size:15.5px;font-weight:600;line-height:1.25;margin-top:4px}
 </style></head>
 <body>
-<div class="bg"><div class="grid"></div><div class="fine"></div><div class="vig"></div></div>
 <div class="sheet">
   <div class="stamp"><b>BROPHY</b>FPV CLUB<br>FLIGHT LAB</div>
 
@@ -120,6 +124,5 @@
     <div class="box rule-c"><div class="k">Rule 4</div><div class="v">Stuck? Tell an instructor. Do not restart the machine.</div></div>
   </div>
 
-  <div class="foot"><span><b>Brophy FPV Club</b> &middot; Flight lab quick guide</span><span>mtucker27@ for questions</span></div>
 </div>
 </body></html>
