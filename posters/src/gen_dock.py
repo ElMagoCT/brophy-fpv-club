@@ -16,21 +16,21 @@ PAPERS = {           # name, width in, height in
     '7x11':   (7.0, 11),
 }
 
-# wheelbase (motor-to-motor diagonal), prop diameter, ducted?, body (w x h),
+# wheelbase (motor-to-motor diagonal), prop diameter, body (w x h),
 # text fraction of the page height, and the specs that matter for that class
-CLASSES = [
-  dict(key='whoop', name='TINY WHOOP', sub='65 – 75 mm · Meteor 75 Pro · Tier 1',
-       wb=75, prop=40, duct=True, body=(22, 48), top=0.40,
-       specs=['Frame / size', 'Motors', 'Battery (1S)', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
-  dict(key='2in', name='TWO INCH', sub='2-inch cinewhoop · Pavo 20 Pro · Tier 2',
-       wb=90, prop=51, duct=True, body=(40, 62), top=0.34,
-       specs=['Frame / size', 'Motors', 'Battery (3S / 4S)', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
-  dict(key='35in', name='3.5 INCH', sub='3.5-inch cinewhoop · Cinebot 35 · Tier 2',
-       wb=150, prop=89, duct=True, body=(56, 86), top=0.25,
-       specs=['Frame / size', 'Motors', 'Battery (4S / 6S)', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
-  dict(key='5in', name='FIVE INCH', sub='5-inch freestyle · 225 mm · Tier 2',
-       wb=225, prop=127, duct=False, body=(40, 110), top=0.25,
-       specs=['Frame', 'Motors (KV)', 'Battery (4S / 6S)', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
+CLASSES = [   # generic classes by prop size (2026-10-24, Micah): no model names, no cell counts, no ducts drawn
+  dict(key='whoop', name='1.6 INCH', sub='40 mm props · 65 – 75 mm wheelbase',
+       wb=75, prop=40, body=(22, 48), top=0.40,
+       specs=['Frame / size', 'Motors', 'Battery', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
+  dict(key='2in', name='2 INCH', sub='51 mm props · about 90 mm wheelbase',
+       wb=90, prop=51, body=(40, 62), top=0.34,
+       specs=['Frame / size', 'Motors', 'Battery', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
+  dict(key='35in', name='3.5 INCH', sub='89 mm props · about 150 mm wheelbase',
+       wb=150, prop=89, body=(56, 86), top=0.25,
+       specs=['Frame / size', 'Motors', 'Battery', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
+  dict(key='5in', name='5 INCH', sub='127 mm props · about 225 mm wheelbase',
+       wb=225, prop=127, body=(40, 110), top=0.25,
+       specs=['Frame', 'Motors (KV)', 'Battery', 'FC / ESC', 'Camera / VTX', 'Receiver', 'Weight', 'Props']),
 ]
 
 INK, RUST, SOFT, LINE = '#1f3350', '#8f3d12', '#546881', 'rgba(31,51,80,.42)'
@@ -40,7 +40,7 @@ def drone_svg(c, w_mm, h_mm):
     cx, cy = w_mm / 2, h_mm / 2
     half = c['wb'] / 2 / (2 ** .5)              # arm reach along x and y
     mr = 5 if c['key'] == 'whoop' else (9 if c['key'] in ('2in', '35in') else 14)
-    reach = half + (c['prop'] / 2 + 4 if c['duct'] else mr)   # ducts count, bare props do not
+    reach = half + mr                             # the frame; the prop traces may run past the edge
     scale = min(1.0, (w_mm - 6) / (2 * reach), (h_mm - 8) / (2 * reach))
     motors = [(cx - half, cy - half), (cx + half, cy - half), (cx - half, cy + half), (cx + half, cy + half)]
     bw, bh = c['body']
@@ -53,13 +53,11 @@ def drone_svg(c, w_mm, h_mm):
     # arms
     for (mx, my) in motors:
         o.append('<line x1="%.1f" y1="%.1f" x2="%.1f" y2="%.1f" stroke-width="%.1f"/>' % (cx, cy, mx, my, 2.2 if c['key'] == 'whoop' else 4))
-    # props or ducts
+    # prop traces: the swept disc as a dashed ring, with a fainter inner trace
     for (mx, my) in motors:
-        if c['duct']:
-            o.append('<circle cx="%.1f" cy="%.1f" r="%.1f" stroke-width="1.6"/>' % (mx, my, c['prop'] / 2 + 4))
-            o.append('<circle cx="%.1f" cy="%.1f" r="%.1f" stroke-width=".7" stroke-dasharray="2 2.5" stroke="%s"/>' % (mx, my, c['prop'] / 2, SOFT))
-        else:
-            o.append('<circle cx="%.1f" cy="%.1f" r="%.1f" stroke-width=".9" stroke-dasharray="3 3" stroke="%s"/>' % (mx, my, c['prop'] / 2, SOFT))
+        r = c['prop'] / 2
+        o.append('<circle cx="%.1f" cy="%.1f" r="%.1f" stroke-width=".9" stroke-dasharray="3 3" stroke="%s"/>' % (mx, my, r, SOFT))
+        o.append('<circle cx="%.1f" cy="%.1f" r="%.1f" stroke-width=".5" stroke-dasharray="1 3" stroke="%s" opacity=".7"/>' % (mx, my, r * .62, SOFT))
     # body (opaque, so the arms stop at its edge)
     o.append('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" rx="%.1f" stroke-width="1.8" fill="#ffffff"/>' % (cx - bw / 2, cy - bh / 2, bw, bh, min(bw, bh) * .18))
     # camera (front) and battery strap hints
