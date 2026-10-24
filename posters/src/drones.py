@@ -43,44 +43,84 @@ def shade(col, f):
 def f2(v): return ('%.2f' % v).rstrip('0').rstrip('.')
 
 class Scene:
-    def __init__(self, yaw=None):
+    def __init__(self, yaw=None, pitch=0.0, roll=0.0):
         self.out, self.defs, self._grad = [], [], {}
         self.off = (0, 0, 0)
         self.yaw = YAW if yaw is None else yaw      # the product shots turn 28 deg; the gate scenes -45 deg, so the drone flies screen-right
         self.bbox = [1e9, 1e9, -1e9, -1e9]
+        self.tilt(pitch, roll)
+
+    def tilt(self, pitch=0.0, roll=0.0):
+        """body attitude, radians: pitch > 0 = nose (+y) down, roll > 0 = right side (+x) down.
+        Applied in the body frame before the yaw, so a flying drone can lean into its path."""
+        cp, sp, cr, sr = math.cos(pitch), math.sin(pitch), math.cos(roll), math.sin(roll)
+        Rx = ((1, 0, 0), (0, cp, sp), (0, -sp, cp))          # pitch about x: +y goes to -z
+        Ry = ((cr, 0, -sr), (0, 1, 0), (sr, 0, cr))          # roll about y: +x goes to -z
+        self.Rt = tuple(tuple(sum(Rx[i][k] * Ry[k][j] for k in range(3)) for j in range(3)) for i in range(3))
+        self.tilted = abs(pitch) + abs(roll) > 1e-6
 
     def rot(self, x, y): return rot(x, y, self.yaw)
 
     # ---- projection
-    def P(self, x, y, z):
-        x, y, z = x + self.off[0], y + self.off[1], z + self.off[2]
+    def world(self, x, y, z):
+        """model -> yawed world: body tilt, offset, yaw"""
+        R = self.Rt
+        x, y, z = (R[0][0] * x + R[0][1] * y + R[0][2] * z + self.off[0],
+                   R[1][0] * x + R[1][1] * y + R[1][2] * z + self.off[1],
+                   R[2][0] * x + R[2][1] * y + R[2][2] * z + self.off[2])
         xr, yr = self.rot(x, y)
+        return xr, yr, z
+
+    def P(self, x, y, z):
+        xr, yr, z = self.world(x, y, z)
         X, Y = xr, yr * K - z * C
         b = self.bbox; b[0] = min(b[0], X); b[1] = min(b[1], Y); b[2] = max(b[2], X); b[3] = max(b[3], Y)
         return X, Y
 
+    def M(self):
+        """the 2x3 linear part of the projection: screen = M * model + t"""
+        o = self.off; self.off = (0, 0, 0)
+        cols = []
+        for v in ((1, 0, 0), (0, 1, 0), (0, 0, 1)):
+            xr, yr, z = self.world(*v); cols.append((xr, yr * K - z * C))
+        self.off = o
+        return cols
+
     def layer(self, z, cx=0, cy=0):
-        """transform for a horizontal plane at height z, origin at plan (cx, cy)"""
+        """transform for a (body-)horizontal plane at height z, origin at plan (cx, cy)"""
         X, Y = self.P(cx, cy, z)
-        cs, sn = math.cos(self.yaw), math.sin(self.yaw)
-        return 'matrix(%.4f %.4f %.4f %.4f %.2f %.2f)' % (cs, sn * K, -sn, cs * K, X, Y)
+        ex, ey, _ = self.M()
+        return 'matrix(%.4f %.4f %.4f %.4f %.2f %.2f)' % (ex[0], ex[1], ey[0], ey[1], X, Y)
 
     def face(self, x, y, z, nx, ny):
-        """transform for a vertical plane through (x,y,z) with plan normal (nx,ny):
+        """transform for a (body-)vertical plane through (x,y,z) with plan normal (nx,ny):
         u runs along the face to the right, v runs up"""
         X, Y = self.P(x, y, z)
         n = math.hypot(nx, ny); nx, ny = nx / n, ny / n
-        tx, ty = -ny, nx                       # tangent, to the right when facing the normal... pick the one that goes right on screen
-        ux, uy = self.rot(tx, ty)
-        if ux < 0: ux, uy, tx, ty = -ux, -uy, -tx, -ty
-        return 'matrix(%.4f %.4f 0 %.4f %.2f %.2f)' % (ux, uy * K, -C, X, Y)
+        tx, ty = -ny, nx
+        ex, ey, ez = self.M()
+        ux, uy = ex[0] * tx + ey[0] * ty, ex[1] * tx + ey[1] * ty
+        if ux < 0: ux, uy = -ux, -uy
+        return 'matrix(%.4f %.4f %.4f %.4f %.2f %.2f)' % (ux, uy, ez[0], ez[1], X, Y)
 
     def mark(self, x, y, z): self.P(x, y, z)   # grow the bbox without drawing
 
     def mark_circle(self, cx, cy, z, r):
         """grow the bbox by the projected ellipse of a horizontal circle"""
         X, Y = self.P(cx, cy, z)
-        b = self.bbox; b[0] = min(b[0], X - r); b[1] = min(b[1], Y - r * K); b[2] = max(b[2], X + r); b[3] = max(b[3], Y + r * K)
+        ex, ey, _ = self.M()
+        rx, ry = r * math.hypot(ex[0], ey[0]), r * math.hypot(ex[1], ey[1])
+        b = self.bbox; b[0] = min(b[0], X - rx); b[1] = min(b[1], Y - ry); b[2] = max(b[2], X + rx); b[3] = max(b[3], Y + ry)
+
+    def arc_pts(self, cx, cy, r, z, front=True, n=18):
+        """points of a horizontal circle's silhouette half: the half nearer the viewer (front) or the far half"""
+        ex, ey, _ = self.M()
+        A, B = ex[0] * r, ey[0] * r                   # X(th) = A cos + B sin: extremes at th0, th0 + pi
+        th0 = math.atan2(B, A)
+        yA = ex[1] * math.cos(th0 + math.pi / 2) + ey[1] * math.sin(th0 + math.pi / 2)
+        yB = ex[1] * math.cos(th0 - math.pi / 2) + ey[1] * math.sin(th0 - math.pi / 2)
+        sgn = 1 if (yA > yB) == front else -1          # which way round from th0 reaches the wanted half
+        return [self.P(cx + r * math.cos(th0 + sgn * k * math.pi / n), cy + r * math.sin(th0 + sgn * k * math.pi / n), z) for k in range(n + 1)]
 
     # ---- gradients (object bounding box, shared by colour)
     def grad(self, kind, col):
@@ -125,43 +165,33 @@ class Scene:
 
     # ---- primitives
     def ellipse(self, cx, cy, z, r, fill, extra=''):
-        X, Y = self.P(cx, cy, z)
         self.mark_circle(cx, cy, z, r)
-        self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s"%s/>' % (f2(X), f2(Y), f2(r), f2(r * K), fill, extra))
+        self.out.append('<circle r="%s" transform="%s" fill="%s"%s/>' % (f2(r), self.layer(z, cx, cy), fill, extra))
 
-    def wall_path(self, X, Y0, Y1, r):
-        ry = r * K
-        return 'M%s %sA%s %s 0 0 0 %s %sL%s %sA%s %s 0 0 1 %s %sZ' % (
-            f2(X - r), f2(Y0), f2(r), f2(ry), f2(X + r), f2(Y0), f2(X + r), f2(Y1), f2(r), f2(ry), f2(X - r), f2(Y1))
+    def wall(self, cx, cy, r, z0, z1, front=True):
+        """path of a cylinder wall between z0 and z1: the front (or back) silhouette half"""
+        lo, hi = self.arc_pts(cx, cy, r, z0, front), self.arc_pts(cx, cy, r, z1, front)
+        return 'M' + 'L'.join('%s %s' % (f2(X), f2(Y)) for X, Y in lo + hi[::-1]) + 'Z'
 
     def cyl(self, cx, cy, r, z0, z1, col, top=None, top_fill=None):
-        X, Y0 = self.P(cx, cy, z0); _, Y1 = self.P(cx, cy, z1)
         self.mark_circle(cx, cy, z0, r); self.mark_circle(cx, cy, z1, r)
-        self.out.append('<path d="%s" fill="url(#%s)"/>' % (self.wall_path(X, Y0, Y1, r), self.grad('wall', col)))
+        self.out.append('<path d="%s" fill="url(#%s)"/>' % (self.wall(cx, cy, r, z0, z1), self.grad('wall', col)))
         if top is not False:
-            self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s"/>' % (
-                f2(X), f2(Y1), f2(r), f2(r * K), top_fill or ('url(#%s)' % self.grad('top', top or shade(col, 1.1)))))
+            self.out.append('<circle r="%s" transform="%s" fill="%s"/>' % (
+                f2(r), self.layer(z1, cx, cy), top_fill or ('url(#%s)' % self.grad('top', top or shade(col, 1.1)))))
 
     def duct_back(self, cx, cy, ro, ri, z0, z1, col, floor=None):
         """inside back wall and floor of a duct - draw, then the motor and prop, then duct_front"""
-        X, Y0 = self.P(cx, cy, z0); _, Y1 = self.P(cx, cy, z1)
-        ry = ri * K
-        d = 'M%s %sA%s %s 0 0 1 %s %sL%s %sA%s %s 0 0 0 %s %sZ' % (
-            f2(X - ri), f2(Y1), f2(ri), f2(ry), f2(X + ri), f2(Y1), f2(X + ri), f2(Y0), f2(ri), f2(ry), f2(X - ri), f2(Y0))
-        self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s"/>' % (f2(X), f2(Y0), f2(ri), f2(ry), floor or shade(col, .55)))
-        self.out.append('<path d="%s" fill="url(#%s)"/>' % (d, self.grad('inner', col)))
+        self.out.append('<circle r="%s" transform="%s" fill="%s"/>' % (f2(ri), self.layer(z0, cx, cy), floor or shade(col, .55)))
+        self.out.append('<path d="%s" fill="url(#%s)"/>' % (self.wall(cx, cy, ri, z0, z1, front=False), self.grad('inner', col)))
 
     def duct_front(self, cx, cy, ro, ri, z0, z1, col, rim=None):
-        X, Y0 = self.P(cx, cy, z0); _, Y1 = self.P(cx, cy, z1)
         self.mark_circle(cx, cy, z0, ro); self.mark_circle(cx, cy, z1, ro)
-        self.out.append('<path d="%s" fill="url(#%s)"/>' % (self.wall_path(X, Y0, Y1, ro), self.grad('wall', col)))
-        ring = ('M%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0ZM%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0Z' % (
-            f2(X - ro), f2(Y1), f2(ro), f2(ro * K), f2(2 * ro), f2(ro), f2(ro * K), f2(-2 * ro),
-            f2(X - ri), f2(Y1), f2(ri), f2(ri * K), f2(2 * ri), f2(ri), f2(ri * K), f2(-2 * ri)))
-        self.out.append('<path d="%s" fill-rule="evenodd" fill="url(#%s)"/>' % (ring, self.grad('top', rim or shade(col, 1.25))))
+        self.out.append('<path d="%s" fill="url(#%s)"/>' % (self.wall(cx, cy, ro, z0, z1), self.grad('wall', col)))
+        self.ring(cx, cy, z1, ro, ri, 'url(#%s)' % self.grad('top', rim or shade(col, 1.25)))
         # a thin highlight on the back of the rim
-        self.out.append('<path d="M%s %sA%s %s 0 0 1 %s %s" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width=".8"/>' % (
-            f2(X - (ro + ri) / 2), f2(Y1), f2((ro + ri) / 2), f2((ro + ri) / 2 * K), f2(X + (ro + ri) / 2), f2(Y1)))
+        back = self.arc_pts(cx, cy, (ro + ri) / 2, z1, front=False)
+        self.out.append('<path d="M%s" fill="none" stroke="#fff" stroke-opacity=".28" stroke-width=".8"/>' % 'L'.join('%s %s' % (f2(X), f2(Y)) for X, Y in back))
 
     def prism(self, pts, z0, z1, col, top=None, top_fill=None, rx=0):
         """a vertical prism over a plan polygon: visible side faces, then the top"""
@@ -173,8 +203,8 @@ class Scene:
             nx, ny = b[1] - a[1], -(b[0] - a[0])
             if (a[0] - cxm) * nx + (a[1] - cym) * ny < 0: nx, ny = -nx, -ny
             ln = math.hypot(nx, ny) or 1; nx, ny = nx / ln, ny / ln
-            nxr, nyr = self.rot(nx, ny)
-            if nyr <= 0.02: continue
+            nxr, nyr, nzr = self.world(nx, ny, 0); o = self.world(0, 0, 0); nxr, nyr, nzr = nxr - o[0], nyr - o[1], nzr - o[2]
+            if nyr * C + nzr * K <= 0.02: continue          # faces the camera
             lit = max(0.0, nxr * LIGHT[0] + nyr * LIGHT[1])
             f = 0.55 + 0.62 * lit
             q = [self.P(a[0], a[1], z0), self.P(b[0], b[1], z0), self.P(b[0], b[1], z1), self.P(a[0], a[1], z1)]
@@ -238,11 +268,10 @@ class Scene:
     def motor(self, cx, cy, r, z0, z1, col='#44484e', ring=None):
         self.cyl(cx, cy, r * 0.55, z0, z0 + (z1 - z0) * 0.25, shade(col, .7))        # base / stator
         self.cyl(cx, cy, r, z0 + (z1 - z0) * 0.25, z1, col, top_fill='url(#%s)' % self.grad('bell', shade(col, .95)))
-        X, Y = self.P(cx, cy, z1)
+        T = self.layer(z1, cx, cy)
         if ring:
-            self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="none" stroke="%s" stroke-width="%s"/>' % (
-                f2(X), f2(Y), f2(r * .78), f2(r * .78 * K), ring, f2(r * .16)))
-        self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s"/>' % (f2(X), f2(Y), f2(r * .18), f2(r * .18 * K), shade(col, .55)))
+            self.out.append('<circle r="%s" transform="%s" fill="none" stroke="%s" stroke-width="%s"/>' % (f2(r * .78), T, ring, f2(r * .16)))
+        self.out.append('<circle r="%s" transform="%s" fill="%s"/>' % (f2(r * .18), T, shade(col, .55)))
 
     def prop(self, cx, cy, z, r, col, blades=3, angle=0, opacity=.92, hub=None):
         d = ('M%s %s C%s %s %s %s %s %s C%s %s %s %s %s %s C%s %s %s %s %s %sZ' % tuple(f2(v) for v in (
@@ -284,11 +313,10 @@ class Scene:
 
     def ring(self, cx, cy, z, ro, ri, fill):
         """a flat annulus at height z"""
-        X, Y = self.P(cx, cy, z)
-        self.out.append('<path d="M%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0ZM%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0Z" fill-rule="evenodd" fill="%s"/>' % (
-            f2(X - ro), f2(Y), f2(ro), f2(ro * K), f2(2 * ro), f2(ro), f2(ro * K), f2(-2 * ro),
-            f2(X - ri), f2(Y), f2(ri), f2(ri * K), f2(2 * ri), f2(ri), f2(ri * K), f2(-2 * ri), fill))
-        self.P(cx - ro, cy - ro, z); self.P(cx + ro, cy + ro, z)
+        self.out.append('<path d="M%s 0a%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0ZM%s 0a%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0Z" fill-rule="evenodd" transform="%s" fill="%s"/>' % (
+            f2(-ro), f2(ro), f2(ro), f2(2 * ro), f2(ro), f2(ro), f2(-2 * ro),
+            f2(-ri), f2(ri), f2(ri), f2(2 * ri), f2(ri), f2(ri), f2(-2 * ri), self.layer(z, cx, cy), fill))
+        self.mark_circle(cx, cy, z, ro)
 
     def struts(self, cx, cy, r, z0, z1, n, col, w=1.6, phase=0):
         """n vertical posts around a circle (the skeleton of a translucent duct)"""
@@ -303,11 +331,12 @@ class Scene:
             self._grad['blur'] = 1
             self.defs.append('<filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>')
         keep = self.off; self.off = (keep[0], keep[1], 0)      # the shadow lies on the floor, however high the drone is
+        Rt = self.Rt; self.Rt = ((1, 0, 0), (0, 1, 0), (0, 0, 1))
         self.out.append('<g filter="url(#blur)" opacity="%s">' % f2(.17 if keep[2] < 1 else .10))
         for cx, cy, r in spots:
             self.ellipse(cx + r * .18, cy - r * .12, z, r * .8, '#1f3350')
         self.out.append('</g>')
-        self.off = keep
+        self.off = keep; self.Rt = Rt
 
     # ---- output
     def svg(self, pad=10, extra_top=0):
@@ -323,8 +352,9 @@ _SCENE = [None]     # the scene being drawn, for depth sorting at its yaw
 def corners(a):
     """the four motor positions of an X quad with half-offset a, far to near"""
     pts = [(-a, -a), (a, -a), (-a, a), (a, a)]
-    yaw = _SCENE[0].yaw if _SCENE[0] else YAW
-    return sorted(pts, key=lambda p: rot(*p, yaw=yaw)[1])
+    sc = _SCENE[0]
+    if sc: return sorted(pts, key=lambda p: sc.world(p[0], p[1], 0)[1] * C + sc.world(p[0], p[1], 0)[2] * K)
+    return sorted(pts, key=lambda p: rot(*p)[1])
 
 def spokes(s, x, y, ri, z, col, n=3, w=1.8, phase=90):
     for k in range(n):
@@ -527,14 +557,18 @@ def streaks(s, span, color, z=14):
 
 CENTERS = {}      # file -> (cx, cy, r) in viewBox units: where the drone is inside the picture, and its radius
 
-def fly(model, yaw_deg, color, name=None):
+ATTITUDE = (math.radians(16), math.radians(-14))    # flying: nose 16 deg down, banked 14 deg
+
+def fly(model, yaw_deg, color, name=None, attitude=ATTITUDE):
     """a drone in flight with its neon streak, no gate. yaw -90 puts the nose
     straight screen-right, so the posters can rotate the picture onto the trail."""
     s = Scene(yaw=math.radians(yaw_deg))
     probe = Scene(yaw=s.yaw); draw(probe, model); span = probe.bbox[2] - probe.bbox[0]
     s.off = (0, 0, 30)
     streaks(s, span * .55, color)
+    s.tilt(*attitude)
     draw(s, model)
+    s.tilt(0, 0)
     out = s.svg(pad=8)
     X, Y = s.P(0, 0, 30)
     if name: CENTERS[name] = (X - s.origin[0], Y - s.origin[1], span * .55)
@@ -566,7 +600,9 @@ def gate(color, drone, scale=1.0, yaw_deg=-45, neon=None, name=None):
     # the drone, through the middle, a little forward of the plane
     s.off = (0, 14, 5 + H * 0.40)
     streaks(s, span * .55, neon or color)
+    s.tilt(ATTITUDE[0] * .8, ATTITUDE[1] * .8)
     draw(s, drone)
+    s.tilt(0, 0)
     s.off = (0, 0, 0)
     out = s.svg(pad=8)
     X, Y = s.P(0, 14, 5 + H * 0.40)

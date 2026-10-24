@@ -380,7 +380,7 @@ TEMPLATE = '''<!doctype html>
       if (found < 0) { img.style.display = 'none'; return; }
       best = found;
       var p0 = probe.getPointAtLength(Math.max(0, best - 12)), p1 = probe.getPointAtLength(Math.min(len, best + 12)), pm = probe.getPointAtLength(best);
-      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI * 0.6;   // crab: part-way between nose-right and the trail's direction
       var cx = +img.getAttribute('data-cx'), cy = +img.getAttribute('data-cy');
       img.style.display = 'block'; img.style.left = (pm.x - cx) + 'px'; img.style.top = (pm.y - cy) + 'px';
       img.style.transformOrigin = cx + 'px ' + cy + 'px'; img.style.transform = 'rotate(' + ang.toFixed(1) + 'deg)';
