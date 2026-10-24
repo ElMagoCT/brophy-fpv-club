@@ -33,6 +33,7 @@ and sets <body data-trail> to "ok k=..." or "overflow Npx".
 import html, json, os, shutil, subprocess, sys
 from drones import SPAN_MM, MODELS, Scene, GATES as GATE_SCENES, K as CAM_K
 import math
+CENTERS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'img', 'centers.json')))
 from scenery import scenery, GY
 import re
 
@@ -70,16 +71,16 @@ SHEETS = [
   dict(file='03-map-tier0', sheet=1, tier='t0', dir='down', scene=(0, .25),
        start=('Start', 'Add your name at the sim kiosk, then fly'),
        sticker='Bonus challenge: do all five in one community period and you fly that day',   # 2026-10-15, Micah
-       gate=1, extras=[('fly-whoop', 70, 880)]),
+       gate=1, extras=['fly-whoop', 'fly-whoop-2']),
   dict(file='04-map-tier1', sheet=2, tier='t1', dir='up', scene=(.25, .5),
        came=('From sheet 1', 'Gate 1 passed: you fly the club Meteor'),
-       gate=2, extras=[('fly-pavo', 90, 1330)]),
+       gate=2, extras=['fly-pavo', 'fly-whoop']),
   dict(file='05-map-tier2', sheet=3, tier='t2', dir='down', scene=(.5, .75),
        came=('From sheet 2', 'Gate 2 passed: you fly the Pavo'),
-       gate=3, extras=[('fly-cinebot', 120, 640)]),
+       gate=3, extras=['fly-cinebot', 'fly-pavo-2']),
   dict(file='06-map-tier3', sheet=4, tier='t3', badges_from='el', dir='up', scene=(.75, 1),
        came=('From sheet 3', 'Gate 3 passed: you fly for the school'),
-       finish=True, extras=[('fly-cinebot-2', 70, 1310)]),
+       finish=True, extras=['fly-five-b', 'fly-cinebot-2']),
 ]
 
 # ----------------------------------------------------------------- helpers
@@ -201,18 +202,22 @@ def render(s, fs):
                 % ('bottom' if d == 'up' else 'top', GATE_GLYPH % ('currentColor', 'currentColor'), esc(s['came'][0]), esc(s['came'][1])))
     heading = ''
     # the picture in the landscape: the gate with the next drone through it (or the 5-inch over the summit on sheet 4)
-    pic = 'img/fly-five-b.svg' if s.get('finish') else 'img/gate-%d.svg' % s['gate']
+    pic = 'img/gate-c.svg' if s.get('finish') else 'img/gate-%d.svg' % s['gate']     # finish: a size probe only, not drawn
     vb = [float(v) for v in re.search(r'viewBox="([^"]+)"', open(os.path.join(HERE, pic)).read()).group(1).split()]
     pw, ph = round(vb[2] * PX_PER_MM), round(vb[3] * PX_PER_MM)
     px_right = 36
     ptop = GY - ph + 6 if d == 'down' else 48
     pcx = 1056 - px_right - pw / 2
     pcy = ptop + ph / 2
-    peak = (pcx, ptop + ph - (8 if not s.get('finish') else -30)) if d == 'up' else None
-    picture = '<img class="pic%s" src="%s" alt="" style="right:%dpx;top:%dpx;width:%dpx;height:%dpx">' % (' finishpic' if s.get('finish') else '', pic, px_right, ptop, pw, ph)
-    for (fname, right, top) in s.get('extras', []):
+    peak = (pcx, ptop + ph - 8) if d == 'up' and not s.get('finish') else ((760, 300) if s.get('finish') else None)
+    c = CENTERS[os.path.basename(pic)[:-4]]
+    picture = '' if s.get('finish') else ('<img class="pic" src="%s" alt="" data-cx="%d" data-cy="%d" data-r="%d" style="right:%dpx;top:%dpx;width:%dpx;height:%dpx">'
+               % (pic, round(c[0] * PX_PER_MM), round(c[1] * PX_PER_MM), round(c[2] * PX_PER_MM), px_right, ptop, pw, ph))
+    for fname in s.get('extras', []):
         vb2 = [float(v) for v in re.search(r'viewBox="([^"]+)"', open(os.path.join(HERE, 'img', fname + '.svg')).read()).group(1).split()]
-        picture += '<img class="extra" src="img/%s.svg" alt="" style="right:%dpx;top:%dpx;width:%dpx;height:%dpx">' % (fname, right, top, round(vb2[2] * PX_PER_MM), round(vb2[3] * PX_PER_MM))
+        c = CENTERS[fname]
+        picture += ('<img class="extra" src="img/%s.svg" alt="" data-cx="%d" data-cy="%d" data-r="%d" style="width:%dpx;height:%dpx">'
+                    % (fname, round(c[0] * PX_PER_MM), round(c[1] * PX_PER_MM), round(c[2] * PX_PER_MM), round(vb2[2] * PX_PER_MM), round(vb2[3] * PX_PER_MM)))
     # the flight line of the gate drone on screen (unit vector), so the exit trail follows it
     fdx, fdy = 0.78, 0.62
     if not s.get('finish'):
@@ -268,12 +273,13 @@ TEMPLATE = '''<!doctype html>
 (function () {
   var sheet = document.querySelector('.sheet'), map = document.getElementById('map');
   var DIR = sheet.getAttribute('data-dir'), SEED = +sheet.getAttribute('data-seed');
-  var W = map.clientWidth, H = map.clientHeight, MID = W / 2, GAPMIN = 14, GAPMAX = (sheet.classList.contains('bonus') || sheet.classList.contains('cert')) ? 130 : 90;
+  var W = map.clientWidth, H = map.clientHeight, MID = W / 2, GAPMIN = 14, GAPMAX = sheet.classList.contains('bonus') ? 150 : 110;
   var EXIT = parseFloat(sheet.style.getPropertyValue('--exit')), FINISH = sheet.classList.contains('finish');
   var TIER = getComputedStyle(document.querySelector('.trail-probe') || sheet).getPropertyValue('--tiercol').trim() || '#1f3350';
   function rnd(i, k) { var x = Math.sin((i + 1) * 12.9898 + SEED * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x); }
   function box(el) { var r = el.getBoundingClientRect(), m = map.getBoundingClientRect(); return {x: r.left - m.left, y: r.top - m.top, w: r.width, h: r.height}; }
   var lead = document.querySelector('.start'), sticker = document.querySelector('.sticker'), gate = document.getElementById('gatebox'), pic = document.querySelector('.pic');
+  var cardBoxes = [];
   var FDX = parseFloat(sheet.getAttribute('data-fdx')), FDY = parseFloat(sheet.getAttribute('data-fdy'));
   var top, bottom, topR;
   if (DIR === 'down') {
@@ -285,13 +291,12 @@ TEMPLATE = '''<!doctype html>
     var lb2 = box(lead); bottom = lb2.y - 16;
   }
   // keep the right-hand column clear of the picture when it sits beside the cards
-  var pb = box(pic), picTop = pb.y - 20, picBottom = pb.y + pb.h + 20;
 
   function layout(k) {
     sheet.style.setProperty('--k', k);
-    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card')), STEP = 48;
+    var cards = Array.prototype.slice.call(document.querySelectorAll('#cards .card')), STEP = 56;
     cards.forEach(function (c, i) {
-      var L = !(i % 2), w = Math.round(380 + 46 * rnd(i, 1)), drift = Math.round(34 * rnd(i, 2));
+      var L = !(i % 2), w = Math.round(410 + 40 * rnd(i, 1)), drift = Math.round(20 * rnd(i, 2));
       c.style.width = w + 'px';
       c.style.left = (L ? 44 + drift : W - 44 - w - drift) + 'px';
       c.style.setProperty('--tilt', ((rnd(i, 3) - .5) * 2.6).toFixed(2) + 'deg');
@@ -311,6 +316,7 @@ TEMPLATE = '''<!doctype html>
     var over = 0;
     for (var gap = GAPMAX; gap >= GAPMIN; gap -= 2) { over = place(gap); if (over <= 0) break; }
     if (DIR === 'up') cards.forEach(function (c) { c.style.top = (top + bottom - (c.offsetTop + c.offsetHeight)) + 'px'; });
+    cardBoxes = cards.map(box).concat([box(gate), box(lead)]);
     return Math.max(0, over);
   }
 
@@ -344,25 +350,56 @@ TEMPLATE = '''<!doctype html>
       pts.push(p);
     });
     var gb = box(gate), gmid = gb.x + gb.w / 2;
-    if (DIR === 'down') pts.push([gmid - 30, gb.y - 50], [gmid, gb.y + 8]);
-    else pts.push([gmid - 30, gb.y + gb.h + 50], [gmid, gb.y + gb.h - 8]);
+    var gateIn = DIR === 'down' ? [gmid, gb.y + 8] : [gmid, gb.y + gb.h - 8];
+    if (DIR === 'down') pts.push([gmid - 30, gb.y - 50], gateIn);
+    else pts.push([gmid - 30, gb.y + gb.h + 50], gateIn);
     var svg = document.getElementById('trail'), d = catmull(pts);
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', W); svg.setAttribute('height', H);
-    var inner = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
-    if (!FINISH) {                                            // out of the box, through the gate along the flight line, off the edge
-      var pb2 = box(pic), pcx = pb2.x + pb2.w / 2, pcy = pb2.y + pb2.h / 2, sz = Math.max(pb2.w, pb2.h);
+    var paths = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
+    var holes = [];                                            // [x, y, r] where a drone sits on the trail
+    // the extra drones ride the trail in the biggest gaps between stops
+    var probe = document.createElementNS('http://www.w3.org/2000/svg', 'path'); probe.setAttribute('d', d); svg.appendChild(probe);
+    var len = probe.getTotalLength();
+    var anchors = pins.concat([gateIn]), gaps = [];          // the stretch from the start marker to badge 1 hugs the first card: never there
+    for (var i = 1; i < anchors.length; i++) {
+      var a0 = anchors[i - 1], a1 = anchors[i];
+      gaps.push({ len: Math.hypot(a1[0] - a0[0], a1[1] - a0[1]), mid: [(a0[0] + a1[0]) / 2, (a0[1] + a1[1]) / 2] });
+    }
+    gaps.sort(function (p, q) { return q.len - p.len; });
+    function clear(x, y, r) {                                  // the drone's circle touches no card or box
+      for (var i = 0; i < cardBoxes.length; i++) { var b = cardBoxes[i]; var nx = Math.max(b.x, Math.min(x, b.x + b.w)), ny = Math.max(b.y, Math.min(y, b.y + b.h)); if (Math.hypot(x - nx, y - ny) < r) return false; }
+      return x > r * .6 && x < W - r * .6;
+    }
+    var extras = Array.prototype.slice.call(document.querySelectorAll('.extra'));
+    extras.forEach(function (img, k) {
+      var gp = gaps[k], r = +img.getAttribute('data-r'); if (!gp || gp.len < Math.max(3.4 * r, 290)) { img.style.display = 'none'; return; }
+      var best = 0, bd = 1e9;
+      for (var t = 0; t <= len; t += 5) { var q = probe.getPointAtLength(t), dd = (q.x - gp.mid[0]) * (q.x - gp.mid[0]) + (q.y - gp.mid[1]) * (q.y - gp.mid[1]); if (dd < bd) { bd = dd; best = t; } }
+      var found = -1;                                          // slide along the trail until the drone is clear of every card
+      for (var off = 0; off <= 400 && found < 0; off += 20) { [best + off, best - off].forEach(function (tt) { if (found >= 0 || tt < 0 || tt > len) return; var q = probe.getPointAtLength(tt); if (clear(q.x, q.y, Math.max(r * 1.15, 80))) found = tt; }); }
+      if (found < 0) { img.style.display = 'none'; return; }
+      best = found;
+      var p0 = probe.getPointAtLength(Math.max(0, best - 12)), p1 = probe.getPointAtLength(Math.min(len, best + 12)), pm = probe.getPointAtLength(best);
+      var ang = Math.atan2(p1.y - p0.y, p1.x - p0.x) * 180 / Math.PI;
+      var cx = +img.getAttribute('data-cx'), cy = +img.getAttribute('data-cy');
+      img.style.display = 'block'; img.style.left = (pm.x - cx) + 'px'; img.style.top = (pm.y - cy) + 'px';
+      img.style.transformOrigin = cx + 'px ' + cy + 'px'; img.style.transform = 'rotate(' + ang.toFixed(1) + 'deg)';
+      holes.push([pm.x, pm.y, r * 1.15]);
+    });
+    if (!FINISH && pic) {                                     // out of the box, through the gate along the flight line, off the edge
+      var pb2 = box(pic), sz = Math.max(pb2.w, pb2.h);
+      var pcx = pb2.x + (+pic.getAttribute('data-cx')), pcy = pb2.y + (+pic.getAttribute('data-cy'));
       var ey = Math.max(gb.y + 30, Math.min(gb.y + gb.h - 30, pcy - FDY * .45 * sz));
       var ex = [[gb.x + gb.w - 10, ey], [pcx - FDX * .48 * sz, pcy - FDY * .48 * sz], [pcx, pcy], [pcx + FDX * .42 * sz, pcy + FDY * .42 * sz], [W + 50, EXIT]];
       var d2 = catmull(ex);
-      // the trail fades out before the drone and back in after it
-      var x0 = pcx - .55 * pb2.w, x1 = pcx + .55 * pb2.w;
-      inner = '<defs><linearGradient id="fadeA" gradientUnits="userSpaceOnUse" x1="' + x0 + '" y1="0" x2="' + x1 + '" y2="0">' +
-              '<stop offset="0" stop-color="#fff" stop-opacity=".92"/><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset=".72" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".92"/></linearGradient>' +
-              '<linearGradient id="fadeB" gradientUnits="userSpaceOnUse" x1="' + x0 + '" y1="0" x2="' + x1 + '" y2="0">' +
-              '<stop offset="0" stop-color="' + TIER + '"/><stop offset=".3" stop-color="' + TIER + '" stop-opacity="0"/><stop offset=".72" stop-color="' + TIER + '" stop-opacity="0"/><stop offset="1" stop-color="' + TIER + '"/></linearGradient></defs>' + inner;
-      inner += '<path class="trail-shadow" d="' + d2 + '" style="stroke:url(#fadeA)"/><path class="trail-line" d="' + d2 + '" style="stroke:url(#fadeB)"/>';
+      paths += '<path class="trail-shadow" d="' + d2 + '"/><path class="trail-line" d="' + d2 + '"/>';
+      holes.push([pcx, pcy, (+pic.getAttribute('data-r')) * 1.25]);
     }
-    svg.innerHTML = inner;
+    // the dots fade out under every drone and back in after it
+    var mask = '<defs><radialGradient id="hole"><stop offset="0" stop-color="#000"/><stop offset=".5" stop-color="#000"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>' +
+               '<mask id="tm" maskUnits="userSpaceOnUse" x="-100" y="-100" width="' + (W + 200) + '" height="' + (H + 200) + '"><rect x="-100" y="-100" width="' + (W + 200) + '" height="' + (H + 200) + '" fill="#fff"/>' +
+               holes.map(function (h) { return '<circle cx="' + h[0].toFixed(1) + '" cy="' + h[1].toFixed(1) + '" r="' + h[2].toFixed(1) + '" fill="url(#hole)"/>'; }).join('') + '</mask></defs>';
+    svg.innerHTML = mask + '<g mask="url(#tm)">' + paths + '</g>';
   }
 
   function run() {

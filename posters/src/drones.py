@@ -20,7 +20,7 @@ Models (real wheelbases, so they grow like the real fleet):
   five     5-inch freestyle quad, 225 mm
 SPAN_MM is the projected width of each, for sizing <img> tags consistently.
 """
-import math, os, re
+import math, os, re, json
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 IMG = os.path.join(HERE, 'img')
@@ -314,6 +314,7 @@ class Scene:
         x0, y0, x1, y1 = self.bbox
         x0 -= pad; y0 -= pad + extra_top; x1 += pad; y1 += pad
         w, h = x1 - x0, y1 - y0
+        self.origin = (x0, y0, w, h)
         return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="%s %s %s %s" width="%s" height="%s">'
                 '<defs>%s</defs>%s</svg>' % (f2(x0), f2(y0), f2(w), f2(h), f2(w), f2(h), ''.join(self.defs), ''.join(self.out)))
 
@@ -524,16 +525,22 @@ def streaks(s, span, color, z=14):
     s.out.append('<g transform="%s" opacity=".9">%s</g>' % (s.layer(z), ribbons))
     s.mark(0, -span * .25 - L, z); s.mark(-span * .5, -span * .25 - L, z); s.mark(span * .5, -span * .25 - L, z)
 
-def fly(model, yaw_deg, color):
-    """a drone in flight with its neon streak, no gate"""
+CENTERS = {}      # file -> (cx, cy, r) in viewBox units: where the drone is inside the picture, and its radius
+
+def fly(model, yaw_deg, color, name=None):
+    """a drone in flight with its neon streak, no gate. yaw -90 puts the nose
+    straight screen-right, so the posters can rotate the picture onto the trail."""
     s = Scene(yaw=math.radians(yaw_deg))
     probe = Scene(yaw=s.yaw); draw(probe, model); span = probe.bbox[2] - probe.bbox[0]
     s.off = (0, 0, 30)
     streaks(s, span * .55, color)
     draw(s, model)
-    return s.svg(pad=8)
+    out = s.svg(pad=8)
+    X, Y = s.P(0, 0, 30)
+    if name: CENTERS[name] = (X - s.origin[0], Y - s.origin[1], span * .55)
+    return out
 
-def gate(color, drone, scale=1.0, yaw_deg=-45, neon=None):
+def gate(color, drone, scale=1.0, yaw_deg=-45, neon=None, name=None):
     """an FPV race gate (LED tube on two feet) with a drone flying through it"""
     s = Scene(yaw=math.radians(yaw_deg))
     # size the gate to the drone
@@ -561,14 +568,19 @@ def gate(color, drone, scale=1.0, yaw_deg=-45, neon=None):
     streaks(s, span * .55, neon or color)
     draw(s, drone)
     s.off = (0, 0, 0)
-    return s.svg(pad=8)
+    out = s.svg(pad=8)
+    X, Y = s.P(0, 14, 5 + H * 0.40)
+    if name: CENTERS[name] = (X - s.origin[0], Y - s.origin[1], span * .5)
+    return out
 
 # the gate scenes: (file, gate colour, drone, yaw deg, streak colour). Different headings on purpose.
 GATES = [('gate-1', '#6b4bc4', 'whoop', -45, '#22d3ee'), ('gate-2', '#c4521a', 'pavo', -150, '#f052a0'),
          ('gate-3', '#2f8a4a', 'five', -28, '#38e07a'), ('gate-c', '#c4521a', 'cinebot', -40, '#f0a91a')]
 # drones in flight for the open parts of the sheets: (file, model, yaw deg, streak colour)
-FLIES = [('fly-five-b', 'five_b', 150, '#7c5cff'), ('fly-whoop', 'whoop', 62, '#22d3ee'), ('fly-pavo', 'pavo', -150, '#f052a0'),
-         ('fly-cinebot', 'cinebot', 24, '#f0a91a'), ('fly-cinebot-2', 'cinebot', 118, '#38e07a'), ('fly-five', 'five', 128, '#38e07a')]
+FLIES = [('fly-five-b', 'five_b', -90, '#7c5cff'),                                          # the finish sheet's big 5-inch, on the trail
+         ('fly-whoop', 'whoop', -90, '#22d3ee'), ('fly-pavo', 'pavo', -90, '#f052a0'),           # trail drones: nose screen-right,
+         ('fly-cinebot', 'cinebot', -90, '#f0a91a'), ('fly-cinebot-2', 'cinebot', -90, '#38e07a'),  # the sheet rotates them onto the trail
+         ('fly-five', 'five', -90, '#7c5cff'), ('fly-whoop-2', 'whoop', -90, '#f052a0'), ('fly-pavo-2', 'pavo', -90, '#f0a91a')]
 PX_PER_MM = 1.15   # one scale for every <img> on the posters, so the fleet grows like the real one
 
 if __name__ == '__main__':
@@ -580,15 +592,16 @@ if __name__ == '__main__':
         tiles.append('<figure><img src="img/drone-%s.svg" style="width:%dpx"><figcaption>%s · %.0f mm wide</figcaption></figure>' % (name, int(SPAN_MM[name] * 1.3), name, SPAN_MM[name]))
         print('drone-%s.svg  %5.0f mm wide  %3d KB' % (name, SPAN_MM[name], len(svg) // 1024))
     for fname, col, drone, yaw, neon in GATES:
-        svg = gate(col, drone, yaw_deg=yaw, neon=neon)
+        svg = gate(col, drone, yaw_deg=yaw, neon=neon, name=fname)
         with open(os.path.join(IMG, fname + '.svg'), 'w') as f: f.write(svg)
         tiles.append('<figure><img src="img/%s.svg" style="width:%dpx"><figcaption>%s</figcaption></figure>' % (fname, int(SPAN_MM[drone] * 1.55 * 1.3), fname))
         print('%s.svg  %3d KB' % (fname, len(svg) // 1024))
     for fname, model, yaw, neon in FLIES:
-        svg = fly(model, yaw, neon)
+        svg = fly(model, yaw, neon, name=fname)
         with open(os.path.join(IMG, fname + '.svg'), 'w') as f: f.write(svg)
         tiles.append('<figure><img src="img/%s.svg" style="width:%dpx"><figcaption>%s</figcaption></figure>' % (fname, 320, fname))
         print('%s.svg  %3d KB' % (fname, len(svg) // 1024))
+    with open(os.path.join(IMG, 'centers.json'), 'w') as f: json.dump(CENTERS, f, indent=0)
     with open(os.path.join(HERE, 'preview-drones.html'), 'w') as f:
         f.write('<!doctype html><meta charset="utf-8"><title>drones</title><style>body{background:#fff;font:14px Barlow,sans-serif;margin:30px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-end}'
                 'figure{margin:0;text-align:center}img{display:block}figcaption{margin-top:8px;color:#555}</style>' + ''.join(tiles))

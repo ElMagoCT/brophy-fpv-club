@@ -145,9 +145,10 @@ the trail fades out before each drone and back in after it. The sheet's own scri
 cards with real heights, mirrors them on "up" sheets, scales the text down a
 step if crowded, draws the trail with one loop in the biggest gap, and sets
 `data-trail="ok k=…"` or `"overflow Npx"` on `<body>` before Chrome prints.
-Each sheet also carries one or two drones in flight with neon streaks
-(`FLIES` in drones.py), headings varied on purpose; the two 5-inch builds differ
-(teal Axis-style and an orange one with an action camera).
+One or two more drones ride the trail on each sheet (`extras` in SHEETS; the
+sheet's script puts each in the longest clear gap, rotated to the trail's
+direction, and the dots fade under every drone through one SVG mask); the two
+5-inch builds differ (teal Axis-style and an orange one with an action camera).
 
 The aircraft are not clip art: `drones.py` is a small renderer (one yaw and
 elevation for everything, affine projection, shaded walls, stacked slices for
