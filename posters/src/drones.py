@@ -30,8 +30,9 @@ ELEV = math.radians(52)
 K, C = math.sin(ELEV), math.cos(ELEV)
 LIGHT = (-0.55, 0.83)          # in the turned plan: from the left and the front
 
-def rot(x, y):
-    cs, sn = math.cos(YAW), math.sin(YAW)
+def rot(x, y, yaw=None):
+    yaw = YAW if yaw is None else yaw
+    cs, sn = math.cos(yaw), math.sin(yaw)
     return x * cs - y * sn, x * sn + y * cs
 
 def shade(col, f):
@@ -42,15 +43,18 @@ def shade(col, f):
 def f2(v): return ('%.2f' % v).rstrip('0').rstrip('.')
 
 class Scene:
-    def __init__(self):
+    def __init__(self, yaw=None):
         self.out, self.defs, self._grad = [], [], {}
         self.off = (0, 0, 0)
+        self.yaw = YAW if yaw is None else yaw      # the product shots turn 28 deg; the gate scenes -45 deg, so the drone flies screen-right
         self.bbox = [1e9, 1e9, -1e9, -1e9]
+
+    def rot(self, x, y): return rot(x, y, self.yaw)
 
     # ---- projection
     def P(self, x, y, z):
         x, y, z = x + self.off[0], y + self.off[1], z + self.off[2]
-        xr, yr = rot(x, y)
+        xr, yr = self.rot(x, y)
         X, Y = xr, yr * K - z * C
         b = self.bbox; b[0] = min(b[0], X); b[1] = min(b[1], Y); b[2] = max(b[2], X); b[3] = max(b[3], Y)
         return X, Y
@@ -58,7 +62,7 @@ class Scene:
     def layer(self, z, cx=0, cy=0):
         """transform for a horizontal plane at height z, origin at plan (cx, cy)"""
         X, Y = self.P(cx, cy, z)
-        cs, sn = math.cos(YAW), math.sin(YAW)
+        cs, sn = math.cos(self.yaw), math.sin(self.yaw)
         return 'matrix(%.4f %.4f %.4f %.4f %.2f %.2f)' % (cs, sn * K, -sn, cs * K, X, Y)
 
     def face(self, x, y, z, nx, ny):
@@ -67,7 +71,7 @@ class Scene:
         X, Y = self.P(x, y, z)
         n = math.hypot(nx, ny); nx, ny = nx / n, ny / n
         tx, ty = -ny, nx                       # tangent, to the right when facing the normal... pick the one that goes right on screen
-        ux, uy = rot(tx, ty)
+        ux, uy = self.rot(tx, ty)
         if ux < 0: ux, uy, tx, ty = -ux, -uy, -tx, -ty
         return 'matrix(%.4f %.4f 0 %.4f %.2f %.2f)' % (ux, uy * K, -C, X, Y)
 
@@ -169,7 +173,7 @@ class Scene:
             nx, ny = b[1] - a[1], -(b[0] - a[0])
             if (a[0] - cxm) * nx + (a[1] - cym) * ny < 0: nx, ny = -nx, -ny
             ln = math.hypot(nx, ny) or 1; nx, ny = nx / ln, ny / ln
-            nxr, nyr = rot(nx, ny)
+            nxr, nyr = self.rot(nx, ny)
             if nyr <= 0.02: continue
             lit = max(0.0, nxr * LIGHT[0] + nyr * LIGHT[1])
             f = 0.55 + 0.62 * lit
@@ -314,10 +318,12 @@ class Scene:
                 '<defs>%s</defs>%s</svg>' % (f2(x0), f2(y0), f2(w), f2(h), f2(w), f2(h), ''.join(self.defs), ''.join(self.out)))
 
 # ---------------------------------------------------------------- helpers
+_SCENE = [None]     # the scene being drawn, for depth sorting at its yaw
 def corners(a):
     """the four motor positions of an X quad with half-offset a, far to near"""
     pts = [(-a, -a), (a, -a), (-a, a), (a, a)]
-    return sorted(pts, key=lambda p: rot(*p)[1])
+    yaw = _SCENE[0].yaw if _SCENE[0] else YAW
+    return sorted(pts, key=lambda p: rot(*p, yaw=yaw)[1])
 
 def spokes(s, x, y, ri, z, col, n=3, w=1.8, phase=90):
     for k in range(n):
@@ -475,16 +481,21 @@ MODELS = dict(radio=radio, whoop=whoop, pavo=pavo, cinebot=cinebot, five=five)
 # projected widths of the finished drawings (mm), filled in by render()
 SPAN_MM = {}
 
-def render(name, **kw):
-    s = Scene(); MODELS[name](s, **kw) if kw else MODELS[name](s)
+def draw(s, name):
+    _SCENE[0] = s; MODELS[name](s); _SCENE[0] = None; return s
+
+def render(name, yaw=None):
+    s = Scene(yaw=yaw); draw(s, name)
     SPAN_MM[name] = s.bbox[2] - s.bbox[0]
     return s.svg()
 
+FLY_YAW = math.radians(-45)     # gate scenes: the drone's nose points screen-right and a little toward the viewer
+
 def gate(color, drone, scale=1.0):
-    """an FPV race gate (LED tube on two feet) with a drone coming through it"""
-    s = Scene()
+    """an FPV race gate (LED tube on two feet) with a drone flying through it, left to right"""
+    s = Scene(yaw=FLY_YAW)
     # size the gate to the drone
-    probe = Scene(); MODELS[drone](probe)
+    probe = Scene(yaw=FLY_YAW); draw(probe, drone)
     span = (probe.bbox[2] - probe.bbox[0]) * scale
     W = span * 1.25 + 110; H = W * 0.92; r = W * 0.16; t = W * 0.045
     # feet
@@ -504,8 +515,8 @@ def gate(color, drone, scale=1.0):
     for sx in (-1, 1):
         s.mark(sx * W / 2 - t, 0, 0); s.mark(sx * W / 2 + t, 0, H + 5 + t)
     # the drone, through the middle, a little forward of the plane
-    s.off = (0, 10, 5 + H * 0.40)
-    MODELS[drone](s)
+    s.off = (0, 14, 5 + H * 0.40)
+    draw(s, drone)
     s.off = (0, 0, 0)
     return s.svg(pad=8)
 
@@ -526,6 +537,9 @@ if __name__ == '__main__':
         with open(os.path.join(IMG, fname + '.svg'), 'w') as f: f.write(svg)
         tiles.append('<figure><img src="img/%s.svg" style="width:%dpx"><figcaption>%s</figcaption></figure>' % (fname, int(SPAN_MM[drone] * 1.55 * 1.3), fname))
         print('%s.svg  %3d KB' % (fname, len(svg) // 1024))
+    svg = render('five', yaw=FLY_YAW)                       # the finish: the 5-inch flying, no gate
+    with open(os.path.join(IMG, 'fly-five.svg'), 'w') as f: f.write(svg)
+    tiles.append('<figure><img src="img/fly-five.svg" style="width:420px"><figcaption>fly-five</figcaption></figure>')
     with open(os.path.join(HERE, 'preview-drones.html'), 'w') as f:
         f.write('<!doctype html><meta charset="utf-8"><title>drones</title><style>body{background:#fff;font:14px Barlow,sans-serif;margin:30px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-end}'
                 'figure{margin:0;text-align:center}img{display:block}figcaption{margin-top:8px;color:#555}</style>' + ''.join(tiles))

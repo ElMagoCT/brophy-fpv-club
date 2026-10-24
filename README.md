@@ -137,8 +137,10 @@ own requirements only; the gate picture (the drone flying through a race gate)
 stands in the landscape beside it and the trail runs out of the box, through the
 gate and off the edge. No titles, legends or footers; a "the whole path" strip
 repeats the four tiers and three gates with YOU ARE HERE. Behind everything a
-faint ink landscape (`scenery.py`) goes from city on sheet 1 to mountains and
-pines on sheet 4, continuous across the sheets. The sheet's own script spaces the
+bold ink landscape (`scenery.py`, no grid) goes from a neon city on sheet 1 to
+mountains and pines on sheet 4, one continuous panorama; the gate pictures are
+rendered at a -45 deg yaw so the drone flies screen-right along the trail, and
+the trail fades out before each drone and back in after it. The sheet's own script spaces the
 cards with real heights, mirrors them on "up" sheets, scales the text down a
 step if crowded, draws the trail with one loop in the biggest gap, and sets
 `data-trail="ok k=…"` or `"overflow Npx"` on `<body>` before Chrome prints.

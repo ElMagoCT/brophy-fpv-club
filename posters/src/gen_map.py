@@ -174,6 +174,7 @@ def cert_flow_html():
 
 # ----------------------------------------------------------------- render
 EXIT = {}        # file -> y where its trail leaves the right edge (the next sheet's entry height)
+HEX = {'var(--sky)': '#1c5578', 'var(--violet)': '#4b3287', 'var(--rust)': '#8f3d12', 'var(--green)': '#1f5230'}
 
 def render(s, fs):
     cert = s.get('cert', False)
@@ -202,7 +203,7 @@ def render(s, fs):
                 % ('bottom' if d == 'up' else 'top', GATE_GLYPH % ('currentColor', 'currentColor'), esc(s['came'][0]), esc(s['came'][1])))
     heading = '<div class="bonushead"><span>Bonus badges</span><span>after Event Pilot &middot; any order, any time &middot; not counted</span></div>' if bonus else ''
     # the picture in the landscape: the gate with the next drone through it (or the 5-inch over the summit on sheet 4)
-    pic = 'img/gate-c.svg' if cert else ('img/drone-five.svg' if s.get('finish') else 'img/gate-%d.svg' % s['gate'])
+    pic = 'img/gate-c.svg' if cert else ('img/fly-five.svg' if s.get('finish') else 'img/gate-%d.svg' % s['gate'])
     vb = [float(v) for v in re.search(r'viewBox="([^"]+)"', open(os.path.join(HERE, pic)).read()).group(1).split()]
     pw, ph = round(vb[2] * PX_PER_MM), round(vb[3] * PX_PER_MM)
     px_right = 36
@@ -216,11 +217,13 @@ def render(s, fs):
     if d == 'up':
         peak = (pcx, ptop + ph - (8 if not s.get('finish') else -30))   # a tower or a summit under the gate (the finish drone hovers above it)
     picture = '<img class="pic%s" src="%s" alt="" style="right:%dpx;top:%dpx;width:%dpx;height:%dpx">' % (' finishpic' if s.get('finish') else '', pic, px_right, ptop, pw, ph)
-    # the trail leaves through the picture at its centre height; the next sheet's entry marker sits at the same height
-    EXIT[s['file']] = pcy
+    # the trail leaves along the flight line, down-right through the gate; the next sheet's entry marker sits where it runs off
+    exit_y = pcy + 0.32 * ph + 30
+    EXIT[s['file']] = exit_y
     prev = {'04-map-tier1': '03-map-tier0', '05-map-tier2': '04-map-tier1', '06-map-tier3': '05-map-tier2'}.get(s['file'])
     entry_y = EXIT.get(prev, 0) if prev else 0
-    scene = scenery(s['scene'][0], s['scene'][1], gx=(s['sheet'] if not cert else 9) * 1056, peak=peak, seed=s['sheet'] if not cert else 7)
+    scene = scenery(s['scene'][0], s['scene'][1], gx=(s['sheet'] if not cert else 9) * 1056, peak=peak, seed=s['sheet'] if not cert else 7,
+                    spot=(pcx, pcy, max(pw, ph) * .62))
     if cert:
         color, flow = 'var(--rust)', cert_flow_html()
         title = 'Flight Clearance — the Brophy Drone Certification'
@@ -232,7 +235,7 @@ def render(s, fs):
     for k, v in {
         '@@TITLE@@': title, '@@TIERCOLOR@@': color, '@@SEED@@': str(s['sheet']) if not cert else '7', '@@DIR@@': d,
         '@@CLASSES@@': (' bonus' if bonus else '') + (' cert' if cert else '') + (' finish' if s.get('finish') else ''),
-        '@@FLOW@@': flow, '@@SCENE@@': scene, '@@PICTURE@@': picture, '@@ENTRY@@': str(round(entry_y)), '@@EXIT@@': str(round(pcy)),
+        '@@FLOW@@': flow, '@@SCENE@@': scene, '@@TIERHEX@@': HEX.get(color, '#1f3350') if not bonus else '#7d5810', '@@PICTURE@@': picture, '@@ENTRY@@': str(round(entry_y)), '@@EXIT@@': str(round(exit_y)),
         '@@LEAD@@': lead, '@@HEADING@@': heading, '@@CARDS@@': cards, '@@GATE@@': gate,
         '@@QR@@': 'qr-clearance.svg' if cert else 'qr-path.svg',
     }.items(): page = page.replace(k, v)
@@ -245,9 +248,8 @@ TEMPLATE = '''<!doctype html>
 <link rel="stylesheet" href="map.css">
 </head>
 <body>
-<div class="bg"><div class="grid"></div><div class="fine"></div><div class="vig"></div></div>
 <div class="scene">@@SCENE@@</div>
-<div class="sheet@@CLASSES@@" style="--tier:@@TIERCOLOR@@;--entry:@@ENTRY@@px;--exit:@@EXIT@@px" data-dir="@@DIR@@" data-seed="@@SEED@@">
+<div class="sheet@@CLASSES@@" style="--tier:@@TIERCOLOR@@;--tiercol:@@TIERHEX@@;--entry:@@ENTRY@@px;--exit:@@EXIT@@px" data-dir="@@DIR@@" data-seed="@@SEED@@">
   @@FLOW@@
   <div class="map" id="map">
     <svg class="trail" id="trail"></svg>
@@ -274,6 +276,7 @@ TEMPLATE = '''<!doctype html>
   var DIR = sheet.getAttribute('data-dir'), SEED = +sheet.getAttribute('data-seed');
   var W = map.clientWidth, H = map.clientHeight, MID = W / 2, GAPMIN = 14, GAPMAX = (sheet.classList.contains('bonus') || sheet.classList.contains('cert')) ? 130 : 90;
   var EXIT = parseFloat(sheet.style.getPropertyValue('--exit')), FINISH = sheet.classList.contains('finish');
+  var TIER = getComputedStyle(document.querySelector('.trail-probe') || sheet).getPropertyValue('--tiercol').trim() || '#1f3350';
   function rnd(i, k) { var x = Math.sin((i + 1) * 12.9898 + SEED * 78.233 + k * 37.719) * 43758.5453; return x - Math.floor(x); }
   function box(el) { var r = el.getBoundingClientRect(), m = map.getBoundingClientRect(); return {x: r.left - m.left, y: r.top - m.top, w: r.width, h: r.height}; }
   var flow = document.querySelector('.flow'), lead = document.querySelector('.start'), sticker = document.querySelector('.sticker'), bh = document.querySelector('.bonushead'), gate = document.getElementById('gatebox'), pic = document.querySelector('.pic');
@@ -353,12 +356,18 @@ TEMPLATE = '''<!doctype html>
     var svg = document.getElementById('trail'), d = catmull(pts);
     svg.setAttribute('viewBox', '0 0 ' + W + ' ' + H); svg.setAttribute('width', W); svg.setAttribute('height', H);
     var inner = '<path class="trail-shadow" d="' + d + '"/><path class="trail-line" d="' + d + '"/>';
-    if (!FINISH) {                                            // out of the box, through the gate, off the edge
-      var ey = Math.max(gb.y + 30, Math.min(gb.y + gb.h - 30, EXIT));
-      var pcx = box(pic).x + box(pic).w / 2;
-      var ex = [[gb.x + gb.w - 10, ey], [gb.x + gb.w + 30, ey + (EXIT - ey) * .4], [pcx - 40, EXIT], [pcx + 60, EXIT], [W + 50, EXIT]];
+    if (!FINISH) {                                            // out of the box, through the gate along the flight line, off the edge
+      var pb2 = box(pic), pcx = pb2.x + pb2.w / 2, pcy = pb2.y + pb2.h / 2;
+      var ey = Math.max(gb.y + 30, Math.min(gb.y + gb.h - 30, pcy - .3 * pb2.h));
+      var ex = [[gb.x + gb.w - 10, ey], [pcx - .5 * pb2.w, pcy - .38 * pb2.h], [pcx, pcy], [pcx + .42 * pb2.w, pcy + .32 * pb2.h], [W + 50, EXIT]];
       var d2 = catmull(ex);
-      inner += '<path class="trail-shadow" d="' + d2 + '"/><path class="trail-line" d="' + d2 + '"/>';
+      // the trail fades out before the drone and back in after it
+      var x0 = pcx - .55 * pb2.w, x1 = pcx + .55 * pb2.w;
+      inner = '<defs><linearGradient id="fadeA" gradientUnits="userSpaceOnUse" x1="' + x0 + '" y1="0" x2="' + x1 + '" y2="0">' +
+              '<stop offset="0" stop-color="#fff" stop-opacity=".92"/><stop offset=".3" stop-color="#fff" stop-opacity="0"/><stop offset=".72" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".92"/></linearGradient>' +
+              '<linearGradient id="fadeB" gradientUnits="userSpaceOnUse" x1="' + x0 + '" y1="0" x2="' + x1 + '" y2="0">' +
+              '<stop offset="0" stop-color="' + TIER + '"/><stop offset=".3" stop-color="' + TIER + '" stop-opacity="0"/><stop offset=".72" stop-color="' + TIER + '" stop-opacity="0"/><stop offset="1" stop-color="' + TIER + '"/></linearGradient></defs>' + inner;
+      inner += '<path class="trail-shadow" d="' + d2 + '" style="stroke:url(#fadeA)"/><path class="trail-line" d="' + d2 + '" style="stroke:url(#fadeB)"/>';
     }
     svg.innerHTML = inner;
   }

@@ -27,6 +27,7 @@
 .map svg.trail{position:absolute;left:0;top:0;overflow:visible;z-index:0}
 .trail-shadow{fill:none;stroke:rgba(255,255,255,.92);stroke-width:24;stroke-linecap:round;stroke-linejoin:round}
 .trail-line{fill:none;stroke:var(--tier);stroke-width:7;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1 17}
+.sheet.cert .trail-line{stroke:var(--rust)}
 .sheet.bonus .trail-line{stroke:var(--amber)}
 
 /* where the trail starts: GO on sheet 1 and the clearance sheet, "from sheet N" on the others */
@@ -34,7 +35,7 @@
 .start.came.start-top{top:calc(var(--entry) - 35px)}
 .start .go{width:70px;height:70px;border-radius:50%;background:var(--rust);color:var(--paper);border:5px solid var(--white);
   font-family:var(--mono);font-size:26px;letter-spacing:.1em;display:grid;place-items:center;flex:none}
-.start div{font-family:var(--hand);font-size:18px;color:var(--rust);line-height:1.15;max-width:380px}
+.start div{font-family:var(--hand);font-size:18px;color:var(--rust);line-height:1.15;max-width:380px;background-color:rgba(242,236,224,.92);border-radius:8px;padding:6px 12px}
 .start b{display:block;font-family:var(--mono);font-weight:400;font-size:15px;letter-spacing:.22em;text-transform:uppercase}
 .start.came .go{background:var(--white);color:var(--tier);border-color:var(--tier)}
 .start.came .go svg{width:42px;height:42px}
