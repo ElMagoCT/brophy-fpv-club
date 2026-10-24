@@ -73,6 +73,11 @@ class Scene:
 
     def mark(self, x, y, z): self.P(x, y, z)   # grow the bbox without drawing
 
+    def mark_circle(self, cx, cy, z, r):
+        """grow the bbox by the projected ellipse of a horizontal circle"""
+        X, Y = self.P(cx, cy, z)
+        b = self.bbox; b[0] = min(b[0], X - r); b[1] = min(b[1], Y - r * K); b[2] = max(b[2], X + r); b[3] = max(b[3], Y + r * K)
+
     # ---- gradients (object bounding box, shared by colour)
     def grad(self, kind, col):
         key = (kind, col)
@@ -117,7 +122,7 @@ class Scene:
     # ---- primitives
     def ellipse(self, cx, cy, z, r, fill, extra=''):
         X, Y = self.P(cx, cy, z)
-        self.P(cx - r, cy - r, z); self.P(cx + r, cy + r, z)
+        self.mark_circle(cx, cy, z, r)
         self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s"%s/>' % (f2(X), f2(Y), f2(r), f2(r * K), fill, extra))
 
     def wall_path(self, X, Y0, Y1, r):
@@ -127,7 +132,7 @@ class Scene:
 
     def cyl(self, cx, cy, r, z0, z1, col, top=None, top_fill=None):
         X, Y0 = self.P(cx, cy, z0); _, Y1 = self.P(cx, cy, z1)
-        self.P(cx - r, cy - r, z0); self.P(cx + r, cy + r, z1)
+        self.mark_circle(cx, cy, z0, r); self.mark_circle(cx, cy, z1, r)
         self.out.append('<path d="%s" fill="url(#%s)"/>' % (self.wall_path(X, Y0, Y1, r), self.grad('wall', col)))
         if top is not False:
             self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="%s"/>' % (
@@ -144,7 +149,7 @@ class Scene:
 
     def duct_front(self, cx, cy, ro, ri, z0, z1, col, rim=None):
         X, Y0 = self.P(cx, cy, z0); _, Y1 = self.P(cx, cy, z1)
-        self.P(cx - ro, cy - ro, z0); self.P(cx + ro, cy + ro, z1)
+        self.mark_circle(cx, cy, z0, ro); self.mark_circle(cx, cy, z1, ro)
         self.out.append('<path d="%s" fill="url(#%s)"/>' % (self.wall_path(X, Y0, Y1, ro), self.grad('wall', col)))
         ring = ('M%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0ZM%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0Z' % (
             f2(X - ro), f2(Y1), f2(ro), f2(ro * K), f2(2 * ro), f2(ro), f2(ro * K), f2(-2 * ro),
@@ -224,7 +229,7 @@ class Scene:
     def ellipse_wh(self, cx, cy, z, rx, ry, fill):
         self.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" transform="%s" fill="%s"/>' % (
             f2(cx), f2(cy), f2(rx), f2(ry), self.layer(z), fill))
-        self.P(cx - rx, cy - ry, z); self.P(cx + rx, cy + ry, z)
+        self.mark_circle(cx, cy, z, max(rx, ry))
 
     def motor(self, cx, cy, r, z0, z1, col='#44484e', ring=None):
         self.cyl(cx, cy, r * 0.55, z0, z0 + (z1 - z0) * 0.25, shade(col, .7))        # base / stator
@@ -248,7 +253,7 @@ class Scene:
             f2(angle + i * 360 / blades), f2(r * .012)) for i in range(blades))
         self.out.append('<g transform="%s" opacity="%s">%s<circle r="%s" fill="%s"/><circle r="%s" fill="%s"/></g>' % (
             self.layer(z, cx, cy), f2(opacity), parts, f2(r * .11), hub or shade(col, .5), f2(r * .035), '#111'))
-        self.P(cx - r, cy - r, z); self.P(cx + r, cy + r, z)
+        self.mark_circle(cx, cy, z, r * 1.06)
 
     def line3(self, x0, y0, z0, x1, y1, z1, w, col, cap='round'):
         A, B = self.P(x0, y0, z0), self.P(x1, y1, z1)
@@ -301,7 +306,7 @@ class Scene:
         self.off = keep
 
     # ---- output
-    def svg(self, pad=6, extra_top=0):
+    def svg(self, pad=10, extra_top=0):
         x0, y0, x1, y1 = self.bbox
         x0 -= pad; y0 -= pad + extra_top; x1 += pad; y1 += pad
         w, h = x1 - x0, y1 - y0
@@ -481,7 +486,7 @@ def gate(color, drone, scale=1.0):
     # size the gate to the drone
     probe = Scene(); MODELS[drone](probe)
     span = (probe.bbox[2] - probe.bbox[0]) * scale
-    W = span * 1.55; H = W * 0.92; r = W * 0.16; t = W * 0.045
+    W = span * 1.25 + 110; H = W * 0.92; r = W * 0.16; t = W * 0.045
     # feet
     for sx in (-1, 1):
         s.box(sx * W / 2 - 12, -22, sx * W / 2 + 12, 22, 0, 5, '#4a4f57')
@@ -499,7 +504,7 @@ def gate(color, drone, scale=1.0):
     for sx in (-1, 1):
         s.mark(sx * W / 2 - t, 0, 0); s.mark(sx * W / 2 + t, 0, H + 5 + t)
     # the drone, through the middle, a little forward of the plane
-    s.off = (0, 10, 5 + H * 0.42)
+    s.off = (0, 10, 5 + H * 0.40)
     MODELS[drone](s)
     s.off = (0, 0, 0)
     return s.svg(pad=8)

@@ -114,6 +114,7 @@ Everything is in `posters/src/`:
 ```bash
 cd posters/src
 python3 drones.py              # draws img/drone-*.svg and img/gate-*.svg (the aircraft and the race gates)
+#   scenery.py is imported by gen_map.py: the city-to-mountains backdrop behind the trail
 python3 gen_map.py             # writes 02-cert (Flight Clearance) and 03..06 (the four Pilot Path sheets)
 python3 gen_dock.py            # writes 08..15, the drone dock sheets (4 drone classes x 8.5x11 and 7x11)
 python3 build.py               # renders every NN-*.html to ../NN.pdf and ../preview/NN.png
@@ -132,8 +133,12 @@ others). Cards hang off the dotted trail on alternating sides, a little varied
 in width, drifted and tilted (seeded, so rebuilds are identical), and list only
 what passes the badge. A tier's checkpoint is a race **gate** box at the end of
 the sheet with the drone it unlocks flying through, listing the checkpoint's
-own requirements only. No big tier title; a "the whole path" strip repeats the
-four tiers and three gates with YOU ARE HERE. The sheet's own script spaces the
+own requirements only; the gate picture (the drone flying through a race gate)
+stands in the landscape beside it and the trail runs out of the box, through the
+gate and off the edge. No titles, legends or footers; a "the whole path" strip
+repeats the four tiers and three gates with YOU ARE HERE. Behind everything a
+faint ink landscape (`scenery.py`) goes from city on sheet 1 to mountains and
+pines on sheet 4, continuous across the sheets. The sheet's own script spaces the
 cards with real heights, mirrors them on "up" sheets, scales the text down a
 step if crowded, draws the trail with one loop in the biggest gap, and sets
 `data-trail="ok k=…"` or `"overflow Npx"` on `<body>` before Chrome prints.
