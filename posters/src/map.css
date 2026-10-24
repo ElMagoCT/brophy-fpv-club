@@ -31,21 +31,19 @@
 .sheet.bonus .trail-line{stroke:var(--amber)}
 
 /* where the trail starts: GO on sheet 1 and the clearance sheet, "from sheet N" on the others */
-.start{position:absolute;left:44px;top:170px;display:flex;align-items:center;gap:14px;z-index:2}
+.start{position:absolute;left:44px;top:44px;display:flex;align-items:center;gap:14px;z-index:2}
+.extra{position:absolute;z-index:1;display:block}
 .start.came.start-top{top:calc(var(--entry) - 35px)}
 .start .go{width:70px;height:70px;border-radius:50%;background:var(--rust);color:var(--paper);border:5px solid var(--white);
   font-family:var(--mono);font-size:26px;letter-spacing:.1em;display:grid;place-items:center;flex:none}
-.start div{font-family:var(--hand);font-size:18px;color:var(--rust);line-height:1.15;max-width:380px;background-color:rgba(242,236,224,.92);border-radius:8px;padding:6px 12px}
+.start div{font-family:var(--hand);font-size:18px;color:var(--rust);line-height:1.15;max-width:380px;background-color:var(--white);border:2px solid var(--rust);border-radius:8px;padding:7px 14px}
 .start b{display:block;font-family:var(--mono);font-weight:400;font-size:15px;letter-spacing:.22em;text-transform:uppercase}
 .start.came .go{background:var(--white);color:var(--tier);border-color:var(--tier)}
 .start.came .go svg{width:42px;height:42px}
-.start.came div{color:var(--tier)}
+.start.came div{color:var(--tier);border-color:var(--tier)}
 .start.came b{color:var(--ink)}
 .start.start-bottom{top:calc(var(--entry) - 35px)}
-.sticker{position:absolute;right:44px;top:200px;z-index:2;max-width:400px;font-family:var(--hand);font-size:17px;color:var(--rust);border:2.5px solid var(--rust);border-radius:6px;padding:6px 12px;transform:rotate(-2deg);line-height:1.2;background-color:var(--paper)}
-.bonushead{position:absolute;left:44px;right:44px;z-index:2;display:flex;justify-content:space-between;font-family:var(--mono);font-size:13.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--amber);
-  border-bottom:2px dashed var(--amber);padding-bottom:5px}
-.bonushead span{background-color:var(--paper);padding:2px 0}
+.sticker{position:absolute;right:44px;top:52px;z-index:2;max-width:400px;font-family:var(--hand);font-size:17px;color:var(--rust);border:2.5px solid var(--rust);border-radius:6px;padding:6px 12px;transform:rotate(-2deg);line-height:1.2;background-color:var(--paper)}
 
 /* cards: name, type, and only what passes the badge - a little tilted, like pinned notes */
 .cards{position:absolute;inset:0;z-index:1}
@@ -80,7 +78,7 @@
 .gatebox{position:absolute;left:28px;width:600px;z-index:3;
   background-color:var(--white);border:3px dashed var(--g);border-left:14px solid var(--g);border-radius:12px;padding:16px 24px 18px 20px}
 .gatebox.gate-down{bottom:56px}
-.gatebox.gate-up{top:172px}
+.gatebox.gate-up{top:44px}
 .gatebox .lab{font-family:var(--mono);font-size:13.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--g)}
 .gatebox .nm{font-family:var(--sketch);font-weight:700;font-size:66px;line-height:.95;margin-top:6px}
 .gatebox .ds{font-size:16.5px;line-height:1.3;margin-top:9px;font-weight:500}
@@ -96,5 +94,3 @@
 .gatebox.finish{color:var(--amber)}
 .gatebox.finish .ds{color:var(--ink)}
 
-.qrmini{position:absolute;right:24px;bottom:10px;z-index:4}
-.qrmini svg{display:block;width:62px;height:62px;background:var(--white);padding:5px;border:1.5px solid var(--line-hard);border-radius:6px}

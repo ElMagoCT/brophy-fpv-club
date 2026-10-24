@@ -426,11 +426,14 @@ def cinebot(s):
     s.cyl(-22, -66, 4.6, 72, 86, '#2f3338')
     return s
 
-def five(s):
-    """a 5-inch freestyle quad, Axis Flying style: black carbon true-X, teal TPU
-    (motor guards, camera cage, antenna mount), smoke props, XT60 pigtail"""
-    a = 225 / (2 * math.sqrt(2))
-    TEAL = '#3dc7d6'
+def five(s, variant='a'):
+    """a 5-inch freestyle quad. 'a': Axis Flying style, black carbon true-X with
+    teal TPU (motor guards, camera cage, antenna mount), smoke props, XT60.
+    'b': the club's other 5-inch - orange TPU, an action camera up front, two
+    antennas, pale props, a wider 235 mm frame."""
+    B = variant == 'b'
+    a = (235 if B else 225) / (2 * math.sqrt(2))
+    TEAL = '#ff7a1a' if B else '#3dc7d6'
     s.shadow([(x, y, 66) for x, y in corners(a)] + [(0, 0, 60)])
     far = corners(a)
     for x, y in far: s.arm(0, 0, x, y, 13, 0, 6, over=14)
@@ -438,23 +441,35 @@ def five(s):
     def mp(i, x, y):
         s.rbox(x + (x / abs(x)) * 6, y + (y / abs(y)) * 6, 20, 20, 0, 6.5, TEAL, r=5)   # teal arm guard under the motor
         s.motor(x, y, 14, 6, 25, col='#6c7178', ring='#2f3338')
-        s.prop(x, y, 27, 64, SMOKE, blades=3, angle=15 + i * 49, opacity=.66)
+        s.prop(x, y, 27, 64, '#b9c7d2' if B else SMOKE, blades=3, angle=15 + i * 49, opacity=.66)
     for i, (x, y) in enumerate(far[:2]): mp(i, x, y)
     s.rbox(0, -18, 32, 32, 9, 26, '#3c4047', r=2)
     for x, y in ((-18, -54), (18, -54), (-18, 52), (18, 52)): s.cyl(x, y, 3, 9, 31, ALU)
     s.plate(0, 0, 48, 138, 31, 34, r=8)
     s.rbox(0, -10, 44, 70, 34, 66, '#2c2f34', r=4)                 # battery
-    s.rbox(0, -10, 36, 46, 66, 66.6, '#4a5568', r=2)
+    s.rbox(0, -10, 36, 46, 66, 66.6, '#8f3d12' if B else '#4a5568', r=2)
     s.rbox(0, -10, 45.6, 20, 33.6, 66.9, '#1f2124', r=1)           # strap
     s.rbox(0, -58, 10, 12, 34, 42, '#f2c230', r=2)                 # XT60
     s.rbox(0, 62, 26, 20, 10, 32, TEAL, r=4)                        # camera cage
     s.lens(0, 72, 21, 0, 1, 7.5)
-    s.rbox(0, 56, 40, 16, 34, 44, TEAL, r=3)                        # action-camera mount
+    if B:                                                           # an action camera on the nose
+        s.rbox(0, 54, 44, 30, 34, 70, '#2b2e33', r=4)
+        s.lens(-10, 69, 56, 0, 1, 9.5, col='#0a0d12')
+        s.rbox(0, 50, 36, 10, 70, 72, TEAL, r=2)
+    else:
+        s.rbox(0, 56, 40, 16, 34, 44, TEAL, r=3)                    # action-camera mount
     for i, (x, y) in enumerate(far[2:], 2): mp(i, x, y)
     s.rbox(0, -68, 14, 10, 34, 44, TEAL, r=2)                       # antenna mount
-    s.antenna(0, -70, 44, 8, -92, 100, w=2.4, tube=0, col='#2a2d32')
-    s.cyl(8, -92, 5, 100, 116, '#2f3338')
+    if B:
+        for sx in (-1, 1):
+            s.antenna(sx * 6, -70, 44, sx * 26, -96, 96, w=2.4, tube=0, col='#2a2d32')
+            s.cyl(sx * 26, -96, 4.6, 96, 110, '#2f3338')
+    else:
+        s.antenna(0, -70, 44, 8, -92, 100, w=2.4, tube=0, col='#2a2d32')
+        s.cyl(8, -92, 5, 100, 116, '#2f3338')
     return s
+
+def five_b(s): return five(s, 'b')
 
 def radio(s):
     """the sim rig's gamepad-style radio: two gimbals, switches, a screen"""
@@ -477,7 +492,7 @@ def radio(s):
         s.ellipse_wh(x, -21, 48.2, 2.2, 2.2, '#d2d6db')
     return s
 
-MODELS = dict(radio=radio, whoop=whoop, pavo=pavo, cinebot=cinebot, five=five)
+MODELS = dict(radio=radio, whoop=whoop, pavo=pavo, cinebot=cinebot, five=five, five_b=five_b)
 # projected widths of the finished drawings (mm), filled in by render()
 SPAN_MM = {}
 
@@ -491,11 +506,38 @@ def render(name, yaw=None):
 
 FLY_YAW = math.radians(-45)     # gate scenes: the drone's nose points screen-right and a little toward the viewer
 
-def gate(color, drone, scale=1.0):
-    """an FPV race gate (LED tube on two feet) with a drone flying through it, left to right"""
-    s = Scene(yaw=FLY_YAW)
+def streaks(s, span, color, z=14):
+    """neon light streaks trailing behind a flying drone (the nose is +y, so they run to -y):
+    three tapered ribbons with a blurred glow under them, drawn before the drone"""
+    gid = 'streak_%s' % color.lstrip('#')
+    if gid not in s._grad:
+        s._grad[gid] = gid
+        s.defs.append('<linearGradient id="%s" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="%s" stop-opacity=".95"/>'
+                      '<stop offset=".45" stop-color="%s" stop-opacity=".45"/><stop offset="1" stop-color="%s" stop-opacity="0"/></linearGradient>' % (gid, color, color, color))
+        s.defs.append('<filter id="sglow" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="6"/></filter>')
+    L = span * 1.9
+    ribbons = ''
+    for k, (ox, w, ln) in enumerate(((-span * .24, span * .09, .8), (0, span * .13, 1.0), (span * .24, span * .09, .85))):
+        y0 = -span * .25
+        ribbons += '<path d="M%s %sL%s %sL%s %sZ" fill="url(#%s)"/>' % (f2(ox - w / 2), f2(y0), f2(ox + w / 2), f2(y0), f2(ox + (k - 1) * span * .06), f2(y0 - L * ln), gid)
+    s.out.append('<g transform="%s" filter="url(#sglow)" opacity=".8">%s</g>' % (s.layer(z), ribbons))
+    s.out.append('<g transform="%s" opacity=".9">%s</g>' % (s.layer(z), ribbons))
+    s.mark(0, -span * .25 - L, z); s.mark(-span * .5, -span * .25 - L, z); s.mark(span * .5, -span * .25 - L, z)
+
+def fly(model, yaw_deg, color):
+    """a drone in flight with its neon streak, no gate"""
+    s = Scene(yaw=math.radians(yaw_deg))
+    probe = Scene(yaw=s.yaw); draw(probe, model); span = probe.bbox[2] - probe.bbox[0]
+    s.off = (0, 0, 30)
+    streaks(s, span * .55, color)
+    draw(s, model)
+    return s.svg(pad=8)
+
+def gate(color, drone, scale=1.0, yaw_deg=-45, neon=None):
+    """an FPV race gate (LED tube on two feet) with a drone flying through it"""
+    s = Scene(yaw=math.radians(yaw_deg))
     # size the gate to the drone
-    probe = Scene(yaw=FLY_YAW); draw(probe, drone)
+    probe = Scene(yaw=s.yaw); draw(probe, drone)
     span = (probe.bbox[2] - probe.bbox[0]) * scale
     W = span * 1.25 + 110; H = W * 0.92; r = W * 0.16; t = W * 0.045
     # feet
@@ -516,12 +558,17 @@ def gate(color, drone, scale=1.0):
         s.mark(sx * W / 2 - t, 0, 0); s.mark(sx * W / 2 + t, 0, H + 5 + t)
     # the drone, through the middle, a little forward of the plane
     s.off = (0, 14, 5 + H * 0.40)
+    streaks(s, span * .55, neon or color)
     draw(s, drone)
     s.off = (0, 0, 0)
     return s.svg(pad=8)
 
-GATES = [('gate-1', 'var-violet', 'whoop'), ('gate-2', 'var-rust', 'pavo'), ('gate-3', 'var-green', 'five'), ('gate-c', 'var-rust', 'cinebot')]
-GATE_COLORS = {'var-violet': '#6b4bc4', 'var-rust': '#c4521a', 'var-green': '#2f8a4a'}
+# the gate scenes: (file, gate colour, drone, yaw deg, streak colour). Different headings on purpose.
+GATES = [('gate-1', '#6b4bc4', 'whoop', -45, '#22d3ee'), ('gate-2', '#c4521a', 'pavo', -150, '#f052a0'),
+         ('gate-3', '#2f8a4a', 'five', -28, '#38e07a'), ('gate-c', '#c4521a', 'cinebot', -40, '#f0a91a')]
+# drones in flight for the open parts of the sheets: (file, model, yaw deg, streak colour)
+FLIES = [('fly-five-b', 'five_b', 150, '#7c5cff'), ('fly-whoop', 'whoop', 62, '#22d3ee'), ('fly-pavo', 'pavo', -150, '#f052a0'),
+         ('fly-cinebot', 'cinebot', 24, '#f0a91a'), ('fly-cinebot-2', 'cinebot', 118, '#38e07a'), ('fly-five', 'five', 128, '#38e07a')]
 PX_PER_MM = 1.15   # one scale for every <img> on the posters, so the fleet grows like the real one
 
 if __name__ == '__main__':
@@ -532,14 +579,16 @@ if __name__ == '__main__':
         with open(os.path.join(IMG, 'drone-%s.svg' % name), 'w') as f: f.write(svg)
         tiles.append('<figure><img src="img/drone-%s.svg" style="width:%dpx"><figcaption>%s · %.0f mm wide</figcaption></figure>' % (name, int(SPAN_MM[name] * 1.3), name, SPAN_MM[name]))
         print('drone-%s.svg  %5.0f mm wide  %3d KB' % (name, SPAN_MM[name], len(svg) // 1024))
-    for fname, ck, drone in GATES:
-        svg = gate(GATE_COLORS[ck], drone)
+    for fname, col, drone, yaw, neon in GATES:
+        svg = gate(col, drone, yaw_deg=yaw, neon=neon)
         with open(os.path.join(IMG, fname + '.svg'), 'w') as f: f.write(svg)
         tiles.append('<figure><img src="img/%s.svg" style="width:%dpx"><figcaption>%s</figcaption></figure>' % (fname, int(SPAN_MM[drone] * 1.55 * 1.3), fname))
         print('%s.svg  %3d KB' % (fname, len(svg) // 1024))
-    svg = render('five', yaw=FLY_YAW)                       # the finish: the 5-inch flying, no gate
-    with open(os.path.join(IMG, 'fly-five.svg'), 'w') as f: f.write(svg)
-    tiles.append('<figure><img src="img/fly-five.svg" style="width:420px"><figcaption>fly-five</figcaption></figure>')
+    for fname, model, yaw, neon in FLIES:
+        svg = fly(model, yaw, neon)
+        with open(os.path.join(IMG, fname + '.svg'), 'w') as f: f.write(svg)
+        tiles.append('<figure><img src="img/%s.svg" style="width:%dpx"><figcaption>%s</figcaption></figure>' % (fname, 320, fname))
+        print('%s.svg  %3d KB' % (fname, len(svg) // 1024))
     with open(os.path.join(HERE, 'preview-drones.html'), 'w') as f:
         f.write('<!doctype html><meta charset="utf-8"><title>drones</title><style>body{background:#fff;font:14px Barlow,sans-serif;margin:30px;display:flex;flex-wrap:wrap;gap:40px;align-items:flex-end}'
                 'figure{margin:0;text-align:center}img{display:block}figcaption{margin-top:8px;color:#555}</style>' + ''.join(tiles))
