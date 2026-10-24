@@ -114,8 +114,7 @@ Everything is in `posters/src/`:
 ```bash
 cd posters/src
 python3 drones.py              # draws img/drone-*.svg and img/gate-*.svg (the aircraft and the race gates)
-python3 gen_map.py             # writes 03..06, the four Pilot Path map sheets
-python3 gen_cert.py            # writes 02-cert, the Flight Clearance sheet
+python3 gen_map.py             # writes 02-cert (Flight Clearance) and 03..06 (the four Pilot Path sheets)
 python3 gen_dock.py            # writes 08..15, the drone dock sheets (4 drone classes x 8.5x11 and 7x11)
 python3 build.py               # renders every NN-*.html to ../NN.pdf and ../preview/NN.png
 ```
@@ -123,30 +122,32 @@ python3 build.py               # renders every NN-*.html to ../NN.pdf and ../pre
 Needs Google Chrome (headless) and, for the PNGs, macOS's `qlmanage`. Fonts are
 the kiosk's self-hosted woff2 files, served over a throwaway local HTTP server
 because Chrome refuses `@font-face` from `file://`. Posters 01 (the ad, white
-background) and 07 (the how-to) are hand-written HTML. The map sheets and the
-Flight Clearance sheet are generated and **read every badge from
-`flightschool/badges.js`** (via node), so a badge change is: edit badges.js,
-`python3 gen_map.py && python3 gen_cert.py`, `python3 build.py`.
+background) and 07 (the how-to) are hand-written HTML. The five trail sheets are
+generated and **read every badge from `flightschool/badges.js`** (via node), so
+a badge change is: edit badges.js, `python3 gen_map.py`, `python3 build.py`.
 
-Map layout (2026-10-23): every sheet reads top to bottom. Badge cards alternate
-left / right down a dotted trail with numbered pins and direction chevrons, and
-list only what passes the badge (the quiz, the bench steps, the witnessed
-requirements). A tier's checkpoint is a race **gate** at the foot of the sheet
-with the drone it unlocks flying through it, listing the checkpoint's own
-requirements and nothing else. A "the whole path" strip under the header repeats
-the four tiers and three gates on every sheet with YOU ARE HERE. Sheet 4's cards
-are labelled BONUS BADGE. The sheet's own script spaces the cards with their real
-heights, scales the text down a step if crowded, and sets `data-trail="ok k=…"`
-or `"overflow Npx"` on `<body>` before Chrome prints.
+Trail layout (2026-10-23): one trail across the four Pilot Path sheets - down
+sheet 1 from START, up sheet 2, down sheet 3, up sheet 4 to the FINISH (teach
+others). Cards hang off the dotted trail on alternating sides, a little varied
+in width, drifted and tilted (seeded, so rebuilds are identical), and list only
+what passes the badge. A tier's checkpoint is a race **gate** box at the end of
+the sheet with the drone it unlocks flying through, listing the checkpoint's
+own requirements only. No big tier title; a "the whole path" strip repeats the
+four tiers and three gates with YOU ARE HERE. The sheet's own script spaces the
+cards with real heights, mirrors them on "up" sheets, scales the text down a
+step if crowded, draws the trail with one loop in the biggest gap, and sets
+`data-trail="ok k=…"` or `"overflow Npx"` on `<body>` before Chrome prints.
+02-cert is the same machinery for the four badges of the Brophy Drone
+Certification (tier `cl`), ending in the CLEARED TO FLY gate.
 
 The aircraft are not clip art: `drones.py` is a small renderer (one yaw and
 elevation for everything, affine projection, shaded walls, stacked slices for
 the curved parts) that draws the radio, the Meteor 75 Pro, the Pavo 20 Pro, the
-Cinebot30 and a 5-inch at their real wheelbases, so they grow sheet by sheet.
-The drone docks (pin a sheet up, write your name, hang the drone on pins through
-the ⊕ marks) come from `CLASSES` in `gen_dock.py` — the outline is drawn in
-millimetres so it prints at actual size, or scaled with a note when the frame is
-wider than the paper.
+Cinebot and a 5-inch from the product photos at their real wheelbases, so they
+grow sheet by sheet. The drone docks (pin a sheet up, write your name, hang the
+drone on pins through the ⊕ marks) come from `CLASSES` in `gen_dock.py` — the
+outline is drawn in millimetres so it prints at actual size, or scaled with a
+note when the frame is wider than the paper.
 
 Tier numbering on the posters and the pilot-path page is the club's: **the
 simulator is Tier 0 and the Meteor is Tier 1**. The grant proposal numbers the

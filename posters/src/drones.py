@@ -80,10 +80,10 @@ class Scene:
         gid = 'g%d' % (len(self._grad) + 1)
         self._grad[key] = gid
         if kind == 'wall':      # vertical cylinder wall, lit from the left
-            stops = [(0, 1.30), (.22, 1.08), (.55, .80), (.82, .52), (1, .40)]
+            stops = [(0, 1.38), (.22, 1.14), (.55, .88), (.82, .64), (1, .52)]
             g = '<linearGradient id="%s">%s</linearGradient>'
         elif kind == 'inner':   # the inside back wall of a duct: shadowed, lit on the right
-            stops = [(0, .40), (.5, .55), (1, .85)]
+            stops = [(0, .52), (.5, .66), (1, .92)]
             g = '<linearGradient id="%s">%s</linearGradient>'
         elif kind == 'top':     # a flat top, a touch lighter toward the back-left
             stops = [(0, 1.18), (1, .88)]
@@ -106,11 +106,11 @@ class Scene:
             self._grad['cf'] = 'cf'
             self.defs.append(
                 '<pattern id="cf" patternUnits="userSpaceOnUse" width="4" height="4">'
-                '<rect width="4" height="4" fill="#24272b"/>'
-                '<rect width="2" height="2" fill="#30343a"/><rect x="2" y="2" width="2" height="2" fill="#30343a"/>'
-                '<path d="M0 2h2M2 4h2" stroke="#3b4047" stroke-width=".5"/></pattern>')
+                '<rect width="4" height="4" fill="#2b2e33"/>'
+                '<rect width="2" height="2" fill="#3a3e45"/><rect x="2" y="2" width="2" height="2" fill="#3a3e45"/>'
+                '<path d="M0 2h2M2 4h2" stroke="#484d55" stroke-width=".5"/></pattern>')
             self.defs.append('<linearGradient id="cfsheen" x1="0" y1="0" x2="1" y2="1">'
-                             '<stop offset="0" stop-color="#fff" stop-opacity=".16"/><stop offset=".5" stop-color="#fff" stop-opacity=".02"/>'
+                             '<stop offset="0" stop-color="#fff" stop-opacity=".26"/><stop offset=".5" stop-color="#fff" stop-opacity=".05"/>'
                              '<stop offset="1" stop-color="#000" stop-opacity=".18"/></linearGradient>')
         return 'url(#cf)'
 
@@ -167,7 +167,7 @@ class Scene:
             nxr, nyr = rot(nx, ny)
             if nyr <= 0.02: continue
             lit = max(0.0, nxr * LIGHT[0] + nyr * LIGHT[1])
-            f = 0.42 + 0.75 * lit
+            f = 0.55 + 0.62 * lit
             q = [self.P(a[0], a[1], z0), self.P(b[0], b[1], z0), self.P(b[0], b[1], z1), self.P(a[0], a[1], z1)]
             faces.append((nyr, '<path d="M%s" fill="%s"/>' % ('L'.join('%s %s' % (f2(X), f2(Y)) for X, Y in q), shade(col, f))))
         for _, s in sorted(faces): self.out.append(s)
@@ -268,13 +268,33 @@ class Scene:
                         '<circle cx="%s" cy="%s" r="%s" fill="#fff" fill-opacity=".55"/></g>' % (
             T, f2(r), shade(col, 1.6), f2(r * .78), self.grad('lens', '#1c2a3a'), f2(-r * .3), f2(-r * .3), f2(r * .16)))
 
+    def group(self, attrs):
+        self.out.append('<g %s>' % attrs)
+    def end(self):
+        self.out.append('</g>')
+
+    def ring(self, cx, cy, z, ro, ri, fill):
+        """a flat annulus at height z"""
+        X, Y = self.P(cx, cy, z)
+        self.out.append('<path d="M%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0ZM%s %sa%s %s 0 1 0 %s 0a%s %s 0 1 0 %s 0Z" fill-rule="evenodd" fill="%s"/>' % (
+            f2(X - ro), f2(Y), f2(ro), f2(ro * K), f2(2 * ro), f2(ro), f2(ro * K), f2(-2 * ro),
+            f2(X - ri), f2(Y), f2(ri), f2(ri * K), f2(2 * ri), f2(ri), f2(ri * K), f2(-2 * ri), fill))
+        self.P(cx - ro, cy - ro, z); self.P(cx + ro, cy + ro, z)
+
+    def struts(self, cx, cy, r, z0, z1, n, col, w=1.6, phase=0):
+        """n vertical posts around a circle (the skeleton of a translucent duct)"""
+        for k in range(n):
+            a = math.radians(phase + k * 360 / n)
+            x, y = cx + math.cos(a) * r, cy + math.sin(a) * r
+            self.line3(x, y, z0, x, y, z1, w, col, cap='butt')
+
     def shadow(self, spots, z=-0.5):
         """soft ground shadow: a blurred blob per spot (cx, cy, r)"""
         if 'blur' not in self._grad:
             self._grad['blur'] = 1
-            self.defs.append('<filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="4.5"/></filter>')
+            self.defs.append('<filter id="blur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter>')
         keep = self.off; self.off = (keep[0], keep[1], 0)      # the shadow lies on the floor, however high the drone is
-        self.out.append('<g filter="url(#blur)" opacity="%s">' % f2(.26 if keep[2] < 1 else .14))
+        self.out.append('<g filter="url(#blur)" opacity="%s">' % f2(.17 if keep[2] < 1 else .10))
         for cx, cy, r in spots:
             self.ellipse(cx + r * .18, cy - r * .12, z, r * .8, '#1f3350')
         self.out.append('</g>')
@@ -294,149 +314,156 @@ def corners(a):
     pts = [(-a, -a), (a, -a), (-a, a), (a, a)]
     return sorted(pts, key=lambda p: rot(*p)[1])
 
-BLACK = '#25282c'
-GUN = '#4a4e55'
+def spokes(s, x, y, ri, z, col, n=3, w=1.8, phase=90):
+    for k in range(n):
+        ang = math.radians(phase + k * 360 / n)
+        s.line3(x, y, z, x + math.cos(ang) * ri, y + math.sin(ang) * ri, z, w, col, cap='butt')
+
 ALU = '#aab2bb'
-RUST = '#9a4a1c'
+CLEAR = '#c9d6e0'          # clear props
+SMOKE = '#8e969e'          # smoke-grey props
 
 # ---------------------------------------------------------------- the models
-def whoop(s, battery=True):
-    """BetaFPV Meteor 75 Pro: 75 mm, 40 mm ducted props, a canopy over the stack"""
+# Drawn from the product photos Micah sent (2026-10-23): lightly simplified,
+# but each one's real colours and silhouette.
+
+def whoop(s):
+    """BetaFPV Meteor 75 Pro: 75 mm, translucent light-grey skeleton ducts,
+    bright blue canopy with the camera in its nose, clear props, blue motor rings"""
     a = 75 / (2 * math.sqrt(2))
-    ro, ri, zd = 24.0, 21.6, 13
-    s.shadow([(x, y, ro) for x, y in corners(a)] + [(0, 2, 20)])
-    # the one-piece frame: a centre body and four arms to the ducts
-    for x, y in corners(a): s.arm(0, 0, x, y, 12, 0, 5, over=0, carbon=False, col='#2a2d32')
-    s.rbox(0, 0, 32, 42, 0, 6, '#2a2d32', r=6)
+    ro, ri, zd = 24.0, 22.4, 12
+    GREY, GREY2 = '#c4c7cb', '#d9dcdf'
+    s.shadow([(x, y, ro) for x, y in corners(a)] + [(0, 2, 18)])
+    for x, y in corners(a): s.arm(0, 0, x, y, 9, 0, 4, carbon=False, col=GREY)
+    s.rbox(0, 0, 30, 40, 0, 5, GREY, r=6)
     for i, (x, y) in enumerate(corners(a)):
-        s.duct_back(x, y, ro, ri, 0, zd, BLACK)
-        # three spokes to the motor mount
-        for k in range(3):
-            ang = math.radians(90 + k * 120)
-            s.line3(x, y, 1.5, x + math.cos(ang) * ri, y + math.sin(ang) * ri, 1.5, 1.6, '#1a1c1f', cap='butt')
-        s.motor(x, y, 6.5, 1.5, 8.5, col='#52565d')
-        s.prop(x, y, 10.5, 20, '#b7cde0', blades=3, angle=20 + i * 47, opacity=.88)
-        s.duct_front(x, y, ro, ri, 0, zd, BLACK, rim='#3a3e44')
-    # the stack and canopy
-    s.rbox(0, -2, 24, 24, 6, 8.5, '#1e3a27', r=2)          # flight controller
-    if battery: s.rbox(0, 14, 13, 30, 2, 9, '#2f3b6e', r=3)     # 1S pack, nosed forward under the canopy
-    s.dome(0, 1, 6, 18.5, 31, 44, '#2f66b8', n=24, flat=.42, power=1.8)
-    # camera in the nose
-    s.box(-6.5, 19, 6.5, 27, 8, 16.5, '#17181b')
-    s.lens(0, 27, 12.5, 0, 1, 3.6)
-    s.antenna(0, -18, 15, -3, -36, 36, w=1.2, tube=.34)
+        # skeleton duct: a bottom ring, three posts, a translucent wall, a top ring
+        s.ring(x, y, 0.5, ro, ri - 1.5, shade(GREY, .9))
+        spokes(s, x, y, ri, 1.2, shade(GREY, .85), n=3, w=1.8, phase=30)
+        s.motor(x, y, 6.2, 1.2, 8.2, col='#6c7178', ring='#2f9de8')
+        s.prop(x, y, 10.2, 20, CLEAR, blades=3, angle=20 + i * 47, opacity=.62)
+        s.group('opacity=".42"'); s.duct_front(x, y, ro, ri, 0.5, zd, GREY2, rim=GREY2); s.end()
+        s.struts(x, y, ro - 0.8, 0.5, zd, 3, shade(GREY, .92), w=1.6, phase=150)
+        s.ring(x, y, zd, ro, ri - 1.6, GREY2)
+    # the stack, a 1S pack in the nose, and the canopy over them
+    s.rbox(0, -2, 24, 24, 5, 7.5, '#2a4a33', r=2)
+    s.rbox(0, 13, 12, 28, 2, 8, '#3b4a8a', r=3)
+    s.dome(0, 0, 5, 20, 30, 46, '#2f9de8', n=26, flat=.46, power=1.7)
+    s.box(-6.5, 20, 6.5, 27, 7.5, 16, '#1b1d20')
+    s.lens(0, 27, 12, 0, 1, 3.8)
+    s.antenna(0, -17, 15, -2, -30, 36, w=2.2, tube=0, col='#1e2024')
     return s
 
 def pavo(s):
-    """BetaFPV Pavo 20 Pro: 2-inch cinewhoop, tall ducts, O4 Pro air unit on top"""
+    """BetaFPV Pavo 20 Pro: 2-inch cinewhoop, charcoal ducts, carbon deck, DJI O4 Pro
+    air unit with fins, camera in a TPU nose, two tall antennas with fat tips"""
     a = 92 / (2 * math.sqrt(2))
-    ro, ri, zd = 29.0, 26.8, 22
+    ro, ri, zd = 29.0, 27.0, 22
+    CH = '#454a51'
     s.shadow([(x, y, ro) for x, y in corners(a)] + [(0, 0, 26)])
-    s.plate(0, 0, 60, 86, 0, 2.2, r=8)                      # carbon bottom plate
-    for x, y in corners(a): s.arm(0, 0, x, y, 14, 2, 6, carbon=False, col='#2a2d32')
-    s.rbox(0, 0, 40, 54, 2, 16, '#2a2d32', r=5)             # moulded frame body
+    s.plate(0, 0, 60, 86, 0, 2.2, r=8)
+    for x, y in corners(a): s.arm(0, 0, x, y, 14, 2, 6, carbon=False, col=CH)
+    s.rbox(0, 0, 40, 54, 2, 15, CH, r=5)
     for i, (x, y) in enumerate(corners(a)):
-        s.duct_back(x, y, ro, ri, 2, zd, BLACK)
-        for k in range(3):
-            ang = math.radians(90 + k * 120)
-            s.line3(x, y, 3.5, x + math.cos(ang) * ri, y + math.sin(ang) * ri, 3.5, 2.2, '#1a1c1f', cap='butt')
-        s.motor(x, y, 8.5, 3.5, 13.5, col='#4e535a')
-        s.prop(x, y, 18, 25.4, '#9fb0bf', blades=3, angle=10 + i * 53, opacity=.9)
-        s.duct_front(x, y, ro, ri, 2, zd, BLACK, rim='#383c42')
-    s.plate(0, -2, 46, 62, 16, 18.5, r=5)                   # carbon top deck
-    # O4 Pro air unit with its heat-sink fins
-    s.rbox(0, -8, 32, 30, 18.5, 28, '#4b5058', r=2)
+        s.duct_back(x, y, ro, ri, 2, zd, CH, floor=shade(CH, .7))
+        spokes(s, x, y, ri, 3.5, shade(CH, .75), n=3, w=2.4)
+        s.motor(x, y, 8.5, 3.5, 13.5, col='#7a8088', ring='#c23a3a')
+        s.prop(x, y, 18, 25.4, CLEAR, blades=3, angle=10 + i * 53, opacity=.6)
+        s.duct_front(x, y, ro, ri, 2, zd, CH, rim=shade(CH, 1.35))
+    s.plate(0, -2, 46, 62, 15, 17.5, r=5)
+    s.rbox(0, -8, 32, 30, 17.5, 27, '#3c4047', r=2)
     for k in range(7):
         y = -8 - 12 + k * 4
-        s.box(-13, y - .7, 13, y + .7, 28, 30.5, '#5a606a')
-    # camera in a TPU mount at the nose
-    s.rbox(0, 26, 20, 16, 15, 29, '#1f2023', r=3)
-    s.lens(0, 34, 22, 0, 1, 5.6)
-    s.antenna(-10, -24, 18, -16, -40, 44, w=1.6, tube=.3)
-    s.antenna(10, -24, 18, 16, -40, 44, w=1.6, tube=.3)
+        s.box(-13, y - .7, 13, y + .7, 27, 29.5, '#5c626b')
+    s.rbox(0, -8, 22, 10, 29.5, 30.2, '#8a9098', r=1)          # the BETAFPV plate
+    s.rbox(0, 26, 20, 16, 14, 28, '#2a2d32', r=3)
+    s.lens(0, 34, 21, 0, 1, 5.8)
+    for sx in (-1, 1):
+        s.antenna(sx * 10, -24, 17, sx * 15, -36, 58, w=2.0, tube=0, col='#2a2d32')
+        s.cyl(sx * 15, -36, 4.2, 58, 70, '#2f3338')
     return s
 
 def cinebot(s):
-    """GEPRC Cinebot30: 3-inch cinewhoop, carbon plates, battery on top"""
+    """GEPRC Cinebot (25 / 30 class): black ducts with orange accents and a green
+    rim stripe, carbon plates, battery on top under a strap, camera in a cage"""
     a = 127 / (2 * math.sqrt(2))
-    ro, ri, zd = 42.5, 40.2, 16
+    ro, ri, zd = 42.5, 40.0, 16
+    BK = '#33373c'; OR = '#e8792a'
     s.shadow([(x, y, ro) for x, y in corners(a)] + [(0, 0, 40)])
     s.plate(0, 0, 66, 104, 0, 3, r=10)
     for x, y in corners(a): s.arm(0, 0, x, y, 11, 0, 4)
     for i, (x, y) in enumerate(corners(a)):
-        s.duct_back(x, y, ro, ri, 4, zd + 4, BLACK)
-        for k in range(3):
-            ang = math.radians(90 + k * 120)
-            s.line3(x, y, 5, x + math.cos(ang) * ri, y + math.sin(ang) * ri, 5, 2.6, '#1a1c1f', cap='butt')
-        s.motor(x, y, 10, 4.5, 17.5, col=GUN, ring=RUST)
-        s.prop(x, y, 19, 38, '#90a6ba', blades=3, angle=5 + i * 61, opacity=.9)
-        s.duct_front(x, y, ro, ri, 4, zd + 4, BLACK, rim='#363a40')
-    s.rbox(0, -10, 30, 30, 6, 21, '#4b5058', r=2)            # O3 air unit between the plates
+        s.duct_back(x, y, ro, ri, 4, zd + 4, BK, floor=shade(BK, .7))
+        spokes(s, x, y, ri, 5, shade(BK, .8), n=3, w=2.8)
+        s.motor(x, y, 10, 4.5, 17.5, col='#6c7178', ring='#c97a2a')
+        s.prop(x, y, 19, 38, SMOKE, blades=3, angle=5 + i * 61, opacity=.7)
+        s.duct_front(x, y, ro, ri, 4, zd + 4, BK, rim=shade(BK, 1.3))
+        # the green edge stripe and an orange accent on the outer rim
+        X, Y = s.P(x, y, zd + 4)
+        s.out.append('<ellipse cx="%s" cy="%s" rx="%s" ry="%s" fill="none" stroke="#7fb36a" stroke-opacity=".8" stroke-width=".9"/>' % (f2(X), f2(Y), f2(ro - .6), f2((ro - .6) * K)))
+        ax, ay = x + (x / abs(x)) * (ro - 1.4), y + (y / abs(y)) * 2
+        s.out.append('<path d="M%s %sl%s %sl%s %sz" transform="%s" fill="%s"/>' % (f2(ax), f2(ay), f2(-(x / abs(x)) * 6), f2(-4), 0, f2(8), s.layer(zd + 4.2), OR))
+    s.rbox(0, -10, 30, 30, 6, 21, '#3c4047', r=2)
     for x, y in ((-22, -40), (22, -40), (-22, 38), (22, 38)): s.cyl(x, y, 2.6, 4, 24, ALU)
     s.plate(0, 0, 60, 98, 24, 27, r=8)
-    # battery, strapped on top
-    s.rbox(0, -6, 36, 74, 27, 55, '#202225', r=3)
-    s.rbox(0, -6, 30, 50, 55, 55.6, '#3a4f8f', r=2)          # label
-    s.rbox(0, -6, 37.6, 18, 26.6, 55.9, RUST, r=1)              # the strap
-    # camera at the nose, between the plates
-    s.rbox(0, 46, 22, 16, 9, 25, '#1c1d20', r=3)
-    s.lens(0, 54, 17, 0, 1, 6.5)
-    s.antenna(-14, -50, 25, -24, -74, 62, w=1.8, tube=.3)
-    s.antenna(14, -50, 25, 24, -74, 62, w=1.8, tube=.3)
+    s.rbox(0, -6, 36, 74, 27, 55, '#2c2f34', r=3)
+    s.rbox(0, -6, 30, 50, 55, 55.6, '#4a5568', r=2)
+    s.rbox(0, -6, 37.6, 18, 26.6, 55.9, '#1f2124', r=1)
+    s.rbox(0, 46, 24, 18, 8, 26, '#2a2d32', r=3)
+    s.lens(0, 55, 17, 0, 1, 7)
+    s.antenna(-12, -48, 25, -22, -66, 72, w=2.2, tube=0, col='#2a2d32')
+    s.cyl(-22, -66, 4.6, 72, 86, '#2f3338')
     return s
 
 def five(s):
-    """a 5-inch freestyle quad: 225 mm true-X, 2207 motors, battery and action camera on top"""
+    """a 5-inch freestyle quad, Axis Flying style: black carbon true-X, teal TPU
+    (motor guards, camera cage, antenna mount), smoke props, XT60 pigtail"""
     a = 225 / (2 * math.sqrt(2))
+    TEAL = '#3dc7d6'
     s.shadow([(x, y, 66) for x, y in corners(a)] + [(0, 0, 60)])
     far = corners(a)
-    for x, y in far: s.arm(0, 0, x, y, 13, 0, 6, over=12)
-    s.plate(0, 0, 50, 132, 6, 9, r=8)                         # mid plate over the arms
-    # motors and props: the two far ones first, then the stack, then the near ones
+    for x, y in far: s.arm(0, 0, x, y, 13, 0, 6, over=14)
+    s.plate(0, 0, 50, 132, 6, 9, r=8)
     def mp(i, x, y):
-        s.motor(x, y, 14, 6, 25, col=GUN, ring=RUST)
-        s.prop(x, y, 27, 64, '#a6b6c7', blades=3, angle=15 + i * 49, opacity=.78)
+        s.rbox(x + (x / abs(x)) * 6, y + (y / abs(y)) * 6, 20, 20, 0, 6.5, TEAL, r=5)   # teal arm guard under the motor
+        s.motor(x, y, 14, 6, 25, col='#6c7178', ring='#2f3338')
+        s.prop(x, y, 27, 64, SMOKE, blades=3, angle=15 + i * 49, opacity=.66)
     for i, (x, y) in enumerate(far[:2]): mp(i, x, y)
-    s.rbox(0, -18, 32, 32, 9, 26, '#4b5058', r=2)            # HD air unit
+    s.rbox(0, -18, 32, 32, 9, 26, '#3c4047', r=2)
     for x, y in ((-18, -54), (18, -54), (-18, 52), (18, 52)): s.cyl(x, y, 3, 9, 31, ALU)
     s.plate(0, 0, 48, 138, 31, 34, r=8)
-    # battery and strap
-    s.rbox(0, -10, 44, 78, 34, 72, '#1f2124', r=4)
-    s.rbox(0, -10, 36, 52, 72, 72.6, '#3a4f8f', r=2)
-    s.rbox(0, -10, 45.6, 20, 33.6, 72.9, RUST, r=1)
-    # action camera on the nose, FPV camera below it
-    s.rbox(0, 64, 22, 18, 12, 30, '#1c1d20', r=3)
-    s.lens(0, 73, 21, 0, 1, 7.5)
-    s.rbox(0, 60, 46, 28, 34, 70, '#2b2e33', r=4)
-    s.lens(-10, 74, 56, 0, 1, 9.5, col='#0a0d12')
-    s.rbox(8, 74.4, 16, 1, 42, 62, '#0f1319', r=.5)          # the little screen
+    s.rbox(0, -10, 44, 70, 34, 66, '#2c2f34', r=4)                 # battery
+    s.rbox(0, -10, 36, 46, 66, 66.6, '#4a5568', r=2)
+    s.rbox(0, -10, 45.6, 20, 33.6, 66.9, '#1f2124', r=1)           # strap
+    s.rbox(0, -58, 10, 12, 34, 42, '#f2c230', r=2)                 # XT60
+    s.rbox(0, 62, 26, 20, 10, 32, TEAL, r=4)                        # camera cage
+    s.lens(0, 72, 21, 0, 1, 7.5)
+    s.rbox(0, 56, 40, 16, 34, 44, TEAL, r=3)                        # action-camera mount
     for i, (x, y) in enumerate(far[2:], 2): mp(i, x, y)
-    s.antenna(-14, -66, 34, -34, -112, 86, w=2.2, tube=.26)
-    s.antenna(14, -66, 34, 34, -112, 86, w=2.2, tube=.26)
+    s.rbox(0, -68, 14, 10, 34, 44, TEAL, r=2)                       # antenna mount
+    s.antenna(0, -70, 44, 8, -92, 100, w=2.4, tube=0, col='#2a2d32')
+    s.cyl(8, -92, 5, 100, 116, '#2f3338')
     return s
 
 def radio(s):
     """the sim rig's gamepad-style radio: two gimbals, switches, a screen"""
     s.shadow([(-45, 0, 46), (45, 0, 46), (0, 0, 40)])
-    # body: a flattened hump with hand grips
-    for sx in (-1, 1): s.dome(sx * 62, 10, 0, 30, 60, 78, '#2a2d32', n=18, flat=.72, power=2.6, spec=False)
-    s.dome(0, 0, 0, 34, 150, 84, '#2c2f35', n=22, flat=.80, power=2.4, spec=False)
-    s.ellipse_wh(0, 0, 34.2, 150 / 2 * .78, 84 / 2 * .78, '#34373d')
-    # gimbals
+    BODY = '#4a4f57'
+    for sx in (-1, 1): s.dome(sx * 62, 10, 0, 30, 60, 78, BODY, n=18, flat=.72, power=2.6, spec=False)
+    s.dome(0, 0, 0, 34, 150, 84, shade(BODY, 1.05), n=22, flat=.80, power=2.4, spec=False)
+    s.ellipse_wh(0, 0, 34.2, 150 / 2 * .78, 84 / 2 * .78, shade(BODY, 1.2))
     for sx in (-1, 1):
-        s.ellipse_wh(sx * 44, 6, 34.4, 18, 18, '#17181b')
-        s.ellipse_wh(sx * 44, 6, 34.6, 15, 15, '#232528')
-        s.cyl(sx * 44, 6, 4.2, 34.5, 60, '#3b3e44')
-        s.dome(sx * 44, 6, 58, 68, 13, 13, '#4a4e55', n=12, flat=.3, power=2)
-    # screen and buttons
-    s.rbox(0, 14, 44, 26, 34.4, 36, '#0d1620', r=2)
-    s.rbox(0, 14, 38, 20, 36, 36.4, '#19324a', r=1)
-    for x, y in ((-12, -14), (12, -14), (0, -22), (0, -6)): s.cyl(x, y, 3.2, 34.4, 37.5, '#50545c')
-    # switches along the top edge, antenna box at the back
+        s.ellipse_wh(sx * 44, 6, 34.4, 18, 18, '#23262b')
+        s.ellipse_wh(sx * 44, 6, 34.6, 15, 15, '#30343a')
+        s.cyl(sx * 44, 6, 4.2, 34.5, 60, '#595e66')
+        s.dome(sx * 44, 6, 58, 68, 13, 13, '#6a7078', n=12, flat=.3, power=2)
+    s.rbox(0, 14, 44, 26, 34.4, 36, '#13202c', r=2)
+    s.rbox(0, 14, 38, 20, 36, 36.4, '#2a5a7a', r=1)
+    for x, y in ((-12, -14), (12, -14), (0, -22), (0, -6)): s.cyl(x, y, 3.2, 34.4, 37.5, '#70767e')
     for x in (-52, -34, 34, 52):
-        s.cyl(x, -21, 3, 33.6, 36.5, '#44484f')
-        s.cyl(x, -21, 1.4, 36.5, 48, '#8d939b')
-        s.ellipse_wh(x, -21, 48.2, 2.2, 2.2, '#c9ced4')
+        s.cyl(x, -21, 3, 33.6, 36.5, '#5a6069')
+        s.cyl(x, -21, 1.4, 36.5, 48, '#9aa0a8')
+        s.ellipse_wh(x, -21, 48.2, 2.2, 2.2, '#d2d6db')
     return s
 
 MODELS = dict(radio=radio, whoop=whoop, pavo=pavo, cinebot=cinebot, five=five)
@@ -457,7 +484,7 @@ def gate(color, drone, scale=1.0):
     W = span * 1.55; H = W * 0.92; r = W * 0.16; t = W * 0.045
     # feet
     for sx in (-1, 1):
-        s.box(sx * W / 2 - 12, -22, sx * W / 2 + 12, 22, 0, 5, '#2a2d32')
+        s.box(sx * W / 2 - 12, -22, sx * W / 2 + 12, 22, 0, 5, '#4a4f57')
     # the ring on the vertical plane y = 0
     T = s.face(0, 0, 0, 0, 1)
     rect = '<rect x="%s" y="%s" width="%s" height="%s" rx="%s" ry="%s" fill="none" ' % (f2(-W / 2), f2(5), f2(W), f2(H), f2(r), f2(r))
@@ -465,7 +492,7 @@ def gate(color, drone, scale=1.0):
     s.defs.append('<filter id="%s" x="-20%%" y="-20%%" width="140%%" height="140%%"><feGaussianBlur stdDeviation="%s"/></filter>' % (glow, f2(t * 1.8)))
     s.out.append('<g transform="%s">' % T)
     s.out.append(rect + 'stroke="%s" stroke-opacity=".38" stroke-width="%s" filter="url(#%s)"/>' % (color, f2(t * 2.6), glow))
-    s.out.append(rect + 'stroke="#2a2d32" stroke-width="%s"/>' % f2(t))
+    s.out.append(rect + 'stroke="#3a3f46" stroke-width="%s"/>' % f2(t))
     s.out.append(rect + 'stroke="%s" stroke-width="%s"/>' % (color, f2(t * .55)))
     s.out.append(rect + 'stroke="#fff" stroke-opacity=".55" stroke-width="%s"/>' % f2(t * .14))
     s.out.append('</g>')
@@ -477,8 +504,9 @@ def gate(color, drone, scale=1.0):
     s.off = (0, 0, 0)
     return s.svg(pad=8)
 
-GATES = [('gate-1', 'var-violet', 'whoop'), ('gate-2', 'var-rust', 'pavo'), ('gate-3', 'var-green', 'five')]
+GATES = [('gate-1', 'var-violet', 'whoop'), ('gate-2', 'var-rust', 'pavo'), ('gate-3', 'var-green', 'five'), ('gate-c', 'var-rust', 'cinebot')]
 GATE_COLORS = {'var-violet': '#6b4bc4', 'var-rust': '#c4521a', 'var-green': '#2f8a4a'}
+PX_PER_MM = 1.15   # one scale for every <img> on the posters, so the fleet grows like the real one
 
 if __name__ == '__main__':
     os.makedirs(IMG, exist_ok=True)

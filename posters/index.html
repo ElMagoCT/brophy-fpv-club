@@ -77,7 +77,7 @@ footer a{color:var(--ink)}
   </header>
 
   <section aria-labelledby="mHead">
-    <div class="eyebrow"><h2 id="mHead">The Pilot Path &middot; hang these four in a row</h2><span class="rule"></span><span class="hint">each sheet reads top to bottom; the gate at the foot of one opens the next</span></div>
+    <div class="eyebrow"><h2 id="mHead">The Pilot Path &middot; hang these four in a row</h2><span class="rule"></span><span class="hint">one trail: down sheet 1, up sheet 2, down 3, up 4 &middot; the gate at the end of one sheet opens the next</span></div>
     <div class="map4">
       <img src="preview/03-map-tier0.png" alt="Sheet 1: Tier 0, Simulator">
       <img src="preview/04-map-tier1.png" alt="Sheet 2: Tier 1, Meteor 75 Pro">
@@ -90,11 +90,11 @@ footer a{color:var(--ink)}
     <div class="eyebrow"><h2 id="aHead">All seven</h2><span class="rule"></span></div>
     <div class="grid7">
       <div class="card p"><img src="preview/01-ad.png" alt=""><div class="cap"><div class="k">Ad</div><div class="t">Fly FPV. Anytime.</div><div class="s">The pitch on white: the four tiers with their drones and the gates between them, the projects, when and where. QR to the pilot path.</div><a class="btn" href="01-ad.pdf">PDF</a></div></div>
-      <div class="card p"><img src="preview/02-cert.png" alt=""><div class="cap"><div class="k">Flight Clearance</div><div class="t">Certified. Then cleared.</div><div class="s">The four badges of the Brophy Drone Certification and the permission steps for every flight. QR to the Flight Clearance page.</div><a class="btn" href="02-cert.pdf">PDF</a></div></div>
-      <div class="card p"><img src="preview/03-map-tier0.png" alt=""><div class="cap"><div class="k">Map &middot; sheet 1 of 4</div><div class="t">Tier 0 &middot; Simulator</div><div class="s">Start here. Five badges down the trail, then Gate 1: the Meteor 75 Pro Certification, with the whoop flying through it.</div><a class="btn" href="03-map-tier0.pdf">PDF</a></div></div>
-      <div class="card p"><img src="preview/04-map-tier1.png" alt=""><div class="cap"><div class="k">Map &middot; sheet 2 of 4</div><div class="t">Tier 1 &middot; Meteor 75 Pro</div><div class="s">Six badges, then Gate 2: the Pavo 20 Pro Flight.</div><a class="btn" href="04-map-tier1.pdf">PDF</a></div></div>
+      <div class="card p"><img src="preview/02-cert.png" alt=""><div class="cap"><div class="k">Flight Clearance</div><div class="t">Cleared to fly</div><div class="s">The four badges of the Brophy Drone Certification down a trail to the gate: Mr. Burr&rsquo;s yes before every flight. QR to the Flight Clearance page.</div><a class="btn" href="02-cert.pdf">PDF</a></div></div>
+      <div class="card p"><img src="preview/03-map-tier0.png" alt=""><div class="cap"><div class="k">Map &middot; sheet 1 of 4</div><div class="t">Tier 0 &middot; Simulator</div><div class="s">START, five badges down the trail, then Gate 1: the Meteor 75 Pro Certification, with the whoop flying through it.</div><a class="btn" href="03-map-tier0.pdf">PDF</a></div></div>
+      <div class="card p"><img src="preview/04-map-tier1.png" alt=""><div class="cap"><div class="k">Map &middot; sheet 2 of 4</div><div class="t">Tier 1 &middot; Meteor 75 Pro</div><div class="s">In from sheet 1 at the bottom, six badges climbing to Gate 2: the Pavo 20 Pro Flight.</div><a class="btn" href="04-map-tier1.pdf">PDF</a></div></div>
       <div class="card p"><img src="preview/05-map-tier2.png" alt=""><div class="cap"><div class="k">Map &middot; sheet 3 of 4</div><div class="t">Tier 2 &middot; Full-size</div><div class="s">Five badges, filming and racing included, then Gate 3: Event Pilot, with the 5-inch through the gate.</div><a class="btn" href="05-map-tier2.pdf">PDF</a></div></div>
-      <div class="card p"><img src="preview/06-map-tier3.png" alt=""><div class="cap"><div class="k">Map &middot; sheet 4 of 4</div><div class="t">Tier 3 &middot; Event Pilot</div><div class="s">The top of the path, then the four bonus badges, any order, not counted.</div><a class="btn" href="06-map-tier3.pdf">PDF</a></div></div>
+      <div class="card p"><img src="preview/06-map-tier3.png" alt=""><div class="cap"><div class="k">Map &middot; sheet 4 of 4</div><div class="t">Tier 3 &middot; Event Pilot</div><div class="s">The four bonus badges climbing to the FINISH: teach others.</div><a class="btn" href="06-map-tier3.pdf">PDF</a></div></div>
       <div class="card p"><img src="preview/07-sim-howto.png" alt=""><div class="cap"><div class="k">How-to</div><div class="t">Seven steps. Never touch the desktop.</div><div class="s">Screenshots and arrows: sign in, pick a sim, wait for green, switch, the clock, Ground School, sign out.</div><a class="btn" href="07-sim-howto.pdf">PDF</a></div></div>
     </div>
   </section>
@@ -118,7 +118,7 @@ footer a{color:var(--ink)}
     <div class="notes">
       <div class="card n"><div class="k">Paper</div><div class="v"><b>11&times;17 in (tabloid), portrait.</b> Print at 100% / &ldquo;actual size&rdquo;, not &ldquo;fit to page&rdquo;. The PDFs have no margins; a printer that cannot bleed will add a thin white border, which is fine.</div></div>
       <div class="card n"><div class="k">Order on the wall</div><div class="v">Ad &middot; <b>Map 1 &middot; 2 &middot; 3 &middot; 4</b> &middot; How-to &middot; Flight Clearance. The four map sheets go in a row, each read top to bottom; the how-to goes nearest the keyboard.</div></div>
-      <div class="card n"><div class="k">Changing them</div><div class="v">Sources are in <code>posters/src/</code> in the site repo. The map sheets come from <code>gen_map.py</code> and the Flight Clearance sheet from <code>gen_cert.py</code>, both reading every badge straight from <code>flightschool/badges.js</code>; the drone pictures are drawn by <code>drones.py</code>, the docks by <code>gen_dock.py</code>; <code>build.py</code> renders everything to PDF and PNG with headless Chrome.</div></div>
+      <div class="card n"><div class="k">Changing them</div><div class="v">Sources are in <code>posters/src/</code> in the site repo. The map sheets and the Flight Clearance sheet come from <code>gen_map.py</code>, which reads every badge straight from <code>flightschool/badges.js</code>; the drone pictures are drawn by <code>drones.py</code>, the docks by <code>gen_dock.py</code>; <code>build.py</code> renders everything to PDF and PNG with headless Chrome.</div></div>
     </div>
   </section>
 
