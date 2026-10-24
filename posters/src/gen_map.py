@@ -335,7 +335,7 @@ TEMPLATE = '''<!doctype html>
     function ctr(el) { var b = box(el); return [b.x + b.w / 2, b.y + b.h / 2]; }
     var pins = Array.prototype.slice.call(document.querySelectorAll('#cards .card:not(.p107) .pin')).map(ctr);
     var g = ctr(lead.querySelector('.go')), pts = [];
-    if (lead.classList.contains('came')) pts.push([-40, g[1]]);  // in from the edge of the previous sheet
+    if (lead.classList.contains('came')) pts.push([-60, g[1]], [40, g[1]]);  // in level from the edge of the previous sheet
     var s = DIR === 'down' ? 1 : -1;
     pts.push(g, [g[0] + 26, g[1] + s * 62]);
     var gi = -1, gbest = 0;
@@ -391,7 +391,7 @@ TEMPLATE = '''<!doctype html>
       var pb2 = box(pic), sz = Math.max(pb2.w, pb2.h);
       var pcx = pb2.x + (+pic.getAttribute('data-cx')), pcy = pb2.y + (+pic.getAttribute('data-cy'));
       var ey = Math.max(gb.y + 30, Math.min(gb.y + gb.h - 30, pcy - FDY * .45 * sz));
-      var ex = [[gb.x + gb.w - 10, ey], [pcx - FDX * .48 * sz, pcy - FDY * .48 * sz], [pcx, pcy], [pcx + FDX * .42 * sz, pcy + FDY * .42 * sz], [W + 50, EXIT]];
+      var ex = [[gb.x + gb.w - 10, ey], [pcx - FDX * .48 * sz, pcy - FDY * .48 * sz], [pcx, pcy], [pcx + FDX * .42 * sz, pcy + FDY * .42 * sz], [W - 40, EXIT], [W + 60, EXIT]];   // level out before the edge: the next sheet comes in level
       var d2 = catmull(ex);
       paths += '<path class="trail-shadow" d="' + d2 + '"/><path class="trail-line" d="' + d2 + '"/>';
       holes.push([pcx, pcy, (+pic.getAttribute('data-r')) * 1.25]);

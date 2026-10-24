@@ -124,7 +124,9 @@ python3 build.py               # renders every NN-*.html to ../NN.pdf and ../pre
 Needs Google Chrome (headless) and, for the PNGs, macOS's `qlmanage`. Fonts are
 the kiosk's self-hosted woff2 files, served over a throwaway local HTTP server
 because Chrome refuses `@font-face` from `file://`. Posters 01 (the ad, white
-background) and 07 (the how-to) are hand-written HTML. The five trail sheets are
+background) and 07 (the monitor strips: one sheet cut in half vertically, the four
+sim steps on one side and the elmagoct.github.io/fpv short link on the other)
+are hand-written HTML. The five trail sheets are
 generated and **read every badge from `flightschool/badges.js`** (via node), so
 a badge change is: edit badges.js, `python3 gen_map.py`, `python3 build.py`.
 
