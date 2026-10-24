@@ -226,6 +226,7 @@ footer a{color:var(--ink)}
 
 @media (max-width:900px){.how{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:600px){.wrap{padding:18px 13px 52px}header.title{padding:18px 16px}.how{grid-template-columns:1fr}.pilot,.upnext{min-width:0;max-width:none;flex-basis:100%}.title>div:first-child{flex-basis:100%}.howbox>summary .hint{display:none}.tier .gate,.group .gate{margin-left:0}}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 </style>
 <link rel="stylesheet" href="../site.css">
 </head>
@@ -260,7 +261,7 @@ footer a{color:var(--ink)}
   </details>
 
   <section aria-labelledby="cHead">
-    <div class="eyebrow"><h2 id="cHead">The whole curriculum</h2><span class="rule"></span><span class="hint" id="srcHint">tap a badge for details</span></div>
+    <h2 id="cHead" class="sr">The badges</h2>
     <div id="tiers"></div>
   </section>
 
@@ -561,9 +562,6 @@ function render() {
   $('pNext').innerHTML = nextStep();
   drawUpNext();
   var kp = kioskPilot();
-  $('srcHint').textContent = !pilot ? 'tap a badge for details' :
-    (kp ? (kp.badges ? 'earned badges and hours from the kiosk · ticks saved here' : 'hours from the kiosk · badges not published by the kiosk yet · ticks saved here')
-        : 'this name has not flown at the kiosk yet · everything here is saved on this device');
 
   var open = {}; var cur = document.querySelectorAll('.badge.open'); for (var i = 0; i < cur.length; i++) open[cur[i].getAttribute('data-id')] = true;
   var html = '';
