@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793031819691,
-    "generatedIso":  "2026-10-26T09:23:40-07:00",
+    "generated":  1793031881727,
+    "generatedIso":  "2026-10-26T09:24:42-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  422431791,
+                   "clubMs":  422475569,
                    "pilots":  40,
                    "activePilots7":  13,
-                   "clubWeekMs":  598682,
+                   "clubWeekMs":  642460,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  298590678.56529939,
+                                    "liftoff":  298634456.59399939,
                                     "microdrones":  121942022.76530042,
                                     "skydive":  757990.89219998755,
                                     "fpvlabs":  316778.85469998,
@@ -373,10 +373,10 @@
                    },
                    {
                        "name":  "Henry P.",
-                       "totalMs":  8797157,
-                       "weekMs":  0,
+                       "totalMs":  8840935,
+                       "weekMs":  43778,
                        "perSimMs":  {
-                                        "liftoff":  8797157,
+                                        "liftoff":  8840935,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -384,7 +384,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1793031795316,
+                       "lastSeen":  1793031871875,
                        "badges":  [
 
                                   ],
