@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793037728585,
-    "generatedIso":  "2026-10-26T11:02:08-07:00",
+    "generated":  1793037789394,
+    "generatedIso":  "2026-10-26T11:03:09-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  429447775,
+                   "clubMs":  429507884,
                    "pilots":  40,
                    "activePilots7":  14,
-                   "clubWeekMs":  7614665,
+                   "clubWeekMs":  7674774,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  303736831.11079955,
+                                    "liftoff":  303796940.11079955,
                                     "microdrones":  123552693.83150038,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -484,6 +484,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Grayson",
+                       "totalMs":  5703360,
+                       "weekMs":  2518268,
+                       "perSimMs":  {
+                                        "liftoff":  5287137,
+                                        "microdrones":  314406,
+                                        "skydive":  0,
+                                        "fpvlabs":  101817,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1793037725957,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Carter.B",
                        "totalMs":  5644742,
                        "weekMs":  0,
@@ -500,25 +519,6 @@
                        "badges":  [
                                       "safe-flight",
                                       "battery-care"
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Grayson",
-                       "totalMs":  5643251,
-                       "weekMs":  2458159,
-                       "perSimMs":  {
-                                        "liftoff":  5227028,
-                                        "microdrones":  314406,
-                                        "skydive":  0,
-                                        "fpvlabs":  101817,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1793037665848,
-                       "badges":  [
-
                                   ],
                        "tier":  0
                    },
