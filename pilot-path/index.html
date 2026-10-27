@@ -256,7 +256,7 @@ footer a{color:var(--ink)}
       <div class="card h"><div class="k">Quiz badges</div><div class="v">Short lessons, then a 10-question quiz - all opened right here from the badge card, with <b>Proceed to next</b> when each one ends. <b>80 % passes.</b> Retake as much as you want, your best score counts, and the badge is awarded automatically.</div></div>
       <div class="card h"><div class="k">Bench badges</div><div class="v">Step-by-step instructions, here or on the kiosk. Tick the boxes as you go, then <b>submit a photo</b> of your work right from the card and a mentor checks it.</div></div>
       <div class="card h"><div class="k">Witnessed badges</div><div class="v">Each card lists its <b>requirements</b> as boxes, with a lesson and a video where there is one. Practice until you can tick them all, then a mentor who holds the badge watches you. <b>Event Ops</b> starts with a short quiz.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is on purpose just the drone things: five quick parts you can do in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it. Once they're all done it gets a <b>big green &#10003;</b> and you can try it with a mentor watching. Pass it and <b>you're on that tier.</b> Passing a checkpoint <b>isn't permission to fly</b> by itself: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr before every campus flight, 24 h ahead. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total. <b>Mentor</b> is for Tier 2 pilots.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is on purpose just the drone things: five quick parts you can do in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it. Once they're all done it gets a <b>big green &#10003;</b> and you can try it with a mentor watching. Pass it and <b>you're on that tier.</b> Passing a checkpoint <b>isn't permission to fly</b> by itself: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr before every campus flight, 24 h ahead. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total. <b>Mentor</b> is for Event Pilots (Tier 3), at most 5 at a time.</div></div>
     </div>
   </details>
 
@@ -407,7 +407,7 @@ function rawStatus(b) {
   if (kp && kp.badges && kp.badges.indexOf(b.id) >= 0) { out.earned = true; out.source = 'kiosk'; out.pct = 100; return out; }
   var aw0e = AWARDS && AWARDS.badges && AWARDS.badges[b.id];
   if (aw0e && aw0e.status === 'earned') { out.earned = true; out.source = 'instructor'; out.pct = 100; return out; }
-  /* minTier (2026-10-06, Mentor = Tier 2 pilots): below it the badge does not
+  /* minTier (2026-10-06; Mentor = Tier 3 pilots since 2026-10-26): below it the badge does not
      count, even if a mentor already approved it - say which, and stop. */
   if (b.minTier != null && pilot) {
     var pt = pilotTier();

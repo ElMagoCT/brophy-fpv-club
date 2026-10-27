@@ -248,7 +248,8 @@
   // The badge rules a sign-off must respect, from the kiosk snapshot
   // (data.json: tier, badges, totalMs). Returns null (fine), {stop: msg}
   // (refuse) or {ask: msg} (the snapshot cannot tell - ask the instructor).
-  //   minTier  (2026-10-06): Mentor is for Tier 2 pilots
+  //   minTier  (2026-10-06): Mentor is for Tier 3 pilots (Event Pilots) since 2026-10-26
+  //   MENTOR_CAP (2026-10-26): at most FS.MENTOR_CAP mentors at a time
   //   minHours (2026-10-07): Sim Flight is judged only after 5 sim hours
   //   checkpoint (2026-10-08): a tier's checkpoint needs the rest of the tier;
   //            asked rather than refused, because an approval filed a minute
@@ -258,6 +259,11 @@
   function checkRules(pilot, bd) {
     if (!bd) return null;
     var rp = rosterPilot(FS.slug(pilot));
+    if (bd.id === 'mentor' && FS.MENTOR_CAP) {
+      var mentors = ((ROSTER && ROSTER.pilots) || []).filter(function (p) { return (p.badges || []).indexOf('mentor') >= 0 && FS.slug(p.name) !== FS.slug(pilot); });
+      if (mentors.length >= FS.MENTOR_CAP) return { ask: 'Warning: the club already has ' + mentors.length + ' mentors (' + mentors.map(function (p) { return p.name; }).join(', ') + ') and the limit is ' + FS.MENTOR_CAP +
+        '. A new mentor must be noticeably more active and knowledgeable than an active mentor, and one steps down. Approve it anyway? It will count.' };
+    }
     if (bd.minTier != null) {
       if (rp && rp.tier != null && rp.tier < bd.minTier) return { ask: 'Warning: ' + bd.name + ' is normally for Tier ' + bd.minTier + ' pilots - ' + pilot + ' is on Tier ' + rp.tier + '. Approve it anyway? It will count.' };
       if (!rp || rp.tier == null) return { ask: 'Warning: the kiosk has not published ' + pilot + '’s tier. ' + bd.name + ' is normally for Tier ' + bd.minTier + ' pilots. Approve it anyway? It will count.' };

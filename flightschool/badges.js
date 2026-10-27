@@ -59,7 +59,7 @@
    type: 'knowledge'  lessons + quiz at 80 %, earned by the kiosk itself
          'bench'      step checklist, a photo submitted here, a mentor reviews it
          'witnessed'  a mentor watches you do it and signs it off
-   minTier:  the tier a pilot must be ON to hold the badge (Mentor: 2)
+   minTier:  the tier a pilot must be ON to hold the badge (Mentor: 3 since 2026-10-26, was 2)
    minHours: sim hours before a mentor may judge it (Sim Flight: 5)
    checkpoint: closes its tier (see above)
    lessons: the badge's lessons ({id, t, drill}); quiz: the quiz lesson id
@@ -222,6 +222,12 @@
       reqs: [{ t: 'Clean race lines', v: VID.lines },
              { t: 'Three clean laps in a row' },
              { t: 'Under the posted time, timed by the mentor', v: VID.faster }] },
+    /* 2026-10-26 (Micah): an in-depth FAA test before Event Pilot - people,
+       crowds, stadiums, night, TFRs, and standard race-day / game-day practice.
+       Twenty questions (qn on the quiz lesson), not ten. */
+    { id: 'faa-event-exam', quiz: 'gs-faa-quiz', tier: 't2', track: 'know', type: 'knowledge', name: 'FAA Event Exam', est: 'about 25 min',
+      do: 'The in-depth FAA test: people, crowds, stadiums, night, TFRs, and how races and games are run. Twenty questions.', why: 'An Event Pilot flies near hundreds of people. Every rule in this one exists because of them.',
+      lessons: [{ id: 'gs-faa-01', t: 'Which rules is this flight under?' }, { id: 'gs-faa-02', t: 'People, crowds and stadiums' }, { id: 'gs-faa-03', t: 'Night, TFRs and fitness to fly' }, { id: 'gs-faa-04', t: 'Race day and game day' }] },
     { id: 'event-pilot', tier: 't2', track: 'flight', type: 'witnessed', name: 'Event Pilot', checkpoint: true, est: 'one event',
       do: 'Checkpoint into Tier 3: fly at a school event or a race.', why: 'The top of the path: flying for the school.',
       reqs: [{ t: 'Zone set up and briefed' },
@@ -259,12 +265,16 @@
       reqs: [{ t: 'Check-in/out sheet, every session' },
              { t: 'A maintenance log' },
              { t: 'A full semester, reviewed by a mentor' }] },
-    { id: 'mentor', tier: 'el', track: 'crew', type: 'witnessed', name: 'Mentor', est: 'about a month', minTier: 2,
-      do: 'Coach a new member through two badges.', why: 'The club trains its own replacements.',
-      reqs: [{ t: 'A Tier 2 pilot' },
+    /* 2026-10-26 (Micah): Event Pilot first (minTier 3), at most MENTOR_CAP
+       mentors at a time, and a new one must clearly outdo an active mentor. */
+    { id: 'mentor', tier: 'el', track: 'crew', type: 'witnessed', name: 'Mentor', est: 'about a month', minTier: 3,
+      do: 'Coach a new member through two badges. Only 5 mentors at a time.', why: 'The club trains its own replacements.',
+      note: 'The club has at most 5 mentors at a time. To become one you must be noticeably more active and more knowledgeable than an active mentor.',
+      reqs: [{ t: 'An Event Pilot (Tier 3)' },
              { t: 'Deep knowledge of the FAA rules', d: 'an officer judges it, no quiz', v: VID.trust },
+             { t: 'Noticeably more active and knowledgeable than an active mentor', d: 'the officers compare you' },
              { t: 'Two badges earned by someone you coached' },
-             { t: 'Officer approval', d: 'then you may sign off badges you hold' }] }
+             { t: 'Officer approval', d: 'at most 5 mentors at a time; then you may sign off badges you hold' }] }
   ];
 
   /* Optional resources for every badge (2026-10-10): { tip } is a flying tip,
@@ -297,6 +307,7 @@
     'cinematography': [{ tip: 'Smooth beats fast: slow throttle changes, wide gentle turns.' }, { t: 'Oscar Liang: making FPV video cinematic', u: 'https://oscarliang.com/cinematic-fpv/' }],
     'indoor-proximity': [{ tip: 'Lower your rates for tight spaces.' }, { tip: 'Fly the hallway course in the sim first.' }],
     'racing': [{ tip: 'Smooth is fast: clean lines beat full throttle.' }, { t: 'MultiGP (drone racing league)', u: 'https://www.multigp.com' }],
+    'faa-event-exam': [{ tip: 'If nobody can say which rules a flight is under, it doesn\'t fly.' }, FAA, { t: 'FAA: stadiums and sporting events', u: 'https://www.faa.gov/uas/getting_started/where_can_i_fly/airspace_restrictions/sports_stadiums' }, { t: 'FAA: educational users', u: 'https://www.faa.gov/uas/educational_users' }, { t: 'AMA: FPV racing recommendations (setbacks, netting)', u: 'https://www.modelaircraft.org/system/files/documents/540-E.pdf' }],
     'event-pilot': [{ tip: 'Fly a practice battery at the venue before people arrive.' }, { tip: 'Agree the LAND call with your spotter before takeoff.' }],
     'editing': [{ tip: 'Cut on the action; 30 seconds of the best beats 3 minutes of everything.' }, { t: 'DaVinci Resolve (free editor)', u: 'https://www.blackmagicdesign.com/products/davinciresolve' }],
     'tuning': [{ tip: 'Change one thing at a time and fly the same line after each change.' }, { t: 'Betaflight PID tuning guide', u: 'https://betaflight.com/docs/wiki/guides/current/PID-Tuning-Guide' }, { t: 'Oscar Liang: Blackbox', u: 'https://oscarliang.com/blackbox/' }],
@@ -317,6 +328,7 @@
   function slug(name) { return String(name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
 
   window.FS = { TIERS: TIERS, TRACK: TRACK, BADGES: B, LESSON_TITLES: LESSON_TITLES, CLUB_DRONES: CLUB_DRONES, slug: slug, PASS: 80, SIM_HOURS: 5 /* suggested, not a gate (2026-10-15) */,
+    MENTOR_CAP: 5 /* mentors at a time (2026-10-26) */,
     API: 'https://brophy-fpv-club-api.netlify.app',
     /* bonus and clearance badges are never counted toward a pilot's total (2026-10-20) */
     counted: function (b) { return b.tier !== 'el' && b.tier !== 'cl'; },

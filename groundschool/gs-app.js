@@ -804,13 +804,14 @@ var GSApp = (function(){
   function drawQuiz(body){
     el('lNext').style.display = 'none';
     el('lPrev').style.display = 'none';
-    /* A badge quiz (lesson.pool set) is ten questions from one pool, scored
+    /* A badge quiz (lesson.pool set) is ten questions (or lesson.qn: the FAA
+       Event Exam is twenty, 2026-10-26) from one pool, scored
        out of 100 with no live drills. The old checkride shape (16 questions
        + hover + orientation) is kept for any quiz lesson without a pool. */
     var POOL = S.lesson && S.lesson.def && S.lesson.def.pool;
     el('lHint').textContent = POOL ? S.lesson.def.title : 'Checkride';
 
-    var Q_N = POOL ? 10 : 16, Q_PTS = POOL ? 100 : 80, HOVER_PTS = POOL ? 0 : 10, ORIENT_PTS = POOL ? 0 : 10;
+    var Q_N = POOL ? (S.lesson.def.qn || 10) : 16, Q_PTS = POOL ? 100 : 80, HOVER_PTS = POOL ? 0 : 10, ORIENT_PTS = POOL ? 0 : 10;
 
     /* Weighted draw: three from each module, then fill at random from the
        whole pool. Guarantees no module can be skipped by luck. */

@@ -899,17 +899,18 @@ function renderLadder(){
   if (!window.FS){ $('ladder').innerHTML = '<div class="msg">Badge list didn\'t load.</div>'; return; }
   var pilots = (DATA.pilots || []).filter(function (p) { return p.tier != null; });
   var tiers = FS.TIERS.filter(function (t) { return t.n >= 0; }).slice().reverse();
-  /* Mentors first: the people who sign your badges off. A Tier 2 pilot with
-     the Mentor bonus badge (an officer judges it). They stay on their own
-     tier below as well. */
+  /* Mentors first: the people who sign your badges off. An Event Pilot
+     (Tier 3, since 2026-10-26) with the Mentor bonus badge (an officer judges
+     it), at most FS.MENTOR_CAP at a time. They stay on their own tier below
+     as well. */
   var mentors = (DATA.pilots || []).filter(function (p) { return (p.badges || []).indexOf('mentor') >= 0; });
   var html = '<div class="rung mentor" style="--c:var(--amber)">' +
     '<a class="rung-h" href="pilot-path/#el"><span class="tn">Mentors</span><span class="nm">Mentor</span>' +
-    '<span class="ct">' + mentors.length + (mentors.length === 1 ? ' mentor' : ' mentors') + '</span></a>' +
+    '<span class="ct">' + mentors.length + ' of ' + (FS.MENTOR_CAP || 5) + ' mentors</span></a>' +
     '<div class="desc">These are the people who can approve your stuff: they watch your witnessed badges, check your photos and sign your badges off.</div>' +
     (mentors.length ? mentors.map(function (p){
       return '<div class="climb top' + (isMe(p) ? ' me' : '') + '"><span class="nm">' + nameHtml(p) + '</span><span class="n">signs off badges</span></div>';
-    }).join('') : '<div class="none">No mentors yet. Tier 2 pilots can earn it.</div>') +
+    }).join('') : '<div class="none">No mentors yet. Event Pilots can earn it.</div>') +
     '</div>';
 
   tiers.forEach(function (t){
