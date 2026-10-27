@@ -210,6 +210,11 @@ section{margin-top:30px}
 .sub{font-size:13.5px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background-color:var(--glass)}
 .sub b{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:400}
 .sub.pending b{color:var(--amber)} .sub.pass b{color:var(--green)} .sub.fail b{color:var(--rust)}
+.sub a{color:var(--rust)}
+/* 2026-10-27: a Drive-link submission (Cinematography) */
+.drv{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.drv input{font:inherit;font-size:14px;width:100%;box-sizing:border-box;border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 10px;background:var(--glass-2);color:var(--ink)}
+.drv .dmsg{font-size:13.5px;color:var(--ink-soft)} .drv .dmsg.bad{color:var(--rust)}
 #cam{position:fixed;inset:0;z-index:50;background:rgba(16,24,38,.55);display:none;align-items:center;justify-content:center;padding:16px}
 #cam.open{display:flex}
 #cam .box{background:#fffdf7;border:2px solid var(--ink);border-radius:14px;width:100%;max-width:560px;padding:16px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 32px);overflow:auto}
@@ -659,7 +664,7 @@ function more(b, s) {
       if (b.rule) h += '<div class="rule1">' + esc(b.rule) + '</div>';
       if (badgeItems(b).length) h += startBtn(b);
     }
-    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + 'a mentor who holds this badge watches you, then signs it off.') + '</div>';
+    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + (b.drive ? 'submit your clip\'s Google Drive link below; a mentor watches it and signs it off. A pass shows here within a minute.' : 'a mentor who holds this badge watches you, then signs it off.')) + '</div>';
   }
   if (b.res && b.res.length) {
     h += '<div class="res"><b>Optional resources</b><ul>' + b.res.map(function (r) {
@@ -667,6 +672,7 @@ function more(b, s) {
     }).join('') + '</ul></div>';
   }
   if (FS.photoOk(b)) h += photoBlock(b, s);
+  if (FS.driveOk && FS.driveOk(b)) h += driveBlock(b, s);
   if (b.type === 'auto') {
     h += '<div class="std"><b>Automatic</b>' + esc(b.standard) + (s.detail ? ' · ' + esc(s.detail) : '') + '</div>';
     h += '<div class="act"><a class="btn" href="../">Lab hours &amp; leaderboard &rarr;</a></div>';
@@ -796,7 +802,7 @@ $('tiers').addEventListener('click', function (e) {
     if (p[id].steps[i]) pushStep(id, i);     // ticks go up; unticks stay on this device only
     render(); return;
   }
-  if (e.target.closest('a,button')) return;
+  if (e.target.closest('a,button,input,.drv')) return;
   // open or close the whole visual row, not just the card that was tapped
   var want = !card.classList.contains('open'), top = card.offsetTop, sib = card.parentNode.children;
   for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) sib[k].classList.toggle('open', want);
@@ -841,6 +847,72 @@ function photoBlock(b, s) {
     (mine.length && mine[0].status === 'fail' ? 'Try again: submit a new photo' : 'Submit a photo') + '</button></div>';
   return h;
 }
+/* 2026-10-27 (Micah): Cinematography is submitted as a Google Drive link, not
+   a photo. Public is checked the way the Drone Portfolio does it: Drive serves
+   a file's thumbnail only to someone allowed to open it, so a private link
+   errors. The mentor watches it in the console's Review tab. DRV keeps what
+   was typed across re-renders. */
+var DRV = {};
+function driveId(u) {
+  var m = /\/file\/d\/([\w-]{15,})/.exec(String(u || '')) || /[?&]id=([\w-]{15,})/.exec(String(u || ''));
+  return m && /^https?:\/\/(drive|docs)\.google\.com\//.test(String(u || '').trim()) ? m[1] : null;
+}
+function driveBlock(b, s) {
+  var mine = (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse();
+  var h = '<div class="subs">' + mine.map(function (x) {
+    var when = new Date(x.at).toLocaleDateString();
+    var head = x.status === 'pass' ? 'Passed' : (x.status === 'fail' ? 'Not passed' : 'Waiting for review');
+    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · link sent ' + esc(when) +
+      (x.video ? ' · <a href="' + esc(x.video) + '" target="_blank" rel="noopener">your clip &#8599;</a>' : '') +
+      (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
+  }).join('') + '</div>';
+  if (s.earned) return h;
+  var d = DRV[b.id] || {};
+  h += '<div class="drv" data-drv="' + b.id + '">' +
+    '<input type="url" inputmode="url" autocomplete="off" placeholder="Google Drive link to your clip" value="' + esc(d.url || '') + '" data-drvurl="' + b.id + '">' +
+    '<input type="text" maxlength="300" placeholder="Anything the mentor should know? (optional)" value="' + esc(d.note || '') + '" data-drvnote="' + b.id + '">' +
+    '<div class="act"><button class="btn primary" type="button" data-drvsend="' + b.id + '">' +
+    (mine.length && mine[0].status === 'fail' ? 'Try again: submit a new link' : 'Submit the Drive link') + '</button></div>' +
+    '<div class="dmsg' + (d.bad ? ' bad' : '') + '">' + esc(d.msg || 'Share it in Drive as "Anyone with the link" first.') + '</div></div>';
+  return h;
+}
+function drvSay(id, msg, isBad) {
+  DRV[id] = DRV[id] || {}; DRV[id].msg = msg; DRV[id].bad = !!isBad;
+  var box = document.querySelector('[data-drv="' + id + '"] .dmsg');
+  if (box) { box.textContent = msg; box.className = 'dmsg' + (isBad ? ' bad' : ''); }
+}
+function drvSend(btn, badgeId) {
+  if (!pilot) { SiteNav.open(); return; }
+  var d = DRV[badgeId] = DRV[badgeId] || {}, url = String(d.url || '').trim(), id = driveId(url);
+  if (!id) { drvSay(badgeId, 'That isn\'t a Google Drive file link. In Drive: Share > Copy link, then paste it here.', true); return; }
+  btn.disabled = true; drvSay(badgeId, 'Checking the link is shared…');
+  var img = new Image(), done = false;
+  function go(pub) {
+    if (done) return; done = true;
+    if (pub === false) { btn.disabled = false; drvSay(badgeId, 'That file isn\'t shared. In Drive: Share > General access > "Anyone with the link", then send it again.', true); return; }
+    drvSay(badgeId, 'Sending…');
+    fetch(API + '/api/submission', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pilot: pilot.name, badge: badgeId, note: String(d.note || '').trim(), video: url }) })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        btn.disabled = false;
+        if (!j || !j.ok) { drvSay(badgeId, 'Could not send it: ' + ((j && j.error) || 'try again'), true); return; }
+        DRV[badgeId] = {}; SUBS = (SUBS || []).concat([j.item]); render();
+      }).catch(function () { btn.disabled = false; drvSay(badgeId, 'Could not reach the club server - check the connection and try again.', true); });
+  }
+  setTimeout(function () { go(null); }, 9000);   // Drive slow: send anyway, the mentor's console checks it again
+  img.onload = function () { go(true); }; img.onerror = function () { go(false); };
+  img.referrerPolicy = 'no-referrer';
+  img.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(id) + '&sz=w320';
+}
+document.addEventListener('input', function (e) {
+  var t = e.target, u = t.getAttribute && t.getAttribute('data-drvurl'), n = t.getAttribute && t.getAttribute('data-drvnote');
+  if (u) (DRV[u] = DRV[u] || {}).url = t.value;
+  if (n) (DRV[n] = DRV[n] || {}).note = t.value;
+});
+document.addEventListener('click', function (e) {
+  var b = e.target.closest ? e.target.closest('[data-drvsend]') : null;
+  if (b) { e.preventDefault(); drvSend(b, b.getAttribute('data-drvsend')); }
+});
 function camShow(which) {
   ['camShoot', 'camSend', 'camRetake', 'camPick'].forEach(function (id) { $(id).hidden = which.indexOf(id) < 0; });
 }

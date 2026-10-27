@@ -206,13 +206,14 @@
              { t: 'When it goes wrong', d: 'failsafe, flyaway, fire, the report', lessons: ['gs-emg-01', 'gs-emg-02', 'gs-emg-03', 'gs-emg-04', 'gs-emg-05'], v: VID.failsafe },
              { t: 'Event Ops quiz (80 %)', lessons: ['gs-evt-quiz'] },
              { t: 'A real setup for a mentor', d: 'zone marked and briefed, failsafe tested' }] },
-    { id: 'cinematography', tier: 't2', track: 'crew', type: 'witnessed', name: 'Cinematography', est: 'one event',
-      do: 'Plan and shoot one usable clip at a real event.', why: 'So Best of Brophy has more than one person who can shoot.',
+    /* 2026-10-27 (Micah): the clip is submitted as a Google Drive link (drive: true) */
+    { id: 'cinematography', tier: 't2', track: 'crew', type: 'witnessed', drive: true, name: 'Cinematography', est: 'one event',
+      do: 'Plan and shoot one usable clip at a real event, then submit it as a Google Drive link.', why: 'So Best of Brophy has more than one person who can shoot.',
       reqs: [{ t: 'A shot list agreed with the coach or moderator' },
              { t: 'A follow shot', v: VID.follow },
              { t: 'An orbit', v: VID.orbit },
              { t: 'A reveal', v: VID.cine },
-             { t: 'A clip the editor accepts' }] },
+             { t: 'A clip the editor accepts', d: 'on Google Drive, "Anyone with the link", submitted below' }] },
     { id: 'indoor-proximity', tier: 't2', track: 'flight', type: 'witnessed', name: 'Indoor Proximity', est: 'one flight · about 10 min', rule: ONE_GO,
       do: 'The hallway course without touching a wall.', why: 'Precision in tight spaces, for the rally race.',
       reqs: [{ t: 'The club hallway course on one battery', v: VID.whoopIn },
@@ -304,7 +305,7 @@
     'pilot-agreement': [{ tip: 'Kept simple on purpose: a reminder of responsibility that you and a parent sign, not a legal contract.' }],
     'drone-portfolio': [{ tip: 'Film from the ground with a phone: takeoff, a minute of flying, a landing on the pad.' }, { tip: 'In Drive: Share > General access > Anyone with the link. The page checks the link before you send it.' }, { t: 'Google Drive: share a file with a link', u: 'https://support.google.com/drive/answer/2494822' }],
     'event-ops': [{ tip: 'Walk the zone before the event with the organizer.' }, { t: 'FAA B4UFLY', u: 'https://www.faa.gov/uas/getting_started/b4ufly' }, FAA],
-    'cinematography': [{ tip: 'Smooth beats fast: slow throttle changes, wide gentle turns.' }, { t: 'Oscar Liang: making FPV video cinematic', u: 'https://oscarliang.com/cinematic-fpv/' }],
+    'cinematography': [{ tip: 'Smooth beats fast: slow throttle changes, wide gentle turns.' }, { tip: 'In Drive: Share > General access > Anyone with the link. The page checks the link before you send it.' }, { t: 'Oscar Liang: making FPV video cinematic', u: 'https://oscarliang.com/cinematic-fpv/' }],
     'indoor-proximity': [{ tip: 'Lower your rates for tight spaces.' }, { tip: 'Fly the hallway course in the sim first.' }],
     'racing': [{ tip: 'Smooth is fast: clean lines beat full throttle.' }, { t: 'MultiGP (drone racing league)', u: 'https://www.multigp.com' }],
     'faa-event-exam': [{ tip: 'If nobody can say which rules a flight is under, it doesn\'t fly.' }, FAA, { t: 'FAA: stadiums and sporting events', u: 'https://www.faa.gov/uas/getting_started/where_can_i_fly/airspace_restrictions/sports_stadiums' }, { t: 'FAA: educational users', u: 'https://www.faa.gov/uas/educational_users' }, { t: 'AMA: FPV racing recommendations (setbacks, netting)', u: 'https://www.modelaircraft.org/system/files/documents/540-E.pdf' }],
@@ -337,7 +338,9 @@
     /* the other badges of a checkpoint's tier */
     mates: function (b) { return B.filter(function (x) { return x !== b && x.tier === b.tier && !x.checkpoint; }); },
     /* a photo can be submitted for any badge a mentor signs off */
-    photoOk: function (b) { return b.type === 'bench' || b.type === 'witnessed'; },
+    photoOk: function (b) { return (b.type === 'bench' || b.type === 'witnessed') && !b.drive; },
+    /* a badge whose work is sent as a Google Drive link instead (2026-10-27) */
+    driveOk: function (b) { return !!b.drive; },
     /* a bench step is a string or { t, v } (2026-10-11) */
     stepText: function (st) { return typeof st === 'string' ? st : (st && st.t) || ''; },
     /* quiz AND a mentor's sign-off (2026-10-10) */

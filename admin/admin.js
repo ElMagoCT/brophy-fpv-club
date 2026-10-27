@@ -373,7 +373,7 @@
       else { img = document.createElement('img'); img.alt = 'submission from ' + it.pilot; }
       img.src = src; box.appendChild(img);
     }
-    if (!it.photo) { box.textContent = 'no file'; return; }
+    if (!it.photo) { box.textContent = it.video ? 'Drive link' : 'no file'; return; }
     if (PHOTOS[it.photo]) { show(PHOTOS[it.photo].src, PHOTOS[it.photo].type); return; }
     box.textContent = 'Loading…';
     api('GET', '/api/submission?photo=' + encodeURIComponent(it.photo), null, reviewHeaders()).then(function (j) {
@@ -402,6 +402,10 @@
       }
       meta.appendChild(dr);
     } else if (it.note) { var n = document.createElement('div'); n.className = 'pnote'; n.textContent = '“' + it.note + '”'; meta.appendChild(n); }
+    if (it.video && driveId(it.video)) {   // 2026-10-27: a Cinematography clip, sent as a Drive link
+      var cl = document.createElement('a'); cl.href = 'https://drive.google.com/file/d/' + encodeURIComponent(driveId(it.video)) + '/view'; cl.target = '_blank'; cl.rel = 'noopener'; cl.textContent = 'the clip ↗';
+      var cr = document.createElement('div'); cr.className = 'pdrone'; cr.appendChild(cl); meta.appendChild(cr);
+    }
     if (it.reviewNote) { var rn = document.createElement('div'); rn.className = 'pnote'; rn.textContent = 'Mentor: ' + it.reviewNote; meta.appendChild(rn); }
     d.appendChild(ph); d.appendChild(meta);
     photoInto(ph, it);
@@ -607,7 +611,7 @@
       el('rvCount').textContent = items.length ? String(items.length) : '';
       el('rvSetup').hidden = true;
       if (countOnly) return;
-      el('rvMsg').textContent = items.length ? items.length + ' photo' + (items.length === 1 ? '' : 's') + ' waiting, oldest first.' : 'Nothing waiting for review.';
+      el('rvMsg').textContent = items.length ? items.length + ' submission' + (items.length === 1 ? '' : 's') + ' waiting, oldest first.' : 'Nothing waiting for review.';
       drawReview(items);
     }).catch(function (e) {
       if (e.status === 503) {
@@ -691,22 +695,16 @@
       // an embedded player. A pass records the review and files the
       // Drone Portfolio badge (one drone approved = the badge).
       var extra = null;
+      if (it.video && !it.drone) {   // 2026-10-27: Cinematography - the clip is a Drive link, there is no photo
+        extra = document.createElement('div'); extra.className = 'drone';
+        driveRow(extra, it.video, 'Open the clip ↗', 'clip');
+      }
       if (it.drone) {
         extra = document.createElement('div'); extra.className = 'drone';
         var dn = document.createElement('b'); dn.textContent = it.drone.name || 'drone';
         var ds = document.createElement('span'); ds.textContent = it.drone.specs ? ' · ' + it.drone.specs : '';
         extra.appendChild(dn); extra.appendChild(ds);
-        var vid = driveId(it.drone.video), vrow = document.createElement('div'); vrow.className = 'video';
-        if (vid) {
-          var va = document.createElement('a'); va.href = 'https://drive.google.com/file/d/' + encodeURIComponent(vid) + '/view'; va.target = '_blank'; va.rel = 'noopener'; va.textContent = 'Open the flight video ↗';
-          var pub = document.createElement('span'); pub.className = 'pub'; pub.textContent = 'checking the link…';
-          var probe = new Image(); probe.referrerPolicy = 'no-referrer';
-          probe.onload = function () { pub.textContent = 'public ✓'; pub.className = 'pub ok'; };
-          probe.onerror = function () { pub.textContent = 'NOT public - fail it and ask for "Anyone with the link"'; pub.className = 'pub bad'; };
-          probe.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(vid) + '&sz=w200';
-          var fr = document.createElement('iframe'); fr.src = 'https://drive.google.com/file/d/' + encodeURIComponent(vid) + '/preview'; fr.title = 'flight video'; fr.loading = 'lazy'; fr.allow = 'autoplay; fullscreen';
-          vrow.appendChild(va); vrow.appendChild(pub); extra.appendChild(vrow); extra.appendChild(fr);
-        } else { vrow.textContent = 'No usable Google Drive link: ' + (it.drone.video || '(none)'); extra.appendChild(vrow); }
+        driveRow(extra, it.drone.video, 'Open the flight video ↗', 'flight video');
       }
       var isDrone = !!(bd && bd.kind === 'drone');
       var rule = checkRules(it.pilot, bd), warn = null;
@@ -717,6 +715,7 @@
       var fail = document.createElement('button'); fail.className = 'danger'; fail.textContent = 'Fail';
       row.appendChild(pass); row.appendChild(fail);
       [frame, who, meta].concat(extra ? [extra] : []).concat(warn ? [warn] : []).concat([note, row]).forEach(function (n) { card.appendChild(n); });
+      if (!it.photo) { frame.hidden = true; } else
       api('GET', '/api/submission?photo=' + encodeURIComponent(it.photo), null, reviewHeaders()).then(function (j) {
         var img;
         if (j.type === 'application/pdf') {   // 2026-10-20: a TRUST certificate sent as a PDF
@@ -744,7 +743,7 @@
         }).then(function () {
           var d = document.createElement('div'); d.className = 'done ' + result;
           d.textContent = result === 'pass' ? (isDrone ? 'Approved - the drone is in the pilot\'s portfolio and the Drone Portfolio badge is on file.' : 'Passed - the badge is on file; the kiosks pick it up on their next sync.')
-                                           : (isDrone ? 'Not approved - the pilot sees your note and can add the drone again.' : 'Failed - the pilot sees your note and can send a new photo.');
+                                           : (isDrone ? 'Not approved - the pilot sees your note and can add the drone again.' : (it.video ? 'Failed - the pilot sees your note and can send a new link.' : 'Failed - the pilot sees your note and can send a new photo.'));
           row.replaceWith(d); note.disabled = true; card.classList.add('decided');
           setTimeout(function () { if (RV.stage === card) rvNext(card); }, 1500);
           var n = +(el('rvCount').textContent || 0) - 1; el('rvCount').textContent = n > 0 ? String(n) : '';
@@ -758,6 +757,20 @@
       fail.onclick = function () { decide('fail'); };
     });
     rvFocus(RV.cards[0]);
+  }
+  // a Drive link, whether Drive serves it publicly (its thumbnail loads only
+  // for a shareable file) and an embedded player
+  function driveRow(box, url, label, title) {
+    var vid = driveId(url), vrow = document.createElement('div'); vrow.className = 'video';
+    if (!vid) { vrow.textContent = 'No usable Google Drive link: ' + (url || '(none)'); box.appendChild(vrow); return; }
+    var va = document.createElement('a'); va.href = 'https://drive.google.com/file/d/' + encodeURIComponent(vid) + '/view'; va.target = '_blank'; va.rel = 'noopener'; va.textContent = label;
+    var pub = document.createElement('span'); pub.className = 'pub'; pub.textContent = 'checking the link…';
+    var probe = new Image(); probe.referrerPolicy = 'no-referrer';
+    probe.onload = function () { pub.textContent = 'public ✓'; pub.className = 'pub ok'; };
+    probe.onerror = function () { pub.textContent = 'NOT public - fail it and ask for "Anyone with the link"'; pub.className = 'pub bad'; };
+    probe.src = 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(vid) + '&sz=w200';
+    var fr = document.createElement('iframe'); fr.src = 'https://drive.google.com/file/d/' + encodeURIComponent(vid) + '/preview'; fr.title = title; fr.loading = 'lazy'; fr.allow = 'autoplay; fullscreen';
+    vrow.appendChild(va); vrow.appendChild(pub); box.appendChild(vrow); box.appendChild(fr);
   }
   function driveId(u) { var m = /\/file\/d\/([\w-]{15,})/.exec(String(u || '')) || /[?&]id=([\w-]{15,})/.exec(String(u || '')); return m ? m[1] : null; }
   function badgeInfo() {
