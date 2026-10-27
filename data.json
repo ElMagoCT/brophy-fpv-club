@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793131566919,
-    "generatedIso":  "2026-10-27T13:06:07-07:00",
+    "generated":  1793131628829,
+    "generatedIso":  "2026-10-27T13:07:09-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  434836901,
+                   "clubMs":  434896961,
                    "pilots":  42,
                    "activePilots7":  14,
-                   "clubWeekMs":  13003790,
+                   "clubWeekMs":  13063850,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  307883324.1329999,
+                                    "liftoff":  307943383.69089985,
                                     "microdrones":  124795326.74950042,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -818,6 +818,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Aaron D",
+                       "totalMs":  436107,
+                       "weekMs":  436107,
+                       "perSimMs":  {
+                                        "liftoff":  321787,
+                                        "microdrones":  114320,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1793131616130,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Marco E.",
                        "totalMs":  377211,
                        "weekMs":  0,
@@ -831,25 +850,6 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1793031783634,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Aaron D",
-                       "totalMs":  376047,
-                       "weekMs":  376047,
-                       "perSimMs":  {
-                                        "liftoff":  261727,
-                                        "microdrones":  114320,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1793131556069,
                        "badges":  [
 
                                   ],
