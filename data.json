@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793116180160,
-    "generatedIso":  "2026-10-27T08:49:40-07:00",
+    "generated":  1793116362844,
+    "generatedIso":  "2026-10-27T08:52:43-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -324,11 +324,11 @@
                                         "fpvlabs":  0,
                                         "picasim":  9793
                                     },
-                       "gsPct":  13,
-                       "gsLessons":  6,
+                       "gsPct":  15,
+                       "gsLessons":  7,
                        "lastSeen":  1792608000440,
                        "badges":  [
-
+                                      "battery-care"
                                   ],
                        "tier":  0
                    },
