@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793207859422,
-    "generatedIso":  "2026-10-28T10:17:39-07:00",
+    "generated":  1793207931561,
+    "generatedIso":  "2026-10-28T10:18:51-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  440832116,
+                   "clubMs":  441014176,
                    "pilots":  43,
-                   "activePilots7":  15,
-                   "clubWeekMs":  18999007,
+                   "activePilots7":  16,
+                   "clubWeekMs":  19181067,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  312562482.34579921,
+                                    "liftoff":  312744542.2386992,
                                     "microdrones":  126111384.87660047,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -235,6 +235,31 @@
                        "tier":  3
                    },
                    {
+                       "name":  "Jameson S.",
+                       "totalMs":  23748342,
+                       "weekMs":  3316609,
+                       "perSimMs":  {
+                                        "liftoff":  19007879,
+                                        "microdrones":  4730670,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  9793
+                                    },
+                       "gsPct":  100,
+                       "gsLessons":  46,
+                       "lastSeen":  1793207907202,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "spotter",
+                                      "faa-trust"
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Colton O.",
                        "totalMs":  23664610,
                        "weekMs":  0,
@@ -250,31 +275,6 @@
                        "lastSeen":  1791215621582,
                        "badges":  [
                                       "safe-flight"
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Jameson S.",
-                       "totalMs":  23566282,
-                       "weekMs":  3134549,
-                       "perSimMs":  {
-                                        "liftoff":  18825819,
-                                        "microdrones":  4730670,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  9793
-                                    },
-                       "gsPct":  100,
-                       "gsLessons":  46,
-                       "lastSeen":  1793207845251,
-                       "badges":  [
-                                      "proficient-flight",
-                                      "safe-flight",
-                                      "battery-care",
-                                      "electrical-components",
-                                      "radio-protocol",
-                                      "spotter",
-                                      "faa-trust"
                                   ],
                        "tier":  0
                    },
@@ -532,7 +532,7 @@
                                     },
                        "gsPct":  30,
                        "gsLessons":  14,
-                       "lastSeen":  1792171969477,
+                       "lastSeen":  1793207914472,
                        "badges":  [
                                       "safe-flight",
                                       "battery-care"
