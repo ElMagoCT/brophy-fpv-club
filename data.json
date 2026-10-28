@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793207992833,
-    "generatedIso":  "2026-10-28T10:19:53-07:00",
+    "generated":  1793208054027,
+    "generatedIso":  "2026-10-28T10:20:54-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  441117498,
+                   "clubMs":  441237600,
                    "pilots":  43,
                    "activePilots7":  16,
-                   "clubWeekMs":  19284389,
+                   "clubWeekMs":  19404492,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  312847863.60949916,
+                                    "liftoff":  312967966.37739921,
                                     "microdrones":  126111384.87660047,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -236,10 +236,10 @@
                    },
                    {
                        "name":  "Jameson S.",
-                       "totalMs":  23808442,
-                       "weekMs":  3376709,
+                       "totalMs":  23868477,
+                       "weekMs":  3436744,
                        "perSimMs":  {
-                                        "liftoff":  19067979,
+                                        "liftoff":  19128014,
                                         "microdrones":  4730670,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -247,7 +247,7 @@
                                     },
                        "gsPct":  100,
                        "gsLessons":  46,
-                       "lastSeen":  1793207923416,
+                       "lastSeen":  1793207983453,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -521,10 +521,10 @@
                    },
                    {
                        "name":  "Carter.B",
-                       "totalMs":  5687964,
-                       "weekMs":  43221,
+                       "totalMs":  5748031,
+                       "weekMs":  103289,
                        "perSimMs":  {
-                                        "liftoff":  1728447,
+                                        "liftoff":  1788515,
                                         "microdrones":  3959516,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -532,7 +532,7 @@
                                     },
                        "gsPct":  30,
                        "gsLessons":  14,
-                       "lastSeen":  1793207965413,
+                       "lastSeen":  1793208025482,
                        "badges":  [
                                       "safe-flight",
                                       "battery-care"
