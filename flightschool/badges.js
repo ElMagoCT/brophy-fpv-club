@@ -213,7 +213,7 @@
              { t: 'A follow shot', v: VID.follow },
              { t: 'An orbit', v: VID.orbit },
              { t: 'A reveal', v: VID.cine },
-             { t: 'A clip the editor accepts', d: 'on Google Drive, "Anyone with the link", submitted below' }] },
+             { t: 'A clip the editor accepts', d: 'on Google Drive, "Anyone with the link", link sent on the Pilot Path' }] },
     { id: 'indoor-proximity', tier: 't2', track: 'flight', type: 'witnessed', name: 'Indoor Proximity', est: 'one flight · about 10 min', rule: ONE_GO,
       do: 'The hallway course without touching a wall.', why: 'Precision in tight spaces, for the rally race.',
       reqs: [{ t: 'The club hallway course on one battery', v: VID.whoopIn },
@@ -223,12 +223,13 @@
       reqs: [{ t: 'Clean race lines', v: VID.lines },
              { t: 'Three clean laps in a row' },
              { t: 'Under the posted time, timed by the mentor', v: VID.faster }] },
-    /* 2026-10-26 (Micah): an in-depth FAA test before Event Pilot - people,
-       crowds, stadiums, night, TFRs, and standard race-day / game-day practice.
-       Twenty questions (qn on the quiz lesson), not ten. */
+    /* 2026-10-26 (Micah): an in-depth FAA test before Event Pilot, plus
+       standard race-day / game-day practice. 2026-10-27: about the FAA's drone
+       rules in general as they apply to the club, not stadiums, and Event
+       Pilots always fly by Part 107. Twenty questions (qn on the quiz lesson). */
     { id: 'faa-event-exam', quiz: 'gs-faa-quiz', tier: 't2', track: 'know', type: 'knowledge', name: 'FAA Event Exam', est: 'about 25 min',
-      do: 'The in-depth FAA test: people, crowds, stadiums, night, TFRs, and how races and games are run. Twenty questions.', why: 'An Event Pilot flies near hundreds of people. Every rule in this one exists because of them.',
-      lessons: [{ id: 'gs-faa-01', t: 'Which rules is this flight under?' }, { id: 'gs-faa-02', t: 'People, crowds and stadiums' }, { id: 'gs-faa-03', t: 'Night, TFRs and fitness to fly' }, { id: 'gs-faa-04', t: 'Race day and game day' }] },
+      do: 'The in-depth FAA test. Event Pilots always fly by Part 107: the pilot in command, limits, airspace, people, preflight, reporting, and how races and games are run. Twenty questions.', why: 'Every event flight is a Part 107 flight, often near a lot of people. This is the rulebook it runs on.',
+      lessons: [{ id: 'gs-faa-01', t: 'Part 107: who\'s in command' }, { id: 'gs-faa-02', t: 'The limits, the airspace and the aircraft' }, { id: 'gs-faa-03', t: 'People, preflight and reporting' }, { id: 'gs-faa-04', t: 'Race day and game day' }] },
     { id: 'event-pilot', tier: 't2', track: 'flight', type: 'witnessed', name: 'Event Pilot', checkpoint: true, est: 'one event',
       do: 'Checkpoint into Tier 3: fly at a school event or a race.', why: 'The top of the path: flying for the school.',
       reqs: [{ t: 'Zone set up and briefed' },
@@ -308,7 +309,7 @@
     'cinematography': [{ tip: 'Smooth beats fast: slow throttle changes, wide gentle turns.' }, { tip: 'In Drive: Share > General access > Anyone with the link. The page checks the link before you send it.' }, { t: 'Oscar Liang: making FPV video cinematic', u: 'https://oscarliang.com/cinematic-fpv/' }],
     'indoor-proximity': [{ tip: 'Lower your rates for tight spaces.' }, { tip: 'Fly the hallway course in the sim first.' }],
     'racing': [{ tip: 'Smooth is fast: clean lines beat full throttle.' }, { t: 'MultiGP (drone racing league)', u: 'https://www.multigp.com' }],
-    'faa-event-exam': [{ tip: 'If nobody can say which rules a flight is under, it doesn\'t fly.' }, FAA, { t: 'FAA: stadiums and sporting events', u: 'https://www.faa.gov/uas/getting_started/where_can_i_fly/airspace_restrictions/sports_stadiums' }, { t: 'FAA: educational users', u: 'https://www.faa.gov/uas/educational_users' }, { t: 'AMA: FPV racing recommendations (setbacks, netting)', u: 'https://www.modelaircraft.org/system/files/documents/540-E.pdf' }],
+    'faa-event-exam': [{ tip: 'If nobody can say who the remote pilot in command is, it doesn\'t fly.' }, { t: 'FAA: Part 107, certificated remote pilots', u: 'https://www.faa.gov/uas/commercial_operators' }, { t: 'The rules themselves: 14 CFR Part 107', u: 'https://www.ecfr.gov/current/title-14/chapter-I/subchapter-F/part-107' }, { t: 'FAA: Remote ID', u: 'https://www.faa.gov/uas/getting_started/remote_id' }, { t: 'AMA: FPV racing recommendations (setbacks, netting)', u: 'https://www.modelaircraft.org/system/files/documents/540-E.pdf' }],
     'event-pilot': [{ tip: 'Fly a practice battery at the venue before people arrive.' }, { tip: 'Agree the LAND call with your spotter before takeoff.' }],
     'editing': [{ tip: 'Cut on the action; 30 seconds of the best beats 3 minutes of everything.' }, { t: 'DaVinci Resolve (free editor)', u: 'https://www.blackmagicdesign.com/products/davinciresolve' }],
     'tuning': [{ tip: 'Change one thing at a time and fly the same line after each change.' }, { t: 'Betaflight PID tuning guide', u: 'https://betaflight.com/docs/wiki/guides/current/PID-Tuning-Guide' }, { t: 'Oscar Liang: Blackbox', u: 'https://oscarliang.com/blackbox/' }],

@@ -785,7 +785,7 @@ var GS_MODULES = [
   { code:'EVT', badge:'event-ops',             tier:2, name:'Event Ops',             mins:24, signoff:true,
     blurb:'What the mentor checks before an outdoor flight - where Sky Harbor\'s Class B starts (Brophy is just outside it), B4UFLY, LAANC and TRUST - then the flight zone, the brief, the calls and the handover, then what to do when it goes wrong. Pass the quiz, then show a mentor at a real setup.' },
   { code:'FAA', badge:'faa-event-exam',        tier:2, name:'FAA Event Exam',        mins:25,
-    blurb:'The in-depth FAA test before Event Pilot: which rules a flight is under, people, crowds and stadiums, night and TFRs, fitness to fly, and how races and games are run. Twenty questions; pass and you have the badge.' },
+    blurb:'The in-depth FAA test before Event Pilot. Event flights are always Part 107: the remote pilot in command, line of sight in goggles, the limits, airspace, registration and Remote ID, people, the preflight, fitness, reporting, then how races and games are run. Twenty questions; pass and you have the badge.' },
   { code:'FLY', badge:null,                    tier:0, name:'Flight prep',           mins:22,
     blurb:'Sticks, hover, orientation and the tricks: the drills mentors expect you to have done before Sim Flight, Line of Sight and Freestyle Flight. No quiz, those badges are watched instead.' }
 ];
@@ -1792,96 +1792,116 @@ var GS_COURSE = [
       p:['The airspace check, the zone, the brief, the calls and the handover, plus failsafe, flyaway, fire and the incident report. <b>80 to pass</b>, then a mentor watches you set up and run a real flight zone to sign the badge off. Unlimited retakes, best score kept.'] }
   ]
 },
-/* ============================ FAA EVENT EXAM (2026-10-26) ===============
-   Micah: an in-depth FAA test before Event Pilot - the rules around people
-   and everything the club does at events, plus standard race-day and
-   game-day practice. Knowledge badge on the Tier 2 path, so the Event Pilot
-   checkpoint needs it. The quiz is twenty questions (qn), not ten.
-   Facts checked 2026-10-26: 49 U.S.C. 44809, FAA educational-users and
-   stadium pages, Part 107 (107.29 night lighting), AMA FPV racing
-   recommendations (540-E). */
+/* ============================ FAA EVENT EXAM (2026-10-26, reworked 2026-10-27) ===
+   Micah: an in-depth FAA test before Event Pilot. 2026-10-27: the focus is
+   the FAA's drone rules in general, as they apply to what the club does -
+   not stadiums - and an Event Pilot ALWAYS flies by Part 107. Knowledge badge
+   on the Tier 2 path, so the Event Pilot checkpoint needs it. The quiz is
+   twenty questions (qn), not ten.
+   Facts: 14 CFR Part 107 (107.7, .9, .12, .15, .17, .19, .23, .25, .27, .29,
+   .31, .33, .35, .37, .39, .49, .51, .65, .145), the Remote ID and
+   registration rules, AMA FPV racing recommendations (540-E). */
 {
-  id:'gs-faa-01', mod:'FAA', ord:10, title:'Which rules is this flight under?', mins:3, kind:'read',
+  id:'gs-faa-01', mod:'FAA', ord:10, title:'Part 107: who\'s in command', mins:3, kind:'read',
   cards:[
-    { h:'Two legal ways to fly', tab:'Two ways',
-      p:['Every outdoor flight is either <b>recreational</b> (the exception in federal law, 49 U.S.C. 44809) or <b>Part 107</b>. Know which before the battery goes in, because the rules differ. <b>Purpose</b> decides, not money: a flight that exists to make something for the school isn\'t "just for fun".'],
-      cols:{ tone:'vs', ha:'Recreational (44809)', hb:'Part 107',
-        a:['Purely for your own enjoyment','TRUST certificate on you','Follow a recognized club safety code (AMA)','400 ft in uncontrolled airspace'],
-        b:['A Remote Pilot Certificate: FAA exam, age 16+','That pilot is in command','Any purpose: school video, club promo','Paid or not'] } },
-    { h:'The recreational rules, all eight', tab:'The eight',
-      p:['Break any one of these and the flight isn\'t recreational any more. It\'s an unlicensed Part 107 flight.'],
-      steps:[
-        { t:'Fun only',     d:'flying purely for your own enjoyment' },
-        { t:'Safety code',  d:'follow a recognized community-based organization\'s (the AMA\'s)' },
-        { t:'Line of sight', d:'yours, or a visual observer standing beside you and talking to you' },
-        { t:'Give way',     d:'to every crewed aircraft, always' },
-        { t:'Authorization', d:'LAANC before flying in controlled airspace' },
-        { t:'400 ft',       d:'the ceiling in uncontrolled (Class G) airspace' },
-        { t:'TRUST',        d:'passed, with proof on you' },
-        { t:'Over 250 g',   d:'registered, number outside, Remote ID' }
+    { h:'Every event flight is Part 107', tab:'Part 107',
+      p:['The club flies every event flight by the FAA\'s <b>Part 107</b> rules, the ones for anyone who isn\'t flying purely for fun. A shot for the school, a promo clip, a race the club runs: all Part 107, paid or not. No guessing which rules apply.'],
+      cols:{ tone:'vs', ha:'Fun flying (TRUST)', hb:'Event flying (Part 107)',
+        a:['Purely for your own enjoyment','TRUST certificate','A club safety code'],
+        b:['Anything flown for the club or the school','A Remote Pilot Certificate in charge','Every rule in this course'] } },
+    { h:'The remote pilot in command', tab:'The RPIC',
+      p:['Every Part 107 flight has one <b>remote pilot in command</b> (RPIC) with a <b>Remote Pilot Certificate</b>. The RPIC is responsible for the whole flight and has the final say on it.'],
+      facts:[
+        { n:'16+', l:'minimum age for the certificate', c:'sky' },
+        { n:'TEST', l:'the FAA knowledge test, at a testing center' },
+        { n:'24 mo', l:'free online recurrent training, every 24 calendar months', c:'amber' },
+        { n:'ON YOU', l:'show it to the FAA or police when asked', c:'rust' }
       ] },
-    { h:'Schools are a special case', tab:'Schools',
-      p:['The FAA\'s guidance for educational users: a K-12 school program may use the recreational rules only if it\'s chartered by an <b>FAA-recognized community-based organization</b> (or is JROTC). Otherwise it flies under <b>Part 107</b>. A club flight filming a game for Brophy has a purpose beyond fun.'],
+    { h:'Flying without a certificate', tab:'Supervised',
+      p:['Someone without a certificate may be on the sticks only under the <b>direct supervision</b> of a certificated RPIC who can <b>immediately take control</b>. Standing nearby isn\'t enough: the RPIC needs a way to take over, right now.'],
       steps:[
-        { t:'Which rules', d:'recreational under a charter, or Part 107' },
-        { t:'Who\'s in command', d:'by name, with their certificate if it\'s 107' },
+        { t:'Name the RPIC', d:'before the event, with their certificate' },
+        { t:'Takeover',  d:'agreed and tested: how the RPIC takes control at once' },
         { t:'Approved', d:'Mr. Burr\'s form, 24 h ahead, answered yes' }
       ],
-      note:'The adviser confirms all three before every event. If nobody can say which rules a flight is under, it doesn\'t fly.' }
+      note:'If nobody can say who the RPIC is, it doesn\'t fly.' },
+    { h:'Eyes on the aircraft', tab:'Line of sight',
+      p:['Part 107 needs the aircraft in <b>visual line of sight</b> the whole flight, seen with plain eyes (glasses are fine, binoculars and a video feed aren\'t). In goggles you can\'t see it, so a <b>visual observer</b> stands beside you, watches the aircraft and talks to you.'],
+      cols:{ tone:'dd', ha:'Counts', hb:'Doesn\'t count',
+        a:['A spotter beside you, eyes on the quad','The RPIC watching it directly','Glasses or contacts'],
+        b:['A friend watching the goggle feed','The OSD or a phone screen','Binoculars'] },
+      tip:'One pilot, one aircraft. Part 107 doesn\'t let anyone fly two at once.' },
+    { h:'Indoors is different', tab:'Indoors',
+      p:['The FAA\'s rules cover the airspace outside. A flight <b>fully inside a building</b>, like the hallway course or the IC, isn\'t under them. Step outside, even into a netted course, and every rule here applies.'] }
   ]
 },
 {
-  id:'gs-faa-02', mod:'FAA', ord:20, title:'People, crowds and stadiums', mins:3, kind:'read',
+  id:'gs-faa-02', mod:'FAA', ord:20, title:'The limits, the airspace and the aircraft', mins:3, kind:'read',
+  cards:[
+    { h:'The hard limits', tab:'Limits',
+      p:['These hold on every Part 107 flight. The club flies well inside them.'],
+      facts:[
+        { n:'400 ft', l:'above the ground, the ceiling', c:'rust' },
+        { n:'100 mph', l:'top groundspeed' },
+        { n:'3 SM', l:'visibility from where you stand', c:'sky' },
+        { n:'500 / 2,000', l:'feet below and sideways from clouds', c:'amber' }
+      ],
+      art:'ceiling', cap:'the shelf you fly under' },
+    { h:'Airspace: check it every time', tab:'Airspace',
+      p:['Brophy sits just outside Sky Harbor\'s Class B. Controlled airspace needs an <b>authorization</b> (LAANC, through an app, often in seconds) before takeoff. <b>Temporary Flight Restrictions</b> pop up for fires, police scenes, VIP visits and big sporting events, and no certificate gets you into one.'],
+      steps:[
+        { t:'Morning of', d:'check the spot in B4UFLY or a LAANC app' },
+        { t:'On site',    d:'check again before the first flight' },
+        { t:'Controlled', d:'LAANC authorization, at or under its altitude' },
+        { t:'TFR',        d:'don\'t fly inside it' }
+      ] },
+    { h:'The aircraft', tab:'Aircraft',
+      p:['Under Part 107 <b>every</b> drone is registered, whatever it weighs, the Meteor included. The registration number goes on the outside, and the drone broadcasts <b>Remote ID</b> (built in, or a broadcast module).'],
+      facts:[
+        { n:'ALL', l:'registered under Part 107, any weight', c:'rust' },
+        { n:'OUTSIDE', l:'the number, readable' },
+        { n:'RID', l:'Remote ID broadcasting', c:'sky' },
+        { n:'< 55 lb', l:'Part 107\'s limit for the aircraft', c:'green' }
+      ] },
+    { h:'Give way, and night', tab:'Night',
+      p:['Give way to <b>every</b> crewed aircraft, always: if a helicopter shows up, land and stay landed. Night and twilight flying is allowed with <b>anti-collision lights visible for 3 statute miles</b>, which is why the Cinebot\'s LEDs are on and checked before a night game.'],
+      facts:[
+        { n:'GIVE WAY', l:'to every crewed aircraft', c:'amber' },
+        { n:'3 SM', l:'anti-collision lights at night', c:'sky' },
+        { n:'LAND', l:'when police, fire or a medical helicopter arrives', c:'rust' }
+      ] }
+  ]
+},
+{
+  id:'gs-faa-03', mod:'FAA', ord:30, title:'People, preflight and reporting', mins:3, kind:'read',
   cards:[
     { h:'Not over people', tab:'People',
-      p:['The FAA\'s advice to recreational flyers is plain: don\'t fly over people, groups, public events or stadiums full of people. Part 107 allows flight over people only in narrow categories set by weight, exposed props and Remote ID, and an open-air crowd is stricter still. The club plans <b>no shot over people</b>, under either set of rules.'],
+      p:['Part 107 allows flight over people only in narrow categories set by weight, exposed props and Remote ID, and flying over a crowd is stricter still. The club\'s rule is simpler: <b>no flight over people</b> who aren\'t part of the crew, and the AMA\'s race setbacks keep spectators 25 ft back.'],
       cols:{ tone:'dd', ha:'OK', hb:'Never',
-        a:['Beside the crowd line, outside the setback','Over the empty, agreed zone','Near crew who are part of the flight and know it\'s up'],
-        b:['Over the stands or any crowd','Over moving cars or a filling parking lot','Between the crowd and the field'] } },
-    { h:'Distance is the safety', tab:'Setbacks',
-      p:['The AMA\'s FPV racing recommendations, which most clubs and races copy, keep <b>spectators 25 ft back</b>. Pilots and spotters may stand closer to the course only when approved <b>netting</b> stands at least 4 ft in front of them. The club\'s zone rule uses the same number.'],
-      facts:[
-        { n:'25 ft', l:'from people to any flight path', c:'rust' },
-        { n:'4 ft', l:'netting in front of pilots and spectators', c:'amber' },
-        { n:'100 ft', l:'race course ceiling; a monitor watches it', c:'sky' },
-        { n:'OUT', l:'an abort direction that\'s always empty', c:'green' }
-      ],
-      art:'ceiling', cap:'crowd behind the line, nothing above anyone' },
-    { h:'Stadium no-fly zones', tab:'Stadiums',
-      p:['A standing FAA restriction covers stadiums with <b>30,000+ seats</b> during MLB, NFL and NCAA Division I football games and major motor races: <b>3 nautical miles</b> out, up to <b>3,000 ft</b>, from an hour before to an hour after. Breaking it is a federal crime. A Brophy home game isn\'t covered by it, but other restrictions can cover any event.'],
-      facts:[
-        { n:'3 NM', l:'radius around the stadium', c:'rust' },
-        { n:'3,000 ft', l:'up to this height' },
-        { n:'±1 h', l:'before the start, after the end', c:'amber' },
-        { n:'30,000', l:'seats or more', c:'sky' }
-      ],
-      note:'Check B4UFLY for restrictions on the day of every event, even a home game.' }
-  ]
-},
-{
-  id:'gs-faa-03', mod:'FAA', ord:30, title:'Night, TFRs and fitness to fly', mins:2, kind:'read',
-  cards:[
-    { h:'Flying a night game', tab:'Night',
-      p:['Night flying is legal with lights. Part 107 requires <b>anti-collision lights visible for 3 statute miles</b> at night and in twilight. The AMA safety code asks for lights that show the pilot where the aircraft is and which way it faces the whole time. The Cinebot\'s LED strips are how it flies a night game, not decoration.'],
-      facts:[
-        { n:'3 SM', l:'anti-collision light visibility (Part 107)', c:'amber' },
-        { n:'LEDs', l:'on and checked before arming', c:'green' },
-        { n:'EYES', l:'the spotter still watches the aircraft', c:'sky' }
-      ] },
-    { h:'TFRs and emergencies', tab:'TFRs',
-      p:['A <b>Temporary Flight Restriction</b> can appear for a VIP visit, a big stadium event, a fire or a police scene. Inside one you don\'t fly, whatever certificate you hold. If police, fire or a medical helicopter turns up, land and stay landed: drones ground firefighting aircraft, and interfering is a federal crime.'],
+        a:['Over the empty, agreed zone','Beside the crowd line, outside the setback','Near crew who know it\'s up'],
+        b:['Over the stands or any crowd','Over moving cars or a filling parking lot','Between the crowd and the field'] },
+      tip:'Part 107 also limits flying over moving vehicles and flying from one. The club does neither.' },
+    { h:'The preflight is a rule', tab:'Preflight',
+      p:['Part 107 makes the RPIC check the <b>area</b>, <b>brief everyone</b> involved and check the <b>aircraft</b> before flight. That\'s the zone walk, the brief and the tech check, written into federal rules.'],
       steps:[
-        { t:'Morning of', d:'check B4UFLY for TFRs' },
-        { t:'On site',    d:'check again before the first flight' },
-        { t:'Helicopter', d:'land at once, every time' },
-        { t:'Emergency',  d:'land, pack away, stay out of the way' }
-      ] },
+        { t:'The area',   d:'people, obstacles, weather, the airspace' },
+        { t:'The brief',  d:'crew and bystanders know the plan and the calls' },
+        { t:'The link',   d:'control and video working, failsafe tested props-off' },
+        { t:'The aircraft', d:'props, battery strap, enough charge for the flight' }
+      ],
+      art:'callouts', cap:'brief the crew before anything arms' },
     { h:'Fit to fly', tab:'Fitness',
-      p:['"Fit to fly" is a check you make on yourself, every flight.'],
+      p:['Part 107 bars flying with a condition that would affect safe flight, and alcohol within <b>8 hours</b> or at <b>0.04</b> or above. Careless or reckless flying, or dropping anything that could hurt someone, is also against the rules.'],
       cols:{ tone:'dd', ha:'Fly', hb:'Don\'t fly',
-        a:['Rested, fed, feeling normal','You know this drone\'s failsafe','You have time to do it properly'],
-        b:['On medicine that makes you drowsy','Sick, or too tired to drive','Rushed, or pushed into it'] },
-      note:'Part 107 also sets 8 hours from a drink and under 0.04 blood alcohol. The club\'s rule is simpler: none.' }
+        a:['Rested, fed, feeling normal','You know this drone\'s failsafe','Time to do it properly'],
+        b:['On medicine that makes you drowsy','Sick, or too tired to drive','Rushed, or pushed into it'] } },
+    { h:'When something goes wrong', tab:'Reporting',
+      p:['The RPIC reports to the FAA <b>within 10 days</b> if a flight causes a serious injury or someone loses consciousness, or damages property (not the drone) costing more than <b>$500</b>. The club\'s incident report goes to the adviser the same day, every time.'],
+      facts:[
+        { n:'10 days', l:'to report to the FAA', c:'rust' },
+        { n:'$500', l:'property damage that must be reported', c:'amber' },
+        { n:'SAME DAY', l:'the club\'s incident report', c:'sky' }
+      ] }
   ]
 },
 {
@@ -1892,7 +1912,7 @@ var GS_COURSE = [
       steps:[
         { t:'Race director', d:'one person runs the course; their call is final' },
         { t:'Frequencies',   d:'a channel per pilot, written down before anyone powers up' },
-        { t:'Pilot area',    d:'pilots fly from behind the net, spotters beside them' },
+        { t:'Pilot area',    d:'pilots fly from behind the net, a spotter beside each one' },
         { t:'Arm',           d:'on the start pad only; disarm before you touch it' },
         { t:'Crash',         d:'disarm at once; nobody walks out until the director calls the course cold' }
       ],
@@ -1924,7 +1944,7 @@ var GS_COURSE = [
   id:'gs-faa-quiz', mod:'FAA', ord:90, title:'FAA Event Exam', mins:8, kind:'quiz', pool:'FAA', qn:20,
   cards:[
     { h:'Twenty questions. Sixteen to pass.', tab:'How it works',
-      p:['Twenty questions from the FAA Event pool, reshuffled every time: which rules a flight is under, people and crowds, stadiums, night, TFRs, fitness to fly, race day and game day. <b>80 to pass</b> earns the badge, and the Event Pilot checkpoint needs it. Unlimited retakes, best score kept.'] }
+      p:['Twenty questions from the FAA Event pool, reshuffled every time: Part 107 and the RPIC, line of sight, the limits, airspace, the aircraft, people, the preflight, fitness, reporting, race day and game day. <b>80 to pass</b> earns the badge, and the Event Pilot checkpoint needs it. Unlimited retakes, best score kept.'] }
   ]
 }
 ];
@@ -2257,64 +2277,85 @@ var GS_QUIZ = [
   opts:['LANDING','BATTERY','PERSON','CLEAR'], a:1,
   why:'BATTERY tells the spotter the quad is coming home now, before the LANDING call.' }
 ,
-/* --- FAA Event Exam (2026-10-26): twenty drawn per attempt --- */
-{ mod:'FAA', q:'Before an event, nobody on the crew can say whether the flight is recreational or Part 107. What happens?',
-  opts:['Fly recreational, it\'s the default','Fly low and keep it short','It doesn\'t fly until the adviser confirms','Fly by Part 107 rules, they\'re stricter'], a:2,
-  why:'Which rules, who is in command and the approval are settled before the event. If nobody can say, nobody flies.' },
-{ mod:'FAA', q:'What decides whether a flight is recreational?',
-  opts:['Whether anyone is paid','Its purpose','Its height','The drone\'s weight'], a:1,
-  why:'Purpose. A flight that makes something for the school or the club isn\'t purely for fun, paid or not.' },
-{ mod:'FAA', q:'Under the FAA\'s educational-users guidance, when may a K-12 school program fly under the recreational rules?',
-  opts:['Always - students are recreational','When it\'s chartered by an FAA-recognized community-based organization (or is JROTC)','Only indoors','Only with drones under 250 g'], a:1,
-  why:'Otherwise a K-12 program flies under Part 107. Indoors, the FAA rules don\'t apply at all.' },
-{ mod:'FAA', q:'Which is NOT one of the recreational (44809) conditions?',
-  opts:['Follow a recognized safety code','Keep visual line of sight, yours or a co-located observer\'s','Hold a Part 107 certificate','Pass TRUST'], a:2,
-  why:'Part 107 is the other way to fly. Recreational flyers need TRUST, a safety code, line of sight and the rest of the eight.' },
-{ mod:'FAA', q:'You fly in goggles. Who keeps the aircraft in visual line of sight?',
-  opts:['Nobody, under 100 ft','A visual observer standing next to you and talking to you','A friend watching the feed on a phone','The OSD'], a:1,
-  why:'A co-located observer with eyes on the aircraft itself. A video feed isn\'t line of sight.' },
-{ mod:'FAA', q:'What does Part 107 need from the pilot in command?',
-  opts:['Nothing beyond TRUST','A Remote Pilot Certificate from the FAA knowledge test, age 16 or over','A parent\'s signature','AMA membership'], a:1,
-  why:'The certificate is the license. The remote pilot in command is responsible for the whole flight.' },
-{ mod:'FAA', q:'The FAA\'s advice to recreational flyers about people:',
-  opts:['Over people is fine under 100 ft','Don\'t fly over people, groups, public events or stadiums full of people','Only over people who are sitting down','Fine with a spotter'], a:1,
-  why:'Not over people. The club plans no shot over people under either set of rules.' },
-{ mod:'FAA', q:'The best shot at a rally passes over the front row of the stands for two seconds. You:',
-  opts:['Take it, two seconds is nothing','Take it lower so it\'s quieter','Change the shot - nothing flies over the crowd','Ask the front row to duck'], a:2,
-  why:'Two seconds over a crowd is two seconds of a failure landing on someone. The shot changes.' },
-{ mod:'FAA', q:'Under Part 107, flight over people is:',
-  opts:['Never allowed','Allowed only in narrow categories set by weight, exposed props and Remote ID','Allowed below 400 ft','Allowed for any certificated pilot'], a:1,
-  why:'Narrow categories, with stricter rules over an open-air crowd. A certificate alone isn\'t permission.' },
-{ mod:'FAA', q:'How far back do spectators stand at an FPV race (the AMA recommendation)?',
-  opts:['5 ft','10 ft','25 ft','Anywhere behind a cone'], a:2,
-  why:'25 ft, the same number as the club\'s zone rule from the crowd line to any flight path.' },
-{ mod:'FAA', q:'When may pilots and spotters stand closer to a race course?',
-  opts:['When they\'re experienced','When approved netting stands at least 4 ft in front of them','Whenever it\'s indoors','When the director isn\'t looking'], a:1,
-  why:'The net is what makes the shorter distance safe.' },
-{ mod:'FAA', q:'The standing stadium flight restriction covers:',
-  opts:['Every high-school game','Stadiums of 30,000+ seats during MLB, NFL and NCAA Division I football games and major motor races','Only the Super Bowl','Any stadium, any day'], a:1,
-  why:'Big stadiums, big leagues. A Brophy home game isn\'t one of them, but you still check for other restrictions.' },
-{ mod:'FAA', q:'How far and how long does the stadium restriction reach?',
-  opts:['1 mile, during play','3 nautical miles and up to 3,000 ft, from an hour before to an hour after','5 miles, all day','400 ft over the stands only'], a:1,
-  why:'3 NM, 3,000 ft, an hour either side. Breaking it is a federal crime.' },
-{ mod:'FAA', q:'A Brophy home football game at night. What about flight restrictions?',
-  opts:['The stadium rule applies, it\'s football','The standing stadium rule doesn\'t cover it, but you check B4UFLY for any TFR that day','No restrictions apply to schools','No drones at any game, ever'], a:1,
-  why:'The standing rule is for 30,000+ seat stadiums and the big leagues. A TFR for something else can still cover the field.' },
-{ mod:'FAA', q:'B4UFLY shows a TFR for a VIP visit over your field. You hold a Part 107 certificate. You:',
+/* --- FAA Event Exam (2026-10-26, reworked 2026-10-27 around Part 107): twenty drawn per attempt --- */
+{ mod:'FAA', q:'Which FAA rules does a club event flight use?',
+  opts:['Recreational, it\'s a student club','Part 107, every time','Whichever the pilot picks','None, it\'s on school property'], a:1,
+  why:'Every event flight is flown by Part 107. No guessing which rules apply.' },
+{ mod:'FAA', q:'A clip for the school\'s Instagram, nobody paid. Which rules?',
+  opts:['Recreational, there\'s no money','Part 107','None, it\'s a school','TRUST only'], a:1,
+  why:'Purpose decides, not money. A flight for the school isn\'t purely for fun.' },
+{ mod:'FAA', q:'What does the remote pilot in command (RPIC) need?',
+  opts:['A TRUST certificate','A Remote Pilot Certificate from the FAA knowledge test, age 16 or over','A parent\'s permission slip','AMA membership'], a:1,
+  why:'The certificate is the license. The RPIC is responsible for the whole flight and has the final say.' },
+{ mod:'FAA', q:'How often does a certificated pilot do the recurrent training?',
+  opts:['Never, it lasts forever','Every 24 calendar months, free online','Every year at a testing center','Only after an accident'], a:1,
+  why:'The recurrent training keeps the certificate current: every 24 calendar months.' },
+{ mod:'FAA', q:'A pilot without a certificate wants to fly at an event. When can they?',
+  opts:['Never','Under the direct supervision of a certificated RPIC who can immediately take control','If an RPIC is somewhere at the event','If they\'ve passed TRUST'], a:1,
+  why:'Direct supervision, and the RPIC has to be able to take over right away. Nearby isn\'t enough.' },
+{ mod:'FAA', q:'An FAA inspector or a police officer asks for your certificate. You:',
+  opts:['Refuse, it\'s private','Show it - you\'re required to have it on you and show it when asked','Say you\'ll email it next week','Land and leave'], a:1,
+  why:'The RPIC carries the certificate and shows it on request.' },
+{ mod:'FAA', q:'Who has the final say on whether a Part 107 flight goes ahead?',
+  opts:['The fastest pilot','The RPIC','The crowd','Whoever owns the drone'], a:1,
+  why:'The RPIC is directly responsible for the flight and has final authority over it.' },
+{ mod:'FAA', q:'You fly in goggles under Part 107. Who keeps the aircraft in line of sight?',
+  opts:['Nobody, under 100 ft','A visual observer beside you, eyes on the aircraft, talking to you','A friend watching the goggle feed','The OSD'], a:1,
+  why:'Someone has to see the aircraft itself. A video feed isn\'t line of sight.' },
+{ mod:'FAA', q:'Which of these counts as visual line of sight?',
+  opts:['Watching through binoculars','Watching the feed on a phone','Seeing it with your own eyes, glasses on','Following it on the OSD map'], a:2,
+  why:'Plain eyes, glasses and contacts allowed. Binoculars and screens don\'t count.' },
+{ mod:'FAA', q:'Can one pilot fly two drones at once under Part 107?',
+  opts:['Yes, if both are small','No - one person, one aircraft at a time','Yes, with a spotter','Yes, indoors only'], a:1,
+  why:'Nobody may fly, or act as RPIC or observer for, more than one aircraft at a time.' },
+{ mod:'FAA', q:'The hallway course, fully inside the building. Do the FAA\'s rules apply?',
+  opts:['Yes, all of Part 107','No - flights fully inside a building aren\'t under them, the club\'s rules still are','Only the 400 ft limit','Only Remote ID'], a:1,
+  why:'The FAA rules cover the airspace outside. Step outside, even into a net, and they all apply.' },
+{ mod:'FAA', q:'What\'s the Part 107 ceiling in open airspace?',
+  opts:['200 ft','400 ft above the ground','1,000 ft','No limit with a spotter'], a:1,
+  why:'400 ft above ground level. The club flies far below it.' },
+{ mod:'FAA', q:'Part 107\'s top groundspeed is:',
+  opts:['50 mph','100 mph','150 mph','No limit'], a:1,
+  why:'100 mph (87 knots). A race quad can beat it, which is one reason event courses are tight.' },
+{ mod:'FAA', q:'What visibility does Part 107 need from where you stand?',
+  opts:['1 statute mile','3 statute miles','5 statute miles','Whatever you can see'], a:1,
+  why:'3 statute miles, and you stay 500 ft below and 2,000 ft sideways from clouds.' },
+{ mod:'FAA', q:'Before flying in controlled airspace, you need:',
+  opts:['Nothing under 100 ft','An authorization, such as LAANC through an app','A phone call to the tower afterwards','A louder spotter'], a:1,
+  why:'Authorization comes before takeoff, and you stay at or under the altitude it grants.' },
+{ mod:'FAA', q:'B4UFLY shows a TFR over your field. You hold a Part 107 certificate. You:',
   opts:['Fly, the certificate overrides it','Fly under 200 ft','Don\'t fly inside it','Fly with the camera off'], a:2,
-  why:'A TFR applies to everyone. No certificate gets you in.' },
+  why:'A Temporary Flight Restriction applies to everyone. No certificate gets you in.' },
+{ mod:'FAA', q:'When do you check the airspace for an event?',
+  opts:['Once, when the club first flew there','The morning of, and again on site before the first flight','Only if it\'s near an airport','After the flight'], a:1,
+  why:'TFRs appear on short notice. Check every time, not last week.' },
+{ mod:'FAA', q:'Under Part 107, which drones must be registered?',
+  opts:['Only those over 250 g','Every one, whatever it weighs','Only the club\'s','Only ones with cameras'], a:1,
+  why:'The 250 g line is for fun flying. Under Part 107 the Meteor gets registered too.' },
+{ mod:'FAA', q:'A registered drone at an event also needs:',
+  opts:['Nothing else','Its registration number on the outside and Remote ID broadcasting','A name sticker only','A paper logbook taped to it'], a:1,
+  why:'Number on the outside, and Remote ID built in or from a broadcast module.' },
 { mod:'FAA', q:'A medical helicopter comes in to land next to your flight. You:',
   opts:['Keep filming, it\'s great footage','Land at once and stay landed','Climb out of its way','Hover still until it leaves'], a:1,
   why:'Give way to every crewed aircraft. Near emergency response, land and stay down.' },
 { mod:'FAA', q:'A night game under Part 107. What does the drone need?',
-  opts:['Nothing extra','Anti-collision lights visible for 3 statute miles','A white headlight','Only a spotter with a flashlight'], a:1,
-  why:'107.29: anti-collision lighting visible for 3 statute miles at night and in twilight.' },
-{ mod:'FAA', q:'Why does the Cinebot fly a night game with its LEDs on?',
-  opts:['Only because it looks good','So the pilot and spotter can see where it is and which way it faces, and lights are required at night','LEDs improve the radio range','The crowd asked for it'], a:1,
-  why:'At night the lights are how anyone keeps it in sight, and the rules require them.' },
+  opts:['Nothing extra','Anti-collision lights visible for 3 statute miles','A white headlight','A spotter with a flashlight'], a:1,
+  why:'Anti-collision lighting visible for 3 statute miles, at night and in twilight.' },
+{ mod:'FAA', q:'The best shot at a rally passes over the front row of the stands for two seconds. You:',
+  opts:['Take it, two seconds is nothing','Take it lower so it\'s quieter','Change the shot - nothing flies over people','Ask the front row to duck'], a:2,
+  why:'Part 107 allows it only in narrow categories. The club\'s rule is none, and the shot changes.' },
+{ mod:'FAA', q:'The parking lot is filling up before kickoff. A shot over it?',
+  opts:['Great establishing shot, take it','No - Part 107 limits flying over moving vehicles, and the club stays off the lot','Fine if you fly higher','Fine with a spotter'], a:1,
+  why:'Moving cars aren\'t in the zone, and a drone over them can cause a crash.' },
+{ mod:'FAA', q:'Part 107\'s preflight duty for the RPIC includes:',
+  opts:['Only charging the battery','Checking the area, briefing everyone involved and checking the aircraft and its link','Posting on social media','Nothing, it\'s optional'], a:1,
+  why:'The zone walk, the brief and the tech check are federal rules, not just club habits.' },
 { mod:'FAA', q:'Fit to fly - which one is a no-go?',
   opts:['You ate lunch an hour ago','You took allergy medicine that makes you drowsy','You flew the sim this morning','You\'re wearing a jacket'], a:1,
-  why:'Anything that slows you down grounds you. You check yourself the same way you check the drone.' },
+  why:'Part 107 bars flying with any condition that affects safe flight. Check yourself like you check the drone.' },
+{ mod:'FAA', q:'A flight at an event breaks a parent\'s car mirror, $650 to fix. Nobody is hurt. What happens?',
+  opts:['Nothing, nobody was hurt','The RPIC reports it to the FAA within 10 days, and the club report goes in the same day','Only the parent needs to know','Report it within a year'], a:1,
+  why:'Property damage over $500, or a serious injury, is reported to the FAA within 10 days.' },
 { mod:'FAA', q:'On race day, who has the final call on the course?',
   opts:['The fastest pilot','The race director','Whoever is spotting','The crowd'], a:1,
   why:'One voice runs the course. Take the ruling, argue later and calmly.' },
@@ -2322,27 +2363,12 @@ var GS_QUIZ = [
   opts:['On at full power to check the picture','Off, or on the lowest power, so it can\'t knock out someone flying','On any free-looking channel','On with the antenna removed'], a:1,
   why:'A video transmitter in the pits can wipe out a racing pilot\'s picture. And never power one without its antenna.' },
 { mod:'FAA', q:'A quad crashes on the course mid-heat. What happens?',
-  opts:['Its pilot runs out to grab it','The pilot disarms at once; nobody walks out until the director calls the course cold','Wait ten seconds, then go','The others keep racing around it while someone fetches it'], a:1,
+  opts:['Its pilot runs out to grab it','The pilot disarms at once; nobody walks out until the director calls the course cold','Wait ten seconds, then go','The others keep racing while someone fetches it'], a:1,
   why:'Disarm first. The course is still hot while other quads are flying.' },
-{ mod:'FAA', q:'A quad\'s tech check before an event includes:',
-  opts:['Failsafe tested props-off, props, battery strap, video channel and power','A full battery, nothing else','A clean frame','Nothing, it flew fine last week'], a:0,
-  why:'Every quad, every event. Last week\'s flight says nothing about today\'s props.' },
 { mod:'FAA', q:'At a football game, when may the drone fly over the field?',
   opts:['During live play, for the best shots','Only in windows agreed with the athletic director - pre-game, halftime, after the final whistle - over an empty area','Whenever the crowd cheers','Any time, it\'s our school'], a:1,
   why:'The AD decides when and where. Never over the field during live play.' },
 { mod:'FAA', q:'A referee waves at you to bring the drone down. You:',
   opts:['Finish the shot first','Land now and talk afterwards','Check with the AD first','Climb out of the way'], a:1,
-  why:'An official\'s word ends a flight on the spot. The drone is a guest.' },
-{ mod:'FAA', q:'Several pilots at one event. Video channels are:',
-  opts:['Picked by each pilot on the day','Assigned and written down before anyone powers up','The same for everyone, taking turns','Not needed with digital'], a:1,
-  why:'One channel per pilot, written down. Digital systems interfere with each other too.' },
-{ mod:'FAA', q:'Where does a drone never fly at a game?',
-  opts:['Over the empty, agreed zone','Between the crowd and the field, or over the stands','Inside a netted course','Over the marked pad'], a:1,
-  why:'Anything that fails there lands on people.' },
-{ mod:'FAA', q:'A drone over 250 g flies at an event. It needs:',
-  opts:['Nothing if the flight is recreational','Registration, the number on the outside, and Remote ID','Only a name sticker','Only a LAANC approval'], a:1,
-  why:'Over 250 g is registered, marked and broadcasting Remote ID, whichever rules the flight is under.' },
-{ mod:'FAA', q:'The parking lot is filling up before kickoff. A shot over it?',
-  opts:['Great establishing shot, take it','No - stay off the lot and the road; moving cars aren\'t in the zone','Fine if you fly higher','Fine with a spotter'], a:1,
-  why:'A drone over moving cars can cause a crash. The zone is agreed and empty, and the lot isn\'t.' }
+  why:'An official\'s word ends a flight on the spot. The drone is a guest.' }
 ];
