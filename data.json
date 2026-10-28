@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793207374131,
-    "generatedIso":  "2026-10-28T10:09:34-07:00",
+    "generated":  1793207435790,
+    "generatedIso":  "2026-10-28T10:10:36-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  439871062,
+                   "clubMs":  439991185,
                    "pilots":  43,
                    "activePilots7":  15,
-                   "clubWeekMs":  18037954,
+                   "clubWeekMs":  18158076,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  311601428.3945992,
+                                    "liftoff":  311721551.2026993,
                                     "microdrones":  126111384.87660047,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -254,6 +254,31 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Jameson S.",
+                       "totalMs":  22725351,
+                       "weekMs":  2293618,
+                       "perSimMs":  {
+                                        "liftoff":  17984888,
+                                        "microdrones":  4730670,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  9793
+                                    },
+                       "gsPct":  100,
+                       "gsLessons":  46,
+                       "lastSeen":  1793207424787,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "spotter",
+                                      "faa-trust"
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Aeson T.",
                        "totalMs":  22680384,
                        "weekMs":  300281,
@@ -271,31 +296,6 @@
                                       "proficient-flight",
                                       "safe-flight",
                                       "battery-care",
-                                      "faa-trust"
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Jameson S.",
-                       "totalMs":  22605228,
-                       "weekMs":  2173495,
-                       "perSimMs":  {
-                                        "liftoff":  17864765,
-                                        "microdrones":  4730670,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  9793
-                                    },
-                       "gsPct":  100,
-                       "gsLessons":  46,
-                       "lastSeen":  1793207364732,
-                       "badges":  [
-                                      "proficient-flight",
-                                      "safe-flight",
-                                      "battery-care",
-                                      "electrical-components",
-                                      "radio-protocol",
-                                      "spotter",
                                       "faa-trust"
                                   ],
                        "tier":  0
