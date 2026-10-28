@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793209883625,
-    "generatedIso":  "2026-10-28T10:51:23-07:00",
+    "generated":  1793210675007,
+    "generatedIso":  "2026-10-28T11:04:35-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  444022560,
+                   "clubMs":  444052463,
                    "pilots":  44,
-                   "activePilots7":  17,
-                   "clubWeekMs":  22189451,
+                   "activePilots7":  18,
+                   "clubWeekMs":  22219354,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  315752925.69209927,
+                                    "liftoff":  315782828.22039932,
                                     "microdrones":  126111384.87660047,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -637,6 +637,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Miles H.",
+                       "totalMs":  1550855,
+                       "weekMs":  29903,
+                       "perSimMs":  {
+                                        "liftoff":  1238546,
+                                        "microdrones":  307223,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  5086
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1793210597778,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Benny T",
                        "totalMs":  1525652,
                        "weekMs":  0,
@@ -650,25 +669,6 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1790204400480,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Miles H.",
-                       "totalMs":  1520952,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  1208643,
-                                        "microdrones":  307223,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  5086
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1790706896797,
                        "badges":  [
 
                                   ],
