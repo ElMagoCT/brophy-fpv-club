@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793222781369,
-    "generatedIso":  "2026-10-28T14:26:21-07:00",
+    "generated":  1793222842352,
+    "generatedIso":  "2026-10-28T14:27:22-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -127,7 +127,8 @@
                        "lastSeen":  1792168807110,
                        "badges":  [
                                       "safe-flight",
-                                      "battery-care"
+                                      "battery-care",
+                                      "faa-trust"
                                   ],
                        "tier":  0
                    },
