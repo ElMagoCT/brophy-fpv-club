@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793299198465,
-    "generatedIso":  "2026-10-29T11:39:58-07:00",
+    "generated":  1793299258358,
+    "generatedIso":  "2026-10-29T11:40:58-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,15 +9,15 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  454355060,
+                   "clubMs":  454373988,
                    "pilots":  45,
                    "activePilots7":  18,
-                   "clubWeekMs":  32521951,
+                   "clubWeekMs":  32540879,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  323791914.44650012,
-                                    "microdrones":  128404895.55630025,
+                                    "microdrones":  128423824.12460026,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
                                     "picasim":  824319.99810002092
@@ -886,18 +886,18 @@
                    },
                    {
                        "name":  "Danny G",
-                       "totalMs":  510402,
-                       "weekMs":  510402,
+                       "totalMs":  529330,
+                       "weekMs":  529330,
                        "perSimMs":  {
                                         "liftoff":  0,
-                                        "microdrones":  510402,
+                                        "microdrones":  529330,
                                         "skydive":  0,
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1793299181401,
+                       "lastSeen":  1793299200330,
                        "badges":  [
 
                                   ],
