@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793284810706,
-    "generatedIso":  "2026-10-29T07:40:10-07:00",
+    "generated":  1793284871867,
+    "generatedIso":  "2026-10-29T07:41:12-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  448777590,
+                   "clubMs":  448837659,
                    "pilots":  44,
                    "activePilots7":  17,
-                   "clubWeekMs":  26944481,
+                   "clubWeekMs":  27004550,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  320507955.26859969,
+                                    "liftoff":  320568024.26859969,
                                     "microdrones":  126111384.87660047,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -133,6 +133,29 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Bryson E.",
+                       "totalMs":  31972700,
+                       "weekMs":  2278032,
+                       "perSimMs":  {
+                                        "liftoff":  15403752,
+                                        "microdrones":  16568948,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  43,
+                       "gsLessons":  20,
+                       "lastSeen":  1793284810476,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "soldering",
+                                      "faa-trust"
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Zane R.",
                        "totalMs":  31920488,
                        "weekMs":  179896,
@@ -170,29 +193,6 @@
                                       "mentor"
                                   ],
                        "tier":  3
-                   },
-                   {
-                       "name":  "Bryson E.",
-                       "totalMs":  31912631,
-                       "weekMs":  2217963,
-                       "perSimMs":  {
-                                        "liftoff":  15343683,
-                                        "microdrones":  16568948,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  43,
-                       "gsLessons":  20,
-                       "lastSeen":  1793284750405,
-                       "badges":  [
-                                      "proficient-flight",
-                                      "safe-flight",
-                                      "battery-care",
-                                      "soldering",
-                                      "faa-trust"
-                                  ],
-                       "tier":  0
                    },
                    {
                        "name":  "Micah T.",
