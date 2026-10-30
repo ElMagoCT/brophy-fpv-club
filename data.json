@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793299258358,
-    "generatedIso":  "2026-10-29T11:40:58-07:00",
+    "generated":  1793343631089,
+    "generatedIso":  "2026-10-30T00:00:31-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -1042,46 +1042,6 @@
                      "source":  "imported 2026-08-31 09:01",
                      "days":  [
                                   {
-                                      "date":  "2026-10-29",
-                                      "dow":  "Thu",
-                                      "dowFull":  "Thursday",
-                                      "label":  "Oct 29",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "08:00",
-                                                          "startIso":  "2026-10-29T07:00:00-07:00",
-                                                          "endIso":  "2026-10-29T08:00:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "09:20",
-                                                          "to":  "09:30",
-                                                          "startIso":  "2026-10-29T09:20:00-07:00",
-                                                          "endIso":  "2026-10-29T09:30:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "10:50",
-                                                          "to":  "11:40",
-                                                          "startIso":  "2026-10-29T10:50:00-07:00",
-                                                          "endIso":  "2026-10-29T11:40:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "13:00",
-                                                          "to":  "13:10",
-                                                          "startIso":  "2026-10-29T13:00:00-07:00",
-                                                          "endIso":  "2026-10-29T13:10:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "14:30",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-29T14:30:00-07:00",
-                                                          "endIso":  "2026-10-29T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
                                       "date":  "2026-10-30",
                                       "dow":  "Fri",
                                       "dowFull":  "Friday",
@@ -1858,6 +1818,17 @@
                                       "dow":  "Wed",
                                       "dowFull":  "Wednesday",
                                       "label":  "Nov 25",
+                                      "open":  false,
+                                      "note":  "Thanksgiving break",
+                                      "windows":  [
+
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-26",
+                                      "dow":  "Thu",
+                                      "dowFull":  "Thursday",
+                                      "label":  "Nov 26",
                                       "open":  false,
                                       "note":  "Thanksgiving break",
                                       "windows":  [
