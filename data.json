@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793402963976,
-    "generatedIso":  "2026-10-30T16:29:24-07:00",
+    "generated":  1793430005036,
+    "generatedIso":  "2026-10-31T00:00:05-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -1043,40 +1043,6 @@
                      "source":  "imported 2026-08-31 09:01",
                      "days":  [
                                   {
-                                      "date":  "2026-10-30",
-                                      "dow":  "Fri",
-                                      "dowFull":  "Friday",
-                                      "label":  "Oct 30",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "08:00",
-                                                          "startIso":  "2026-10-30T07:00:00-07:00",
-                                                          "endIso":  "2026-10-30T08:00:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "09:20",
-                                                          "to":  "09:45",
-                                                          "startIso":  "2026-10-30T09:20:00-07:00",
-                                                          "endIso":  "2026-10-30T09:45:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "11:05",
-                                                          "to":  "11:15",
-                                                          "startIso":  "2026-10-30T11:05:00-07:00",
-                                                          "endIso":  "2026-10-30T11:15:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "12:35",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-10-30T12:35:00-07:00",
-                                                          "endIso":  "2026-10-30T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
                                       "date":  "2026-10-31",
                                       "dow":  "Sat",
                                       "dowFull":  "Saturday",
@@ -1830,6 +1796,17 @@
                                       "dow":  "Thu",
                                       "dowFull":  "Thursday",
                                       "label":  "Nov 26",
+                                      "open":  false,
+                                      "note":  "Thanksgiving break",
+                                      "windows":  [
+
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-11-27",
+                                      "dow":  "Fri",
+                                      "dowFull":  "Friday",
+                                      "label":  "Nov 27",
                                       "open":  false,
                                       "note":  "Thanksgiving break",
                                       "windows":  [
