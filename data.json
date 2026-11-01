@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793569460583,
-    "generatedIso":  "2026-11-01T14:44:20-07:00",
+    "generated":  1793569521416,
+    "generatedIso":  "2026-11-01T14:45:21-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  477271046,
+                   "clubMs":  477391194,
                    "pilots":  45,
                    "activePilots7":  19,
-                   "clubWeekMs":  17481337,
+                   "clubWeekMs":  17601485,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  346293794.35960025,
+                                    "liftoff":  346413942.55320019,
                                     "microdrones":  128819002.12460026,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -94,30 +94,11 @@
                        "tier":  2
                    },
                    {
-                       "name":  "Cyrus G.",
-                       "totalMs":  46515432,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  22407496,
-                                        "microdrones":  24091708,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  16228
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1792103800432,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
                        "name":  "Micah T.",
-                       "totalMs":  46444075,
-                       "weekMs":  17481337,
+                       "totalMs":  46564223,
+                       "weekMs":  17601485,
                        "perSimMs":  {
-                                        "liftoff":  36207440,
+                                        "liftoff":  36327588,
                                         "microdrones":  8996521,
                                         "skydive":  225289,
                                         "fpvlabs":  254749,
@@ -125,7 +106,7 @@
                                     },
                        "gsPct":  35,
                        "gsLessons":  21,
-                       "lastSeen":  1793569458049,
+                       "lastSeen":  1793569518118,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -151,6 +132,25 @@
                                       "mentor"
                                   ],
                        "tier":  3
+                   },
+                   {
+                       "name":  "Cyrus G.",
+                       "totalMs":  46515432,
+                       "weekMs":  0,
+                       "perSimMs":  {
+                                        "liftoff":  22407496,
+                                        "microdrones":  24091708,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  16228
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1792103800432,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
                    },
                    {
                        "name":  "Bode K.",
