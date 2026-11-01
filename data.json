@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793564768681,
-    "generatedIso":  "2026-11-01T13:26:08-07:00",
+    "generated":  1793564830342,
+    "generatedIso":  "2026-11-01T13:27:10-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  467910846,
+                   "clubMs":  468031024,
                    "pilots":  45,
                    "activePilots7":  19,
-                   "clubWeekMs":  8121137,
+                   "clubWeekMs":  8241315,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  336933594.12390012,
+                                    "liftoff":  337053772.12390012,
                                     "microdrones":  128819002.12460026,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -113,32 +113,11 @@
                        "tier":  0
                    },
                    {
-                       "name":  "Bode K.",
-                       "totalMs":  37178601,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  25295845,
-                                        "microdrones":  11569388,
-                                        "skydive":  280231,
-                                        "fpvlabs":  0,
-                                        "picasim":  33137
-                                    },
-                       "gsPct":  30,
-                       "gsLessons":  21,
-                       "lastSeen":  1792168807110,
-                       "badges":  [
-                                      "safe-flight",
-                                      "battery-care",
-                                      "faa-trust"
-                                  ],
-                       "tier":  0
-                   },
-                   {
                        "name":  "Micah T.",
-                       "totalMs":  37083875,
-                       "weekMs":  8121137,
+                       "totalMs":  37204053,
+                       "weekMs":  8241315,
                        "perSimMs":  {
-                                        "liftoff":  26847240,
+                                        "liftoff":  26967418,
                                         "microdrones":  8996521,
                                         "skydive":  225289,
                                         "fpvlabs":  254749,
@@ -146,7 +125,7 @@
                                     },
                        "gsPct":  35,
                        "gsLessons":  21,
-                       "lastSeen":  1793564742251,
+                       "lastSeen":  1793564802308,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -172,6 +151,27 @@
                                       "mentor"
                                   ],
                        "tier":  3
+                   },
+                   {
+                       "name":  "Bode K.",
+                       "totalMs":  37178601,
+                       "weekMs":  0,
+                       "perSimMs":  {
+                                        "liftoff":  25295845,
+                                        "microdrones":  11569388,
+                                        "skydive":  280231,
+                                        "fpvlabs":  0,
+                                        "picasim":  33137
+                                    },
+                       "gsPct":  30,
+                       "gsLessons":  21,
+                       "lastSeen":  1792168807110,
+                       "badges":  [
+                                      "safe-flight",
+                                      "battery-care",
+                                      "faa-trust"
+                                  ],
+                       "tier":  0
                    },
                    {
                        "name":  "Bryson E.",
