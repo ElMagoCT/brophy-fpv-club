@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793562141577,
-    "generatedIso":  "2026-11-01T12:42:21-07:00",
+    "generated":  1793562203326,
+    "generatedIso":  "2026-11-01T12:43:23-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  462728373,
+                   "clubMs":  462788421,
                    "pilots":  45,
                    "activePilots7":  19,
-                   "clubWeekMs":  2938664,
+                   "clubWeekMs":  2998712,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  331751121.12390012,
+                                    "liftoff":  331811169.12390012,
                                     "microdrones":  128819002.12460026,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -157,6 +157,46 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Micah T.",
+                       "totalMs":  31961450,
+                       "weekMs":  2998712,
+                       "perSimMs":  {
+                                        "liftoff":  21724815,
+                                        "microdrones":  8996521,
+                                        "skydive":  225289,
+                                        "fpvlabs":  254749,
+                                        "picasim":  760076
+                                    },
+                       "gsPct":  35,
+                       "gsLessons":  21,
+                       "lastSeen":  1793562182425,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "building",
+                                      "betaflight",
+                                      "line-of-sight",
+                                      "tiny-whoop",
+                                      "soldering",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "field-repair",
+                                      "freestyle-flight",
+                                      "pavo-flight",
+                                      "spotter",
+                                      "faa-trust",
+                                      "event-ops",
+                                      "cinematography",
+                                      "indoor-proximity",
+                                      "racing",
+                                      "event-pilot",
+                                      "fleet-steward",
+                                      "mentor"
+                                  ],
+                       "tier":  3
+                   },
+                   {
                        "name":  "Zane R.",
                        "totalMs":  31920488,
                        "weekMs":  0,
@@ -191,46 +231,6 @@
                                       "indoor-proximity",
                                       "racing",
                                       "event-pilot",
-                                      "mentor"
-                                  ],
-                       "tier":  3
-                   },
-                   {
-                       "name":  "Micah T.",
-                       "totalMs":  31901402,
-                       "weekMs":  2938664,
-                       "perSimMs":  {
-                                        "liftoff":  21664767,
-                                        "microdrones":  8996521,
-                                        "skydive":  225289,
-                                        "fpvlabs":  254749,
-                                        "picasim":  760076
-                                    },
-                       "gsPct":  35,
-                       "gsLessons":  21,
-                       "lastSeen":  1793562050185,
-                       "badges":  [
-                                      "proficient-flight",
-                                      "safe-flight",
-                                      "battery-care",
-                                      "building",
-                                      "betaflight",
-                                      "line-of-sight",
-                                      "tiny-whoop",
-                                      "soldering",
-                                      "electrical-components",
-                                      "radio-protocol",
-                                      "field-repair",
-                                      "freestyle-flight",
-                                      "pavo-flight",
-                                      "spotter",
-                                      "faa-trust",
-                                      "event-ops",
-                                      "cinematography",
-                                      "indoor-proximity",
-                                      "racing",
-                                      "event-pilot",
-                                      "fleet-steward",
                                       "mentor"
                                   ],
                        "tier":  3
