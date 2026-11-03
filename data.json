@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793725440212,
-    "generatedIso":  "2026-11-03T10:04:00-07:00",
+    "generated":  1793725500312,
+    "generatedIso":  "2026-11-03T10:05:00-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  498610196,
+                   "clubMs":  498670309,
                    "pilots":  45,
                    "activePilots7":  16,
-                   "clubWeekMs":  38820488,
+                   "clubWeekMs":  38880600,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  367106742.09779936,
+                                    "liftoff":  367166854.51989943,
                                     "microdrones":  129345204.16850004,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -345,10 +345,10 @@
                    },
                    {
                        "name":  "Henry P.",
-                       "totalMs":  15392330,
-                       "weekMs":  2388310,
+                       "totalMs":  15452443,
+                       "weekMs":  2448423,
                        "perSimMs":  {
-                                        "liftoff":  15392330,
+                                        "liftoff":  15452443,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -356,7 +356,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1793725424012,
+                       "lastSeen":  1793725484126,
                        "badges":  [
 
                                   ],
