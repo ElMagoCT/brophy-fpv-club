@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793903472456,
-    "generatedIso":  "2026-11-05T11:31:12-07:00",
+    "generated":  1793903533171,
+    "generatedIso":  "2026-11-05T11:32:13-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  515999530,
+                   "clubMs":  516112623,
                    "pilots":  47,
                    "activePilots7":  17,
-                   "clubWeekMs":  56209823,
+                   "clubWeekMs":  56322916,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  380033756.64099967,
+                                    "liftoff":  380146849.93049967,
                                     "microdrones":  133807523.40920003,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -58,10 +58,10 @@
     "pilots":  [
                    {
                        "name":  "Josiah T.",
-                       "totalMs":  63096625,
-                       "weekMs":  2396644,
+                       "totalMs":  63156735,
+                       "weekMs":  2456754,
                        "perSimMs":  {
-                                        "liftoff":  44013455,
+                                        "liftoff":  44073565,
                                         "microdrones":  19021140,
                                         "skydive":  0,
                                         "fpvlabs":  62030,
@@ -69,7 +69,7 @@
                                     },
                        "gsPct":  20,
                        "gsLessons":  9,
-                       "lastSeen":  1793903384250,
+                       "lastSeen":  1793903444361,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -261,6 +261,29 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Aeson T.",
+                       "totalMs":  23712036,
+                       "weekMs":  1031652,
+                       "perSimMs":  {
+                                        "liftoff":  11911351,
+                                        "microdrones":  11578538,
+                                        "skydive":  222147,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  39,
+                       "gsLessons":  18,
+                       "lastSeen":  1793903502482,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "building",
+                                      "faa-trust"
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Colton O.",
                        "totalMs":  23664610,
                        "weekMs":  0,
@@ -276,29 +299,6 @@
                        "lastSeen":  1793903019759,
                        "badges":  [
                                       "safe-flight"
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Aeson T.",
-                       "totalMs":  23659053,
-                       "weekMs":  978669,
-                       "perSimMs":  {
-                                        "liftoff":  11858368,
-                                        "microdrones":  11578538,
-                                        "skydive":  222147,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  39,
-                       "gsLessons":  18,
-                       "lastSeen":  1793903439016,
-                       "badges":  [
-                                      "proficient-flight",
-                                      "safe-flight",
-                                      "battery-care",
-                                      "building",
-                                      "faa-trust"
                                   ],
                        "tier":  0
                    },
