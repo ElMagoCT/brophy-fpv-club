@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1793895133818,
-    "generatedIso":  "2026-11-05T09:12:14-07:00",
+    "generated":  1793895193305,
+    "generatedIso":  "2026-11-05T09:13:13-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  513109204,
+                   "clubMs":  513169268,
                    "pilots":  46,
                    "activePilots7":  16,
-                   "clubWeekMs":  63239263,
-                   "weekBasis":  "rolling7",
+                   "clubWeekMs":  53379560,
+                   "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  377854679.02019972,
+                                    "liftoff":  377914742.45799965,
                                     "microdrones":  133096274.93660003,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -215,7 +215,7 @@
                    {
                        "name":  "Bryson E.",
                        "totalMs":  35333326,
-                       "weekMs":  2328344,
+                       "weekMs":  1933166,
                        "perSimMs":  {
                                         "liftoff":  17134973,
                                         "microdrones":  18198353,
@@ -238,7 +238,7 @@
                    {
                        "name":  "Jameson S.",
                        "totalMs":  31134118,
-                       "weekMs":  3916241,
+                       "weekMs":  3339565,
                        "perSimMs":  {
                                         "liftoff":  24795599,
                                         "microdrones":  6328726,
@@ -304,10 +304,10 @@
                    },
                    {
                        "name":  "Marco F.",
-                       "totalMs":  22440837,
-                       "weekMs":  70057,
+                       "totalMs":  22500901,
+                       "weekMs":  130121,
                        "perSimMs":  {
-                                        "liftoff":  20058802,
+                                        "liftoff":  20118865,
                                         "microdrones":  2382036,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -315,7 +315,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1793895120815,
+                       "lastSeen":  1793895180881,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -346,7 +346,7 @@
                    {
                        "name":  "Henry P.",
                        "totalMs":  16603564,
-                       "weekMs":  3599544,
+                       "weekMs":  3599545,
                        "perSimMs":  {
                                         "liftoff":  16603564,
                                         "microdrones":  0,
@@ -365,7 +365,7 @@
                    {
                        "name":  "Bruno A.",
                        "totalMs":  13891393,
-                       "weekMs":  2669380,
+                       "weekMs":  1140391,
                        "perSimMs":  {
                                         "liftoff":  12358993,
                                         "microdrones":  1532400,
@@ -449,7 +449,7 @@
                    {
                        "name":  "Grayson",
                        "totalMs":  9242794,
-                       "weekMs":  1012731,
+                       "weekMs":  680299,
                        "perSimMs":  {
                                         "liftoff":  8826571,
                                         "microdrones":  314406,
@@ -547,7 +547,7 @@
                    {
                        "name":  "Loic B.",
                        "totalMs":  5982702,
-                       "weekMs":  2817935,
+                       "weekMs":  115143,
                        "perSimMs":  {
                                         "liftoff":  5982702,
                                         "microdrones":  0,
@@ -604,7 +604,7 @@
                    {
                        "name":  "carson",
                        "totalMs":  3352049,
-                       "weekMs":  2644050,
+                       "weekMs":  572884,
                        "perSimMs":  {
                                         "liftoff":  3352049,
                                         "microdrones":  0,
@@ -661,7 +661,7 @@
                    {
                        "name":  "Aaron D",
                        "totalMs":  2404105,
-                       "weekMs":  1783204,
+                       "weekMs":  0,
                        "perSimMs":  {
                                         "liftoff":  1133699,
                                         "microdrones":  1270406,
@@ -699,7 +699,7 @@
                    {
                        "name":  "Danny G",
                        "totalMs":  1816118,
-                       "weekMs":  1816118,
+                       "weekMs":  1286788,
                        "perSimMs":  {
                                         "liftoff":  1286788,
                                         "microdrones":  529330,
