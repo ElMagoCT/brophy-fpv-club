@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794236544834,
-    "generatedIso":  "2026-11-09T08:02:25-07:00",
+    "generated":  1794236725350,
+    "generatedIso":  "2026-11-09T08:05:25-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -11,7 +11,7 @@
     "totals":  {
                    "clubMs":  523240612,
                    "pilots":  48,
-                   "activePilots7":  19,
+                   "activePilots7":  20,
                    "clubWeekMs":  220140,
                    "weekBasis":  "calendar",
                    "sims":  5,
@@ -67,7 +67,7 @@
                                         "fpvlabs":  62030,
                                         "picasim":  0
                                     },
-                       "gsPct":  20,
+                       "gsPct":  18,
                        "gsLessons":  9,
                        "lastSeen":  1793903522842,
                        "badges":  [
@@ -75,6 +75,7 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
+                                      "betaflight-intro",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
@@ -89,9 +90,10 @@
                                       "event-ops",
                                       "indoor-proximity",
                                       "racing",
+                                      "pilot-agreement",
                                       "mentor"
                                   ],
-                       "tier":  0
+                       "tier":  2
                    },
                    {
                        "name":  "Micah T.",
@@ -104,14 +106,15 @@
                                         "fpvlabs":  254749,
                                         "picasim":  760076
                                     },
-                       "gsPct":  35,
-                       "gsLessons":  21,
-                       "lastSeen":  1793579231446,
+                       "gsPct":  41,
+                       "gsLessons":  26,
+                       "lastSeen":  1794236301875,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
                                       "battery-care",
                                       "building",
+                                      "betaflight-intro",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
@@ -127,11 +130,13 @@
                                       "cinematography",
                                       "indoor-proximity",
                                       "racing",
+                                      "faa-event-exam",
                                       "event-pilot",
+                                      "pilot-agreement",
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  0
+                       "tier":  3
                    },
                    {
                        "name":  "Cyrus G.",
@@ -163,13 +168,15 @@
                                         "fpvlabs":  0,
                                         "picasim":  33137
                                     },
-                       "gsPct":  30,
+                       "gsPct":  27,
                        "gsLessons":  21,
                        "lastSeen":  1792168807110,
                        "badges":  [
                                       "safe-flight",
                                       "battery-care",
-                                      "faa-trust"
+                                      "faa-trust",
+                                      "pilot-agreement",
+                                      "drone-portfolio"
                                   ],
                        "tier":  0
                    },
@@ -184,14 +191,15 @@
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  83,
-                       "gsLessons":  49,
+                       "gsPct":  84,
+                       "gsLessons":  54,
                        "lastSeen":  1793988859776,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
                                       "battery-care",
                                       "building",
+                                      "betaflight-intro",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
@@ -207,10 +215,13 @@
                                       "cinematography",
                                       "indoor-proximity",
                                       "racing",
+                                      "faa-event-exam",
                                       "event-pilot",
+                                      "pilot-agreement",
+                                      "drone-portfolio",
                                       "mentor"
                                   ],
-                       "tier":  0
+                       "tier":  3
                    },
                    {
                        "name":  "Bryson E.",
@@ -223,15 +234,17 @@
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  43,
+                       "gsPct":  39,
                        "gsLessons":  20,
-                       "lastSeen":  1793804214234,
+                       "lastSeen":  1793903013487,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
                                       "battery-care",
+                                      "betaflight-intro",
                                       "soldering",
-                                      "faa-trust"
+                                      "faa-trust",
+                                      "pilot-agreement"
                                   ],
                        "tier":  0
                    },
@@ -247,7 +260,7 @@
                                         "picasim":  9793
                                     },
                        "gsPct":  100,
-                       "gsLessons":  46,
+                       "gsLessons":  51,
                        "lastSeen":  1793989456300,
                        "badges":  [
                                       "proficient-flight",
@@ -256,7 +269,9 @@
                                       "electrical-components",
                                       "radio-protocol",
                                       "spotter",
-                                      "faa-trust"
+                                      "faa-trust",
+                                      "faa-event-exam",
+                                      "pilot-agreement"
                                   ],
                        "tier":  0
                    },
@@ -271,7 +286,7 @@
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  39,
+                       "gsPct":  35,
                        "gsLessons":  18,
                        "lastSeen":  1793903704602,
                        "badges":  [
@@ -279,7 +294,9 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
-                                      "faa-trust"
+                                      "betaflight-intro",
+                                      "faa-trust",
+                                      "pilot-agreement"
                                   ],
                        "tier":  0
                    },
@@ -294,7 +311,7 @@
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  9,
+                       "gsPct":  8,
                        "gsLessons":  4,
                        "lastSeen":  1793903019759,
                        "badges":  [
@@ -321,6 +338,7 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
+                                      "betaflight-intro",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
@@ -341,7 +359,7 @@
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  0
+                       "tier":  2
                    },
                    {
                        "name":  "Henry P.",
@@ -373,7 +391,7 @@
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  100,
+                       "gsPct":  90,
                        "gsLessons":  46,
                        "lastSeen":  1794235728911,
                        "badges":  [
@@ -383,7 +401,8 @@
                                       "electrical-components",
                                       "radio-protocol",
                                       "spotter",
-                                      "faa-trust"
+                                      "faa-trust",
+                                      "drone-portfolio"
                                   ],
                        "tier":  0
                    },
@@ -417,14 +436,15 @@
                                         "fpvlabs":  60579,
                                         "picasim":  0
                                     },
-                       "gsPct":  2,
-                       "gsLessons":  1,
+                       "gsPct":  4,
+                       "gsLessons":  2,
                        "lastSeen":  1793036876094,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
                                       "battery-care",
                                       "building",
+                                      "betaflight-intro",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
@@ -441,10 +461,11 @@
                                       "indoor-proximity",
                                       "racing",
                                       "event-pilot",
+                                      "pilot-agreement",
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  0
+                       "tier":  2
                    },
                    {
                        "name":  "Grayson",
@@ -533,14 +554,15 @@
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
-                       "gsPct":  30,
+                       "gsPct":  27,
                        "gsLessons":  14,
                        "lastSeen":  1793208915797,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
                                       "battery-care",
-                                      "faa-trust"
+                                      "faa-trust",
+                                      "pilot-agreement"
                                   ],
                        "tier":  0
                    },
