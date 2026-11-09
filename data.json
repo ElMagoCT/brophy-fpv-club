@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794246658223,
-    "generatedIso":  "2026-11-09T10:50:58-07:00",
+    "generated":  1794246719231,
+    "generatedIso":  "2026-11-09T10:51:59-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  530006534,
+                   "clubMs":  530066610,
                    "pilots":  49,
                    "activePilots7":  23,
-                   "clubWeekMs":  6986062,
+                   "clubWeekMs":  7046138,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  393530984.28289974,
+                                    "liftoff":  393591060.28289974,
                                     "microdrones":  134284583.32450005,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -759,10 +759,10 @@
                    },
                    {
                        "name":  "Ari. K",
-                       "totalMs":  1792214,
-                       "weekMs":  1262987,
+                       "totalMs":  1852290,
+                       "weekMs":  1323063,
                        "perSimMs":  {
-                                        "liftoff":  1792214,
+                                        "liftoff":  1852290,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -770,7 +770,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794246578516,
+                       "lastSeen":  1794246638594,
                        "badges":  [
 
                                   ],
