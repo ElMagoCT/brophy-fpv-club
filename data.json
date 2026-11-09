@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794247514769,
-    "generatedIso":  "2026-11-09T11:05:15-07:00",
+    "generated":  1794247576019,
+    "generatedIso":  "2026-11-09T11:06:16-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  531357715,
+                   "clubMs":  531438891,
                    "pilots":  49,
                    "activePilots7":  23,
-                   "clubWeekMs":  8337243,
+                   "clubWeekMs":  8418419,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  394882165.13329971,
+                                    "liftoff":  394963341.04059976,
                                     "microdrones":  134284583.32450005,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -702,10 +702,10 @@
                    },
                    {
                        "name":  "Ari. K",
-                       "totalMs":  2663112,
-                       "weekMs":  2133885,
+                       "totalMs":  2684222,
+                       "weekMs":  2154995,
                        "perSimMs":  {
-                                        "liftoff":  2663112,
+                                        "liftoff":  2684222,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -713,7 +713,26 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794247449435,
+                       "lastSeen":  1794247470546,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
+                       "name":  "Danny G",
+                       "totalMs":  2564323,
+                       "weekMs":  540349,
+                       "perSimMs":  {
+                                        "liftoff":  2034993,
+                                        "microdrones":  529330,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1794247551801,
                        "badges":  [
 
                                   ],
@@ -733,25 +752,6 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1790280438806,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Danny G",
-                       "totalMs":  2504257,
-                       "weekMs":  480283,
-                       "perSimMs":  {
-                                        "liftoff":  1974927,
-                                        "microdrones":  529330,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1794247491734,
                        "badges":  [
 
                                   ],
