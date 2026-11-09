@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794246474841,
-    "generatedIso":  "2026-11-09T10:47:55-07:00",
+    "generated":  1794246536754,
+    "generatedIso":  "2026-11-09T10:48:57-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  529681729,
+                   "clubMs":  529801814,
                    "pilots":  49,
                    "activePilots7":  23,
-                   "clubWeekMs":  6661258,
+                   "clubWeekMs":  6781343,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  393206179.6536997,
+                                    "liftoff":  393326264.61769974,
                                     "microdrones":  134284583.32450005,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -606,6 +606,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "henry m",
+                       "totalMs":  3571975,
+                       "weekMs":  2081623,
+                       "perSimMs":  {
+                                        "liftoff":  3571975,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1794246530370,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Sawyer M.",
                        "totalMs":  3538136,
                        "weekMs":  0,
@@ -619,25 +638,6 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1792518568287,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "henry m",
-                       "totalMs":  3511915,
-                       "weekMs":  2021563,
-                       "perSimMs":  {
-                                        "liftoff":  3511915,
-                                        "microdrones":  0,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1794246470309,
                        "badges":  [
 
                                   ],
@@ -759,10 +759,10 @@
                    },
                    {
                        "name":  "Ari. K",
-                       "totalMs":  1612053,
-                       "weekMs":  1082826,
+                       "totalMs":  1672078,
+                       "weekMs":  1142851,
                        "perSimMs":  {
-                                        "liftoff":  1612053,
+                                        "liftoff":  1672078,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -770,7 +770,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794246398351,
+                       "lastSeen":  1794246458376,
                        "badges":  [
 
                                   ],
