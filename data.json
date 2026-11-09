@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794236725350,
-    "generatedIso":  "2026-11-09T08:05:25-07:00",
+    "generated":  1794236846423,
+    "generatedIso":  "2026-11-09T08:07:26-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -460,12 +460,13 @@
                                       "cinematography",
                                       "indoor-proximity",
                                       "racing",
+                                      "faa-event-exam",
                                       "event-pilot",
                                       "pilot-agreement",
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  2
+                       "tier":  3
                    },
                    {
                        "name":  "Grayson",
