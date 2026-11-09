@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794235806654,
-    "generatedIso":  "2026-11-09T07:50:06-07:00",
+    "generated":  1794236544834,
+    "generatedIso":  "2026-11-09T08:02:25-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -75,10 +75,10 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
-                                      "betaflight",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
+                                      "betaflight",
                                       "electrical-components",
                                       "radio-protocol",
                                       "field-repair",
@@ -91,7 +91,7 @@
                                       "racing",
                                       "mentor"
                                   ],
-                       "tier":  2
+                       "tier":  0
                    },
                    {
                        "name":  "Micah T.",
@@ -112,10 +112,10 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
-                                      "betaflight",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
+                                      "betaflight",
                                       "electrical-components",
                                       "radio-protocol",
                                       "field-repair",
@@ -131,7 +131,7 @@
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  3
+                       "tier":  0
                    },
                    {
                        "name":  "Cyrus G.",
@@ -192,10 +192,10 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
-                                      "betaflight",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
+                                      "betaflight",
                                       "electrical-components",
                                       "radio-protocol",
                                       "field-repair",
@@ -210,7 +210,7 @@
                                       "event-pilot",
                                       "mentor"
                                   ],
-                       "tier":  3
+                       "tier":  0
                    },
                    {
                        "name":  "Bryson E.",
@@ -321,10 +321,10 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
-                                      "betaflight",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
+                                      "betaflight",
                                       "electrical-components",
                                       "radio-protocol",
                                       "field-repair",
@@ -341,7 +341,7 @@
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  3
+                       "tier":  0
                    },
                    {
                        "name":  "Henry P.",
@@ -425,10 +425,10 @@
                                       "safe-flight",
                                       "battery-care",
                                       "building",
-                                      "betaflight",
                                       "line-of-sight",
                                       "tiny-whoop",
                                       "soldering",
+                                      "betaflight",
                                       "electrical-components",
                                       "radio-protocol",
                                       "field-repair",
@@ -444,7 +444,7 @@
                                       "fleet-steward",
                                       "mentor"
                                   ],
-                       "tier":  3
+                       "tier":  0
                    },
                    {
                        "name":  "Grayson",
