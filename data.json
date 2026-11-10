@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794335516659,
-    "generatedIso":  "2026-11-10T11:31:57-07:00",
+    "generated":  1794335576807,
+    "generatedIso":  "2026-11-10T11:32:57-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  540493516,
+                   "clubMs":  540613588,
                    "pilots":  49,
                    "activePilots7":  23,
-                   "clubWeekMs":  17473043,
+                   "clubWeekMs":  17593115,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  401852402.22109973,
+                                    "liftoff":  401972474.14889973,
                                     "microdrones":  136450146.97810021,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -588,10 +588,10 @@
                    },
                    {
                        "name":  "henry m",
-                       "totalMs":  5675055,
-                       "weekMs":  4184703,
+                       "totalMs":  5735124,
+                       "weekMs":  4244772,
                        "perSimMs":  {
-                                        "liftoff":  5675055,
+                                        "liftoff":  5735124,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -599,7 +599,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794335444759,
+                       "lastSeen":  1794335504829,
                        "badges":  [
 
                                   ],
@@ -645,10 +645,10 @@
                    },
                    {
                        "name":  "Ari. K",
-                       "totalMs":  3718195,
-                       "weekMs":  3188968,
+                       "totalMs":  3778198,
+                       "weekMs":  3248971,
                        "perSimMs":  {
-                                        "liftoff":  3718195,
+                                        "liftoff":  3778198,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -656,7 +656,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794335510483,
+                       "lastSeen":  1794335570488,
                        "badges":  [
 
                                   ],
