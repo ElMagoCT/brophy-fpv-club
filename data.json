@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794380402782,
-    "generatedIso":  "2026-11-11T00:00:03-07:00",
+    "generated":  1794407580732,
+    "generatedIso":  "2026-11-11T07:33:01-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  544365771,
+                   "clubMs":  544387717,
                    "pilots":  49,
                    "activePilots7":  24,
-                   "clubWeekMs":  21345298,
+                   "clubWeekMs":  21367244,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  403542345.52949977,
+                                    "liftoff":  403564291.52949977,
                                     "microdrones":  138632458.54280022,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -288,7 +288,7 @@
                                     },
                        "gsPct":  35,
                        "gsLessons":  18,
-                       "lastSeen":  1794322555767,
+                       "lastSeen":  1794407567516,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -382,10 +382,10 @@
                    },
                    {
                        "name":  "Bruno A.",
-                       "totalMs":  15688015,
-                       "weekMs":  597458,
+                       "totalMs":  15709961,
+                       "weekMs":  619404,
                        "perSimMs":  {
-                                        "liftoff":  13937719,
+                                        "liftoff":  13959665,
                                         "microdrones":  1750296,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -393,7 +393,7 @@
                                     },
                        "gsPct":  90,
                        "gsLessons":  46,
-                       "lastSeen":  1794322255692,
+                       "lastSeen":  1794407493313,
                        "badges":  [
                                       "safe-flight",
                                       "battery-care",
