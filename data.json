@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794581593931,
-    "generatedIso":  "2026-11-13T07:53:14-07:00",
+    "generated":  1794581655984,
+    "generatedIso":  "2026-11-13T07:54:16-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  559486463,
+                   "clubMs":  559606643,
                    "pilots":  49,
                    "activePilots7":  21,
-                   "clubWeekMs":  36465989,
+                   "clubWeekMs":  36586169,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  417327136.12389988,
+                                    "liftoff":  417447315.97489989,
                                     "microdrones":  139968359.56520033,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -382,10 +382,10 @@
                    },
                    {
                        "name":  "Bruno A.",
-                       "totalMs":  18707315,
-                       "weekMs":  3616758,
+                       "totalMs":  18767413,
+                       "weekMs":  3676856,
                        "perSimMs":  {
-                                        "liftoff":  16957019,
+                                        "liftoff":  17017117,
                                         "microdrones":  1750296,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -393,7 +393,7 @@
                                     },
                        "gsPct":  90,
                        "gsLessons":  46,
-                       "lastSeen":  1794581563862,
+                       "lastSeen":  1794581623961,
                        "badges":  [
                                       "safe-flight",
                                       "battery-care",
@@ -420,6 +420,25 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1793919600565,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
+                       "name":  "henry m",
+                       "totalMs":  10381550,
+                       "weekMs":  8891198,
+                       "perSimMs":  {
+                                        "liftoff":  10381550,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1794581643034,
                        "badges":  [
 
                                   ],
@@ -467,25 +486,6 @@
                                       "mentor"
                                   ],
                        "tier":  3
-                   },
-                   {
-                       "name":  "henry m",
-                       "totalMs":  10321468,
-                       "weekMs":  8831116,
-                       "perSimMs":  {
-                                        "liftoff":  10321468,
-                                        "microdrones":  0,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1794581582951,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
                    },
                    {
                        "name":  "Grayson",
