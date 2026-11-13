@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794553226791,
-    "generatedIso":  "2026-11-13T00:00:27-07:00",
+    "generated":  1794580362498,
+    "generatedIso":  "2026-11-13T07:32:42-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -288,7 +288,7 @@
                                     },
                        "gsPct":  35,
                        "gsLessons":  18,
-                       "lastSeen":  1794495320777,
+                       "lastSeen":  1794580351224,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
