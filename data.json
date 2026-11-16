@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794812414082,
-    "generatedIso":  "2026-11-16T00:00:14-07:00",
+    "generated":  1794840025434,
+    "generatedIso":  "2026-11-16T07:40:25-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  562215382,
+                   "clubMs":  562257456,
                    "pilots":  49,
                    "activePilots7":  20,
-                   "clubWeekMs":  0,
+                   "clubWeekMs":  42074,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  420056055.56279975,
+                                    "liftoff":  420098129.13819987,
                                     "microdrones":  139968359.56520033,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -427,10 +427,10 @@
                    },
                    {
                        "name":  "henry m",
-                       "totalMs":  11536121,
-                       "weekMs":  0,
+                       "totalMs":  11578195,
+                       "weekMs":  42074,
                        "perSimMs":  {
-                                        "liftoff":  11536121,
+                                        "liftoff":  11578195,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -438,7 +438,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794588083344,
+                       "lastSeen":  1794839967167,
                        "badges":  [
 
                                   ],
