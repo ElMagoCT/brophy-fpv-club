@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794852840095,
-    "generatedIso":  "2026-11-16T11:14:00-07:00",
+    "generated":  1794852901369,
+    "generatedIso":  "2026-11-16T11:15:01-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  564032386,
+                   "clubMs":  564152515,
                    "pilots":  49,
                    "activePilots7":  17,
-                   "clubWeekMs":  1817004,
+                   "clubWeekMs":  1937133,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  421666049.02289987,
+                                    "liftoff":  421786178.11029994,
                                     "microdrones":  140175369.56520033,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -224,6 +224,33 @@
                        "tier":  3
                    },
                    {
+                       "name":  "Jameson S.",
+                       "totalMs":  35385653,
+                       "weekMs":  310252,
+                       "perSimMs":  {
+                                        "liftoff":  28193906,
+                                        "microdrones":  7181954,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  9793
+                                    },
+                       "gsPct":  100,
+                       "gsLessons":  51,
+                       "lastSeen":  1794852875962,
+                       "badges":  [
+                                      "proficient-flight",
+                                      "safe-flight",
+                                      "battery-care",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "spotter",
+                                      "faa-trust",
+                                      "faa-event-exam",
+                                      "pilot-agreement"
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Bryson E.",
                        "totalMs":  35333326,
                        "weekMs":  0,
@@ -244,33 +271,6 @@
                                       "betaflight-intro",
                                       "soldering",
                                       "faa-trust",
-                                      "pilot-agreement"
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Jameson S.",
-                       "totalMs":  35325527,
-                       "weekMs":  250126,
-                       "perSimMs":  {
-                                        "liftoff":  28133780,
-                                        "microdrones":  7181954,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  9793
-                                    },
-                       "gsPct":  100,
-                       "gsLessons":  51,
-                       "lastSeen":  1794852815834,
-                       "badges":  [
-                                      "proficient-flight",
-                                      "safe-flight",
-                                      "battery-care",
-                                      "electrical-components",
-                                      "radio-protocol",
-                                      "spotter",
-                                      "faa-trust",
-                                      "faa-event-exam",
                                       "pilot-agreement"
                                   ],
                        "tier":  0
@@ -408,10 +408,10 @@
                    },
                    {
                        "name":  "henry m",
-                       "totalMs":  12759621,
-                       "weekMs":  1223500,
+                       "totalMs":  12819624,
+                       "weekMs":  1283503,
                        "perSimMs":  {
-                                        "liftoff":  12552611,
+                                        "liftoff":  12612614,
                                         "microdrones":  207010,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -419,7 +419,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794852761515,
+                       "lastSeen":  1794852821519,
                        "badges":  [
 
                                   ],
