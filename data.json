@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794840512651,
-    "generatedIso":  "2026-11-16T07:48:33-07:00",
+    "generated":  1794840573529,
+    "generatedIso":  "2026-11-16T07:49:33-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,15 +9,15 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  562709552,
+                   "clubMs":  562815326,
                    "pilots":  49,
                    "activePilots7":  21,
-                   "clubWeekMs":  494170,
+                   "clubWeekMs":  599944,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  420487131.13819987,
-                                    "microdrones":  140031453.56520033,
+                                    "liftoff":  420532854.26319987,
+                                    "microdrones":  140091504.56520033,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
                                     "picasim":  857036.99810002092
@@ -408,18 +408,18 @@
                    },
                    {
                        "name":  "henry m",
-                       "totalMs":  12030291,
-                       "weekMs":  494170,
+                       "totalMs":  12090342,
+                       "weekMs":  554221,
                        "perSimMs":  {
                                         "liftoff":  11967197,
-                                        "microdrones":  63094,
+                                        "microdrones":  123145,
                                         "skydive":  0,
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794840447691,
+                       "lastSeen":  1794840507744,
                        "badges":  [
 
                                   ],
@@ -891,6 +891,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Graham S",
+                       "totalMs":  829099,
+                       "weekMs":  45723,
+                       "perSimMs":  {
+                                        "liftoff":  829099,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1794840561522,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Mr. Reasy",
                        "totalMs":  813065,
                        "weekMs":  0,
@@ -904,25 +923,6 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1790620521101,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Graham S",
-                       "totalMs":  783376,
-                       "weekMs":  0,
-                       "perSimMs":  {
-                                        "liftoff":  783376,
-                                        "microdrones":  0,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1794840490215,
                        "badges":  [
 
                                   ],
