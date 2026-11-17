@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1794938606586,
-    "generatedIso":  "2026-11-17T11:03:26-07:00",
+    "generated":  1794938668399,
+    "generatedIso":  "2026-11-17T11:04:28-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  578172414,
+                   "clubMs":  578232435,
                    "pilots":  49,
                    "activePilots7":  18,
-                   "clubWeekMs":  15957031,
+                   "clubWeekMs":  16017052,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  435766871.39640003,
+                                    "liftoff":  435826892.39640003,
                                     "microdrones":  140214574.56520033,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -419,7 +419,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794935924324,
+                       "lastSeen":  1794938653455,
                        "badges":  [
 
                                   ],
@@ -664,10 +664,10 @@
                    },
                    {
                        "name":  "carson",
-                       "totalMs":  3964327,
-                       "weekMs":  409921,
+                       "totalMs":  4024348,
+                       "weekMs":  469942,
                        "perSimMs":  {
-                                        "liftoff":  3925122,
+                                        "liftoff":  3985143,
                                         "microdrones":  39205,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -675,7 +675,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1794938544276,
+                       "lastSeen":  1794938604297,
                        "badges":  [
 
                                   ],
