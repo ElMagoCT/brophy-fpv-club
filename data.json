@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795012713101,
-    "generatedIso":  "2026-11-18T07:38:33-07:00",
+    "generated":  1795012773967,
+    "generatedIso":  "2026-11-18T07:39:34-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  582723239,
+                   "clubMs":  582783350,
                    "pilots":  49,
                    "activePilots7":  17,
-                   "clubWeekMs":  20507856,
+                   "clubWeekMs":  20567967,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  436544945.37519985,
+                                    "liftoff":  436605056.68059987,
                                     "microdrones":  143987324.56520033,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -339,6 +339,32 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Bruno A.",
+                       "totalMs":  23214594,
+                       "weekMs":  2993012,
+                       "perSimMs":  {
+                                        "liftoff":  21464297,
+                                        "microdrones":  1750296,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  90,
+                       "gsLessons":  46,
+                       "lastSeen":  1795012765296,
+                       "badges":  [
+                                      "safe-flight",
+                                      "battery-care",
+                                      "soldering",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "spotter",
+                                      "faa-trust",
+                                      "drone-portfolio"
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Marco F.",
                        "totalMs":  23178639,
                        "weekMs":  0,
@@ -379,32 +405,6 @@
                                       "mentor"
                                   ],
                        "tier":  2
-                   },
-                   {
-                       "name":  "Bruno A.",
-                       "totalMs":  23154483,
-                       "weekMs":  2932901,
-                       "perSimMs":  {
-                                        "liftoff":  21404186,
-                                        "microdrones":  1750296,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  90,
-                       "gsLessons":  46,
-                       "lastSeen":  1795012705183,
-                       "badges":  [
-                                      "safe-flight",
-                                      "battery-care",
-                                      "soldering",
-                                      "electrical-components",
-                                      "radio-protocol",
-                                      "spotter",
-                                      "faa-trust",
-                                      "drone-portfolio"
-                                  ],
-                       "tier":  0
                    },
                    {
                        "name":  "henry m",
