@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795125733732,
-    "generatedIso":  "2026-11-19T15:02:14-07:00",
+    "generated":  1795125794753,
+    "generatedIso":  "2026-11-19T15:03:15-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,15 +9,15 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  599529545,
+                   "clubMs":  599589644,
                    "pilots":  49,
                    "activePilots7":  16,
-                   "clubWeekMs":  37314161,
+                   "clubWeekMs":  37374260,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
                                     "liftoff":  441330194.14610004,
-                                    "microdrones":  156008381.13940033,
+                                    "microdrones":  156068480.13940033,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
                                     "picasim":  857036.99810002092
@@ -296,18 +296,18 @@
                    },
                    {
                        "name":  "Aeson T.",
-                       "totalMs":  29374453,
-                       "weekMs":  2457376,
+                       "totalMs":  29434552,
+                       "weekMs":  2517475,
                        "perSimMs":  {
                                         "liftoff":  14206564,
-                                        "microdrones":  14945742,
+                                        "microdrones":  15005841,
                                         "skydive":  222147,
                                         "fpvlabs":  0,
                                         "picasim":  0
                                     },
                        "gsPct":  35,
                        "gsLessons":  18,
-                       "lastSeen":  1795125655277,
+                       "lastSeen":  1795125715379,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
