@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795538500893,
-    "generatedIso":  "2026-11-24T09:41:41-07:00",
+    "generated":  1795540743921,
+    "generatedIso":  "2026-11-24T10:19:04-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -11,7 +11,7 @@
     "totals":  {
                    "clubMs":  615076303,
                    "pilots":  50,
-                   "activePilots7":  14,
+                   "activePilots7":  13,
                    "clubWeekMs":  5933914,
                    "weekBasis":  "calendar",
                    "sims":  5,
