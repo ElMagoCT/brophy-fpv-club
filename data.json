@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795544633743,
-    "generatedIso":  "2026-11-24T11:23:54-07:00",
+    "generated":  1795544695029,
+    "generatedIso":  "2026-11-24T11:24:55-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  615911768,
+                   "clubMs":  615971816,
                    "pilots":  50,
                    "activePilots7":  12,
-                   "clubWeekMs":  6769379,
+                   "clubWeekMs":  6829427,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  452482597.49999976,
+                                    "liftoff":  452542645.49999976,
                                     "microdrones":  161238203.22860023,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -295,6 +295,32 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Bruno A.",
+                       "totalMs":  30735043,
+                       "weekMs":  1551608,
+                       "perSimMs":  {
+                                        "liftoff":  24463243,
+                                        "microdrones":  6271800,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  90,
+                       "gsLessons":  46,
+                       "lastSeen":  1795544591557,
+                       "badges":  [
+                                      "safe-flight",
+                                      "battery-care",
+                                      "soldering",
+                                      "electrical-components",
+                                      "radio-protocol",
+                                      "spotter",
+                                      "faa-trust",
+                                      "drone-portfolio"
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Aeson T.",
                        "totalMs":  30689429,
                        "weekMs":  579169,
@@ -316,32 +342,6 @@
                                       "betaflight-intro",
                                       "faa-trust",
                                       "pilot-agreement",
-                                      "drone-portfolio"
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Bruno A.",
-                       "totalMs":  30674995,
-                       "weekMs":  1491560,
-                       "perSimMs":  {
-                                        "liftoff":  24403195,
-                                        "microdrones":  6271800,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  90,
-                       "gsLessons":  46,
-                       "lastSeen":  1795544531509,
-                       "badges":  [
-                                      "safe-flight",
-                                      "battery-care",
-                                      "soldering",
-                                      "electrical-components",
-                                      "radio-protocol",
-                                      "spotter",
-                                      "faa-trust",
                                       "drone-portfolio"
                                   ],
                        "tier":  0
