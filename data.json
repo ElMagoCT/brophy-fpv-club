@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795581857186,
-    "generatedIso":  "2026-11-24T21:44:17-07:00",
+    "generated":  1795590027263,
+    "generatedIso":  "2026-11-25T00:00:27-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -1183,40 +1183,6 @@
                      "source":  "imported 2026-08-31 09:01",
                      "days":  [
                                   {
-                                      "date":  "2026-11-24",
-                                      "dow":  "Tue",
-                                      "dowFull":  "Tuesday",
-                                      "label":  "Nov 24",
-                                      "open":  true,
-                                      "note":  "",
-                                      "windows":  [
-                                                      {
-                                                          "from":  "07:00",
-                                                          "to":  "08:00",
-                                                          "startIso":  "2026-11-24T07:00:00-07:00",
-                                                          "endIso":  "2026-11-24T08:00:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "09:20",
-                                                          "to":  "11:40",
-                                                          "startIso":  "2026-11-24T09:20:00-07:00",
-                                                          "endIso":  "2026-11-24T11:40:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "13:00",
-                                                          "to":  "13:10",
-                                                          "startIso":  "2026-11-24T13:00:00-07:00",
-                                                          "endIso":  "2026-11-24T13:10:00-07:00"
-                                                      },
-                                                      {
-                                                          "from":  "14:30",
-                                                          "to":  "16:00",
-                                                          "startIso":  "2026-11-24T14:30:00-07:00",
-                                                          "endIso":  "2026-11-24T16:00:00-07:00"
-                                                      }
-                                                  ]
-                                  },
-                                  {
                                       "date":  "2026-11-25",
                                       "dow":  "Wed",
                                       "dowFull":  "Wednesday",
@@ -1876,6 +1842,17 @@
                                       "dow":  "Mon",
                                       "dowFull":  "Monday",
                                       "label":  "Dec 21",
+                                      "open":  false,
+                                      "note":  "Winter break",
+                                      "windows":  [
+
+                                                  ]
+                                  },
+                                  {
+                                      "date":  "2026-12-22",
+                                      "dow":  "Tue",
+                                      "dowFull":  "Tuesday",
+                                      "label":  "Dec 22",
                                       "open":  false,
                                       "note":  "Winter break",
                                       "windows":  [
