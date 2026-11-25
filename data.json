@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795576522096,
-    "generatedIso":  "2026-11-24T20:15:22-07:00",
+    "generated":  1795576583714,
+    "generatedIso":  "2026-11-24T20:16:23-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  629583163,
+                   "clubMs":  629689299,
                    "pilots":  51,
                    "activePilots7":  15,
-                   "clubWeekMs":  20440772,
+                   "clubWeekMs":  20546908,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  466153992.1632992,
+                                    "liftoff":  466260128.08309913,
                                     "microdrones":  161238203.22860023,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -58,10 +58,10 @@
     "pilots":  [
                    {
                        "name":  "Josiah T.",
-                       "totalMs":  72266974,
-                       "weekMs":  3949338,
+                       "totalMs":  72313098,
+                       "weekMs":  3995462,
                        "perSimMs":  {
-                                        "liftoff":  48885617,
+                                        "liftoff":  48931741,
                                         "microdrones":  23319327,
                                         "skydive":  0,
                                         "fpvlabs":  62030,
@@ -69,7 +69,7 @@
                                     },
                        "gsPct":  18,
                        "gsLessons":  9,
-                       "lastSeen":  1795576498919,
+                       "lastSeen":  1795576558988,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
@@ -1103,10 +1103,10 @@
                    },
                    {
                        "name":  "john doe",
-                       "totalMs":  159156,
-                       "weekMs":  159156,
+                       "totalMs":  219168,
+                       "weekMs":  219168,
                        "perSimMs":  {
-                                        "liftoff":  159156,
+                                        "liftoff":  219168,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -1114,7 +1114,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1795576426158,
+                       "lastSeen":  1795576486171,
                        "badges":  [
 
                                   ],
