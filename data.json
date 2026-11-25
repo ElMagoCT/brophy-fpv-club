@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795571776895,
-    "generatedIso":  "2026-11-24T18:56:17-07:00",
+    "generated":  1795571837324,
+    "generatedIso":  "2026-11-24T18:57:17-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  622500640,
+                   "clubMs":  622620812,
                    "pilots":  51,
                    "activePilots7":  14,
-                   "clubWeekMs":  13358251,
+                   "clubWeekMs":  13478422,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  459071469.4849999,
+                                    "liftoff":  459191641.48649979,
                                     "microdrones":  161238203.22860023,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -277,10 +277,10 @@
                    },
                    {
                        "name":  "Bruno A.",
-                       "totalMs":  32020914,
-                       "weekMs":  2837480,
+                       "totalMs":  32081026,
+                       "weekMs":  2897591,
                        "perSimMs":  {
-                                        "liftoff":  25749114,
+                                        "liftoff":  25809226,
                                         "microdrones":  6271800,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -288,7 +288,7 @@
                                     },
                        "gsPct":  90,
                        "gsLessons":  46,
-                       "lastSeen":  1795571681057,
+                       "lastSeen":  1795571741169,
                        "badges":  [
                                       "safe-flight",
                                       "battery-care",
@@ -874,6 +874,25 @@
                        "tier":  0
                    },
                    {
+                       "name":  "Will G.",
+                       "totalMs":  1131493,
+                       "weekMs":  1131493,
+                       "perSimMs":  {
+                                        "liftoff":  1131493,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1795571812717,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "Graham S",
                        "totalMs":  1117376,
                        "weekMs":  0,
@@ -887,25 +906,6 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1794840861458,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Will G.",
-                       "totalMs":  1071433,
-                       "weekMs":  1071433,
-                       "perSimMs":  {
-                                        "liftoff":  1071433,
-                                        "microdrones":  0,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1795571752653,
                        "badges":  [
 
                                   ],
