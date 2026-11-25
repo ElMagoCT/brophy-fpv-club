@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795570246026,
-    "generatedIso":  "2026-11-24T18:30:46-07:00",
+    "generated":  1795570306277,
+    "generatedIso":  "2026-11-24T18:31:46-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  619599424,
+                   "clubMs":  619719511,
                    "pilots":  50,
                    "activePilots7":  13,
-                   "clubWeekMs":  10457035,
+                   "clubWeekMs":  10577121,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  456170253.81959975,
+                                    "liftoff":  456290340.81959975,
                                     "microdrones":  161238203.22860023,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -427,6 +427,25 @@
                        "tier":  2
                    },
                    {
+                       "name":  "Micah T",
+                       "totalMs":  11676547,
+                       "weekMs":  2738937,
+                       "perSimMs":  {
+                                        "liftoff":  11676547,
+                                        "microdrones":  0,
+                                        "skydive":  0,
+                                        "fpvlabs":  0,
+                                        "picasim":  0
+                                    },
+                       "gsPct":  0,
+                       "gsLessons":  0,
+                       "lastSeen":  1795570280865,
+                       "badges":  [
+
+                                  ],
+                       "tier":  0
+                   },
+                   {
                        "name":  "AYAan",
                        "totalMs":  11627650,
                        "weekMs":  0,
@@ -440,25 +459,6 @@
                        "gsPct":  0,
                        "gsLessons":  0,
                        "lastSeen":  1793919600565,
-                       "badges":  [
-
-                                  ],
-                       "tier":  0
-                   },
-                   {
-                       "name":  "Micah T",
-                       "totalMs":  11556460,
-                       "weekMs":  2618851,
-                       "perSimMs":  {
-                                        "liftoff":  11556460,
-                                        "microdrones":  0,
-                                        "skydive":  0,
-                                        "fpvlabs":  0,
-                                        "picasim":  0
-                                    },
-                       "gsPct":  0,
-                       "gsLessons":  0,
-                       "lastSeen":  1795570220847,
                        "badges":  [
 
                                   ],
