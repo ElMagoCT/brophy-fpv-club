@@ -1,0 +1,34 @@
+# Publishes the site to GitHub Pages on every push to main.
+# Replaces the legacy "Deploy from a branch" build (2026-11-25): the kiosks push
+# data.json as often as once a minute while someone is flying, the legacy build
+# could not deploy that fast, and every collision sent a "Run failed: pages build
+# and deployment" email. Here only one deploy runs at a time; pushes that arrive
+# meanwhile wait, and a newer push replaces a waiting one (that run shows as
+# cancelled, which sends no email). The newest commit is always the one that lands.
+# Static files only, no Jekyll (same as the .nojekyll the branch build used).
+name: Deploy to Pages
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v5
