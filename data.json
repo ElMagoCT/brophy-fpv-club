@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795575976744,
-    "generatedIso":  "2026-11-24T20:06:16-07:00",
+    "generated":  1795576038717,
+    "generatedIso":  "2026-11-24T20:07:19-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  628548140,
+                   "clubMs":  628668223,
                    "pilots":  51,
                    "activePilots7":  14,
-                   "clubWeekMs":  19405749,
+                   "clubWeekMs":  19525833,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  465118969.25629938,
+                                    "liftoff":  465239052.76749933,
                                     "microdrones":  161238203.22860023,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -58,10 +58,10 @@
     "pilots":  [
                    {
                        "name":  "Josiah T.",
-                       "totalMs":  71391107,
-                       "weekMs":  3073471,
+                       "totalMs":  71511190,
+                       "weekMs":  3193555,
                        "perSimMs":  {
-                                        "liftoff":  48009750,
+                                        "liftoff":  48129834,
                                         "microdrones":  23319327,
                                         "skydive":  0,
                                         "fpvlabs":  62030,
@@ -69,7 +69,7 @@
                                     },
                        "gsPct":  18,
                        "gsLessons":  9,
-                       "lastSeen":  1795575958180,
+                       "lastSeen":  1795576018235,
                        "badges":  [
                                       "proficient-flight",
                                       "safe-flight",
