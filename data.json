@@ -1,7 +1,7 @@
 {
     "schemaVersion":  1,
-    "generated":  1795580388447,
-    "generatedIso":  "2026-11-24T21:19:48-07:00",
+    "generated":  1795580449374,
+    "generatedIso":  "2026-11-24T21:20:49-07:00",
     "club":  {
                  "name":  "Brophy FPV Club",
                  "subtitle":  "Flight Simulator Lab",
@@ -9,14 +9,14 @@
                  "playlistUrl":  "https://www.youtube.com/playlist?list=PLSMZuEPVkmR_Z2GjwgFvcgPaWJXxR4xRF"
              },
     "totals":  {
-                   "clubMs":  634504857,
+                   "clubMs":  634564909,
                    "pilots":  51,
                    "activePilots7":  15,
-                   "clubWeekMs":  25362466,
+                   "clubWeekMs":  25422518,
                    "weekBasis":  "calendar",
                    "sims":  5,
                    "perSimMs":  {
-                                    "liftoff":  471075686.15289867,
+                                    "liftoff":  471135738.15289867,
                                     "microdrones":  161238203.22860023,
                                     "skydive":  854755.44699993171,
                                     "fpvlabs":  479174.44610003708,
@@ -685,10 +685,10 @@
                    },
                    {
                        "name":  "john doe",
-                       "totalMs":  4081823,
-                       "weekMs":  4081823,
+                       "totalMs":  4141875,
+                       "weekMs":  4141875,
                        "perSimMs":  {
-                                        "liftoff":  4081823,
+                                        "liftoff":  4141875,
                                         "microdrones":  0,
                                         "skydive":  0,
                                         "fpvlabs":  0,
@@ -696,7 +696,7 @@
                                     },
                        "gsPct":  0,
                        "gsLessons":  0,
-                       "lastSeen":  1795580360334,
+                       "lastSeen":  1795580420387,
                        "badges":  [
 
                                   ],
