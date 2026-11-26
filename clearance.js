@@ -58,11 +58,11 @@
     var src = onFile(b.id);
     if (src) { s.earned = true; s.source = src; s.pct = 100; s.detail = 'done'; return s; }
     if (b.type === 'knowledge') {
-      var ids = (b.lessons || []).map(function (l) { return l.id; }), done = 0, best = quizBest(b);
-      ids.forEach(function (id) { if (lessonDone(id)) done++; });
+      /* 2026-11-25: video + quiz; the old lessons are resources, so only the quiz counts */
+      var best = quizBest(b);
       if (best >= FS.PASS) { s.earned = true; s.source = 'quiz'; s.pct = 100; s.detail = 'quiz ' + best; return s; }
-      s.pct = Math.round((done + (best > 0 ? 0.5 : 0)) / (ids.length + 1) * 100);
-      s.detail = done + ' of ' + (ids.length + 1) + ' parts' + (best > 0 ? ' · best quiz ' + best : '');
+      s.pct = best > 0 ? 50 : 0;
+      s.detail = best > 0 ? 'best quiz ' + best + ' · ' + FS.PASS + ' to pass' : 'watch the video, then the quiz';
       return s;
     }
     if (b.kind === 'drone') {

@@ -119,6 +119,8 @@
   function countBadges(r) {
     /* bonus badges and the Flight Clearance parts are never counted (2026-10-20) */
     var bonus = { editing: 1, tuning: 1, 'fleet-steward': 1, mentor: 1, 'faa-trust': 1, 'safe-flight': 1, 'pilot-agreement': 1, 'drone-portfolio': 1 };
+    /* 2026-11-25: from the catalogue when the page loaded it (site.js doesn't load it itself) */
+    if (window.FS && FS.BADGES && FS.counted) { bonus = {}; FS.BADGES.forEach(function (b) { if (!FS.counted(b)) bonus[b.id] = 1; }); }
     return (r.badges || []).filter(function (id) { return !bonus[id]; }).length;
   }
   function drawNames() {

@@ -6,8 +6,11 @@
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
 <!-- Everything this page may load or talk to. Nothing inline, no third-party
-     script, and the only network destination is GitHub's API. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data:; connect-src 'self' https://brophy-fpv-club-api.netlify.app; base-uri 'none'; form-action 'none'">
+     script; data goes only to the club API (brophy-fpv-club-api.netlify.app).
+     2026-11-25: Google Drive thumbnails (the "public" check) and the Drive
+     preview player, blob: video for recorded flights, and data: frames/objects
+     for PDF certificates (Chrome's PDF viewer needs both). -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self' data: https://drive.google.com https://*.googleusercontent.com; media-src blob:; frame-src https://drive.google.com data:; object-src data:; connect-src 'self' https://brophy-fpv-club-api.netlify.app; base-uri 'none'; form-action 'none'">
 <title>Instructor Console · Brophy FPV Club</title>
 <link rel="stylesheet" href="../groundschool/fonts.css">
 <link rel="stylesheet" href="admin.css">
@@ -46,23 +49,25 @@
   <!-- ============ console ============ -->
   <section id="console" hidden>
     <nav class="views" id="views">
-      <a href="#review" id="vReview" class="on">Review photos <span id="rvCount"></span></a>
+      <a href="#review" id="vReview" class="on">Review <span id="rvCount"></span></a>
       <a href="#pilots" id="vApprovals">Pilots</a>
       <a href="#kiosks" id="vKiosks">Kiosks</a>
     </nav>
 
-    <!-- ---- review: photos pilots submitted from Flight School (2026-10-08) ---- -->
+    <!-- ---- review: photos pilots submitted from Flight School (2026-10-08),
+         and Sim Flight recordings from the kiosks (2026-11-25) ---- -->
     <div id="review" hidden>
       <div class="card">
         <div class="row between">
-          <h2>Review photos</h2>
+          <h2>Review</h2>
           <button id="rvRefresh">Refresh</button>
         </div>
         <p class="muted small">Photos pilots took of their work on the Pilot Path and Flight Clearance pages (TRUST certificates,
           signed Pilot Agreements), and <b>Drone Portfolio</b> entries - a picture, the drone's name and specs, and a Google Drive flight
-          video (the card says whether the link is public and plays it). <b>Pass</b> files the same signed approval as the Approvals tab
-          (both kiosks pull it) and tells the pilot; for a drone it approves that drone and files the Drone Portfolio badge. <b>Fail</b> tells the pilot why, and they
-          can send a new photo. The badge rules still apply: Sim Flight needs 5 sim hours, a checkpoint needs the rest of its tier.</p>
+          video (the card says whether the link is public and plays it). <b>Recorded flights</b> are Sim Flight checkrides from the kiosks:
+          60 seconds of Liftoff, played here next to the standard (Pass unlocks once the video has loaded). <b>Pass</b> files the same signed approval as the Approvals tab
+          (both kiosks pull it) and tells the pilot; for a drone it approves that drone and files the Drone Portfolio badge. <b>Fail</b> tells the pilot why (a failed
+          flight needs a note); they can send a new photo, or record another flight on a later day. The badge rules still apply: a checkpoint needs the rest of its tier.</p>
         <div class="setup" id="rvSetup" hidden></div>
         <div class="muted small" id="rvMsg"></div>
         <!-- one big submission on stage, the rest in a grid below (click to bring up) -->
@@ -73,6 +78,9 @@
 
     <!-- ---- approvals: Flight School badge sign-off ---- -->
     <div id="approvals" hidden>
+      <!-- 2026-11-25: decisions on file not signed with the instructor password
+           (the API checks them with the review key); filled by admin.js loadAudit -->
+      <div class="card" id="apAudit" hidden></div>
       <div class="card">
         <h2>Approve a badge</h2>
         <p class="muted small">For bench and witnessed badges. The pilot has DM'd their photo (or you watched them do it);
@@ -80,7 +88,7 @@
           on their next sync, whichever is on. Quiz badges are earned by passing the quiz — only use this to override.
           Nothing here can be undone by a student; Revoke is yours alone.</p>
         <div class="row wrapline">
-          <label class="inline">Pilot <input id="apPilot" list="apPilots" placeholder="Micah T." autocomplete="off"> <datalist id="apPilots"></datalist></label>
+          <label class="inline">Pilot <input id="apPilot" list="apPilots" placeholder="Micah T." autocomplete="off" maxlength="40"> <datalist id="apPilots"></datalist></label>
           <span class="muted small" id="apHas"></span>
         </div>
         <label>Badge <select id="apBadge"></select></label>

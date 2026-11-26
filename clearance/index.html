@@ -153,9 +153,9 @@ section{margin-top:26px}
 .badge li.step:hover,.badge li.les:hover{background:var(--paper-2)}
 .badge li .rt{flex:1;min-width:0}
 .badge li.on .rt{color:var(--ink-soft)}
-.badge li .go{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
+.badge li .go{margin-left:auto;font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
 .badge li.on .go{color:var(--ink-soft)}
-.badge a.rl{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap;margin-left:8px}
+.badge a.rl{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap;margin-left:8px}
 .badge .act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
 .badge .res{border:1px dashed var(--line-hard);border-radius:7px;padding:7px 10px;margin-top:8px;font-size:13.5px}
 .badge .res b{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--ink-soft)}
@@ -164,6 +164,23 @@ section{margin-top:26px}
 .badge .res a{color:var(--sky)}
 .approve{font-size:13.5px;color:var(--ink-soft);margin-top:8px;line-height:1.4}
 .approve b{color:var(--ink);font-weight:600}
+/* 2026-11-25: video, quiz, then Resources (closed), as on the Pilot Path */
+.badge .qrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px}
+.badge .qrow .qmeta{font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.badge .qrow .qmeta b{color:var(--green);font-weight:400}
+.badge details.resg{margin-top:10px;border:1px dashed var(--line-hard);border-radius:7px;padding:0 10px;font-size:14px}
+.badge details.resg>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 0;font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.badge details.resg>summary::-webkit-details-marker{display:none}
+.badge details.resg>summary::before{content:'\25B8';display:inline-block;transition:transform .15s}
+.badge details.resg[open]>summary::before{transform:rotate(90deg)}
+.badge details.resg>summary:hover{color:var(--ink)}
+.badge details.resg>summary .rn{margin-left:auto;letter-spacing:.08em}
+.badge details.resg[open]{padding-bottom:9px}
+.badge details.resg>ul:first-of-type{margin-top:0}
+.badge .rlinks{display:block;margin:8px 0 0;padding-left:16px;list-style:disc}
+.badge .rlinks li{display:list-item;padding:0;margin:0}
+.badge .rlinks a{color:var(--sky)}
+.badge li .soon{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-left:6px}
 .subs{margin-top:8px;display:flex;flex-direction:column;gap:5px}
 .sub{font-size:13.5px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background-color:var(--glass)}
 .sub b{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:400}
@@ -325,7 +342,7 @@ footer a{color:var(--ink)}
 
 <div id="lp" role="dialog" aria-modal="true" aria-labelledby="lpTitle">
   <div class="bar"><span class="t" id="lpTitle">Lesson</span><button class="btn" type="button" id="lpClose">&larr; Back</button></div>
-  <iframe id="lpFrame" title="Lesson"></iframe>
+  <iframe id="lpFrame" title="Lesson" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <div id="lpDone"><div class="box">
     <div class="big" id="lpDoneBig">Done</div>
     <div class="lpsub" id="lpDoneSub"></div>
@@ -369,6 +386,7 @@ footer a{color:var(--ink)}
 
 <script src="../confetti.js"></script>
 <script src="../flightschool/badges.js"></script>
+<script src="../groundschool/gs-videos.js"></script>
 <script src="../clearance.js"></script>
 <script>
 var FS = window.FS, CL = window.Clearance, ST = CL.state;
@@ -470,7 +488,9 @@ function chipFor(s) {
 function drawBadges(st) {
   var open = {}; document.querySelectorAll('.badge.open').forEach(function (c) { open[c.getAttribute('data-id')] = true; });
   $('badgeHint').textContent = ST.pilot ? st.done + ' of ' + st.of + ' · tap a badge' : 'tap a badge';
-  $('badges').innerHTML = st.parts.map(function (p) { return card(p.badge, p.s, open[p.badge.id]); }).join('');
+  /* redrawn every minute: a club video that is playing keeps playing (2026-11-25) */
+  var html = st.parts.map(function (p) { return card(p.badge, p.s, open[p.badge.id]); }).join('');
+  if (window.GS_VIDEOS) GS_VIDEOS.render($('badges'), html); else $('badges').innerHTML = html;
   /* the Pilot Path checkpoints: what unlocks the club drones */
   var kp = CL.kioskRow(), cps = FS.BADGES.filter(function (b) { return b.checkpoint; });
   $('cps').innerHTML = '<b style="font-family:var(--font-mono);font-weight:400;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase">Pilot Path' + (kp && kp.tier != null ? ' · Tier ' + kp.tier : '') + '</b>' +
@@ -493,8 +513,14 @@ function stepsList(b) {
   return '<div class="reqh">Steps</div><ul>' + (b.steps || []).map(function (t, i) {
     var on = pr.steps && pr.steps[i], txt = FS.stepText(t);
     return '<li class="step' + (on ? ' on' : '') + '" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(txt) + '</span>' +
-      (t && t.v ? '<a class="rl" href="https://www.youtube.com/watch?v=' + esc(t.v.yt) + '" target="_blank" rel="noopener" title="' + esc(t.v.t + ' · ' + t.v.by) + '">&#9654; video</a>' : '') + '</li>';
+      (t && t.v ? '<a class="rl" href="' + esc(vidUrl(t.v)) + '" target="_blank" rel="noopener" title="' + esc(t.v.t + (t.v.by ? ' · ' + t.v.by : '')) + '">&#9654; video</a>' : '') +
+      /* 2026-11-25: a page the step needs (TRUST's test, Drive's share help), since Resources start closed */
+      (t && t.link && t.link.u ? '<a class="rl" href="' + esc(t.link.u) + '" target="_blank" rel="noopener" title="' + esc(t.link.t || '') + '">' + esc(t.link.l || 'link') + ' &#8599;</a>' : '') + '</li>';
   }).join('') + '</ul>';
+}
+/* a video reference: YouTube ({yt}) or, since 2026-11-25, a Google Drive file ({drive}) */
+function vidUrl(v) {
+  return v.drive ? 'https://drive.google.com/file/d/' + encodeURIComponent(v.drive) + '/view' : 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.yt);
 }
 function subsList(b, s, label) {
   var mine = CL.mySubs(b.id).slice(0, 3);
@@ -505,25 +531,36 @@ function subsList(b, s, label) {
   if (!s.earned && !s.pending) h += '<div class="act"><button class="btn primary" type="button" data-photo="' + b.id + '">' + (mine.length && mine[0].status === 'fail' ? 'Try again: ' + label : label) + '</button></div>';
   return h;
 }
+/* 2026-11-25: Resources, closed - the old lessons (still openable and
+   recorded), YouTube how-tos, and the tips and links. RESOPEN keeps an opened
+   group open across the minute-by-minute redraws. */
+var RESOPEN = {};
 function resources(b) {
-  if (!b.res || !b.res.length) return '';
-  return '<div class="res"><b>Optional resources</b><ul>' + b.res.map(function (r) {
-    return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>';
-  }).join('') + '</ul></div>';
+  var items = b.resources || [], tips = b.res || [];
+  if (!items.length && !tips.length) return '';
+  var h = '<details class="resg" data-res="' + b.id + '"' + (RESOPEN[b.id] ? ' open' : '') + '><summary>Resources<span class="rn">' + (items.length + tips.length) + '</span></summary>';
+  var les = items.filter(function (r) { return r.id; });
+  if (les.length) h += '<ul>' + les.map(function (l) {
+    var on = CL.lessonDone(l.id);
+    return '<li class="les' + (on ? ' on' : '') + '" data-lesson="' + esc(l.id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(l.t) + (l.drill ? '<span class="soon">drill</span>' : '') + '</span><span class="go">' + (on ? 'review' : 'start &rsaquo;') + '</span></li>';
+  }).join('') + '</ul>';
+  var links = items.filter(function (r) { return r.v; }).map(function (r) { return '<li><a href="' + esc(vidUrl(r.v)) + '" target="_blank" rel="noopener">&#9654; ' + esc(r.v.t) + (r.v.by ? ' · ' + esc(r.v.by) : '') + ' &#8599;</a></li>'; })
+    .concat(tips.map(function (r) { return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>'; }));
+  if (links.length) h += '<ul class="rlinks">' + links.join('') + '</ul>';
+  return h + '</details>';
+}
+/* the club video (gs-videos.js; "coming soon" until it is on Drive) and the quiz button */
+function videoSlot(b) { return window.GS_VIDEOS ? GS_VIDEOS.slot(b.id) : ''; }
+function quizRow(b, s) {
+  if (!b.quiz) return '';
+  var best = CL.quizBest(b), passed = best >= FS.PASS;
+  return '<div class="qrow"><button class="btn primary" type="button" data-lesson="' + esc(b.quiz) + '">' + (passed ? 'Retake the quiz' : 'Take the quiz') + ' &rarr;</button>' +
+    '<span class="qmeta">' + (passed || s.earned ? '<b>Passed</b>' + (best ? ' · best ' + best : '') : FS.qn(b) + ' questions · ' + FS.PASS + ' % to pass' + (best > 0 ? ' · best ' + best : '')) + '</span></div>';
 }
 function more(b, s) {
-  var h = '<div class="why"><b>Why:</b> ' + esc(b.why) + '</div>';
+  var h = '<div class="why"><b>Why:</b> ' + esc(b.why) + '</div>' + videoSlot(b);
   if (b.type === 'knowledge') {
-    h += '<div class="reqh">Lessons</div><ul>';
-    var qon = CL.quizBest(b) >= FS.PASS || s.earned, best = CL.quizBest(b);
-    (b.lessons || []).forEach(function (l) {
-      var on = CL.lessonDone(l.id);
-      h += '<li class="les' + (on ? ' on' : '') + '" data-lesson="' + esc(l.id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(l.t) + (l.drill ? ' <span class="st">drill</span>' : '') + '</span><span class="go">' + (on ? 'review' : 'start &rsaquo;') + '</span></li>';
-    });
-    h += '<li class="les' + (qon ? ' on' : '') + '" data-lesson="' + esc(b.quiz) + '"><span class="tick' + (qon ? ' on' : '') + '">' + (qon ? '✓' : '') + '</span><span class="rt">Quiz · 10 questions · ' + FS.PASS + ' % to pass' + (best > 0 ? ' · best ' + best : '') + '</span><span class="go">' + (qon ? 'review' : 'start &rsaquo;') + '</span></li></ul>';
-    var items = (b.lessons || []).map(function (l) { return l.id; }).concat([b.quiz]), next = items.filter(function (id) { return !CL.lessonDone(id) && !(id === b.quiz && qon); })[0];
-    h += '<div class="act"><button class="btn primary" type="button" data-lesson="' + esc(next || items[0]) + '">' + (next ? (next === items[0] ? 'Start the lessons' : 'Continue') : 'Review the lessons') + ' &rarr;</button></div>';
-
+    h += quizRow(b, s) + '<div class="approve">Pass the quiz and the badge is yours, no sign-off needed.</div>';
   } else if (b.kind === 'drone') {
     h += stepsList(b) + '<div class="act"><button class="btn primary" type="button" data-add="1">Add a drone</button><a class="btn" href="#droneSec">Your drones</a></div>';
   } else if (b.kind === 'paper') {
@@ -538,11 +575,24 @@ function more(b, s) {
 var TERMS = '<div class="act"><a class="btn" href="terms/">Read the terms &rarr;</a><a class="btn" href="agreement.html" target="_blank" rel="noopener">Print the signing paper &nearr;</a></div>';
 
 /* ---------- lessons in a frame (the Ground School course app) ---------- */
+/* 2026-11-25: any clearance badge's quiz or resource lesson opens here (it was
+   Safe Flight only). The quiz opens on its Watch tab once its video is on Drive. */
 var LP = { id: null };
-function safeBadge() { return FS.BADGES.filter(function (x) { return x.id === 'safe-flight'; })[0]; }
-function lesName(id) { var b = safeBadge(); if (id === b.quiz) return 'Safe Flight quiz'; var l = b.lessons.filter(function (x) { return x.id === id; })[0]; return l ? l.t : (FS.LESSON_TITLES[id] || id); }
+function lesBadge(id) {
+  var bs = FS.clearance().concat(FS.BADGES);
+  for (var i = 0; i < bs.length; i++) if (bs[i].quiz === id || FS.resLessons(bs[i]).some(function (l) { return l.id === id; })) return bs[i];
+  return null;
+}
+function lesItems(b) { return FS.resLessons(b).map(function (l) { return l.id; }).concat(b.quiz ? [b.quiz] : []); }
+function lesName(id) {
+  var b = lesBadge(id); if (b && id === b.quiz) return b.name + ' quiz';
+  var l = b && FS.resLessons(b).filter(function (x) { return x.id === id; })[0];
+  return l ? l.t : (FS.LESSON_TITLES[id] || id);
+}
 function openLesson(id) {
-  LP.id = id; $('lpTitle').textContent = 'Safe Flight · ' + lesName(id);
+  var b = lesBadge(id);
+  if (window.GS_VIDEOS) GS_VIDEOS.stopAll();
+  LP.id = id; $('lpTitle').textContent = (b ? b.name + ' · ' : '') + lesName(id);
   $('lpDone').classList.remove('show');
   $('lpFrame').src = '../groundschool/?lesson=' + encodeURIComponent(id) + '&t=' + Date.now();
   $('lp').classList.add('open'); document.body.style.overflow = 'hidden';
@@ -550,11 +600,12 @@ function openLesson(id) {
 function closeLP() { $('lp').classList.remove('open'); $('lpDone').classList.remove('show'); $('lpFrame').src = 'about:blank'; LP.id = null; document.body.style.overflow = ''; render(); CL.pullMine(); }
 function lessonEnded(id, how) {
   if (how === 'exit') { closeLP(); return; }
-  var b = safeBadge(), items = b.lessons.map(function (l) { return l.id; }).concat([b.quiz]);
-  var isQuiz = id === b.quiz, passed = how === 'complete';
-  var nx = items.filter(function (x) { return x !== id && !CL.lessonDone(x) && !(x === b.quiz && CL.quizBest(b) >= FS.PASS); })[0] || null;
+  var b = lesBadge(id); if (!b) { closeLP(); return; }
+  var items = lesItems(b), isQuiz = id === b.quiz, passed = how === 'complete';
+  /* after a resource: the next unfinished resource, then the quiz; after the quiz: nothing */
+  var nx = isQuiz && passed ? null : (items.slice(items.indexOf(id) + 1).filter(function (x) { return !CL.lessonDone(x) && !(x === b.quiz && CL.quizBest(b) >= FS.PASS); })[0] || null);
   $('lpDoneBig').textContent = passed ? (isQuiz ? 'Quiz passed ✓' : 'Done ✓') : 'Not passed yet';
-  $('lpDoneSub').textContent = passed ? (isQuiz ? 'Safe Flight is yours.' : lesName(id)) : 'Your best score is kept. The questions reshuffle every try.';
+  $('lpDoneSub').textContent = passed ? (isQuiz ? (b.type === 'knowledge' ? b.name + ' is yours.' : 'Now a mentor signs the rest off.') : lesName(id)) : 'Your best score is kept. The questions reshuffle every try.';
   var btns = '';
   if (!passed) btns += '<button class="btn primary" type="button" data-lp="retry">Try again</button>';
   if (nx) btns += '<button class="btn' + (passed ? ' primary' : '') + '" type="button" data-lp="next">Next: ' + esc(lesName(nx)) + ' &rarr;</button>';
@@ -581,12 +632,18 @@ document.addEventListener('click', function (e) {
   var ph = e.target.closest('[data-photo]');
   if (ph) { camOpen(ph.getAttribute('data-photo')); return; }
   if (e.target.closest('[data-add]')) { ddOpen(); return; }
+  if (e.target.closest('li.step a[target="_blank"]')) return;   // a step's video or test link opens; it doesn't tick the step
   var step = e.target.closest('li.step'), card = e.target.closest('.badge');
   if (step && card) { if (!ST.pilot) { SiteNav.open(); return; } CL.tickStep(card.getAttribute('data-id'), +step.getAttribute('data-step')); return; }
-  if (!card || e.target.closest('a,button,details,input,textarea')) return;
+  var sum = e.target.closest('details.resg > summary');
+  if (sum) { RESOPEN[sum.parentNode.getAttribute('data-res')] = !sum.parentNode.open; return; }
+  if (!card || e.target.closest('a,button,details,input,textarea,.gsv')) return;
   /* open or close the whole visual row, as on the Pilot Path */
   var want = !card.classList.contains('open'), top = card.offsetTop, sib = card.parentNode.children;
-  for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) sib[k].classList.toggle('open', want);
+  for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) {
+    sib[k].classList.toggle('open', want);
+    if (!want && window.GS_VIDEOS) GS_VIDEOS.stopIn(sib[k]);   // a closed card doesn't keep playing sound
+  }
 });
 
 /* ---------- photo / PDF submissions ---------- */

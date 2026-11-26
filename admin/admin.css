@@ -153,3 +153,26 @@ button.primary.flush{margin-top:0}
 .rvlist .rv input,.rvlist .rv .row,.rvlist .rv .warn{display:none}
 .rvlist .rv.decided{opacity:.6}
 @media (max-width:560px){ .rvlist{grid-template-columns:1fr} .rvstage .rv .ph{height:52vh} }
+
+/* ---- recorded flights from the kiosks (2026-11-25) ---- */
+.rv .flight{font-size:14px;line-height:1.4;border-top:1px dashed var(--line);padding-top:6px}
+.rv .flight video, .psub .ph video { width:100%; aspect-ratio:16/9; background:#000; border-radius:7px; display:block }
+.rv .flight .std { margin:6px 0 8px } .rv .flight .std ul { margin:4px 0 0 18px }
+.rvstage .rv .flight video{max-height:min(64vh,620px)}
+.rv .flight .msg,.psub .ph .msg{display:block;margin-top:4px;font-size:13.5px;color:var(--muted)}
+.rv .flight .msg:empty,.psub .ph .msg:empty{display:none}
+.rv .flight .msg.err,.psub .ph .msg.err{color:var(--bad)}
+.rv .flight .msg button,.psub .ph .msg button{margin:0 0 0 8px;padding:3px 10px;font-size:13px}
+.rvlist .rv .flight video,.rvlist .rv .flight .std,.rvlist .rv .flight .msg{display:none}
+.psub .ph.fl{width:auto;min-width:150px;padding:6px;gap:6px;cursor:default;text-align:center;font-size:12.5px}
+.psub .ph.fl.full{width:100%;display:block}
+.psub:has(> .ph.fl.full){flex-wrap:wrap}   /* the player takes the row; status and notes go under it */
+.pplay{font:inherit;font-size:13px;padding:3px 12px;margin:0}
+
+/* ---- 2026-11-25: Pass waits for the flight video; decisions that do not verify ---- */
+.rv .row .gate{align-self:center}
+#apAudit{border-color:var(--bad)}
+#apAudit h2{color:var(--bad)}
+#apAudit ul{margin:6px 0 0 18px;padding:0}
+#apAudit li{margin:3px 0}
+button.linklike{background:none;border:0;padding:0;margin:0;color:var(--accent);text-decoration:underline;font:inherit;cursor:pointer}

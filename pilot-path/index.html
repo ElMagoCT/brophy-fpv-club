@@ -125,7 +125,7 @@ section{margin-top:30px}
 .badge li .tick.on{border-color:var(--green);background:rgba(31,82,48,.12)}
 .badge li.step{cursor:pointer}
 .badge li.step:hover .tick{border-color:var(--green)}
-.badge li .soon{font-family:var(--font-mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper-2);border:1px dashed var(--line-hard);border-radius:5px;padding:1px 6px;margin-left:6px}
+.badge li .soon{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper-2);border:1px dashed var(--line-hard);border-radius:5px;padding:1px 6px;margin-left:6px}
 .badge .std{background-color:var(--glass);border:1px solid var(--line);border-radius:7px;padding:8px 10px;margin-top:6px}
 .badge .std .rule1{display:block;margin-top:5px;font-weight:600;color:var(--rust)}
 .badge .std b{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--rust);display:block;margin-bottom:2px}
@@ -184,14 +184,37 @@ section{margin-top:30px}
 .badge li.req .rt small{display:block;color:var(--ink-soft);font-size:12.5px;line-height:1.25}
 .badge li.req.on .rt{color:var(--ink-soft)}
 .badge .rls{display:flex;gap:10px;flex:none;margin-left:8px}
-.badge a.rl,.badge span.rl{font-family:var(--font-mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap}
+.badge a.rl,.badge span.rl{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap}
 .badge a.rl:hover{text-decoration:underline}
 .badge span.rl.k{color:var(--ink-soft)}
 .badge .rule1{margin-top:6px;font-size:13.5px;font-weight:600;color:var(--rust)}
 .badge li.les{cursor:pointer;border-radius:5px;padding:1px 3px;margin:0 -3px}
 .badge li.les:hover{background:var(--paper-2)}
-.badge li.les .go{margin-left:auto;font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
+.badge li.les .go{margin-left:auto;font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
 .badge li.les.on .go{color:var(--ink-soft)}
+/* ---------- 2026-11-25: video, quiz, then Resources (closed) ---------- */
+.badge .qrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px}
+.badge .qrow .qmeta{font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.badge .qrow .qmeta b{color:var(--green);font-weight:400}
+.badge details.resg{margin-top:10px;border:1px dashed var(--line-hard);border-radius:7px;padding:0 10px;font-size:14px}
+.badge details.resg>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 0;font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
+.badge details.resg>summary::-webkit-details-marker{display:none}
+.badge details.resg>summary::before{content:'\25B8';display:inline-block;transition:transform .15s}
+.badge details.resg[open]>summary::before{transform:rotate(90deg)}
+.badge details.resg>summary:hover{color:var(--ink)}
+.badge details.resg>summary .rn{margin-left:auto;letter-spacing:.08em}
+.badge details.resg[open]{padding-bottom:9px}
+.badge details.resg>ul:first-of-type{margin-top:0}
+.badge .rlinks{display:block;margin:8px 0 0;padding-left:16px;list-style:disc}
+.badge .rlinks li{display:list-item}
+.badge .rlinks a{color:var(--sky)}
+.badge .rsteps{margin-top:8px}
+.badge .rsteps b{display:block;font-weight:600}
+.badge .rsteps ol{margin:4px 0 0;padding-left:20px}
+.badge .rsteps li{display:list-item}
+.badge .std b + span{display:block}
+.howvid{max-width:600px;margin:0 0 14px}
+.howvid[hidden]{display:none}
 #lp{position:fixed;inset:0;z-index:60;background:var(--paper);display:none;flex-direction:column}
 #lp.open{display:flex}
 #lp .bar{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1.5px solid var(--line-hard);background:var(--glass)}
@@ -256,12 +279,14 @@ footer a{color:var(--ink)}
   </header>
 
   <details class="howbox">
-    <summary class="eyebrow"><h2>How it works</h2><span class="rule"></span><span class="hint">quiz, bench and witnessed badges &middot; checkpoints</span></summary>
+    <summary class="eyebrow"><h2>How it works</h2><span class="rule"></span><span class="hint">video + quiz &middot; bench &middot; witnessed &middot; checkpoints</span></summary>
+    <!-- 2026-11-25: the website how-to video (GS_VIDEOS['site-howto']); stays hidden until it has a Drive file -->
+    <div class="howvid" id="howVid" hidden></div>
     <div class="how">
-      <div class="card h"><div class="k">Quiz badges</div><div class="v">Short lessons, then a 10-question quiz - all opened right here from the badge card, with <b>Proceed to next</b> when each one ends. <b>80 % passes.</b> Retake as much as you want, your best score counts, and the badge is awarded automatically.</div></div>
-      <div class="card h"><div class="k">Bench badges</div><div class="v">Step-by-step instructions, here or on the kiosk. Tick the boxes as you go, then <b>submit a photo</b> of your work right from the card and a mentor checks it.</div></div>
-      <div class="card h"><div class="k">Witnessed badges</div><div class="v">Each card lists its <b>requirements</b> as boxes, with a lesson and a video where there is one. Practice until you can tick them all, then a mentor who holds the badge watches you. <b>Event Ops</b> starts with a short quiz.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is on purpose just the drone things: five quick parts you can do in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it. Once they're all done it gets a <b>big green &#10003;</b> and you can try it with a mentor watching. Pass it and <b>you're on that tier.</b> Passing a checkpoint <b>isn't permission to fly</b> by itself: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr before every campus flight, 24 h ahead. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total. <b>Mentor</b> is for Event Pilots (Tier 3), at most 5 at a time.</div></div>
+      <div class="card h"><div class="k">Video + quiz</div><div class="v">Most badges start with a short club video and a quiz. <b>80 % passes</b>, retakes are free and your best score counts. A quiz badge is yours as soon as you pass. Older lessons and how-to videos are under <b>Resources</b>.</div></div>
+      <div class="card h"><div class="k">Bench badges</div><div class="v">Building, Soldering, Betaflight and Tuning are hands-on. Tick the steps as you go, then <b>submit a photo</b> of your work from the card and a mentor checks it.</div></div>
+      <div class="card h"><div class="k">Witnessed badges</div><div class="v">Video and quiz first (bonus badges skip them), then a mentor who holds the badge watches you do it. <b>Sim Flight</b> is recorded instead: one minute in Liftoff on the kiosk, and a mentor passes the clip.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is on purpose just the drone things: four quick parts you can do in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it. Once they're all done it gets a <b>big green &#10003;</b> and you can try it with a mentor watching. Pass it and <b>you're on that tier.</b> Passing a checkpoint <b>isn't permission to fly</b> by itself: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr before every campus flight, 24 h ahead. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total. <b>Mentor</b> is for Event Pilots (Tier 3), at most 5 at a time.</div></div>
     </div>
   </details>
 
@@ -271,14 +296,14 @@ footer a{color:var(--ink)}
   </section>
 
   <footer>
-    <span>Sim hours and earned badges come from the club kiosk. Lessons and ticks you do here are saved for the pilot you picked and synced to the club (they only ever go up, and the kiosk has the final say). Mentors approve badges in the <a href="../admin/#approvals" rel="nofollow">console</a>.</span>
+    <span>Sim hours and earned badges come from the club kiosk. Quizzes, lessons and ticks you do here are saved for the pilot you picked and synced to the club (they only ever go up, and the kiosk has the final say). Mentors approve badges in the <a href="../admin/#approvals" rel="nofollow">console</a>.</span>
     <span>mtucker27@ for questions</span>
   </footer>
 </div>
 
 <div id="lp" role="dialog" aria-modal="true" aria-labelledby="lpTitle">
   <div class="bar"><span class="t" id="lpTitle">Lesson</span><button class="btn" type="button" id="lpClose">&larr; Back to badges</button></div>
-  <iframe id="lpFrame" title="Lesson"></iframe>
+  <iframe id="lpFrame" title="Lesson" allow="autoplay; fullscreen" allowfullscreen></iframe>
   <div id="lpDone"><div class="box">
     <div class="big" id="lpDoneBig">Done</div>
     <div class="lpsub" id="lpDoneSub"></div>
@@ -306,6 +331,7 @@ footer a{color:var(--ink)}
 
 <script src="../confetti.js"></script>
 <script src="../flightschool/badges.js"></script>
+<script src="../groundschool/gs-videos.js"></script>
 <script>
 /* Three sources, merged per badge:
      1. the kiosk's published snapshot (../data.json): earned badges + sim hours
@@ -448,14 +474,12 @@ function rawStatus(b) {
     return out;
   }
   if (b.type === 'knowledge') {
-    var ids = (b.lessons || []).map(function (l) { return l.id; }), done = 0;
-    ids.forEach(function (id) { var r = gp && gp.groundSchool && gp.groundSchool.lessons[id]; if (r && r.status === 'complete') done++; });
-    var q = gp && gp.groundSchool && b.quiz && gp.groundSchool.lessons[b.quiz];
-    var best = Math.max(q ? (q.score || 0) : 0, (SERVER && SERVER.quizzes && SERVER.quizzes[b.id]) ? (SERVER.quizzes[b.id].best || 0) : 0);
+    /* 2026-11-25: video + quiz. The lessons are resources now, so only the
+       quiz moves the meter; passing it is still what earns the badge. */
+    var best = quizBest(b, gp);
     if (best >= FS.PASS) { out.earned = true; out.source = 'web'; out.pct = 100; out.detail = 'quiz ' + best; return out; }
-    var total = ids.length + 1;      // + the quiz
-    out.pct = Math.round((done + (best > 0 ? 0.5 : 0)) / total * 100);
-    out.detail = done + ' of ' + total + ' parts' + (best > 0 ? ' · best quiz ' + best : '');
+    out.pct = best > 0 ? 50 : 0;
+    out.detail = best > 0 ? 'best quiz ' + best + ' · ' + FS.PASS + ' to pass' : (hasVid(b) ? 'watch the video, then the quiz' : 'take the quiz');
     return out;
   }
   if (b.type === 'bench') {
@@ -470,38 +494,53 @@ function rawStatus(b) {
     b.reqs.forEach(function (r, i) { if (reqDone(b, r, i, gp, pr, kh)) dn++; });
     out.pct = Math.round(dn / b.reqs.length * 90);
     if (FS.both(b)) out.quizPassed = quizBest(b, gp) >= FS.PASS;
-    out.detail = dn + ' of ' + b.reqs.length + ' requirements' + (FS.both(b) ? (out.quizPassed ? ' · quiz passed' : ' · quiz first') : '') + ' · then a mentor signs it off';
+    out.detail = dn + ' of ' + b.reqs.length + ' requirements' + (FS.both(b) ? (out.quizPassed ? ' · quiz passed' : ' · quiz first') : '') +
+      (b.record ? ' · then record it on the kiosk' : ' · then a mentor signs it off');
     return out;
   }
   if (b.type === 'witnessed') { out.detail = 'waiting for a mentor'; return out; }
   return out;
 }
 /* a requirement box is done when: its hours are logged, its lessons are
-   complete (a quiz lesson: passed), or - with neither - the pilot ticked it */
+   complete (a quiz lesson: passed), or - with neither - the pilot ticked it.
+   2026-11-25: a tick is stored under the box's key (FS.tickKey: its k, else
+   its index), so boxes added above it don't move old ticks. */
 function reqDone(b, r, i, gp, pr, kh) {
   if (r.hours) return kh >= r.hours;
   if (r.lessons && r.lessons.length) return r.lessons.every(function (id) { return lesDoneFor(b, id, gp); });
-  return !!(pr && pr.steps && pr.steps[i]);
+  return !!(pr && pr.steps && pr.steps[FS.tickKey(r, i)]);
 }
+/* whether the badge's club video is on Drive yet (gs-videos.js) */
+function hasVid(b) { return !!(window.GS_VIDEOS && GS_VIDEOS.ready(b.id)); }
+function watchQuiz(b) { return hasVid(b) ? 'watch the video and pass the quiz' : 'pass the quiz'; }
 function lesDoneFor(b, id, gp) {
   if (id === b.quiz) return quizBest(b, gp) >= FS.PASS;
   var r = gp && gp.groundSchool && gp.groundSchool.lessons[id];
   return !!(r && r.status === 'complete');
 }
+/* a video reference: YouTube ({yt}) or, since 2026-11-25, a Google Drive file ({drive}) */
+function vidUrl(v) {
+  return v.drive ? 'https://drive.google.com/file/d/' + encodeURIComponent(v.drive) + '/view' : 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.yt);
+}
+/* a page a bench step needs (2026-11-25: { t, v, link }, e.g. FAA TRUST's test) */
+function stepLink(l) {
+  return l && l.u ? '<a class="rl" href="' + esc(l.u) + '" target="_blank" rel="noopener" title="' + esc(l.t || '') + '">' + esc(l.l || 'link') + ' &#8599;</a>' : '';
+}
 function vidLink(v) {
-  return v ? '<a class="rl" href="https://www.youtube.com/watch?v=' + esc(v.yt) + '" target="_blank" rel="noopener" title="' + esc(v.t + ' · ' + v.by) + '">&#9654; video</a>' : '';
+  return v ? '<a class="rl" href="' + esc(vidUrl(v)) + '" target="_blank" rel="noopener" title="' + esc(v.t + (v.by ? ' · ' + v.by : '')) + '">&#9654; video</a>' : '';
 }
 function reqRow(b, r, i, gp, pr, kh) {
   var auto = !!(r.hours || (r.lessons && r.lessons.length)), done = reqDone(b, r, i, gp, pr, kh), links = '';
-  if (r.lessons && r.lessons.length) {
+  /* the video + quiz box ticks itself; the card's quiz button is right above it, so no link here */
+  if (r.lessons && r.lessons.length && !r.watch) {
     var nx = r.lessons.filter(function (id) { return !lesDoneFor(b, id, gp); })[0] || r.lessons[0];
     links += '<a href="#" class="rl" data-lesson="' + esc(nx) + '">' + (r.lessons.length > 1 ? r.lessons.length + ' lessons' : (nx === b.quiz ? 'quiz' : 'lesson')) + ' &rsaquo;</a>';
   }
   if (r.hours) links += '<span class="rl k">' + kh.toFixed(1) + ' / ' + r.hours + ' h</span>';
   links += vidLink(r.v);
-  return '<li class="req' + (auto ? '' : ' step') + (done ? ' on' : '') + '"' + (auto ? '' : ' data-step="' + i + '"') + '>' +
+  return '<li class="req' + (auto ? '' : ' step') + (done ? ' on' : '') + '"' + (auto ? '' : ' data-step="' + FS.tickKey(r, i) + '"') + '>' +
     '<span class="tick' + (done ? ' on' : '') + '">' + (done ? '✓' : '') + '</span>' +
-    '<span class="rt">' + esc(r.t) + (r.d ? '<small>' + esc(r.d) + '</small>' : '') + '</span><span class="rls">' + links + '</span></li>';
+    '<span class="rt">' + esc(FS.reqText(b, r)) + (r.d ? '<small>' + esc(r.d) + '</small>' : '') + '</span><span class="rls">' + links + '</span></li>';
 }
 function quizBest(b, gp) {
   var q = gp && gp.groundSchool && b.quiz && gp.groundSchool.lessons[b.quiz];
@@ -532,8 +571,9 @@ function nextUpRaw() {
     var bs = prereqs(i), cp = checkpointOf(i), open = bs.filter(function (b) { return !status(b).earned; });
     if (open.length) {
       var pick = open.filter(function (b) { return b.type === 'knowledge' || b.type === 'bench'; })[0] || open[0];
-      var verb = { knowledge: 'do the lessons and pass the quiz', bench: 'work through the steps at the kiosk', witnessed: 'ask a mentor to watch you', auto: 'keep flying the sim' }[pick.type];
-      if (FS.both(pick)) verb = status(pick).quizPassed ? 'quiz passed - ask a mentor to watch you' : 'do the short course and pass the quiz, then a mentor signs it off';
+      var verb = { knowledge: watchQuiz(pick), bench: 'work through the steps at the kiosk', witnessed: 'ask a mentor to watch you', auto: 'keep flying the sim' }[pick.type];
+      if (FS.both(pick)) verb = pick.record ? (status(pick).quizPassed ? 'quiz passed - record your minute on the kiosk' : watchQuiz(pick) + ', then record a minute on the kiosk')
+                                            : (status(pick).quizPassed ? 'quiz passed - ask a mentor to watch you' : watchQuiz(pick) + ', then a mentor watches you');
       if (pick.minHours && status(pick).needHours) verb = 'log ' + pick.minHours + ' h in the sim, then ask a mentor to judge it';
       return { line: '<b>Tier ' + (i + 1) + ' path · ' + (bs.length - open.length) + ' of ' + bs.length + ' badges</b>',
                badge: pick, label: 'Tier ' + (i + 1) + ' path', verb: verb };
@@ -592,13 +632,14 @@ function render() {
   var el = FS.TIERS.filter(function (t) { return t.id === 'el'; })[0];
   html += head('group', 'el', el.color, 'Bonus', el.name, el.gear, countDone(FS.BADGES.filter(function (b) { return b.tier === 'el'; })), '') +
     grid(FS.BADGES.filter(function (b) { return b.tier === 'el'; })) + '</div>';
-  $('tiers').innerHTML = html;
+  /* the page redraws every minute; a club video that is playing keeps playing */
+  if (window.GS_VIDEOS) GS_VIDEOS.render($('tiers'), html); else $('tiers').innerHTML = html;
   setTimeout(celebrate, 0);
 }
 function card(b, open) {
   var s = status(b), col = { flight: 'var(--sky)', build: 'var(--amber)', know: 'var(--green)', crew: 'var(--violet)' }[b.track];
   var type = { knowledge: 'Quiz', bench: 'Bench', witnessed: 'Witnessed', auto: 'Automatic' }[b.type];
-  if (FS.both(b)) type = 'Quiz + ' + type.toLowerCase();
+  if (FS.both(b)) type = 'Quiz + ' + (b.record ? 'recording' : type.toLowerCase());
   var st = s.earned ? '<span class="st earned">earned</span>' : (pilot && s.pct > 0 ? '<span class="st progress">' + s.pct + '%</span>' : '');
   var cp = b.checkpoint ? ' checkpoint' + (s.earned ? ' won' : (s.ready ? ' ready' : '')) : '';
   var main = '<div class="lab"><span class="type">' + type + '</span><span>' + esc(FS.TRACK[b.track]) + '</span></div>' +
@@ -636,24 +677,55 @@ function prereqPanel(b) {
     '<ul>' + li + '</ul><div class="big' + (all ? ' on' : '') + '" title="' + (all ? 'Ready to attempt' : 'Not yet') + '">✓</div>' +
     '<div class="pmsg">' + msg + '</div></div>';
 }
+/* 2026-11-25: every card leads with its club video (gs-videos.js; "coming
+   soon" until the Drive file exists) and its quiz, then what the badge asks
+   for, then Resources: the old lessons, YouTube how-tos and tips, closed. */
+function quizRow(b, gp) {
+  if (!b.quiz) return '';
+  var best = quizBest(b, gp), passed = best >= FS.PASS;
+  return '<div class="qrow"><button class="btn primary" type="button" data-lesson="' + esc(b.quiz) + '">' + (passed ? 'Retake the quiz' : 'Take the quiz') + ' &rarr;</button>' +
+    '<span class="qmeta">' + (passed ? '<b>Passed</b> · best ' + best : FS.qn(b) + ' questions · ' + FS.PASS + ' % to pass' + (best > 0 ? ' · best ' + best : '')) + '</span></div>';
+}
+var RESOPEN = {};   // Resources groups the pilot opened, kept across redraws
+function resBlock(b) {
+  var items = b.resources || [], tips = b.res || [];
+  if (!items.length && !tips.length) return '';
+  var les = items.filter(function (r) { return r.id; }), vids = items.filter(function (r) { return r.v; }), steps = items.filter(function (r) { return r.steps; });
+  var h = '<details class="resg" data-res="' + b.id + '"' + (RESOPEN[b.id] ? ' open' : '') + '><summary>Resources<span class="rn">' + (items.length + tips.length) + '</span></summary>';
+  if (les.length) h += '<ul>' + les.map(function (l) { return lesRow(l.id, lessonDone(l.id), esc(l.t) + (l.drill ? ' <span class="soon">drill</span>' : '')); }).join('') + '</ul>';
+  steps.forEach(function (r) { h += '<div class="rsteps"><b>' + esc(r.t) + '</b><ol>' + r.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol></div>'; });
+  var links = vids.map(function (r) { return '<li><a href="' + esc(vidUrl(r.v)) + '" target="_blank" rel="noopener">&#9654; ' + esc(r.v.t) + (r.v.by ? ' · ' + esc(r.v.by) : '') + ' &#8599;</a></li>'; })
+    .concat(tips.map(function (r) { return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>'; }));
+  if (links.length) h += '<ul class="rlinks">' + links.join('') + '</ul>';
+  return h + '</details>';
+}
+/* Sim Flight (record: true): a minute recorded on the kiosk, passed in the
+   console. Its submissions carry `flight` (the kiosk's recording); older
+   photo submissions still list. No upload button here. */
+function recordBlock(b, s) {
+  var mine = (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse();
+  var h = b.standard ? '<div class="std"><b>The recording</b><span>' + esc(b.standard) + '</span></div>' : '';
+  h += '<div class="subs">' + mine.map(function (x) {
+    var f = x.flight, when = new Date((f && f.recordedAt) || x.at).toLocaleDateString();
+    var head = x.status === 'pass' ? 'Passed' : (x.status === 'fail' ? 'Not passed' : 'Waiting for review');
+    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · ' + (f ? 'flight recorded ' + esc(when) + (f.simName ? ' in ' + esc(f.simName) : '') : 'photo sent ' + esc(when)) +
+      (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
+  }).join('') + '</div>';
+  h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : 'record it on the IC room kiosk (sign in, <b>Liftoff</b>, <b>Record flight</b>). A pass shows here within a minute.') + '</div>';
+  return h;
+}
 function more(b, s) {
   var gp = gsProfile(), pr = progress()[b.id] || {}, h = '<div class="why"><b>Why:</b> ' + esc(b.why) + '</div>';
   if (b.note) h += '<div class="why" style="margin-top:4px">' + esc(b.note) + '</div>';
+  if (window.GS_VIDEOS) h += GS_VIDEOS.slot(b.id);
+  h += quizRow(b, gp);
   if (b.type === 'knowledge') {
-    h += '<ul>';
-    (b.lessons || []).forEach(function (l) {
-      var r = gp && gp.groundSchool && gp.groundSchool.lessons[l.id], on = r && r.status === 'complete';
-      h += lesRow(l.id, on, esc(l.t) + (l.drill ? ' <span class="soon">drill</span>' : '') + (l.v ? ' ' + vidLink(l.v) : ''));
-    });
-    var qrec = gp && gp.groundSchool && b.quiz && gp.groundSchool.lessons[b.quiz], qbest = Math.max(qrec ? (qrec.score || 0) : 0, quizBest(b, gp));
-    h += lesRow(b.quiz, qbest >= FS.PASS, 'Quiz · 10 questions · ' + FS.PASS + ' % to pass' + (qbest > 0 ? ' · best ' + qbest : '')) + '</ul>';
-    h += startBtn(b);
-    h += '<div class="approve">Lessons tick off here as you finish them for this pilot. Pass the quiz and the badge is yours, no sign-off needed.</div>';
+    h += '<div class="approve">Pass the quiz and the badge is yours, no sign-off needed.</div>';
   } else if (b.type === 'bench') {
     h += '<ul>';
     (b.steps || []).forEach(function (t, i) {
       var on = pr.steps && pr.steps[i];
-      h += '<li class="req step" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(FS.stepText(t)) + '</span><span class="rls">' + vidLink(t && t.v) + '</span></li>';
+      h += '<li class="req step" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(FS.stepText(t)) + '</span><span class="rls">' + vidLink(t && t.v) + stepLink(t && t.link) + '</span></li>';
     });
     h += '</ul>';
     h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done — passed by a mentor.' : 'submit a photo of your work below and a mentor checks it. A pass shows here within a minute.') + '</div>';
@@ -662,17 +734,16 @@ function more(b, s) {
       var kp2 = kioskPilot(), kh2 = kp2 ? (kp2.totalMs || 0) / 3600000 : 0;
       h += '<div class="reqh">Requirements</div><ul>' + b.reqs.map(function (r, i) { return reqRow(b, r, i, gp, pr, kh2); }).join('') + '</ul>';
       if (b.rule) h += '<div class="rule1">' + esc(b.rule) + '</div>';
-      if (badgeItems(b).length) h += startBtn(b);
     }
-    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + (b.drive ? 'submit your clip\'s Google Drive link below; a mentor watches it and signs it off. A pass shows here within a minute.' : 'a mentor who holds this badge watches you, then signs it off.')) + '</div>';
-  }
-  if (b.res && b.res.length) {
-    h += '<div class="res"><b>Optional resources</b><ul>' + b.res.map(function (r) {
-      return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>';
-    }).join('') + '</ul></div>';
+    if (b.record) h += recordBlock(b, s);
+    else h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + (b.drive ? 'submit your clip\'s Google Drive link below; a mentor watches it and signs it off. A pass shows here within a minute.' : 'a mentor who holds this badge watches you, then signs it off.')) + '</div>';
   }
   if (FS.photoOk(b)) h += photoBlock(b, s);
+  /* 2026-11-25: Betaflight Intro and Field Diagnostics stopped taking photos;
+     a photo already sent for one still shows its review, read-only */
+  else if (!b.record && !(FS.driveOk && FS.driveOk(b))) h += photoSubs(b);
   if (FS.driveOk && FS.driveOk(b)) h += driveBlock(b, s);
+  h += resBlock(b);
   if (b.type === 'auto') {
     h += '<div class="std"><b>Automatic</b>' + esc(b.standard) + (s.detail ? ' · ' + esc(s.detail) : '') + '</div>';
     h += '<div class="act"><a class="btn" href="../">Lab hours &amp; leaderboard &rarr;</a></div>';
@@ -697,34 +768,51 @@ function lessonDone(id) {
 function lesRow(id, on, label) {
   return '<li class="les' + (on ? ' on' : '') + '" data-lesson="' + esc(id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + label + '</span><span class="go">' + (on ? 'review' : 'start &rsaquo;') + '</span></li>';
 }
+/* 2026-11-25: a badge's place on the path is its quiz (plus any lesson a
+   requirement box links); its other lessons are resources, opened from the
+   Resources group and still recorded. */
 function badgeItems(b) {
-  var out = (b.lessons || []).map(function (l) { return l.id; }).concat(b.quiz ? [b.quiz] : [], b.prep || []);
+  var out = b.quiz ? [b.quiz] : [];
   (b.reqs || []).forEach(function (r) { (r.lessons || []).forEach(function (id) { if (out.indexOf(id) < 0) out.push(id); }); });
   return out;
 }
-function startBtn(b) {
-  var items = badgeItems(b), next = items.filter(function (id) { return !lessonDone(id); })[0];
-  if (!items.length) return '';
-  return '<div class="act"><button class="btn primary" type="button" data-lesson="' + esc(next || items[0]) + '">' +
-    (next ? (next === items[0] && !items.some(lessonDone) ? 'Start the lessons' : 'Continue: ' + esc(lesName(next, b))) : 'Review the lessons') + ' &rarr;</button></div>';
-}
+function resIds(b) { return FS.resLessons(b).map(function (l) { return l.id; }); }
 function lesName(id, b) {
   if (b && id === b.quiz) return b.name + ' quiz';
-  var l = b && (b.lessons || []).filter(function (x) { return x.id === id; })[0];
+  var l = b && FS.resLessons(b).filter(function (x) { return x.id === id; })[0];
   return l ? l.t : lesTitle(id);
 }
-/* every lesson on the path, in page order: Building to Tier 1, its checkpoint, ... bonus */
-function pathItems() {
+/* every badge on the page, in page order: the Tier 1 path, its checkpoint, ... bonus */
+function pathBadges() {
   var order = [];
   for (var i = 0; i < 3; i++) { prereqs(i).forEach(function (b) { order.push(b); }); var cp = checkpointOf(i); if (cp) order.push(cp); }
   FS.BADGES.filter(function (b) { return b.tier === 'el'; }).forEach(function (b) { order.push(b); });
+  return order;
+}
+/* the quizzes (and box lessons) on the path, in page order */
+function pathItems() {
   var out = [], seen = {};
-  order.forEach(function (b) { badgeItems(b).forEach(function (id) { if (!seen[id]) { seen[id] = 1; out.push({ id: id, badge: b }); } }); });
+  pathBadges().forEach(function (b) { badgeItems(b).forEach(function (id) { if (!seen[id]) { seen[id] = 1; out.push({ id: id, badge: b }); } }); });
   return out;
 }
+/* which badge a lesson opens under: a quiz first, then a resource (a drill
+   two badges share opens under the first one on the page) */
+function ownerOf(id) {
+  var bs = pathBadges(), i;
+  for (i = 0; i < bs.length; i++) if (badgeItems(bs[i]).indexOf(id) >= 0) return bs[i];
+  for (i = 0; i < bs.length; i++) if (resIds(bs[i]).indexOf(id) >= 0) return bs[i];
+  return null;
+}
 function nextAfter(id) {
+  var b = ownerOf(id);
+  /* a resource: the rest of that badge's resources, then its quiz */
+  if (b && badgeItems(b).indexOf(id) < 0) {
+    var rs = resIds(b), more = rs.slice(rs.indexOf(id) + 1).filter(function (x) { return !lessonDone(x); })[0];
+    if (more) return { id: more, badge: b };
+    if (b.quiz && !lessonDone(b.quiz)) return { id: b.quiz, badge: b };
+  }
   var all = pathItems(), k = -1;
-  for (var i = 0; i < all.length; i++) if (all[i].id === id) { k = i; break; }
+  for (var i = 0; i < all.length; i++) if (all[i].id === id || (b && all[i].badge === b)) { k = i; if (all[i].id === id) break; }
   if (k >= 0) {   // finish the badge you are in first, then move along the path
     var same = all.filter(function (x) { return x.badge === all[k].badge && x.id !== id && !lessonDone(x.id); })[0];
     if (same) return same;
@@ -735,7 +823,8 @@ function nextAfter(id) {
 }
 var LP = { id: null };
 function openLesson(id) {
-  var it = pathItems().filter(function (x) { return x.id === id; })[0];
+  var ob = ownerOf(id), it = ob ? { badge: ob } : null;
+  if (window.GS_VIDEOS) GS_VIDEOS.stopAll();   // the frame covers the page: stop a video playing on a card
   LP.id = id;
   $('lpTitle').textContent = (it ? it.badge.name + ' · ' : '') + lesName(id, it && it.badge);
   $('lpDone').classList.remove('show');
@@ -750,10 +839,10 @@ function closeLP() {
 }
 function lessonEnded(id, how) {
   if (how === 'exit') { closeLP(); return; }
-  var it = pathItems().filter(function (x) { return x.id === id; })[0], b = it && it.badge, nx = nextAfter(id);
+  var b = ownerOf(id), nx = nextAfter(id);
   var isQuiz = b && id === b.quiz, passed = how === 'complete';
   $('lpDoneBig').textContent = passed ? (isQuiz ? 'Quiz passed ✓' : 'Done ✓') : 'Not passed yet';
-  $('lpDoneSub').textContent = passed ? lesName(id, b) + (isQuiz && FS.both(b) ? ' - now a mentor signs the rest of the badge off.' : '')
+  $('lpDoneSub').textContent = passed ? lesName(id, b) + (isQuiz && FS.both(b) ? (b.record ? ' - now record your minute on the kiosk.' : ' - now a mentor signs the rest of the badge off.') : '')
                                       : 'Your best score is kept. The questions reshuffle every try.';
   $('lpNext').innerHTML = nx ? 'Next: <b>' + esc(lesName(nx.id, nx.badge)) + '</b>' + (nx.badge !== b ? ' · ' + esc(nx.badge.name) : '') : 'That was the last open lesson on the path.';
   var btns = '';
@@ -802,11 +891,19 @@ $('tiers').addEventListener('click', function (e) {
     if (p[id].steps[i]) pushStep(id, i);     // ticks go up; unticks stay on this device only
     render(); return;
   }
-  if (e.target.closest('a,button,input,.drv')) return;
+  /* Resources open and close on their own and stay that way across redraws */
+  var sum = e.target.closest('details.resg > summary');
+  if (sum) { RESOPEN[sum.parentNode.getAttribute('data-res')] = !sum.parentNode.open; return; }
+  if (e.target.closest('a,button,input,.drv,details,.gsv')) return;
   // open or close the whole visual row, not just the card that was tapped
   var want = !card.classList.contains('open'), top = card.offsetTop, sib = card.parentNode.children;
-  for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) sib[k].classList.toggle('open', want);
+  for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) {
+    sib[k].classList.toggle('open', want);
+    if (!want && window.GS_VIDEOS) GS_VIDEOS.stopIn(sib[k]);   // a closed card doesn't keep playing sound
+  }
 });
+/* 2026-11-25: the website how-to, once it has a Drive file */
+if (window.GS_VIDEOS && GS_VIDEOS.ready('site-howto')) { $('howVid').hidden = false; GS_VIDEOS.player($('howVid'), 'site-howto'); }
 /* The profile lives in the site bar now (site.js, top right on every page);
    the Flying-as box's button opens it, and a pick there re-renders this page. */
 $('pChange').onclick = function () { SiteNav.open(); };
@@ -835,14 +932,18 @@ function pullSubs() {
     SUBS = (j && j.items) || []; render();
   }).catch(function () {});
 }
-function photoBlock(b, s) {
-  var mine = (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse();
-  var h = '<div class="subs">' + mine.map(function (x) {
+function mySubs(b) { return (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse(); }
+function photoSubs(b) {
+  var mine = mySubs(b);
+  return mine.length ? '<div class="subs">' + mine.map(function (x) {
     var when = new Date(x.at).toLocaleDateString();
     var head = x.status === 'pass' ? 'Passed' : (x.status === 'fail' ? 'Not passed' : 'Waiting for review');
     return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · photo sent ' + esc(when) +
       (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
-  }).join('') + '</div>';
+  }).join('') + '</div>' : '';
+}
+function photoBlock(b, s) {
+  var mine = mySubs(b), h = photoSubs(b);
   if (!s.earned) h += '<div class="act"><button class="btn primary" type="button" data-photo="' + b.id + '">' +
     (mine.length && mine[0].status === 'fail' ? 'Try again: submit a new photo' : 'Submit a photo') + '</button></div>';
   return h;

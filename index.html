@@ -173,6 +173,8 @@ header.title{
 
 /* ---------- section scaffolding ---------- */
 section{margin-top:30px}
+.howvid{max-width:600px;margin:14px 0 0}
+.howvid[hidden],header.title .side .btn[hidden]{display:none}
 .eyebrow{
   display:flex;align-items:baseline;gap:12px;
   margin:0 2px 12px;
@@ -481,8 +483,12 @@ header.title .side .btn{text-align:center;justify-content:center}
       </div>
       <a class="btn primary" href="pilot-path/">Pilot Path: badges &amp; lessons &rarr;</a>
       <a class="btn" href="clearance/">Flight Clearance: fly at Brophy &rarr;</a>
+      <!-- 2026-11-25: the website how-to video (GS_VIDEOS['site-howto'] in groundschool/gs-videos.js);
+           the button stays hidden until it has a Drive file and opens the video under the header -->
+      <button class="btn" id="howtoBtn" type="button" aria-expanded="false" aria-controls="howtoVid" hidden>Using this site &#9654;&#xFE0E;</button>
     </div>
   </header>
+  <div class="howvid" id="howtoVid" hidden></div>
 
   <section aria-label="Club totals">
     <div class="stats" id="stats"></div>
@@ -552,6 +558,26 @@ header.title .side .btn{text-align:center;justify-content:center}
 </div>
 
 <script src="flightschool/badges.js"></script>
+<script src="groundschool/gs-videos.js"></script>
+<script>
+/* 2026-11-25: the website how-to video, once it has a Drive file: a button in
+   the header opens it right under the header (and starts it); again closes it */
+(function () {
+  var btn = document.getElementById('howtoBtn'), box = document.getElementById('howtoVid');
+  if (!btn || !box || !window.GS_VIDEOS || !GS_VIDEOS.ready('site-howto')) return;
+  btn.hidden = false;
+  btn.onclick = function () {
+    var opening = box.hidden;
+    if (opening) {
+      box.hidden = false;
+      GS_VIDEOS.player(box, 'site-howto');
+      var p = box.querySelector('.gsv-poster'); if (p) p.click();
+    } else { GS_VIDEOS.stopIn(box); box.hidden = true; }
+    btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    btn.innerHTML = 'Using this site ' + (opening ? '&#10005;' : '&#9654;&#xFE0E;');
+  };
+})();
+</script>
 <script>
 /* ============================================================================
    One fetch of data.json, then everything is drawn from that object.
@@ -786,6 +812,9 @@ function renderStats(){
 var BONUS_BADGES = { editing: 1, tuning: 1, 'fleet-steward': 1, mentor: 1,
   /* 2026-10-20: the Flight Clearance parts (tier 'cl') are not counted either */
   'faa-trust': 1, 'safe-flight': 1, 'pilot-agreement': 1, 'drone-portfolio': 1 };
+/* 2026-11-25: read from the catalogue when it loaded, so a new bonus or clearance
+   badge can't be counted by mistake; the list above is the fallback */
+if (window.FS && FS.BADGES && FS.counted) { BONUS_BADGES = {}; FS.BADGES.forEach(function (b) { if (!FS.counted(b)) BONUS_BADGES[b.id] = 1; }); }
 
 var BOARD_SHOW = 10;
 
@@ -890,7 +919,7 @@ var LADDER_SHOW = 8;
 /* what each tier is - these were their own row of cards above the boards
    until 2026-10-10, now folded into the ladder */
 var TIER_DESC = [
-  'The five sims in the IC. Everyone starts here with just the drone things: the Battery Care quiz, rebuilding and setting up a Meteor, flying it line of sight, and Sim Flight (about 5 sim hours of practice is typical). About one community period, then the Meteor 75 Pro Certification, which is your first real flight.',
+  'The five sims in the IC. Everyone starts here with just the drone things: a video and a quiz each for Battery Care and Betaflight Intro, rebuilding a Meteor, flying it line of sight, and one minute of Sim Flight recorded on the kiosk (about 5 sim hours of practice is typical). About one community period, then the Meteor 75 Pro Certification, which is your first real flight.',
   'Certified on the Meteor 75 Pro. From here it\'s soldering, Betaflight, diagnosing faults and freestyle.',
   'Pavo 20 Pro and larger drones at Brophy: spotting, Event Ops, filming and racing.',
   'Earned by flying at a school event or a race, with a spotter. The top of the path.'

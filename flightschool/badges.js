@@ -56,15 +56,55 @@
    bench and flight checks are short). The Pavo and Event Pilot requirements
    are unchanged on purpose: about an hour of homework each, plus flying.
 
-   type: 'knowledge'  lessons + quiz at 80 %, earned by the kiosk itself
+   2026-11-25 (the club's own videos): every badge is now VIDEO + QUIZ first.
+   Each badge with a club video has an entry in groundschool/gs-videos.js
+   (GS_VIDEOS[badge id]: a Google Drive file, one shared player on every page
+   and in the course app). The old lessons, drills, YouTube how-tos and
+   hands-on steps were not deleted: they moved into `resources` (shown under a
+   collapsed "Resources" group, still openable, progress still recorded).
+   Lesson ids never change; eleven new quiz lessons were added (gs-content.js).
+     - Knowledge badges (Battery Care, Safe Flight, Electrical Components,
+       Radio Protocol, Spotter, FAA Event Exam): watch the video, pass the
+       quiz, and the badge is yours, as before.
+     - Betaflight Intro and Field Diagnostics: bench -> knowledge, quizzes
+       gs-bfi-quiz and gs-fdx-quiz; their old steps are resources. The Meteor
+       still gets its hands-on setup with a mentor before the Meteor checkride
+       (the tiny-whoop requirements say so).
+     - Flight and witnessed badges: the first requirement box is "Watch the
+       video and pass the quiz" (each has its own quiz now; Event Ops keeps
+       gs-evt-quiz). The checkride or mentor sign-off is unchanged and still
+       what earns the badge; the quiz never earns a witnessed badge alone.
+     - Sim Flight (record: true): proven by a RECORDED minute on the kiosk
+       (pick Liftoff, tap "Record flight", fly, it uploads, a mentor passes it
+       in the console) instead of a photo or a live checkride. 5 sim hours
+       stay a suggestion.
+     - FAA TRUST gets a video and stays a bench badge (certificate photo).
+       Soldering, Building and Betaflight stay hands-on, unchanged.
+     - Requirement-box ticks are stored by key, not by position: a box the
+       pilot ticks carries `k`, the index it had before this change, so the
+       new WATCH box at the top doesn't shift old ticks onto other boxes
+       (fs.progress.v1 and /api/progress `steps` keep their old keys; nothing
+       is migrated). New boxes take k 10 and up. FS.tickKey(r, i) reads it.
+   qn: questions per quiz attempt when it is not 10 (FAA Event Exam: 20);
+   must match the quiz lesson's qn in gs-content.js.
+
+   type: 'knowledge'  video + quiz at 80 %, earned by the kiosk itself
          'bench'      step checklist, a photo submitted here, a mentor reviews it
          'witnessed'  a mentor watches you do it and signs it off
    minTier:  the tier a pilot must be ON to hold the badge (Mentor: 3 since 2026-10-26, was 2)
    minHours: sim hours before a mentor may judge it (Sim Flight: 5)
    checkpoint: closes its tier (see above)
    lessons: the badge's lessons ({id, t, drill}); quiz: the quiz lesson id
+            (2026-11-25: no badge lists lessons any more; they are resources)
+   resources: optional extras, in order (2026-11-25): { id, t, drill } a Ground
+            School lesson, { v } a YouTube video, { t, steps } hands-on steps
+            done with a mentor. RES below (tips and links) is shown with them.
+   record:  proven by a flight recorded on the kiosk (Sim Flight, 2026-11-25)
+   reqs:    a witnessed badge's boxes { t, d, lessons, v, k, watch }; k = tick key
+            (2026-11-25, see above), watch = the video + quiz box
    prep:    drill ids a witnessed badge reuses as practice
-   steps:   the checklist a bench badge walks through
+   steps:   the checklist a bench badge walks through: 'text', { t, v } or
+            { t, v, link } (2026-11-25: link = { t, u, l } shown on the step)
    standard: what the mentor is watching for */
 (function () {
   var TIERS = [
@@ -85,10 +125,21 @@
     { id: 'club-pavo',   name: 'Pavo 20 Pro',   specs: 'BetaFPV 2-inch cinewhoop · 4S · DJI O4 Pro air unit · about 125 g without battery', badge: 'pavo-flight', unlock: 'Pavo 20 Pro Flight (the Tier 2 checkpoint)' }
   ];
   var TRACK = { flight: 'Flight', build: 'Build & tech', know: 'Knowledge & safety', crew: 'Crew & leadership' };
+  /* 2026-11-25: Resources start closed, so a link a bench step can't do
+     without sits on the step itself ({ t, v, link }; l = the link's label) */
+  var TRUST_TEST = { t: 'Take the TRUST test (Pilot Institute, free, FAA-approved)', u: 'https://trust.pilotinstitute.com/', l: 'test' };
+  var DRIVE_HELP = { t: 'Google Drive: share a file with a link', u: 'https://support.google.com/drive/answer/2494822', l: 'how' };
   var PHOTO = 'Take a photo of your work with "Submit a photo" below and a mentor checks it.';
   /* 2026-10-10 (Micah): every flight checkride is judged IN PERSON, all of
      it in ONE flight, ONE attempt per day. Shown on each flight badge. */
   var ONE_GO = 'In person with a mentor, everything in one flight, one attempt per day.';
+  /* 2026-11-25: Sim Flight is recorded on the kiosk instead (record: true). */
+  var ONE_REC = 'Recorded on the kiosk: everything in one minute, one recording a day.';
+  /* 2026-11-25: the first box on every flight and witnessed badge. It ticks
+     itself when the quiz is passed; pages word it by FS.reqText (no video
+     yet: "Pass the quiz") and give it no link of its own (the card's quiz
+     button is right above it). No k: it is lesson-based, never ticked. */
+  function WATCH(quiz) { return { t: 'Watch the video and pass the quiz', lessons: [quiz], watch: true }; }
   /* 2026-10-11: requirements are boxes. A witnessed badge lists `reqs`; each
      box may link lesson(s) (ticks itself when they\'re done) and a YouTube
      video (checked live 2026-10-11). Boxes without a lesson are ticked by the
@@ -131,35 +182,46 @@
     // Just the drone things (2026-10-20): Battery Care, Building, Betaflight Intro, Line of Sight,
     // Sim Flight (practice first, 5 h suggested), then the checkpoint flight. Safe Flight is
     // part of Flight Clearance now.
-    { id: 'proficient-flight', tier: 't0', track: 'flight', type: 'witnessed', name: 'Sim Flight', est: 'one flight · about 5 h of sim practice first is typical', rule: ONE_GO,
-      do: 'Fly a short checkride in Liftoff: an orbit, a Split-S, three gaps.', why: 'Acro muscle memory where crashes are free.',
-      note: 'Suggested, not required: about 5 hours in the sims before you try it. Ask a mentor whenever you feel ready.',
-      reqs: [{ t: 'Stick basics', d: 'four channels, rate vs angle, hover, throttle', lessons: ['gs-fly-01', 'gs-fly-02', 'gs-fly-03', 'gs-fly-04'], v: VID.liftoff },
-             { t: 'A clean orbit around a gate', v: VID.orbit },
-             { t: 'A Split-S', lessons: ['gs-trk-02'], v: VID.splitS },
-             { t: 'Three gaps without a crash', v: VID.gaps }] },
+    /* 2026-11-25: recorded on the kiosk (record: true), reviewed in the console - no photo, no live checkride */
+    { id: 'proficient-flight', quiz: 'gs-fly-quiz', record: true, tier: 't0', track: 'flight', type: 'witnessed', name: 'Sim Flight', est: 'one recorded minute · about 5 h of sim practice first is typical', rule: ONE_REC,
+      do: 'Record one minute in Liftoff on the kiosk: an orbit, a Split-S, three gaps.', why: 'Acro muscle memory where crashes are free.',
+      standard: 'Rate mode, all in one flight.',
+      reqs: [WATCH('gs-fly-quiz'),
+             { t: 'A clean orbit around a gate', d: 'nose and camera on the gate the whole way', k: 1 },
+             { t: 'A Split-S', k: 2 },
+             { t: 'Three gaps without a crash', k: 3 }],
+      resources: [{ id: 'gs-fly-01', t: 'Four channels, two sticks', drill: true }, { id: 'gs-fly-02', t: 'Rate mode against angle mode', drill: true }, { id: 'gs-fly-03', t: 'Hover Trainer', drill: true }, { id: 'gs-fly-04', t: 'Throttle discipline', drill: true }, { id: 'gs-trk-02', t: 'The Split-S' },
+                  { v: VID.liftoff }, { v: VID.orbit }, { v: VID.splitS }, { v: VID.gaps }] },
     { id: 'battery-care', quiz: 'gs-bat-quiz', tier: 't0', track: 'build', type: 'knowledge', name: 'Battery Care', est: 'about 10 min',
       do: 'Charging, storage, puffed packs and disposal.', why: 'LiPos are the biggest real fire risk in the hobby.',
-      lessons: [{ id: 'gs-bat-01', t: 'LiPo basics' }, { id: 'gs-bat-02', t: 'Battery math', drill: true }, { id: 'gs-bat-03', t: 'Charging, storage and disposal', v: VID.lipo }, { id: 'gs-bat-04', t: 'When a pack goes bad' }] },
+      resources: [{ id: 'gs-bat-01', t: 'LiPo basics' }, { id: 'gs-bat-02', t: 'Battery math', drill: true }, { id: 'gs-bat-03', t: 'Charging, storage and disposal' }, { id: 'gs-bat-04', t: 'When a pack goes bad' }, { v: VID.lipo }] },
     { id: 'building', tier: 't0', track: 'build', type: 'bench', name: 'Building', est: 'about 15 min',
       do: 'Rebuild a disassembled Meteor 75 Pro.', why: 'So you can fix what you break.',
       steps: [{ t: 'Parts check: frame, FC/ESC, motors, RX, VTX, camera, antenna, props, strap', v: VID.meteor }, 'Motors on - right screw length, nothing touching a winding', 'Plug in the motors', 'Assemble it and put the canopy on', 'Plug in the canopy', 'Test: motors beep, camera turns on', { t: 'Props: each matches its motor\'s spin (props in or out, as set in Betaflight), leading edge first', v: VID.motors }, PHOTO] },
-    { id: 'betaflight-intro', tier: 't0', track: 'build', type: 'bench', name: 'Betaflight Intro', est: 'about 5 min',
-      do: 'Calibrate the accelerometer and bind the receiver.', why: 'The two things every Meteor needs before its first flight.',
-      steps: ['Props OFF, battery OUT, USB only', 'Connect to Betaflight (the kiosk reads the board)', 'Setup tab: calibrate the accelerometer, the drone flat and still', 'Bind the receiver (plug/unplug method)', PHOTO],
-      note: 'Done on the club Meteor 75 Pro at the kiosk, right after Building. The rest of Betaflight is its own badge on the Tier 2 path.' },
-    { id: 'line-of-sight', tier: 't0', track: 'flight', type: 'witnessed', name: 'Line of Sight', est: 'about 15 min', rule: ONE_GO,
+    /* 2026-11-25: bench -> knowledge (video + gs-bfi-quiz). The old steps are a resource, and
+       the club Meteor's hands-on setup is still done with a mentor before the Meteor checkride. */
+    { id: 'betaflight-intro', quiz: 'gs-bfi-quiz', tier: 't0', track: 'build', type: 'knowledge', name: 'Betaflight Intro', est: 'about 10 min',
+      do: 'What Betaflight does, calibrating the accelerometer, binding the receiver, and why a drone won\'t arm.', why: 'The things every Meteor needs before its first flight.',
+      note: 'A mentor helps you set up the club Meteor (calibrate, bind) before your Meteor checkride. The rest of Betaflight is its own badge on the Tier 2 path.',
+      resources: [{ t: 'Setting up the club Meteor, with a mentor before your Meteor checkride', steps: ['Props OFF, battery OUT, USB only', 'Connect to Betaflight (the kiosk reads the board)', 'Setup tab: calibrate the accelerometer, the drone flat and still', 'Bind the receiver (plug/unplug method)'] }] },
+    { id: 'line-of-sight', quiz: 'gs-los-quiz', tier: 't0', track: 'flight', type: 'witnessed', name: 'Line of Sight', est: 'about 15 min', rule: ONE_GO,
       do: 'No goggles: fly a whoop in angle mode.', why: 'If video cuts out you can still land.',
-      reqs: [{ t: 'Takeoff to head height', lessons: ['gs-los-01'], v: VID.los },
-             { t: 'A 20-second steady hover', lessons: ['gs-fly-03'], v: VID.throttle },
-             { t: 'A lap around a tree', lessons: ['gs-los-02'] },
-             { t: 'A smooth landing', lessons: ['gs-los-03'] }] },
-    { id: 'tiny-whoop', tier: 't0', track: 'flight', type: 'witnessed', name: 'Meteor 75 Pro Certification', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
+      reqs: [WATCH('gs-los-quiz'),
+             { t: 'Takeoff to head height', k: 0 },
+             { t: 'A 20-second steady hover', k: 1 },
+             { t: 'A lap around a tree', k: 2 },
+             { t: 'A smooth landing', k: 3 }],
+      resources: [{ id: 'gs-los-01', t: 'Which way is left?', drill: true }, { id: 'gs-fly-03', t: 'Hover Trainer', drill: true }, { id: 'gs-los-02', t: 'Gate Run', drill: true }, { id: 'gs-los-03', t: 'Lost orientation recovery', drill: true },
+                  { v: VID.los }, { v: VID.throttle }] },
+    { id: 'tiny-whoop', quiz: 'gs-met-quiz', tier: 't0', track: 'flight', type: 'witnessed', name: 'Meteor 75 Pro Certification', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
       do: 'Checkpoint into Tier 1: the Meteor 75 Pro in goggles.', why: 'Your first real flight. Pass it and you\'re Tier 1, and the club Meteor goes into your Drone Portfolio.',
-      reqs: [{ t: 'A controlled takeoff', v: VID.throttle },
-             { t: 'A figure-eight through two gates', v: VID.turns },
-             { t: 'An orbit', v: VID.orbit },
-             { t: 'A landing on the pad, no wall contact' }] },
+      reqs: [WATCH('gs-met-quiz'),
+             { t: 'The Meteor set up with a mentor', d: 'accelerometer calibrated and receiver bound, before you fly (the Betaflight Intro steps)', k: 10 },
+             { t: 'A controlled takeoff', k: 0 },
+             { t: 'A figure-eight through two gates', k: 1 },
+             { t: 'An orbit', k: 2 },
+             { t: 'A landing on the pad, no wall contact', k: 3 }],
+      resources: [{ v: VID.throttle }, { v: VID.turns }, { v: VID.orbit }] },
 
     // ---------------- Tier 1 · Tiny Whoop -> checkpoint Pavo 20 Pro Flight
     { id: 'soldering', tier: 't1', track: 'build', type: 'bench', name: 'Soldering', est: 'about 30 min',
@@ -171,79 +233,91 @@
       note: 'On the club Meteor 75 Pro at the kiosk. Betaflight Intro (Tier 1 path) covered the accelerometer and binding.' },
     { id: 'electrical-components', quiz: 'gs-elc-quiz', tier: 't1', track: 'know', type: 'knowledge', name: 'Electrical Components', est: 'about 10 min',
       do: 'Choose motors, ESCs, batteries and props that match.', why: 'Why small and big quads need different parts.',
-      lessons: [{ id: 'gs-elc-01', t: 'The six parts' }, { id: 'gs-elc-02', t: 'Motors, props and thrust', drill: true }, { id: 'gs-elc-03', t: 'Matching motor, ESC, prop and battery' }, { id: 'gs-elc-04', t: 'Why a 3-inch and a 5-inch differ' }] },
+      resources: [{ id: 'gs-elc-01', t: 'The six parts' }, { id: 'gs-elc-02', t: 'Motors, props and thrust', drill: true }, { id: 'gs-elc-03', t: 'Matching motor, ESC, prop and battery' }, { id: 'gs-elc-04', t: 'Why a 3-inch and a 5-inch differ' }] },
     { id: 'radio-protocol', quiz: 'gs-rad-quiz', tier: 't1', track: 'know', type: 'knowledge', name: 'Radio Protocol', est: 'about 15 min',
       do: 'Control links, video systems, antennas and interference.', why: 'Fewer dropouts, and footage the editor can use.',
-      lessons: [{ id: 'gs-rad-01', t: 'Analog against digital' }, { id: 'gs-rad-02', t: 'Bands, channels and racing', drill: true }, { id: 'gs-rad-03', t: 'Antennas and diversity' }, { id: 'gs-rad-04', t: 'Control links: ELRS, Crossfire, binding, failsafe' }, { id: 'gs-rad-05', t: 'Interference at an event' }, { id: 'gs-rad-06', t: 'Digital video: goggles, recording and D-log' }] },
-    { id: 'field-repair', tier: 't1', track: 'build', type: 'bench', name: 'Field Diagnostics', est: 'about 20 min',
-      do: 'Find and fix three faults a mentor plants.', why: 'Keeps a shoot going instead of ending it.',
-      steps: ['A mentor breaks three things without telling you what', 'Radio: find and fix it', { t: 'Betaflight: find and fix it', v: VID.arm }, 'Mechanical or electrical: find and fix it', 'Explain each cause to the mentor', PHOTO] },
-    { id: 'freestyle-flight', tier: 't1', track: 'flight', type: 'witnessed', name: 'Freestyle Flight', est: 'one flight · lots of sim practice first', rule: ONE_GO,
+      resources: [{ id: 'gs-rad-01', t: 'Analog against digital' }, { id: 'gs-rad-02', t: 'Bands, channels and racing', drill: true }, { id: 'gs-rad-03', t: 'Antennas and diversity' }, { id: 'gs-rad-04', t: 'Control links: ELRS, Crossfire, binding, failsafe' }, { id: 'gs-rad-05', t: 'Interference at an event' }, { id: 'gs-rad-06', t: 'Digital video: goggles, recording and D-log' }] },
+    /* 2026-11-25: bench -> knowledge (video + gs-fdx-quiz); the planted-faults session is a resource */
+    { id: 'field-repair', quiz: 'gs-fdx-quiz', tier: 't1', track: 'build', type: 'knowledge', name: 'Field Diagnostics', est: 'about 15 min',
+      do: 'Tracking down radio, Betaflight and hardware faults, simple things first.', why: 'Keeps a shoot going instead of ending it.',
+      resources: [{ t: 'Practice with a mentor: three planted faults', steps: ['A mentor breaks three things without telling you what', 'Radio: find and fix it', 'Betaflight: find and fix it', 'Mechanical or electrical: find and fix it', 'Explain each cause to the mentor'] },
+                  { v: VID.arm }] },
+    { id: 'freestyle-flight', quiz: 'gs-frs-quiz', tier: 't1', track: 'flight', type: 'witnessed', name: 'Freestyle Flight', est: 'one flight · lots of sim practice first', rule: ONE_GO,
       do: 'A freestyle checkride in the simulator.', why: 'Real control before you touch the expensive drones.',
-      reqs: [{ t: 'Smooth, flowing lines', v: VID.smooth },
-             { t: 'Three tiny gaps', v: VID.gaps },
-             { t: 'A powerloop', lessons: ['gs-trk-03'], v: VID.loop },
-             { t: 'A trippy spin', v: VID.trippy },
-             { t: 'A Matty flip', lessons: ['gs-trk-04'], v: VID.matty },
-             { t: 'A wildcard', d: 'a path or move the mentor picks at random', lessons: ['gs-trk-01'], v: VID.tricks }] },
-    { id: 'pavo-flight', tier: 't1', track: 'flight', type: 'witnessed', name: 'Pavo 20 Pro Flight', checkpoint: true, est: 'one flight · about 10 min', rule: ONE_GO,
+      reqs: [WATCH('gs-frs-quiz'),
+             { t: 'Smooth, flowing lines', k: 0 },
+             { t: 'Three tiny gaps', k: 1 },
+             { t: 'A powerloop', k: 2 },
+             { t: 'A trippy spin', k: 3 },
+             { t: 'A Matty flip', k: 4 },
+             { t: 'A wildcard', d: 'a path or move the mentor picks at random', k: 5 }],
+      resources: [{ id: 'gs-trk-01', t: 'Your first flip and roll' }, { id: 'gs-trk-03', t: 'The Power Loop' }, { id: 'gs-trk-04', t: 'The Matty Flip' },
+                  { v: VID.smooth }, { v: VID.gaps }, { v: VID.loop }, { v: VID.trippy }, { v: VID.matty }, { v: VID.tricks }] },
+    { id: 'pavo-flight', quiz: 'gs-pav-quiz', tier: 't1', track: 'flight', type: 'witnessed', name: 'Pavo 20 Pro Flight', checkpoint: true, est: 'one flight · about 10 min', rule: ONE_GO,
       do: 'Checkpoint into Tier 2: fly the Pavo 20 Pro.', why: 'Your first full-size airframe. Pass it and you\'re Tier 2.',
-      reqs: [{ t: 'Takeoff with a spotter', v: VID.pavo },
-             { t: 'A figure-eight', v: VID.turns },
-             { t: 'An orbit', v: VID.orbit },
-             { t: 'Through a gate' },
-             { t: 'A clean landing on the pad - no contact' }] },
+      reqs: [WATCH('gs-pav-quiz'),
+             { t: 'Takeoff with a spotter', k: 0 },
+             { t: 'A figure-eight', k: 1 },
+             { t: 'An orbit', k: 2 },
+             { t: 'Through a gate', k: 3 },
+             { t: 'A clean landing on the pad - no contact', k: 4 }],
+      resources: [{ v: VID.pavo }, { v: VID.turns }, { v: VID.orbit }] },
 
     // ---------------- Tier 2 · Full-size -> checkpoint Event Pilot
     { id: 'spotter', quiz: 'gs-spt-quiz', tier: 't2', track: 'crew', type: 'knowledge', name: 'Spotter', est: 'about 5 min',
-      do: 'Short course and quiz: the spotter’s job and the two calls.', why: 'FPV pilots can’t see around themselves; at an event a spotter stands beside every pilot.',
-      lessons: [{ id: 'gs-spt-01', t: 'The spotter’s job' }, { id: 'gs-spt-02', t: 'What to call' }] },
+      do: 'Video and quiz: the spotter’s job and the calls.', why: 'FPV pilots can’t see around themselves; at an event a spotter stands beside every pilot.',
+      resources: [{ id: 'gs-spt-01', t: 'The spotter’s job' }, { id: 'gs-spt-02', t: 'What to call' }] },
     { id: 'event-ops', quiz: 'gs-evt-quiz', tier: 't2', track: 'know', type: 'witnessed', name: 'Event Ops', est: 'about 40 min',
-      do: 'Course and quiz, then run a real flight-zone setup.', why: 'Flying at a game or rally, and a plan for when it goes wrong.',
-      lessons: [{ id: 'gs-asp-01', t: 'Class B, 400 ft and Sky Harbor' }, { id: 'gs-asp-02', t: 'B4UFLY, LAANC and TRUST' }, { id: 'gs-evt-01', t: 'The flight zone' }, { id: 'gs-evt-02', t: 'Briefing bystanders' }, { id: 'gs-evt-03', t: 'Pilot and spotter call-outs' }, { id: 'gs-emg-01', t: 'Failsafe: set it, test it' }, { id: 'gs-emg-02', t: 'Flyaway and lost video' }, { id: 'gs-emg-03', t: 'LiPo fire and injury' }, { id: 'gs-emg-04', t: 'The incident report' }, { id: 'gs-emg-05', t: 'Scenario drill', drill: true }],
-      reqs: [{ t: 'Airspace: what the mentor checks', lessons: ['gs-asp-01', 'gs-asp-02'] },
-             { t: 'The zone, the brief and the calls', lessons: ['gs-evt-01', 'gs-evt-02', 'gs-evt-03'] },
-             { t: 'When it goes wrong', d: 'failsafe, flyaway, fire, the report', lessons: ['gs-emg-01', 'gs-emg-02', 'gs-emg-03', 'gs-emg-04', 'gs-emg-05'], v: VID.failsafe },
-             { t: 'Event Ops quiz (80 %)', lessons: ['gs-evt-quiz'] },
-             { t: 'A real setup for a mentor', d: 'zone marked and briefed, failsafe tested' }] },
+      do: 'Video and quiz, then run a real flight-zone setup.', why: 'Flying at a game or rally, and a plan for when it goes wrong.',
+      reqs: [WATCH('gs-evt-quiz'),
+             { t: 'A real setup for a mentor', d: 'zone marked and briefed, failsafe tested', k: 4 }],
+      resources: [{ id: 'gs-asp-01', t: 'Class B, 400 ft and Sky Harbor' }, { id: 'gs-asp-02', t: 'B4UFLY, LAANC and TRUST' }, { id: 'gs-evt-01', t: 'The flight zone' }, { id: 'gs-evt-02', t: 'Briefing bystanders' }, { id: 'gs-evt-03', t: 'Pilot and spotter call-outs' }, { id: 'gs-emg-01', t: 'Failsafe: set it, test it' }, { id: 'gs-emg-02', t: 'Flyaway and lost video' }, { id: 'gs-emg-03', t: 'LiPo fire and injury' }, { id: 'gs-emg-04', t: 'The incident report' }, { id: 'gs-emg-05', t: 'Scenario drill', drill: true },
+                  { v: VID.failsafe }] },
     /* 2026-10-27 (Micah): the clip is submitted as a Google Drive link (drive: true) */
-    { id: 'cinematography', tier: 't2', track: 'crew', type: 'witnessed', drive: true, name: 'Cinematography', est: 'one event',
+    { id: 'cinematography', quiz: 'gs-cin-quiz', tier: 't2', track: 'crew', type: 'witnessed', drive: true, name: 'Cinematography', est: 'one event',
       do: 'Plan and shoot one usable clip at a real event, then submit it as a Google Drive link.', why: 'So Best of Brophy has more than one person who can shoot.',
-      reqs: [{ t: 'A shot list agreed with the coach or moderator' },
-             { t: 'A follow shot', v: VID.follow },
-             { t: 'An orbit', v: VID.orbit },
-             { t: 'A reveal', v: VID.cine },
-             { t: 'A clip the editor accepts', d: 'on Google Drive, "Anyone with the link", link sent on the Pilot Path' }] },
-    { id: 'indoor-proximity', tier: 't2', track: 'flight', type: 'witnessed', name: 'Indoor Proximity', est: 'one flight · about 10 min', rule: ONE_GO,
+      reqs: [WATCH('gs-cin-quiz'),
+             { t: 'A shot list agreed with the coach or moderator', k: 0 },
+             { t: 'A follow shot', k: 1 },
+             { t: 'An orbit', k: 2 },
+             { t: 'A reveal', k: 3 },
+             { t: 'A clip the editor accepts', d: 'on Google Drive, "Anyone with the link", link sent on the Pilot Path', k: 4 }],
+      resources: [{ v: VID.follow }, { v: VID.orbit }, { v: VID.cine }] },
+    { id: 'indoor-proximity', quiz: 'gs-ind-quiz', tier: 't2', track: 'flight', type: 'witnessed', name: 'Indoor Proximity', est: 'one flight · about 10 min', rule: ONE_GO,
       do: 'The hallway course without touching a wall.', why: 'Precision in tight spaces, for the rally race.',
-      reqs: [{ t: 'The club hallway course on one battery', v: VID.whoopIn },
-             { t: 'Zero wall contact', v: VID.throttle }] },
-    { id: 'racing', tier: 't2', track: 'flight', type: 'witnessed', name: 'Racing', est: 'one flight · about 10 min', rule: ONE_GO,
+      reqs: [WATCH('gs-ind-quiz'),
+             { t: 'The club hallway course on one battery', k: 0 },
+             { t: 'Zero wall contact', k: 1 }],
+      resources: [{ v: VID.whoopIn }, { v: VID.throttle }] },
+    { id: 'racing', quiz: 'gs-rac-quiz', tier: 't2', track: 'flight', type: 'witnessed', name: 'Racing', est: 'one flight · about 10 min', rule: ONE_GO,
       do: '3 clean laps of the club course under the posted time.', why: 'Qualifies you for the rally race.',
-      reqs: [{ t: 'Clean race lines', v: VID.lines },
-             { t: 'Three clean laps in a row' },
-             { t: 'Under the posted time, timed by the mentor', v: VID.faster }] },
+      reqs: [WATCH('gs-rac-quiz'),
+             { t: 'Clean race lines', k: 0 },
+             { t: 'Three clean laps in a row', k: 1 },
+             { t: 'Under the posted time, timed by the mentor', k: 2 }],
+      resources: [{ v: VID.lines }, { v: VID.faster }] },
     /* 2026-10-26 (Micah): an in-depth FAA test before Event Pilot, plus
        standard race-day / game-day practice. 2026-10-27: about the FAA's drone
        rules in general as they apply to the club, not stadiums, and Event
        Pilots always fly by Part 107. Twenty questions (qn on the quiz lesson). */
-    { id: 'faa-event-exam', quiz: 'gs-faa-quiz', tier: 't2', track: 'know', type: 'knowledge', name: 'FAA Event Exam', est: 'about 25 min',
+    { id: 'faa-event-exam', quiz: 'gs-faa-quiz', qn: 20, tier: 't2', track: 'know', type: 'knowledge', name: 'FAA Event Exam', est: 'about 25 min',
       do: 'The in-depth FAA test. Event Pilots always fly by Part 107: the pilot in command, limits, airspace, people, preflight, reporting, and how races and games are run. Twenty questions.', why: 'Every event flight is a Part 107 flight, often near a lot of people. This is the rulebook it runs on.',
-      lessons: [{ id: 'gs-faa-01', t: 'Part 107: who\'s in command' }, { id: 'gs-faa-02', t: 'The limits, the airspace and the aircraft' }, { id: 'gs-faa-03', t: 'People, preflight and reporting' }, { id: 'gs-faa-04', t: 'Race day and game day' }] },
-    { id: 'event-pilot', tier: 't2', track: 'flight', type: 'witnessed', name: 'Event Pilot', checkpoint: true, est: 'one event',
+      resources: [{ id: 'gs-faa-01', t: 'Part 107: who\'s in command' }, { id: 'gs-faa-02', t: 'The limits, the airspace and the aircraft' }, { id: 'gs-faa-03', t: 'People, preflight and reporting' }, { id: 'gs-faa-04', t: 'Race day and game day' }] },
+    { id: 'event-pilot', quiz: 'gs-evp-quiz', tier: 't2', track: 'flight', type: 'witnessed', name: 'Event Pilot', checkpoint: true, est: 'one event',
       do: 'Checkpoint into Tier 3: fly at a school event or a race.', why: 'The top of the path: flying for the school.',
-      reqs: [{ t: 'Zone set up and briefed' },
-             { t: 'A spotter beside you' },
-             { t: 'A mentor on site signs it off' }] },
+      reqs: [WATCH('gs-evp-quiz'),
+             { t: 'Zone set up and briefed', k: 0 },
+             { t: 'A spotter beside you', k: 1 },
+             { t: 'A mentor on site signs it off', k: 2 }] },
 
     // ---------------- Flight Clearance (tier 'cl', 2026-10-20) - the Brophy Drone Certification.
     // Four parts on ../clearance/; never a tier, never counted. Order here is the page order.
     { id: 'faa-trust', tier: 'cl', track: 'know', type: 'bench', name: 'FAA TRUST', est: 'about 20 min',
       do: 'Take the free TRUST test and send a photo of the certificate.', why: 'Federal requirement for every recreational flyer, before the first real flight.',
-      steps: [{ t: 'Take the free TRUST test (link below - about 20 min, can\'t be failed)', v: VID.trust }, 'Submit a photo or PDF of the certificate, name readable'] },
+      steps: [{ t: 'Take the free TRUST test (about 20 min, can\'t be failed)', v: VID.trust, link: TRUST_TEST }, 'Submit a photo or PDF of the certificate, name readable'] },
     { id: 'safe-flight', quiz: 'gs-saf-quiz', tier: 'cl', track: 'know', type: 'knowledge', name: 'Safe Flight', est: 'about 10 min',
       do: 'Know and follow the Brophy FPV safe-flight rules.', why: 'The rules everyone flies by once there\'s real hardware involved.',
-      lessons: [{ id: 'gs-saf-01', t: "Who's flying, who's watching" }, { id: 'gs-saf-02', t: 'The Brophy FPV rules sheet' }, { id: 'gs-saf-03', t: 'Go / No-Go', drill: true }] },
+      resources: [{ id: 'gs-saf-01', t: "Who's flying, who's watching" }, { id: 'gs-saf-02', t: 'The Brophy FPV rules sheet' }, { id: 'gs-saf-03', t: 'Go / No-Go', drill: true }] },
     { id: 'pilot-agreement', tier: 'cl', track: 'know', type: 'bench', kind: 'paper', name: 'Pilot Agreement', est: 'about 10 min, plus a parent',
       do: 'Read the terms, print the signing paper, sign it with a parent, send a photo of it.',
       why: 'A simple, clear reminder that you\'re flying expensive equipment and are responsible for how you use it, signed by you and a parent or guardian (Mr. Reasy and Mr. Burr asked for that).',
@@ -251,7 +325,7 @@
     { id: 'drone-portfolio', tier: 'cl', track: 'flight', type: 'bench', kind: 'drone', name: 'Drone Portfolio', est: 'a minute of video per drone',
       do: 'Your list of drones the club has seen you fly safely, so you can get permission to fly them at Brophy. Club drones get added when you pass their checkpoint.',
       why: 'Clearance is per drone, for every pilot (DJI, FPV, anything), so the club knows what you fly and has seen you fly it.',
-      steps: ['Record about a minute: take off, fly, land safely', 'Upload it to Google Drive, shared as "Anyone with the link"', 'Add the drone: name, specs, a picture and the link'] },
+      steps: ['Record about a minute: take off, fly, land safely', { t: 'Upload it to Google Drive, shared as "Anyone with the link"', link: DRIVE_HELP }, 'Add the drone: name, specs, a picture and the link'] },
 
     // ---------------- Bonus badges (tier 'el') - never counted toward the total or the tier
     { id: 'editing', tier: 'el', track: 'crew', type: 'witnessed', name: 'Editing', est: 'about 1 h',
@@ -302,9 +376,9 @@
     'field-repair': [{ tip: 'Check the simple things first: battery, props, binding, switch positions.' }, { t: 'Betaflight: arming and why it won\'t arm', u: 'https://betaflight.com/docs/wiki/guides/current/Arming-Sequence-And-Safety' }, JB],
     'freestyle-flight': [{ tip: 'Learn each trick high and slow in the sim, then lower and faster.' }, { tip: 'Watch the trick at half speed on YouTube and copy the sticks, not the camera.' }, LIFT, JB],
     'pavo-flight': [{ tip: 'The Pavo is heavier than the Meteor - give it more room to stop.' }, { t: 'BetaFPV Pavo20 Pro', u: 'https://betafpv.com/products/pavo20-pro-brushless-whoop-quadcopter' }],
-    'faa-trust': [{ t: 'Take the TRUST test (Pilot Institute, free, FAA-approved)', u: 'https://trust.pilotinstitute.com/' }, { t: 'FAA TRUST (the free test)', u: 'https://www.faa.gov/uas/recreational_flyers/knowledge_test_updates' }, FAA],
+    'faa-trust': [TRUST_TEST, { t: 'FAA TRUST (the free test)', u: 'https://www.faa.gov/uas/recreational_flyers/knowledge_test_updates' }, FAA],
     'pilot-agreement': [{ tip: 'Kept simple on purpose: a reminder of responsibility that you and a parent sign, not a legal contract.' }],
-    'drone-portfolio': [{ tip: 'Film from the ground with a phone: takeoff, a minute of flying, a landing on the pad.' }, { tip: 'In Drive: Share > General access > Anyone with the link. The page checks the link before you send it.' }, { t: 'Google Drive: share a file with a link', u: 'https://support.google.com/drive/answer/2494822' }],
+    'drone-portfolio': [{ tip: 'Film from the ground with a phone: takeoff, a minute of flying, a landing on the pad.' }, { tip: 'In Drive: Share > General access > Anyone with the link. The page checks the link before you send it.' }, DRIVE_HELP],
     'event-ops': [{ tip: 'Walk the zone before the event with the organizer.' }, { t: 'FAA B4UFLY', u: 'https://www.faa.gov/uas/getting_started/b4ufly' }, FAA],
     'cinematography': [{ tip: 'Smooth beats fast: slow throttle changes, wide gentle turns.' }, { tip: 'In Drive: Share > General access > Anyone with the link. The page checks the link before you send it.' }, { t: 'Oscar Liang: making FPV video cinematic', u: 'https://oscarliang.com/cinematic-fpv/' }],
     'indoor-proximity': [{ tip: 'Lower your rates for tight spaces.' }, { tip: 'Fly the hallway course in the sim first.' }],
@@ -338,12 +412,28 @@
     clearance: function () { return B.filter(function (b) { return b.tier === 'cl'; }); },
     /* the other badges of a checkpoint's tier */
     mates: function (b) { return B.filter(function (x) { return x !== b && x.tier === b.tier && !x.checkpoint; }); },
-    /* a photo can be submitted for any badge a mentor signs off */
-    photoOk: function (b) { return (b.type === 'bench' || b.type === 'witnessed') && !b.drive; },
+    /* a photo can be submitted for any badge a mentor signs off - not one sent as a Drive
+       link, and not Sim Flight, which is recorded on the kiosk (2026-11-25) */
+    photoOk: function (b) { return (b.type === 'bench' || b.type === 'witnessed') && !b.drive && !b.record; },
+    /* proven by a flight recorded on the kiosk, reviewed in the console (2026-11-25) */
+    recordOk: function (b) { return !!b.record; },
+    /* questions per quiz attempt (2026-11-25): 10 unless the badge says (FAA Event Exam 20) */
+    qn: function (b) { return (b && b.qn) || 10; },
+    /* the badge's optional Ground School lessons, kept as resources (2026-11-25) */
+    resLessons: function (b) { return ((b && b.resources) || []).filter(function (r) { return r && r.id; }); },
     /* a badge whose work is sent as a Google Drive link instead (2026-10-27) */
     driveOk: function (b) { return !!b.drive; },
-    /* a bench step is a string or { t, v } (2026-10-11) */
+    /* a bench step is a string or { t, v } (2026-10-11); { t, v, link } also links a
+       page, e.g. FAA TRUST's test (2026-11-25) */
     stepText: function (st) { return typeof st === 'string' ? st : (st && st.t) || ''; },
+    /* the key a requirement box's tick is stored under (2026-11-25): its k, else its index */
+    tickKey: function (r, i) { return r && r.k != null ? r.k : i; },
+    /* a requirement box's words: the WATCH box says "Pass the quiz" until the
+       badge's club video exists (needs gs-videos.js on the page) */
+    reqText: function (b, r) {
+      if (r && r.watch && !(window.GS_VIDEOS && GS_VIDEOS.ready && GS_VIDEOS.ready(b.id))) return 'Pass the quiz';
+      return (r && r.t) || '';
+    },
     /* quiz AND a mentor's sign-off (2026-10-10) */
     both: function (b) { return !!b.quiz && b.type !== 'knowledge'; } };
 })();

@@ -77,6 +77,17 @@ var GSApp = (function(){
     var q = GS_COURSE.filter(function(l){ return l.mod === code && l.kind === 'quiz'; });
     return q.length ? q[0] : null;
   }
+  /* the module a lesson belongs to, and the club videos (gs-videos.js,
+     2026-11-25). GS_VIDEOS is optional: without that file nothing breaks,
+     the course just has no Watch tab. */
+  function modOf(code){
+    for(var i=0;i<GS_MODULES.length;i++){ if(GS_MODULES[i].code === code) return GS_MODULES[i]; }
+    return null;
+  }
+  function vids(){
+    var V = window.GS_VIDEOS;
+    return (V && typeof V.player === 'function') ? V : null;
+  }
   function rec(id){
     return S.lessons[id] || { status:'not-started', score:0, attempts:0, timeMs:0 };
   }
@@ -282,24 +293,58 @@ var GSApp = (function(){
     return '<span class="lkind k-read">Read</span>';
   }
 
+  function lessonRow(l){
+    var r = rec(l.id);
+    var can = !!S.profile;
+    var row = h('button','lrow st-' + r.status + (can ? ' can' : ' no'));
+    var tick = h('span','tick', r.status === 'complete' ? tickSvg() : '');
+    row.appendChild(tick);
+    /* a badge quiz says how many questions it asks (2026-11-25: FAA asks 20) */
+    row.appendChild(h('span','ltitle', l.title + (l.kind === 'quiz' && l.pool ? ' · ' + (l.qn || 10) + ' questions' : '')));
+    row.appendChild(h('span','', kindChip(l)));
+    row.appendChild(h('span','lmin', l.mins + 'm'));
+    var sc = (r.status === 'complete' || r.score > 0)
+      ? h('span','lscore' + (r.score >= 80 ? '' : ' low'), String(Math.round(r.score)))
+      : h('span','lscore none','—');
+    row.appendChild(sc);
+    row.onclick = function(){
+      if(!S.profile){ el('gate').classList.add('show'); return; }
+      openLesson(l.id);
+    };
+    return row;
+  }
+
+  /* the module sheets' video players, stopped (timers and all) before the
+     syllabus is redrawn or a lesson opens over it. Opening a lesson only
+     hides the syllabus, so that stop puts the poster back and drops Drive's
+     frame - a quiet stop would leave the video playing under the lesson.
+     The quiet stop is for renderSyllabus, which wipes the sheets anyway. */
+  var sylPlayers = [], resOpen = {};
+  function stopSylPlayers(wipe){
+    sylPlayers.forEach(function(p){ try{ p.stop(!!wipe); }catch(e){} });
+    if(wipe) sylPlayers = [];
+  }
+
   function renderSyllabus(){
     var host = el('syllabus');
+    stopSylPlayers(true);
     host.innerHTML = '';
 
     if(S.catalogStale) host.appendChild(staleStrip());
+    var V = vids();
 
     GS_MODULES.forEach(function(M){
       var ls = moduleLessons(M.code);
-      var allDone = ls.length > 0 && ls.every(function(l){ return isDone(l.id); });
       var quiz = moduleQuiz(M.code);
-      var isCheck = false;
       var earned = !!quiz && rec(quiz.id).score >= S.passScore;
+      /* 2026-11-25: a module with a quiz is done when the quiz is passed - its
+         other lessons are optional resources now */
+      var allDone = quiz ? earned : (ls.length > 0 && ls.every(function(l){ return isDone(l.id); }));
 
-      var sheet = h('div','sheet' + (allDone ? ' done' : '') + (isCheck ? ' check' : '') +
-                               (isCheck && allDone ? ' passed' : ''));
+      var sheet = h('div','sheet' + (allDone ? ' done' : '') + (earned ? ' sealed' : ''));
 
       var head = h('div','sheethead');
-      head.appendChild(h('span','mcode', M.badge ? ('TIER ' + M.tier) : 'PREP'));
+      head.appendChild(h('span','mcode', M.tier === 'cl' ? 'CLEARANCE' : (M.badge ? ('TIER ' + M.tier) : 'PREP')));
       head.appendChild(h('h2','', M.name));
       var doneN = ls.filter(function(l){ return isDone(l.id); }).length;
       head.appendChild(h('span','mmins', doneN + '/' + ls.length + ' · ' + M.mins + ' min'));
@@ -307,28 +352,39 @@ var GSApp = (function(){
       sheet.appendChild(h('div','sheetsub', M.blurb));
       sheet.appendChild(h('div','sheetrule'));
 
-      ls.forEach(function(l){
-        var r = rec(l.id);
-        var can = !!S.profile;
-        var row = h('button','lrow st-' + r.status + (can ? ' can' : ' no'));
-        var tick = h('span','tick', r.status === 'complete' ? tickSvg() : '');
-        row.appendChild(tick);
-        row.appendChild(h('span','ltitle', l.title));
-        row.appendChild(h('span','', kindChip(l)));
-        row.appendChild(h('span','lmin', l.mins + 'm'));
-        var sc = (r.status === 'complete' || r.score > 0)
-          ? h('span','lscore' + (r.score >= 80 ? '' : ' low'), String(Math.round(r.score)))
-          : h('span','lscore none','—');
-        row.appendChild(sc);
-        row.onclick = function(){
-          if(!S.profile){ el('gate').classList.add('show'); return; }
-          openLesson(l.id);
-        };
-        sheet.appendChild(row);
-      });
+      /* 2026-11-25: the module leads with its badge's video and the quiz.
+         The older lessons, drills and YouTube how-tos sit under Resources,
+         closed: still openable, and still recorded. */
+      var hasVid = !!(V && M.badge && V.get(M.badge));
+      if(quiz){
+        var lead = h('div','watchlead');
+        /* the label promises a video only once there is one to watch */
+        lead.appendChild(h('div','wl', (hasVid && V.ready(M.badge)) ? 'Watch, then take the quiz' : 'Take the quiz'));
+        if(hasVid){
+          var slot = h('div','gsv');
+          lead.appendChild(slot);
+          var pl = V.player(slot, M.badge, { keepAlive:markActive });
+          if(pl) sylPlayers.push(pl);
+        }
+        lead.appendChild(lessonRow(quiz));
+        sheet.appendChild(lead);
+      }
+      var rest = ls.filter(function(l){ return l !== quiz; });
+      if(rest.length && quiz){
+        var grp = h('details','resgrp');
+        if(resOpen[M.code]) grp.open = true;
+        var doneR = rest.filter(function(l){ return isDone(l.id); }).length;
+        grp.appendChild(h('summary','', 'Resources<span class="rn">' + doneR + ' / ' + rest.length + '</span>'));
+        rest.forEach(function(l){ grp.appendChild(lessonRow(l)); });
+        grp.addEventListener('toggle', function(){ resOpen[M.code] = grp.open; });
+        sheet.appendChild(grp);
+      } else {
+        rest.forEach(function(l){ sheet.appendChild(lessonRow(l)); });
+      }
 
       if(earned){
-        var seal = h('div','passseal','BADGE EARNED<small>quiz ' + Math.round(rec(quiz.id).score) + ' / 100</small>');
+        /* a witnessed badge's quiz is half the badge (signoff), so it says so */
+        var seal = h('div','passseal',(M.signoff ? 'QUIZ PASSED' : 'BADGE EARNED') + '<small>quiz ' + Math.round(rec(quiz.id).score) + ' / 100</small>');
         sheet.appendChild(seal);
       }
 
@@ -365,6 +421,7 @@ var GSApp = (function(){
       score:null,
       done:false
     };
+    stopSylPlayers(false);
     /* opening a lesson IS a click, so start the clock un-paused */
     markActive();
     paintPaused(false);
@@ -381,6 +438,13 @@ var GSApp = (function(){
 
   function buildSteps(L){
     var steps = [];
+    /* 2026-11-25: a badge quiz opens on its badge's club video ("Watch, then
+       take the quiz") - only once that video exists on Drive, so a quiz whose
+       video is still coming starts on How it works as before. */
+    if(L.kind === 'quiz' && L.pool){
+      var V = vids(), M = modOf(L.mod);
+      if(V && M && M.badge && V.ready(M.badge)) steps.push({ t:'video', badge:M.badge });
+    }
     (L.cards || []).forEach(function(c){ steps.push({ t:'card', card:c }); });
     if(L.extra)          steps.push({ t:'widget', w:L.extra });
     if(L.check)          steps.push({ t:'check' });
@@ -404,6 +468,7 @@ var GSApp = (function(){
   }
 
   function tabLabel(step){
+    if(step.t === 'video')  return 'Watch';
     if(step.t === 'card')   return step.card.tab || shortLabel(step.card.h);
     if(step.t === 'widget') return 'Try it';
     if(step.t === 'check')  return 'Check';
@@ -457,6 +522,7 @@ var GSApp = (function(){
     el('lNext').textContent = (Ls.i === Ls.steps.length - 1) ? 'Finish' : 'Next  →';
     el('lHint').textContent = '';
 
+    if(step.t === 'video')  return drawVideo(body, step.badge);
     if(step.t === 'card')   return drawCard(body, step.card);
     if(step.t === 'widget') return drawWidget(body, step.w);
     if(step.t === 'end')    return drawEnd(body);
@@ -630,6 +696,24 @@ var GSApp = (function(){
     wrap.appendChild(box);
     if(v.cap) wrap.appendChild(h('div','vcap', v.cap));
     return wrap;
+  }
+
+  /* The badge's club video, first tab of its quiz (2026-11-25). The player is
+     gs-videos.js: a poster drawn here, Drive's frame only once tapped. It is
+     S.live, so moving to another tab stops it. While it plays it calls
+     markActive(), so the kiosk doesn't sign a pilot out mid-video and the
+     lesson clock doesn't stop: input inside Drive's frame never reaches us. */
+  function drawVideo(body, badge){
+    var card = h('div','rcard noart watchcard');
+    var col = h('div','rmain');
+    col.appendChild(h('h3','', 'Watch, then take the quiz'));
+    var slot = h('div','gsv');
+    col.appendChild(slot);
+    card.appendChild(col);
+    body.appendChild(card);
+    var V = vids();
+    S.live = V ? V.player(slot, badge, { keepAlive:markActive }) : null;
+    el('lHint').textContent = 'Watch';
   }
 
   function drawCard(body, c){
@@ -969,7 +1053,7 @@ var GSApp = (function(){
       card.appendChild(tab);
 
       var p = h('p','', passed
-        ? (POOL ? (SIGNOFF ? 'Quiz passed. The other half of this badge is a mentor watching you do it for real - ask one, and they sign it off.' : 'That badge is yours - no sign-off needed. Best score is kept, so a retake can only help.')
+        ? (POOL ? (SIGNOFF ? ((MOD && MOD.after) || 'Quiz passed. The other half of this badge is a mentor watching you do it for real - ask one, and they sign it off.') : 'That badge is yours - no sign-off needed. Best score is kept, so a retake can only help.')
                 : 'That mark goes on your record and shows on the hangar leaderboard. Best score is kept, so a retake can only help.')
         : 'The questions reshuffle every attempt, so go back through whichever module let you down and come again. Only your best score is kept — a retake cannot cost you anything.');
       p.style.cssText = 'margin-top:20px;font-weight:400;font-size:17px;line-height:1.55;color:var(--ink)';

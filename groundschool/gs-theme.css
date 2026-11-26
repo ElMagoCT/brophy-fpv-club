@@ -300,6 +300,30 @@ h1 .accent{color:var(--rust)}
 }
 .passseal small{display:block;font-size:14px;letter-spacing:2px;opacity:.85;margin-top:2px}
 
+/* 2026-11-25: a badge module leads with its club video (gs-videos.js draws
+   the player and its own styles) and the quiz; the older lessons sit in a
+   closed Resources group under them */
+.watchlead{position:relative;z-index:1;margin-top:8px}
+.sheet.sealed{padding-bottom:66px}
+.watchlead .wl{
+  font-family:var(--font-mono);font-size:14px;letter-spacing:1.8px;text-transform:uppercase;
+  color:var(--rust);padding:0 8px;
+}
+.watchlead .gsv{margin:8px 8px 6px}
+.watchlead .lrow{border-bottom:0}
+.resgrp{position:relative;z-index:1;margin-top:4px;border-top:1px dashed rgba(45,69,101,.20)}
+.resgrp>summary{
+  list-style:none;display:flex;align-items:center;gap:10px;padding:10px 8px;
+  font-family:var(--font-mono);font-size:14px;letter-spacing:1.8px;text-transform:uppercase;color:var(--ink-soft);
+}
+.resgrp>summary::-webkit-details-marker{display:none}
+.resgrp>summary::before{content:'\25B8';display:inline-block;transition:transform .15s}
+.resgrp[open]>summary::before{transform:rotate(90deg)}
+.resgrp>summary:hover{color:var(--ink)}
+.resgrp>summary .rn{margin-left:auto;letter-spacing:1.2px}
+/* the Watch tab: the video as big as the screen allows, never taller */
+.watchcard .gsv{max-width:calc((100vh - 400px) * 16 / 9);min-width:min(100%,420px);margin:14px auto 0}
+
 /* ===========================================================================
    LESSON VIEW
    =========================================================================== */

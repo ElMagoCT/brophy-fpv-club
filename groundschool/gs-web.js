@@ -80,14 +80,24 @@
   /* Mirror to the API so the kiosks (and the pilot's other devices) see it.
      Fire-and-forget; the page never waits on it and a failure changes nothing
      locally. Guests are not mirrored - there is no name to file it under. */
-  var QUIZ_BADGE = { saf:'safe-flight', bat:'battery-care', elc:'electrical-components', rad:'radio-protocol',
-                     evt:'event-ops', spt:'spotter' };   /* asp and emg quizzes retired 2026-10-06; spt added 2026-10-10 */
+  /* quiz lesson id -> badge id (2026-11-25). Built from the catalogue,
+     ../flightschool/badges.js (each badge's `quiz`), with gs-content.js's
+     GS_MODULES filling any gap. It was a hand list of six that had missed the
+     FAA Event Exam, so a web pass of it never earned the badge on the kiosk.
+     A witnessed badge's quiz goes up too: the kiosk records the score, and
+     only a knowledge badge is earned by it (Apply-QuizResult). */
+  var QUIZ_BADGE = {};
+  (window.GS_MODULES || []).forEach(function(m){
+    if(!m.badge) return;
+    (window.GS_COURSE || []).forEach(function(l){ if(l.mod === m.code && l.kind === 'quiz') QUIZ_BADGE[l.id] = m.badge; });
+  });
+  ((window.FS && window.FS.BADGES) || []).forEach(function(b){ if(b.quiz) QUIZ_BADGE[b.quiz] = b.id; });
   function push(lessonId, L){
     var who = pilot(); if(who.slug === 'guest') return;
     var lessons = {}; lessons[lessonId] = { status:L.status, score:L.score };
     var body = { name: who.name, lessons: lessons };
-    var m = /^gs-([a-z]{3})-quiz$/.exec(lessonId);
-    if(m && QUIZ_BADGE[m[1]] && L.score > 0){ body.quizzes = {}; body.quizzes[QUIZ_BADGE[m[1]]] = { best: L.score }; }
+    var bid = QUIZ_BADGE[lessonId];
+    if(bid && L.score > 0){ body.quizzes = {}; body.quizzes[bid] = { best: L.score }; }
     try{ realFetch(API + '/api/progress', { method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
           body: JSON.stringify(body) }).catch(function(){}); }catch(e){}
   }

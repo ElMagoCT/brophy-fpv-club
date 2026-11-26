@@ -71,20 +71,56 @@
   //      review sends) against the API's REVIEW_KEY_HASH: 403 = wrong;
   //   2. if review is not set up (503) or unreachable, a kiosk's last signed
   //      heartbeat, verified locally with the HMAC key, like the status badge.
-  // Resolves true (right), false (wrong) or null (nothing could tell).
-  function verifyPassword(keyHex, key) {
-    return api('GET', '/api/submission?review=1', null, { 'X-Review-Key': keyHex }).then(function () { return true; }, function (e) {
-      if (e.status === 401 || e.status === 403) return false;
-      var i = 0;
-      function next() {
-        if (i >= MACHINES.length) return null;
-        var m = MACHINES[i++];
-        return readStatus(m).then(function (st) {
-          if (!st || !st.sig) return next();
-          return crypto.subtle.sign('HMAC', key, enc.encode('v1s\n' + m + '\n' + st.data + '\n' + st.updated)).then(hex).then(function (sig) { return sig === st.sig; });
-        }, next);
+  // 2026-11-25: BOTH checks run, every time. The API and the kiosks hold the
+  // password separately (REVIEW_KEY_HASH on the API site, adminPasswordSha256 in
+  // each kiosk's config.json). If they drift - the password changed on the
+  // kiosks and not on the API, or the other way round - the API files approvals
+  // that both kiosks throw away on every sync, the failure the four bad
+  // approvals were. So:
+  //   API right, a RUNNING kiosk (heartbeat under 6 h old) wrong -> signed in,
+  //     approvals OFF, warning that the two keys differ;
+  //   API wrong, a kiosk right -> signed in (kiosk commands work), approvals
+  //     and review off, warning that REVIEW_KEY_HASH is out of date;
+  //   API wrong, no kiosk right -> wrong password;
+  //   API silent -> the kiosks decide, as before (an older heartbeat counts here).
+  // A heartbeat over 6 h old that does not verify only warns: a kiosk switched
+  // off before a password change would otherwise block approvals until it reports.
+  // Resolves {ok: true|false|null (approvals on / off / nothing could tell),
+  //           signIn: false only for a wrong password, warn: text or ''}.
+  var FRESH_STATUS_MS = 6 * 3600000;
+  function apiKeyCheck(keyHex) {   // true / false / null (review not set up, or no answer)
+    return api('GET', '/api/submission?review=1', null, { 'X-Review-Key': keyHex }).then(function () { return true; },
+      function (e) { return (e.status === 401 || e.status === 403) ? false : null; });
+  }
+  function kioskKeyCheck(key) {    // each kiosk's last signed heartbeat, verified with this password
+    var out = { ok: [], bad: [], stale: [] };
+    return Promise.all(MACHINES.map(function (m) {
+      return readStatus(m).then(function (st) {
+        if (!st || !st.sig) return;
+        return crypto.subtle.sign('HMAC', key, enc.encode('v1s\n' + m + '\n' + st.data + '\n' + st.updated)).then(hex).then(function (sig) {
+          if (sig === st.sig) out.ok.push(m);
+          else (Date.now() - (Number(st.updated) || 0) < FRESH_STATUS_MS ? out.bad : out.stale).push(m);
+        });
+      }, function () {});
+    })).then(function () { return out; });
+  }
+  function checkPassword(keyHex, key) {
+    return Promise.all([apiKeyCheck(keyHex), kioskKeyCheck(key)]).then(function (r) {
+      var a = r[0], k = r[1], both = function (l) { return l.join(' and '); };
+      var setup = ' (club API README, "Setting the review key": REVIEW_KEY_HASH must be SHA-256 of the kiosks\' adminPasswordSha256; change both together)';
+      if (a === true) {
+        if (k.bad.length) return { ok: false, signIn: true, warn: 'the club API accepts this password but ' + both(k.bad) + ' does not, so the API\'s review key and the kiosks\' password differ. Approvals filed now would be thrown away by the kiosks; they are off until both match' + setup + '.' };
+        return { ok: true, signIn: true, warn: k.stale.length ? both(k.stale) + '\'s last heartbeat (over 6 h old) does not verify with this password - if its password was changed on its own, it will reject approvals' + setup + '.' : '' };
       }
-      return next();
+      if (a === false) {
+        if (k.ok.length) return { ok: false, signIn: true, warn: 'this password is right for ' + both(k.ok) + ' but not for the club API: its REVIEW_KEY_HASH is out of date. Kiosk commands work; review and approvals are off until it matches' + setup + '.' };
+        return { ok: false, signIn: false, warn: '' };
+      }
+      var badAny = k.bad.concat(k.stale);
+      if (k.ok.length && badAny.length) return { ok: false, signIn: true, warn: both(k.ok) + ' accepts this password but ' + both(badAny) + ' does not: the kiosks\' passwords differ. Approvals are off until they match.' };
+      if (k.ok.length) return { ok: true, signIn: true, warn: '' };
+      if (badAny.length) return { ok: false, signIn: false, warn: '' };
+      return { ok: null, signIn: true, warn: '' };
     });
   }
   function signIn() {
@@ -93,18 +129,40 @@
     if (pw.length < 4) { el('signMsg').textContent = 'Enter the instructor password.'; return; }
     el('go').disabled = true; el('signMsg').textContent = 'Checking…';
     sha256Hex(pw).then(function (h) { h0 = h; return importKey(h); }).then(function (k) {
-      return verifyPassword(h0, k).then(function (ok) {
-        if (ok === false) { el('signMsg').textContent = 'Wrong password.'; el('pw').select(); return; }
-        S.keyHex = h0; S.key = k; el('pw').value = ''; pw = null; el('signMsg').textContent = '';
+      return checkPassword(h0, k).then(function (c) {
+        if (!c.signIn) { el('signMsg').textContent = 'Wrong password.'; el('pw').select(); return; }
+        S.keyHex = h0; S.key = k; S.checked = c.ok === true; S.warn = c.warn; el('pw').value = ''; pw = null; el('signMsg').textContent = '';
         el('signin').hidden = true; el('console').hidden = false;
-        el('who').textContent = ok ? 'Signed in · password checked · kept in this tab only'
-                                   : 'Signed in · password NOT checked (photo review not set up and no signed kiosk status to check it against) · kept in this tab only';
+        showWho();
         el('signout').hidden = false;
         drawTabs(); drawActions(); loadStatus(); showView(); loadReview(true);
       });
     }).catch(function (e) { el('signMsg').textContent = e.message; }).then(function () { el('go').disabled = false; });
   }
   function signOut() { S.key = null; location.reload(); }
+  function showWho() {
+    el('who').textContent = S.checked ? 'Signed in · password checked · kept in this tab only' + (S.warn ? ' · Note: ' + S.warn : '')
+      : S.warn ? 'Signed in · approvals are OFF: ' + S.warn + ' · kept in this tab only'
+      : 'Signed in · password NOT checked (the club API\'s review check did not answer and no kiosk had a signed status to check it against) · approvals are off until it is checked · kept in this tab only';
+  }
+  // 2026-11-25: approvals are filed ONLY with a checked password. Four approvals
+  // were signed with a password the console let in unchecked (the API's review
+  // check did not answer); both kiosks reject them every sync while the website
+  // showed them as earned. An unchecked sign-in can still send kiosk commands
+  // (each kiosk verifies those itself), but an award is checked again here
+  // first, and the API now verifies the key and the signature too.
+  function passwordChecked() {
+    if (!S.key || !S.keyHex) return Promise.reject(new Error('sign in first.'));
+    if (S.checked) return Promise.resolve();
+    return checkPassword(S.keyHex, S.key).then(function (c) {
+      S.warn = c.warn;
+      if (c.ok === true) { S.checked = true; showWho(); return; }
+      showWho();
+      throw new Error(!c.signIn ? 'the instructor password is wrong - sign out and sign in again. Nothing was filed.'
+        : c.warn ? 'not filed - ' + c.warn
+        : 'not filed - your password has not been checked yet (the club API\'s review check did not answer, and no kiosk had a signed status to check it against). A decision signed with an unchecked password is thrown away by both kiosks. Try again in a minute, or sign out and back in.');
+    });
+  }
 
   // ---------------------------------------------------------------- UI
   function drawTabs() {
@@ -209,6 +267,7 @@
     el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : '';
     if ((ap || rv) && !ROSTER) loadRoster();
     if (rv && S.key) loadReview();
+    if (ap && S.key) loadAudit();
   }
   window.addEventListener('hashchange', showView);
   function drawApprovals() {
@@ -238,13 +297,50 @@
   function showHas() {
     var pilot = el('apPilot').value.trim(); el('apHas').textContent = '';
     if (pilot.length < 2) return;
-    api('GET', '/api/award?pilot=' + encodeURIComponent(pilot)).then(function (j) {
+    awardsOf(pilot).then(function (j) {
       var aw = j.awards && j.awards.badges ? j.awards.badges : {};
-      var earned = Object.keys(aw).filter(function (k) { return aw[k].status === 'earned'; });
-      el('apHas').textContent = earned.length ? 'On file: ' + earned.map(badgeName).join(', ') : 'No sign-offs on file yet.';
+      var earned = Object.keys(aw).filter(function (k) { return aw[k].status === 'earned' && trusted(aw[k]); });
+      var bad = Object.keys(aw).filter(function (k) { return aw[k] && aw[k].verified === false; });
+      el('apHas').textContent = (earned.length ? 'On file: ' + earned.map(badgeName).join(', ') : 'No sign-offs on file yet.') +
+        (bad.length ? ' · NOT signed with the instructor password (the kiosks ignore it): ' + bad.map(function (k) { return badgeName(k) + ' ' + aw[k].status; }).join(', ') + ' - approve or revoke again' : '');
     }).catch(function (e) { el('apHas').textContent = e.message; });
   }
   function badgeName(id) { var b = FS.BADGES.filter(function (x) { return x.id === id; })[0]; return b ? b.name : id; }
+  // 2026-11-25: decisions on file that do not verify with the instructor password
+  // (GET /api/award?all=1 with the review key lists them as `untrusted`). Both
+  // kiosks ignore them, but the public website still counts an untrusted
+  // 'earned' one, so they are listed at the top of Pilots: open the pilot and
+  // Approve or Revoke again, which files a properly signed decision over it.
+  var AUDIT = { at: 0 };
+  function loadAudit(force) {
+    var box = el('apAudit');
+    if (!S.checked || !S.keyHex) { box.hidden = true; return; }
+    if (!force && Date.now() - AUDIT.at < 60000) return;
+    AUDIT.at = Date.now();
+    api('GET', '/api/award?all=1', null, reviewHeaders()).then(function (j) {
+      var rows = [];
+      Object.keys(j.pilots || {}).forEach(function (s) {
+        var p = j.pilots[s];
+        (p.untrusted || []).forEach(function (u) { rows.push({ name: p.name || s, badge: u.badge, status: u.status, at: u.at }); });
+      });
+      box.textContent = '';
+      if (!rows.length) { box.hidden = true; return; }
+      rows.sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : a.at - b.at; });
+      var h = document.createElement('h2'); h.textContent = rows.length + (rows.length === 1 ? ' decision on file is' : ' decisions on file are') + ' not signed with the instructor password';
+      var p = document.createElement('p'); p.className = 'muted small';
+      p.textContent = 'Both kiosks throw these away on every sync, but the website still shows an "earned" one. Open the pilot and Approve or Revoke the badge again: that files a properly signed decision over it.';
+      var ul = document.createElement('ul');
+      rows.forEach(function (r) {
+        var li = document.createElement('li'), a = document.createElement('button');
+        a.type = 'button'; a.className = 'linklike'; a.textContent = r.name;
+        a.onclick = function () { el('apPilot').value = r.name; pickPilot(); el('pp').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+        li.appendChild(a);
+        li.appendChild(document.createTextNode(' · ' + badgeName(r.badge) + ' · ' + r.status + (r.at ? ' ' + new Date(r.at).toLocaleDateString() : '')));
+        ul.appendChild(li);
+      });
+      box.appendChild(h); box.appendChild(p); box.appendChild(ul); box.hidden = false;
+    }).catch(function () { box.hidden = true; AUDIT.at = 0; });
+  }
   // The badge rules a sign-off must respect, from the kiosk snapshot
   // (data.json: tier, badges, totalMs). Returns null (fine), {stop: msg}
   // (refuse) or {ask: msg} (the snapshot cannot tell - ask the instructor).
@@ -282,12 +378,31 @@
   }
   // Sign the decision with the instructor password (same key as commands) and
   // file it. Signature: HMAC over "v1a\n<slug>\n<badge>\n<status>\n<at>".
+  // 2026-11-25: only with a checked password (passwordChecked), and the POST
+  // carries X-Review-Key: the API checks the key and the signature before filing.
+  // The pilot name exactly as the API files it (2026-11-25): trimmed, at most 40
+  // characters. The API checks the signature against the slug of THAT name, so
+  // signing the slug of a longer name was refused as 'sig' (a password error for
+  // a name problem). Kiosk names are at most 28, so recorded flights never hit it.
+  function awardName(pilot) { return String(pilot || '').trim().slice(0, 40); }
   function fileAward(pilot, badge, status, note, evidence) {
-    var at = Date.now(), s = FS.slug(pilot);
-    return hmac('v1a\n' + s + '\n' + badge + '\n' + status + '\n' + at).then(function (sig) {
-      return api('POST', '/api/award', { pilot: pilot, badge: badge, status: status, at: at, note: note, evidence: evidence, sig: sig });
+    return passwordChecked().then(function () {
+      var p = awardName(pilot), at = Date.now(), s = FS.slug(p);
+      return hmac('v1a\n' + s + '\n' + badge + '\n' + status + '\n' + at).then(function (sig) {
+        return api('POST', '/api/award', { pilot: p, badge: badge, status: status, at: at, note: note, evidence: evidence, sig: sig }, reviewHeaders());
+      });
     });
   }
+  // A pilot's decisions on file. Signed in with a checked password, the API
+  // verifies each record (verified: true|false); a decision that does not
+  // verify was not signed with the instructor password and both kiosks ignore
+  // it. Falls back to the plain read if review is not set up (503).
+  function awardsOf(pilot) {
+    var path = '/api/award?pilot=' + encodeURIComponent(awardName(pilot));
+    if (!S.checked || !S.keyHex) return api('GET', path);
+    return api('GET', path, null, reviewHeaders()).catch(function (e) { if (e.status === 503) return api('GET', path); throw e; });
+  }
+  function trusted(r) { return !!r && r.verified !== false; }
   function award(status) {
     var pilot = el('apPilot').value.trim(), badge = el('apBadge').value;
     if (pilot.length < 2) { el('apPilot').focus(); return; }
@@ -337,12 +452,12 @@
          whole progress list, so the page jumped back to the top every time. */
       if (PP.slug === FS.slug(pilot)) {
         PP.awards = PP.awards || {}; PP.awards.badges = PP.awards.badges || {};
-        PP.awards.badges[badge] = { status: status, at: Date.now(), note: note };
+        PP.awards.badges[badge] = { status: status, at: Date.now(), note: note, verified: true };
         var y = window.scrollY; drawProgress(); window.scrollTo(0, y);
         var row = el('ppList').querySelector('[data-badge="' + badge + '"] .pmsg');
         if (row) row.textContent = msg.textContent;
       }
-      showHas();
+      showHas(); loadAudit(true);
     }).catch(function (e) { msg.textContent = 'Could not file it: ' + e.message; });
   }
 
@@ -373,6 +488,7 @@
       else { img = document.createElement('img'); img.alt = 'submission from ' + it.pilot; }
       img.src = src; box.appendChild(img);
     }
+    if (!it.photo && it.flight) { flightInto(box, it); return; }   // 2026-11-25: a recorded kiosk flight
     if (!it.photo) { box.textContent = it.video ? 'Drive link' : 'no file'; return; }
     if (PHOTOS[it.photo]) { show(PHOTOS[it.photo].src, PHOTOS[it.photo].type); return; }
     box.textContent = 'Loading…';
@@ -430,12 +546,13 @@
     showHas();
     if (s.length < 2) { el('pp').hidden = true; PP.slug = null; return; }
     if (s === PP.slug) return;
+    revokeAll(PP_FLIGHT_URLS);
     PP.slug = s; PP.name = name; PP.awards = PP.prog = PP.subs = null; PP.loaded = false; el('ppDocs').textContent = '';
     el('pp').hidden = false; el('ppName').textContent = name + ' · progress';
     el('ppMsg').textContent = 'Loading…'; el('ppList').textContent = ''; el('ppSum').textContent = '';
     var q = encodeURIComponent(name);
     Promise.all([
-      api('GET', '/api/award?pilot=' + q).then(function (j) { return j.awards || null; }),
+      awardsOf(name).then(function (j) { return j.awards || null; }),
       api('GET', '/api/progress?pilot=' + q).then(function (j) { return j.progress || null; }),
       loadPilotSubs(s),
       ROSTER ? Promise.resolve() : fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { ROSTER = ROSTER || (window.mergePilots ? window.mergePilots(d) : d); })
@@ -450,8 +567,9 @@
   function badgeState(b) {
     var rp = rosterPilot(PP.slug), pr = PP.prog || {}, aws = (PP.awards && PP.awards.badges) || {};
     var lessons = pr.lessons || {}, aw = aws[b.id] || null;
-    var st = { kiosk: !!(rp && rp.badges && rp.badges.indexOf(b.id) >= 0), aw: aw,
-               approved: !!(aw && aw.status === 'earned'), revoked: !!(aw && aw.status === 'revoked'),
+    // 2026-11-25: a decision that does not verify (verified:false) is not one: the kiosks ignore it
+    var st = { kiosk: !!(rp && rp.badges && rp.badges.indexOf(b.id) >= 0), aw: aw, untrusted: !!(aw && aw.verified === false),
+               approved: !!(aw && aw.status === 'earned' && trusted(aw)), revoked: !!(aw && aw.status === 'revoked' && trusted(aw)),
                hours: rp ? (rp.totalMs || 0) / 3600000 : 0, bits: [] };
     // quiz: the best of the per-badge quiz record and the quiz lesson's score
     var best = 0;
@@ -472,7 +590,7 @@
       var rd = b.reqs.filter(function (r, i) {
         if (r.hours) return st.hours >= r.hours;
         if (r.lessons && r.lessons.length) return r.lessons.every(function (id) { return lessons[id] && (lessons[id].status === 'complete' || (id === b.quiz && (+lessons[id].score || 0) >= FS.PASS)); });
-        return !!rt[i];
+        return !!rt[FS.tickKey(r, i)];   // 2026-11-25: ticks are stored by the box's key, not its index
       }).length;
       st.bits.push('requirements ' + rd + '/' + b.reqs.length);
     }
@@ -516,6 +634,11 @@
     else chips.appendChild(chip('', 'not yet'));
     if (st.kiosk) chips.appendChild(chip('src', 'kiosk'));
     if (st.approved) chips.appendChild(chip('src', 'approved ' + when(st.aw.at)));
+    if (st.untrusted) {
+      var uc = chip('bad', st.aw.status + ' ' + when(st.aw.at) + ' · bad signature');
+      uc.title = 'This decision on file was not signed with the instructor password, so both kiosks ignore it. Approve or Revoke again to file a properly signed one.';
+      chips.appendChild(uc);
+    }
     if (st.both) chips.appendChild(chip(st.quizPass ? 'src' : '', st.quizPass ? 'quiz ✓' : 'quiz ✗'));
     else if (b.type === 'knowledge' && st.quizPass) chips.appendChild(chip('src', 'quiz ✓'));
     if (st.revoked && st.earned) chips.appendChild(chip('bad', 'revoked ' + when(st.aw.at) + ' · ' + (ROSTER && st.aw.at > (ROSTER.generated || 0) ? 'kiosk not synced yet' : 'kiosk still shows it')));
@@ -596,6 +719,110 @@
       (PP.prog && PP.prog.updated ? ' · website activity ' + when(PP.prog.updated) : '');
   }
 
+  // ---------------------------------------------------------------- recorded flights (2026-11-25)
+  // A kiosk's 60 s Sim Flight recording. GET /api/flight?id= streams it (review
+  // key, like the photos); it plays from a blob: URL (CSP media-src blob:). The
+  // URLs are revoked when the review list is redrawn, or another pilot is picked.
+  var FLIGHT_URLS = [], PP_FLIGHT_URLS = [];
+  function revokeAll(list) { while (list.length) { try { URL.revokeObjectURL(list.pop()); } catch (e) { /* already gone */ } } }
+  function mb(bytes) { return (Math.round((+bytes || 0) / 100000) / 10) + ' MB'; }
+  // MediaRecorder files can report an Infinity duration (no index at the end):
+  // seek far past the end once, which makes the browser find it, then back to 0.
+  function fixDuration(video) {
+    if (video.durFix) return;
+    video.durFix = true;
+    video.addEventListener('loadedmetadata', function () {
+      if (isFinite(video.duration)) return;
+      video.addEventListener('timeupdate', function back() { video.removeEventListener('timeupdate', back); video.currentTime = 0; });
+      video.currentTime = 1e101;
+    });
+  }
+  function loadFlightInto(video, msg, it, bucket) {
+    msg.className = 'msg'; msg.textContent = 'Loading the flight (' + mb(it.flight && it.flight.bytes) + ')…';
+    return fetch(API + '/api/flight?id=' + encodeURIComponent(it.id), { headers: reviewHeaders(), cache: 'no-store' }).then(function (r) {
+      if (!r.ok) return r.json().catch(function () { return {}; }).then(function (j) { var e = new Error(j.error || ('HTTP ' + r.status)); e.status = r.status; throw e; });
+      return r.blob();
+    }).then(function (b) {
+      // The API streams without a Content-Length, so a body cut short mid-stream
+      // is caught here: the size the kiosk uploaded is in flight.bytes.
+      var want = +(it.flight && it.flight.bytes) || 0;
+      if (want && b.size !== want) throw new Error('only ' + mb(b.size) + ' of ' + mb(want) + ' arrived');
+      var u = URL.createObjectURL(b);
+      (bucket || FLIGHT_URLS).push(u);
+      fixDuration(video);
+      // The whole file is in memory already, so preload costs nothing - and it
+      // makes the browser decode the first frame (loadeddata), which Pass waits for.
+      video.preload = 'auto';
+      if (!video.errWatch) {
+        video.errWatch = true;
+        video.addEventListener('error', function () {
+          msg.className = 'msg err';
+          msg.textContent = 'This browser could not play the recording (' + ((video.error && video.error.code) || '?') + '). Try Chrome or Edge, or fail it with a note.';
+        });
+      }
+      video.src = u; msg.textContent = '';
+    }).catch(function (e) {
+      msg.className = 'msg err'; msg.textContent = 'Could not load the flight: ' + e.message;
+      if (e.status !== 404 && e.status !== 410) {   // gone stays gone; anything else (a slow link, a timeout) can be retried
+        var again = document.createElement('button'); again.type = 'button'; again.textContent = 'Try again';
+        again.onclick = function (ev) { ev.stopPropagation(); loadFlightInto(video, msg, it, bucket); };
+        msg.appendChild(again);
+      }
+    });
+  }
+  // What the mentor judges against: the badge's own words from flightschool/badges.js,
+  // read defensively (do, then standard, then the requirement boxes, then the rule).
+  function standardEl(bd) {
+    if (!bd) return null;
+    var d = document.createElement('div'); d.className = 'std small';
+    if (bd.do) { var p = document.createElement('div'); p.textContent = bd.do; d.appendChild(p); }
+    if (bd.standard) { var sd = document.createElement('div'); sd.textContent = 'Standard: ' + bd.standard; d.appendChild(sd); }
+    var reqs = (Array.isArray(bd.reqs) ? bd.reqs : []).map(function (r) { return typeof r === 'string' ? r : (r && r.t) || ''; }).filter(Boolean);
+    if (reqs.length) {
+      var ul = document.createElement('ul');
+      reqs.forEach(function (t) { var li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+      d.appendChild(ul);
+    }
+    if (bd.rule) { var ru = document.createElement('div'); ru.className = 'muted'; ru.textContent = bd.rule; d.appendChild(ru); }
+    return d.childNodes.length ? d : null;
+  }
+  // The review card's flight: what was recorded, the standard, and the player.
+  // Nothing is fetched until the card is on stage (card.rvLoad, called by rvFocus).
+  function flightBox(card, it, bd) {
+    var f = it.flight || {}, box = document.createElement('div'); box.className = 'flight';
+    var line = document.createElement('div'), t = document.createElement('b');
+    t.textContent = 'Recorded flight'; line.appendChild(t);
+    var bits = [f.simName || f.sim || 'sim', f.machine, (f.secs || Math.round((f.durationMs || 0) / 1000)) + ' s', mb(f.bytes),
+                f.recordedAt ? new Date(f.recordedAt).toLocaleString() : ''].filter(function (x) { return !!x; });
+    line.appendChild(document.createTextNode(' · ' + bits.join(' · ') + (f.simHours != null ? ' · ' + f.simHours + ' h in the sims' : '')));
+    box.appendChild(line);
+    var std = standardEl(bd || FS.BADGES.filter(function (x) { return x.id === 'proficient-flight'; })[0]);
+    if (std) box.appendChild(std);
+    var video = document.createElement('video'); video.controls = true; video.preload = 'metadata'; video.setAttribute('playsinline', '');
+    var msg = document.createElement('span'); msg.className = 'msg';
+    box.appendChild(video); box.appendChild(msg);
+    var loaded = false;
+    card.rvLoad = function () { if (!loaded) { loaded = true; loadFlightInto(video, msg, it); } };
+    card.rvVideo = video;
+    return box;
+  }
+  // Pilots tab, a badge's "+ N" list: the flight's summary and a Play button (no autoload).
+  function flightInto(box, it) {
+    var f = it.flight || {};
+    box.textContent = ''; box.classList.add('fl');
+    var t = document.createElement('div'); t.textContent = 'Recorded flight · ' + (f.simName || f.sim || 'sim') + ' · ' + (f.secs || '?') + ' s';
+    var play = document.createElement('button'); play.type = 'button'; play.className = 'pplay'; play.textContent = 'Play';
+    play.onclick = function (e) {
+      e.stopPropagation();
+      var video = document.createElement('video'); video.controls = true; video.preload = 'metadata'; video.setAttribute('playsinline', '');
+      video.addEventListener('click', function (ev) { ev.stopPropagation(); });
+      var msg = document.createElement('span'); msg.className = 'msg';
+      box.textContent = ''; box.classList.add('full'); box.appendChild(video); box.appendChild(msg);
+      loadFlightInto(video, msg, it, PP_FLIGHT_URLS);
+    };
+    box.appendChild(t); box.appendChild(play);
+  }
+
   // ---------------------------------------------------------------- photo review (2026-10-08)
   // Pilots submit photos from flightschool/; the club API keeps them in the
   // private control repo. Reading the queue and deciding needs the review key
@@ -634,9 +861,11 @@
   var RV = { cards: [], stage: null };
   function rvFocus(card) {
     if (!card || card === RV.stage) return;
+    if (RV.stage && RV.stage.rvVideo) RV.stage.rvVideo.pause();
     RV.stage = card; el('rvStage').textContent = ''; el('rvStage').appendChild(card);
     var list = el('rvList'); list.textContent = '';
     RV.cards.forEach(function (c) { c.classList.toggle('on', c === card); if (c !== card) list.appendChild(c); c.rvZoom(1); });   // every switch resets zoom
+    if (card.rvLoad) card.rvLoad();   // 2026-11-25: a recorded flight (~10 MB) is fetched only once it is on stage
   }
   function rvNext(after) {
     var i = RV.cards.indexOf(after), rest = RV.cards.slice(i + 1).concat(RV.cards.slice(0, i));
@@ -676,6 +905,7 @@
   function drawReview(items) {
     var list = el('rvList'); list.textContent = ''; el('rvStage').textContent = '';
     RV.cards = []; RV.stage = null;
+    revokeAll(FLIGHT_URLS);
     items.forEach(function (it) {
       var bd = FS.BADGES.filter(function (x) { return x.id === it.badge; })[0];
       var card = document.createElement('div'); card.className = 'rv';
@@ -699,6 +929,7 @@
         extra = document.createElement('div'); extra.className = 'drone';
         driveRow(extra, it.video, 'Open the clip ↗', 'clip');
       }
+      if (it.flight) extra = flightBox(card, it, bd);   // 2026-11-25: a Sim Flight recording from a kiosk
       if (it.drone) {
         extra = document.createElement('div'); extra.className = 'drone';
         var dn = document.createElement('b'); dn.textContent = it.drone.name || 'drone';
@@ -706,15 +937,31 @@
         extra.appendChild(dn); extra.appendChild(ds);
         driveRow(extra, it.drone.video, 'Open the flight video ↗', 'flight video');
       }
-      var isDrone = !!(bd && bd.kind === 'drone');
+      var isDrone = !!(bd && bd.kind === 'drone'), isFlight = !!it.flight;
       var rule = checkRules(it.pilot, bd), warn = null;
       if (rule) { warn = document.createElement('div'); warn.className = 'warn'; warn.textContent = rule.stop || rule.ask.replace(/ Approve it anyway\? It will count\.$/, ''); }
-      var note = document.createElement('input'); note.placeholder = 'Note to the pilot (say why, if it fails)'; note.maxLength = 300;
+      var note = document.createElement('input'); note.placeholder = isFlight ? 'Note to the pilot (required if it fails)' : 'Note to the pilot (say why, if it fails)'; note.maxLength = 300;
+      var noteWarn = document.createElement('div'); noteWarn.className = 'warn'; noteWarn.hidden = true;   // a failed flight needs a reason
+      note.addEventListener('input', function () { noteWarn.hidden = true; });
       var row = document.createElement('div'); row.className = 'row';
       var pass = document.createElement('button'); pass.className = 'primary'; pass.textContent = 'Pass';
       var fail = document.createElement('button'); fail.className = 'danger'; fail.textContent = 'Fail';
       row.appendChild(pass); row.appendChild(fail);
-      [frame, who, meta].concat(extra ? [extra] : []).concat(warn ? [warn] : []).concat([note, row]).forEach(function (n) { card.appendChild(n); });
+      // 2026-11-25: a recorded flight can only be passed once its video has
+      // actually loaded (loadeddata = a frame is decoded), so nobody passes a
+      // flight they could not watch. Fail stays available (gone, unplayable).
+      var watched = !isFlight, gate = null;
+      function live() { fail.disabled = false; pass.disabled = !watched; }
+      if (isFlight) {
+        pass.disabled = true; pass.title = 'Pass unlocks once the flight video has loaded';
+        gate = document.createElement('span'); gate.className = 'muted small gate'; gate.textContent = 'Pass unlocks once the video loads.';
+        row.appendChild(gate);
+        card.rvVideo.addEventListener('loadeddata', function () {
+          watched = true; pass.title = ''; if (gate) { gate.remove(); gate = null; }
+          if (!card.classList.contains('decided') && fail.disabled === false) pass.disabled = false;
+        });
+      }
+      [frame, who, meta].concat(extra ? [extra] : []).concat(warn ? [warn] : []).concat([note, noteWarn, row]).forEach(function (n) { card.appendChild(n); });
       if (!it.photo) { frame.hidden = true; } else
       api('GET', '/api/submission?photo=' + encodeURIComponent(it.photo), null, reviewHeaders()).then(function (j) {
         var img;
@@ -726,30 +973,42 @@
         if (card === RV.stage) card.rvZoom(1);
       }).catch(function (e) { phMsg.textContent = 'Could not load the photo: ' + e.message; });
       function decide(result) {
+        if (result === 'pass' && !watched) return;                  // 2026-11-25: not before the video loaded
+        if (result === 'fail' && isFlight && !note.value.trim()) {   // 2026-11-25: the pilot is told why
+          noteWarn.textContent = 'Write why it failed - the pilot sees this'; noteWarn.hidden = false; note.focus();
+          live(); return;
+        }
         pass.disabled = fail.disabled = true;
         var first = Promise.resolve();
         if (result === 'pass' && isDrone) {   // 2026-10-20: an approved drone = the Drone Portfolio badge on file (the kiosk catalogue has it)
           first = fileAward(it.pilot, 'drone-portfolio', 'earned', 'drone approved: ' + ((it.drone && it.drone.name) || 'drone') + (note.value.trim() ? ' - ' + note.value.trim() : ''), ['photo:' + it.id]);
         } else if (result === 'pass') {
           var r = checkRules(it.pilot, bd);
-          if (r && r.stop) { window.alert(r.stop.replace(/ Not filed\.$/, ' Fail it with a note, or wait.')); pass.disabled = fail.disabled = false; return; }
-          if (r && r.ask && !window.confirm(r.ask)) { pass.disabled = fail.disabled = false; return; }
+          if (r && r.stop) { window.alert(r.stop.replace(/ Not filed\.$/, ' Fail it with a note, or wait.')); live(); return; }
+          if (r && r.ask && !window.confirm(r.ask)) { live(); return; }
           first = quizAsk(it.pilot, bd).then(function (ask) {
             if (ask && !window.confirm(ask)) throw Object.assign(new Error('not filed'), { quiet: true });
-          }).then(function () { return fileAward(it.pilot, it.badge, 'earned', 'photo review' + (note.value.trim() ? ': ' + note.value.trim() : ''), ['photo:' + it.id]); });
+          }).then(function () {
+            return fileAward(it.pilot, it.badge, 'earned', (isFlight ? 'flight review' : 'photo review') + (note.value.trim() ? ': ' + note.value.trim() : ''), [(isFlight ? 'flight:' : 'photo:') + it.id]);
+          });
         }
         first.then(function () {
           return api('POST', '/api/submission', { action: 'review', pilot: it.pilot, id: it.id, result: result, note: note.value.trim() }, reviewHeaders());
         }).then(function () {
           var d = document.createElement('div'); d.className = 'done ' + result;
-          d.textContent = result === 'pass' ? (isDrone ? 'Approved - the drone is in the pilot\'s portfolio and the Drone Portfolio badge is on file.' : 'Passed - the badge is on file; the kiosks pick it up on their next sync.')
-                                           : (isDrone ? 'Not approved - the pilot sees your note and can add the drone again.' : (it.video ? 'Failed - the pilot sees your note and can send a new link.' : 'Failed - the pilot sees your note and can send a new photo.'));
-          row.replaceWith(d); note.disabled = true; card.classList.add('decided');
+          d.textContent = result === 'pass' ? (isDrone ? 'Approved - the drone is in the pilot\'s portfolio and the Drone Portfolio badge is on file.'
+                                              : isFlight ? 'Passed - ' + (bd ? bd.name : 'the badge') + ' is on file; the kiosks pick it up on their next sync.'
+                                              : 'Passed - the badge is on file; the kiosks pick it up on their next sync.')
+                                           : (isDrone ? 'Not approved - the pilot sees your note and can add the drone again.'
+                                              : isFlight ? 'Failed - the pilot sees your note and can record again another day.'
+                                              : (it.video ? 'Failed - the pilot sees your note and can send a new link.' : 'Failed - the pilot sees your note and can send a new photo.'));
+          row.replaceWith(d); note.disabled = true; noteWarn.hidden = true; card.classList.add('decided');
+          if (card.rvVideo) card.rvVideo.pause();
           setTimeout(function () { if (RV.stage === card) rvNext(card); }, 1500);
           var n = +(el('rvCount').textContent || 0) - 1; el('rvCount').textContent = n > 0 ? String(n) : '';
           if (result === 'pass') { ROSTER = null; loadRoster(); }
         }).catch(function (e) {
-          pass.disabled = fail.disabled = false;
+          live();
           if (!e.quiet) window.alert('Could not record it: ' + e.message);
         });
       }
