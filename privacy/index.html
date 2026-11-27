@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Privacy — Brophy FPV Club</title>
+<meta name="description" content="What the Brophy FPV Club website keeps about pilots, and what Sign in with Google is used for.">
+<meta name="color-scheme" content="light dark">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23f2ece0'/><g stroke='%231f3350' stroke-width='2.4' fill='none' stroke-linecap='round'><circle cx='16' cy='16' r='3.4'/><path d='M8 8 13 13M24 8 19 13M8 24 13 19M24 24 19 19'/><circle cx='7' cy='7' r='3.2'/><circle cx='25' cy='7' r='3.2'/><circle cx='7' cy='25' r='3.2'/><circle cx='25' cy='25' r='3.2'/></g></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Cabin+Sketch:wght@400;700&family=Architects+Daughter&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="../theme.js"></script>
+<style>
+/* Privacy (2026-11-27): what the site and its API keep. Written for the Google sign-in
+   consent screen; keep it in step with brophy-fpv-club-api (auth, roster, progress). */
+:root{
+  --paper:#f2ece0;--paper-2:#eae2d1;--ink:#2d4565;--ink-soft:#62768e;
+  --rust:#b0532a;--amber:#98701c;--green:#2d7045;--sky:#2a72a0;--violet:#6450ab;--gold:#f0a91a;
+  --line:rgba(45,69,101,.20);--line-hard:rgba(45,69,101,.42);--glass:#f3eee2;--glass-2:#ffffff;
+  --font-sketch:'Cabin Sketch','Architects Daughter',cursive;--font-hand:'Architects Daughter','Segoe Print',cursive;
+  --font-mono:'Share Tech Mono','Consolas',monospace;--font-body:'Barlow','Segoe UI',system-ui,sans-serif;
+  --r:10px;--shadow:0 1px 0 rgba(45,69,101,.14),0 6px 18px rgba(45,69,101,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.5;min-height:100vh}
+#paper-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+#paper-bg .grid{position:absolute;inset:0;opacity:.28;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px}
+#paper-bg .grid-fine{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(45,69,101,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(45,69,101,.10) 1px,transparent 1px);background-size:7px 7px}
+#paper-bg .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 45% 32%,rgba(255,255,255,.42) 0%,rgba(255,255,255,0) 48%),radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(120,100,60,.13) 100%)}
+.wrap{position:relative;z-index:1;max-width:880px;margin:0 auto;padding:28px 20px 64px}
+header.title{background-color:var(--glass);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 24px;display:flex;flex-wrap:wrap;gap:18px 24px;align-items:flex-end;justify-content:space-between}
+.title h1{font-family:var(--font-sketch);font-weight:700;font-size:clamp(32px,6vw,50px);line-height:.95;margin:0;letter-spacing:.5px}
+.title h1 .a{color:var(--rust)}
+.title .sub{font-family:var(--font-mono);font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin-top:6px}
+.stamp{font-family:var(--font-hand);font-size:19px;color:var(--rust);transform:rotate(-3deg);border:2.5px solid var(--rust);border-radius:6px;padding:3px 11px;display:inline-block;margin-top:12px;opacity:.9}
+.btn{font-family:var(--font-mono);font-size:13.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--glass-2);color:var(--ink);text-decoration:none;border:1.5px solid var(--line-hard);border-radius:7px;padding:9px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn:hover{background:var(--paper-2)}
+.btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.acts{display:flex;flex-wrap:wrap;gap:8px}
+.card{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:var(--r);box-shadow:var(--shadow);padding:22px 26px;margin-top:22px;font-size:15.5px;line-height:1.55}
+.lead{color:var(--ink-soft);font-style:italic;margin:0 0 12px}
+.card h2{font-family:var(--font-mono);font-size:13px;letter-spacing:.18em;text-transform:uppercase;font-weight:400;color:var(--rust);margin:18px 0 4px}
+.card h2:first-of-type{margin-top:0}
+.card p{margin:0 0 8px}
+.card ul{margin:2px 0 8px;padding-left:20px}
+.card li{margin:0 0 4px}
+.card b{font-weight:600}
+footer{margin-top:34px;padding:16px 18px;background-color:var(--glass);border:1.5px solid var(--line-hard);border-radius:var(--r);font-size:13.5px;color:var(--ink-soft);display:flex;flex-wrap:wrap;gap:6px 20px;justify-content:space-between}
+footer a{color:var(--ink)}
+@media print{#paper-bg,.sitebar,.acts,footer{display:none}body{background:#fff;color:#000}.card,header.title{box-shadow:none;border-color:#000;background:#fff}.title h1 .a,.card h2,.stamp{color:#000}}
+@media (max-width:600px){.wrap{padding:18px 13px 52px}.card{padding:16px 16px}}
+</style>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<div id="paper-bg" aria-hidden="true"><div class="grid"></div><div class="grid-fine"></div><div class="vignette"></div></div>
+<div class="wrap">
+
+  <nav class="crumbs" aria-label="Site"></nav>
+  <script src="../pilots.js"></script>
+  <script src="../site.js"></script>
+
+  <header class="title">
+    <div>
+      <h1>Privacy</h1>
+      <div class="sub">Brophy FPV Club website &middot; what we keep</div>
+    </div>
+    <div class="acts">
+      <a class="btn" href="../">Home</a>
+    </div>
+  </header>
+
+  <div class="card">
+    <p class="lead">The club keeps as little as it can: a name, your progress, and your sim hours. Nothing is sold, shared for advertising, or used for anything but running the club.</p>
+
+    <h2>What we keep</h2>
+    <ul>
+      <li><b>Your name</b> as you add it on the Join page: first name and last initial.</li>
+      <li><b>Your progress:</b> quiz scores, badges, checkpoint results, mentor notes, and the photo or Drive links you submit.</li>
+      <li><b>Sim hours</b> logged on the club simulators.</li>
+    </ul>
+
+    <h2>Sign in with Google</h2>
+    <ul>
+      <li>Sign-in is only for your Brophy school account, so nobody can post progress under someone else's name.</li>
+      <li>Google tells us your name, your school email address and an account number. We use the name to fill in the Join form. We keep the part of your email before the @ and the account number, only to link your sign-in to your club entry.</li>
+      <li>We never read your email, Drive, contacts or anything else in your Google account, and we never post anything for you.</li>
+    </ul>
+
+    <h2>Who can see it</h2>
+    <ul>
+      <li>Names and earned badges show on the club site and the sims. Everything else is seen only by club mentors.</li>
+      <li>The data is stored on GitHub and Netlify, the services that run the site.</li>
+    </ul>
+
+    <h2>Removing it</h2>
+    <ul><li>Ask a mentor or the club moderator, and your entry and sign-in link are removed.</li></ul>
+  </div>
+
+  <footer>
+    <span>mtucker27@ for questions</span>
+  </footer>
+</div>
+</body>
+</html>

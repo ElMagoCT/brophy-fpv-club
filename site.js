@@ -240,7 +240,7 @@
     if (!foot || foot.querySelector('.sitelinks')) return;
     var sp = document.createElement('span'); sp.className = 'sitelinks';
     sp.innerHTML = '<a href="' + BASE + 'clearance/">Flight Clearance</a> · <a href="' + BASE + 'clearance/terms/">Pilot Agreement terms</a> · ' +
-      '<a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">Request form (Mr. Burr) &nearr;</a>';
+      '<a href="https://docs.google.com/forms/d/e/1FAIpQLSeIPraaBO1fHJE6GGEvQHs63saL9bmpDYng5O5Du4kSDWkegw/viewform" target="_blank" rel="noopener">Request form (Mr. Burr) &nearr;</a> · <a href="' + BASE + 'privacy/">Privacy</a>';
     foot.appendChild(sp);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', footLinks); else footLinks();
