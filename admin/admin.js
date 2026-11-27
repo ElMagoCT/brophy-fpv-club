@@ -1250,7 +1250,7 @@
       head.appendChild(stat);
       head.onclick = function () {
         var open = RS.sel !== p.slug;
-        RS.sel = open ? p.slug : null; RS.mode = null; RS.armed = false; RS.other = ''; RS.keep = ''; AU.code = null;
+        RS.sel = open ? p.slug : null; RS.mode = null; RS.armed = false; RS.other = ''; RS.keep = ''; AU.code = null; el('rsNote').textContent = '';
         drawRoster();
         if (open) pickName(p.name);
       };
@@ -1457,19 +1457,45 @@
   // editor's own code path. Hours are kept per kiosk and summed through the
   // ledgers, so an adjust goes to the kiosk that should hold the time and a
   // reset goes to both. Only with a checked password, like approvals.
+  // 2026-11-27 review fixes: a send that got no clear answer keeps its command id
+  // (HC.pend / HC.rp, per pilot) so sending again files the SAME command: the API
+  // answers already:true for a repeat and the kiosk applies an id once. Results
+  // are written only on the card of the pilot they belong to; anywhere else they
+  // go to that pilot's list and to #rsNote with the name in front.
   var PCS = [{ m: 'KIOSK-A', t: 'FPV Sim 1' }, { m: 'KIOSK-B', t: 'FPV Sim 2' }];
-  var MAX_MIN = 720, NOTE_MAX = 80, HC_KEY = 'fpv.admin.hours.v1';
-  var HC = { pc: PCS[0].m, sim: '', dir: 'add', sent: {} };
+  var MAX_MIN = 720, NOTE_MAX = 80, HC_KEY = 'fpv.admin.hours.v1', ARM_MS = 700;
+  var HC = { pc: PCS[0].m, sim: '', dir: 'add', sent: {}, pend: {}, rp: {}, rnote: {} };
   try { HC.sent = JSON.parse(sessionStorage.getItem(HC_KEY) || '{}') || {}; } catch (e) { HC.sent = {}; }
   function pcName(m) { var x = PCS.filter(function (c) { return c.m === m; })[0]; return x ? x.t : m; }
+  function pcList(ms) { return ms.map(pcName).join(' and '); }
   function simList() { return ((KSNAP && KSNAP.sims) || []).filter(function (s) { return s && s.id; }); }
   function simName(id) { var x = simList().filter(function (s) { return s.id === id; })[0]; return x ? x.name : id; }
   function cleanNote(t) { return String(t || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, NOTE_MAX); }
   function fmtH(ms) { return ((ms || 0) / 3600000).toFixed(1) + ' h'; }
+  function endDot(t) { t = String(t || '').trim(); return /[.!?]$/.test(t) ? t : t + '.'; }
   function remember(slug, rec) {
     (HC.sent[slug] = HC.sent[slug] || []).unshift(rec);
     HC.sent[slug] = HC.sent[slug].slice(0, 20);
     try { sessionStorage.setItem(HC_KEY, JSON.stringify(HC.sent)); } catch (e) { /* memory only */ }
+  }
+  // File one command under the id kept in rec.ids[m]. A 409 means that id is on
+  // file for a different command, so this one was not filed: take a new id once.
+  function postKept(rec, m, action, args) {
+    return postCommand(m, action, args, rec.ids[m]).catch(function (e) {
+      if (!e || e.status !== 409) throw e;
+      rec.ids[m] = randId();
+      return postCommand(m, action, args, rec.ids[m]);
+    });
+  }
+  // Where a result for pilot p goes: that pilot's open card, else #rsNote with the name.
+  function tell(p, text, ok) {
+    var m = RS.sel === p.slug && el('rsList').querySelector('.rrow.on .rmsg');
+    if (m) { m.className = 'small rmsg ' + (ok ? 'ok' : 'bad'); m.textContent = text; return; }
+    var n = el('rsNote'); n.className = 'small rsnote ' + (ok ? 'ok' : 'bad'); n.textContent = p.name + ': ' + text;
+  }
+  function done(p, text) {   // success: flash on the pilot's own card, or the note above the list
+    if (RS.sel === p.slug) { RS.flash = text; drawRoster(); return; }
+    tell(p, text, true);
   }
   function commandError(e) {
     if (e && e.name === 'TypeError') return 'Could not reach the club API. Check the connection and send again.';
@@ -1481,7 +1507,8 @@
     return t || 'Something went wrong. Nothing was sent.';
   }
   function notSent(e) { var t = String((e && e.message) || ''); return 'Not sent: ' + t.replace(/^not filed - /, '').replace(/ Nothing was filed\.$/, ''); }
-  // This pilot's hours per simulator, both sims together (data.json is the summed snapshot).
+  // This pilot's hours per simulator. data.json only has both sim PCs summed, so
+  // the console cannot say which PC the time was flown on.
   function hoursLine(p) {
     var per = {}, rows = kioskRows(p), d = document.createElement('div'); d.className = 'small hrs';
     rows.forEach(function (r) { Object.keys(r.perSimMs || {}).forEach(function (k) { per[k] = (per[k] || 0) + (+r.perSimMs[k] || 0); }); });
@@ -1493,7 +1520,7 @@
       c.textContent = s.name + ' ' + fmtH(per[s.id]); d.appendChild(c);
     });
     var asof = document.createElement('span'); asof.className = 'muted';
-    asof.textContent = 'both sims, as of ' + (KSNAP.generatedIso || '').slice(0, 16).replace('T', ' ');
+    asof.textContent = 'both sim PCs together, as of ' + (KSNAP.generatedIso || '').slice(0, 16).replace('T', ' ');
     d.appendChild(asof);
     return d;
   }
@@ -1504,12 +1531,12 @@
     h.textContent = 'Sent from this tab (the club API cannot list sent commands, so this list is kept for this tab only):';
     box.appendChild(h);
     list.forEach(function (r) {
-      var li = document.createElement('div'); li.className = 'hitem';
-      var w = new Date(r.at).toLocaleString(undefined, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' });
-      li.textContent = w + ' · ' + (r.kind === 'reset'
-        ? 'reset to zero on ' + r.machines.map(pcName).join(' and ')
-        : (r.deltaMs > 0 ? 'added ' : 'took away ') + Math.abs(r.deltaMs / 60000) + ' min of ' + simName(r.simId) + ' on ' + pcName(r.machines[0])) +
-        ' · "' + r.note + '"' + (r.failed && r.failed.length ? ' · NOT sent to ' + r.failed.map(pcName).join(' and ') : '');
+      var li = document.createElement('div'); li.className = 'hitem' + (r.unclear ? ' bad' : '');
+      var w = new Date(r.at).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+      var what = r.kind === 'reset' ? 'reset to zero on ' + pcList(r.machines)
+        : (r.deltaMs > 0 ? 'added ' : 'took away ') + Math.abs(r.deltaMs / 60000) + ' min of ' + simName(r.simId) + ' on ' + pcName(r.machines[0]);
+      li.textContent = (r.unclear ? 'No clear answer ' : 'Sent ') + w + ': ' + what + ' · "' + r.note + '"' +
+        (r.failed && r.failed.length ? ' · NOT sent to ' + pcList(r.failed) : '');
       box.appendChild(li);
     });
     return box;
@@ -1526,30 +1553,50 @@
     sub.appendChild(hoursLine(p));
     var sims = simList();
     if (!sims.length) { sub.appendChild(sentList(p)); return; }
+    var pend = HC.pend[p.slug], dr = pend && pend.draft;
+    if (dr) { HC.pc = dr.pc; HC.sim = dr.sim; HC.dir = dr.dir; }
     if (!HC.sim || !sims.some(function (s) { return s.id === HC.sim; })) HC.sim = sims[0].id;
-    var pc = sel(PCS.map(function (c) { return [c.m, c.t]; }), HC.pc, function (v) { HC.pc = v; });
-    var sm = sel(sims.map(function (s) { return [s.id, s.name]; }), HC.sim, function (v) { HC.sim = v; });
-    var dir = sel([['add', 'Add'], ['sub', 'Take away']], HC.dir, function (v) { HC.dir = v; });
-    var mins = document.createElement('input'); mins.type = 'number'; mins.min = '1'; mins.max = String(MAX_MIN); mins.step = '1';
+    var mins = document.createElement('input'), note = document.createElement('input');
+    // the kept command id holds only while the form says the same thing
+    function values() { return { pc: HC.pc, sim: HC.sim, dir: HC.dir, mins: mins.value.trim(), note: cleanNote(note.value) }; }
+    function changed() {
+      var q = HC.pend[p.slug]; if (!q) return;
+      var v = values(), d = q.draft;
+      if (v.pc !== d.pc || v.sim !== d.sim || v.dir !== d.dir || v.mins !== d.mins || v.note !== d.note) delete HC.pend[p.slug];
+    }
+    var pc = sel(PCS.map(function (c) { return [c.m, c.t]; }), HC.pc, function (v) { HC.pc = v; changed(); });
+    var sm = sel(sims.map(function (s) { return [s.id, s.name]; }), HC.sim, function (v) { HC.sim = v; changed(); });
+    var dir = sel([['add', 'Add'], ['sub', 'Take away']], HC.dir, function (v) { HC.dir = v; changed(); });
+    mins.type = 'number'; mins.min = '1'; mins.max = String(MAX_MIN); mins.step = '1';
     mins.placeholder = 'min'; mins.className = 'hmin'; mins.setAttribute('aria-label', 'Minutes');
     var ml = document.createElement('span'); ml.className = 'small muted'; ml.textContent = 'min';
-    var note = document.createElement('input'); note.placeholder = 'Reason, e.g. timer ran while away'; note.maxLength = NOTE_MAX;
+    note.placeholder = 'Reason, e.g. timer ran while away'; note.maxLength = NOTE_MAX;
     note.className = 'hnote'; note.autocomplete = 'off'; note.setAttribute('aria-label', 'Reason');
+    if (dr) { mins.value = dr.mins; note.value = dr.note; }
+    mins.addEventListener('input', changed); note.addEventListener('input', changed);
     pc.setAttribute('aria-label', 'Sim PC'); sm.setAttribute('aria-label', 'Simulator'); dir.setAttribute('aria-label', 'Add or take away');
     var go = btn('Send', 'primary flush', function () {
-      var raw = mins.value.trim(), n = Number(raw), why = cleanNote(note.value);
+      var v = values(), n = Number(v.mins), why = v.note;
       msg.className = 'small rmsg bad';
-      if (!/^\d+$/.test(raw) || n < 1 || n > MAX_MIN) { msg.textContent = 'Minutes: a whole number from 1 to ' + MAX_MIN + '.'; mins.focus(); return; }
+      if (!/^\d+$/.test(v.mins) || n < 1 || n > MAX_MIN) { msg.textContent = 'Minutes: a whole number from 1 to ' + MAX_MIN + '.'; mins.focus(); return; }
       if (why.length < 2) { msg.textContent = 'Write a short reason.'; note.focus(); return; }
-      var deltaMs = (HC.dir === 'sub' ? -1 : 1) * n * 60000;
-      var args = { slug: p.slug, simId: HC.sim, deltaMs: deltaMs, note: why }, m = HC.pc;
+      var deltaMs = (v.dir === 'sub' ? -1 : 1) * n * 60000;
+      var args = { slug: p.slug, simId: v.sim, deltaMs: deltaMs, note: why }, m = v.pc, aj = JSON.stringify(args);
+      var q = HC.pend[p.slug];
+      if (!q || q.machine !== m || q.args !== aj) q = HC.pend[p.slug] = { machine: m, args: aj, ids: {}, draft: v };
+      q.ids[m] = q.ids[m] || randId();
       busy(true); msg.className = 'small rmsg'; msg.textContent = 'Sending…';
       passwordChecked().then(function () {
-        return postCommand(m, 'hours.adjust', args).then(function (c) {
+        return postKept(q, m, 'hours.adjust', args).then(function (c) {
+          if (HC.pend[p.slug] === q) delete HC.pend[p.slug];
           remember(p.slug, { at: c.issuedAt, kind: 'adjust', machines: [m], simId: args.simId, deltaMs: deltaMs, note: why, ids: [c.id] });
-          RS.flash = 'Sent. The sim applies it within a couple of minutes while it is on.'; drawRoster();
-        }, function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = commandError(e); });
-      }, function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = notSent(e); });
+          done(p, 'Sent. The sim applies it within a couple of minutes while it is on.');
+        }, function (e) {
+          busy(false);
+          if (RS.sel !== p.slug) remember(p.slug, { at: Date.now(), kind: 'adjust', machines: [m], simId: args.simId, deltaMs: deltaMs, note: why, ids: [q.ids[m]], unclear: true });
+          tell(p, commandError(e) + ' Send again goes as the same command, so it cannot count twice.', false);
+        });
+      }, function (e) { busy(false); tell(p, notSent(e), false); });
     });
     note.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
     mins.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
@@ -1557,59 +1604,105 @@
     [pc, sm, dir, mins, ml, note, go].forEach(function (x) { line.appendChild(x); });
     sub.appendChild(line);
     var help = document.createElement('div'); help.className = 'muted small';
-    help.textContent = 'Changes one simulator\'s time on one sim PC, 1 to ' + MAX_MIN + ' minutes. It never goes below zero.';
+    help.textContent = '1 to ' + MAX_MIN + ' minutes, never below zero. Taking time away only removes time that was flown on that sim PC, and a correction lands within a couple of minutes while that PC is on.';
     sub.appendChild(help);
+    if (pend) {
+      var pn = document.createElement('div'); pn.className = 'small hwarn';
+      pn.textContent = 'The last send got no clear answer. Send again goes as the same command, so it cannot count twice.';
+      sub.appendChild(pn);
+    }
     sub.appendChild(sentList(p));
     if (RS.focus) { RS.focus = false; setTimeout(function () { mins.focus(); }, 0); }
   }
   function resetForm(p, sub, msg, busy) {
     sub.classList.add('hform');
     sub.appendChild(hoursLine(p));
+    var rp = HC.rp[p.slug], half = rp && rp.miss.length && rp.miss.length < PCS.length;
     var say = document.createElement('div'); say.className = 'small rsay hwarn';
-    say.textContent = dot('Sets ' + p.name + '\'s simulator hours to zero on both sims (FPV Sim 1 and FPV Sim 2). Lessons, badges and the profile stay. This cannot be undone.');
+    say.textContent = dot('Sets ' + p.name + '\'s simulator hours to zero on both sims (FPV Sim 1 and FPV Sim 2). Lessons, badges and the profile stay. This cannot be undone.') +
+      ' A sim PC that stays off for a month never gets it.';
     sub.appendChild(say);
     var note = document.createElement('input'); note.placeholder = 'Reason'; note.maxLength = NOTE_MAX; note.className = 'hnote';
-    note.autocomplete = 'off'; note.setAttribute('aria-label', 'Reason'); note.value = HC.resetNote || '';
-    note.addEventListener('input', function () { HC.resetNote = note.value; });
+    note.autocomplete = 'off'; note.setAttribute('aria-label', 'Reason');
+    note.value = half ? rp.note : (HC.rnote[p.slug] || '');
+    note.addEventListener('input', function () { HC.rnote[p.slug] = note.value; });
     var line = document.createElement('div'); line.className = 'row wrapline hline';
     line.appendChild(note);
-    if (!RS.armed) {
-      line.appendChild(btn('Reset ' + p.name + '\'s hours', 'danger', function () {
-        if (cleanNote(note.value).length < 2) { msg.className = 'small rmsg bad'; msg.textContent = 'Write a short reason.'; note.focus(); return; }
-        RS.armed = true; drawRoster();
+    // Send to the kiosks in rec.miss, one after the other, so a failure names the PC it missed.
+    function fire(rec, again) {
+      var args = { slug: p.slug, note: rec.note }, to = rec.miss.slice(), sent = [], ids = [], firstErr = null, at = Date.now();
+      busy(true); msg.className = 'small rmsg'; msg.textContent = 'Sending…';
+      passwordChecked().then(function () {
+        return to.reduce(function (chain, m) {
+          return chain.then(function () {
+            return postKept(rec, m, 'hours.reset', args).then(function (r) {
+              ids.push(r.id); sent.push(m); rec.miss = rec.miss.filter(function (x) { return x !== m; });
+            }, function (e) { firstErr = firstErr || e; });
+          });
+        }, Promise.resolve()).then(function () {
+          var failed = rec.miss.slice(), mine = RS.sel === p.slug;
+          if (sent.length) remember(p.slug, { at: at, kind: 'reset', machines: sent, note: rec.note, ids: ids, failed: failed });
+          if (!failed.length) {
+            if (HC.rp[p.slug] === rec) delete HC.rp[p.slug];
+            delete HC.rnote[p.slug];
+            if (mine) { RS.mode = 'reset'; RS.armed = false; }
+            done(p, again ? 'Sent to ' + pcList(sent) + ' too, so both sims have been sent the reset.'
+              : 'Sent to both sims. Each applies it within a couple of minutes while it is on.');
+            return;
+          }
+          if (mine) { RS.armed = false; drawRoster(); }
+          var held = PCS.map(function (c) { return c.m; }).filter(function (m) { return failed.indexOf(m) < 0; });
+          tell(p, held.length
+            ? 'Sent to ' + pcList(held) + ' only. ' + pcList(failed) + ' did not get it: ' + endDot(commandError(firstErr)) +
+              ' Reset again sends it to ' + pcList(failed) + ' only, as the same command.'
+            : 'Not sent: ' + endDot(commandError(firstErr)) + ' Sending again goes as the same command, so it cannot count twice.', false);
+        });
+      }, function (e) { busy(false); tell(p, notSent(e), false); });
+    }
+    if (half) {
+      note.readOnly = true;
+      line.appendChild(btn('Reset again on ' + pcList(rp.miss) + ' only', 'danger solid', function (e) {
+        if (e && e.detail > 1) return;
+        fire(rp, true);
       }));
-    } else {
+      sub.appendChild(line);
+      var hs = document.createElement('div'); hs.className = 'row wrapline hline';
+      var ht = document.createElement('span'); ht.className = 'small hwarn';
+      ht.textContent = pcList(rp.miss) + ' did not get this reset. ' + pcList(PCS.map(function (c) { return c.m; }).filter(function (m) { return rp.miss.indexOf(m) < 0; })) + ' has been sent it.';
+      hs.appendChild(ht);
+      hs.appendChild(btn('Forget it', '', function () { delete HC.rp[p.slug]; drawRoster(); }));
+      sub.appendChild(hs);
+      sub.appendChild(sentList(p));
+      return;
+    }
+    var first = btn('Reset ' + p.name + '\'s hours', 'danger' + (RS.armed ? ' on' : ''), function () {
+      if (cleanNote(note.value).length < 2) { msg.className = 'small rmsg bad'; msg.textContent = 'Write a short reason.'; note.focus(); return; }
+      RS.armed = true; RS.armedAt = Date.now(); drawRoster();
+    });
+    first.disabled = !!RS.armed;   // armed: the second click of a double click lands here and does nothing
+    line.appendChild(first);
+    sub.appendChild(line);
+    if (RS.armed) {
+      // The confirm row sits on its own line below, never where the first button was.
+      var conf = document.createElement('div'); conf.className = 'row wrapline hline hconf';
       var sure = document.createElement('span'); sure.className = 'small hwarn';
       sure.textContent = 'Sure? Both sims, all of ' + p.name + '\'s time, for good.';
-      line.appendChild(sure);
-      line.appendChild(btn('Yes, reset on both sims', 'danger solid', function () {
+      conf.appendChild(sure);
+      conf.appendChild(btn('Yes, reset on both sims', 'danger solid', function (e) {
+        if (e && e.detail > 1) return;                        // part of a double click
+        if (Date.now() - (RS.armedAt || 0) < ARM_MS) return;  // too soon after arming to be a decision
         var why = cleanNote(note.value);
         if (why.length < 2) { msg.className = 'small rmsg bad'; msg.textContent = 'Write a short reason.'; return; }
-        busy(true); msg.className = 'small rmsg'; msg.textContent = 'Sending…';
-        passwordChecked().then(function () {
-          var args = { slug: p.slug, note: why }, ids = [], sent = [], failed = [], firstErr = null, at = Date.now();
-          // one command per kiosk, one after the other, so a failure names the sim it missed
-          return PCS.reduce(function (chain, c) {
-            return chain.then(function () {
-              return postCommand(c.m, 'hours.reset', args).then(function (r) { ids.push(r.id); sent.push(c.m); },
-                function (e) { failed.push(c.m); firstErr = firstErr || e; });
-            });
-          }, Promise.resolve()).then(function () {
-            if (sent.length) remember(p.slug, { at: at, kind: 'reset', machines: sent, note: why, ids: ids, failed: failed });
-            if (!failed.length) { HC.resetNote = ''; RS.mode = 'reset'; RS.armed = false; RS.flash = 'Sent to both sims. Each applies it within a couple of minutes while it is on.'; drawRoster(); return; }
-            RS.armed = false; drawRoster();
-            var m2 = el('rsList').querySelector('.rrow.on .rmsg');
-            if (m2) {
-              m2.className = 'small rmsg bad';
-              m2.textContent = (sent.length ? 'Sent to ' + sent.map(pcName).join(' and ') + ' only. ' + pcName(failed[0]) + ' did not get it: ' : 'Not sent: ') +
-                commandError(firstErr) + (sent.length ? ' Reset again to send it there.' : '');
-            }
-          });
-        }, function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = notSent(e); });
+        var aj = JSON.stringify({ slug: p.slug, note: why }), rec = HC.rp[p.slug];
+        if (!rec || rec.args !== aj) {
+          rec = HC.rp[p.slug] = { args: aj, note: why, ids: {}, miss: PCS.map(function (c) { return c.m; }) };
+          rec.miss.forEach(function (m) { rec.ids[m] = randId(); });
+        }
+        fire(rec, false);
       }));
-      line.appendChild(btn('Cancel', '', function () { RS.armed = false; drawRoster(); }));
+      conf.appendChild(btn('Cancel', '', function () { RS.armed = false; drawRoster(); }));
+      sub.appendChild(conf);
     }
-    sub.appendChild(line);
     sub.appendChild(sentList(p));
   }
   function addPilot() {

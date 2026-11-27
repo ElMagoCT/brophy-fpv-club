@@ -226,3 +226,7 @@ label.inline.tight{margin:0;font-size:14px}
 .hsent{border-top:1px dashed var(--line);padding-top:4px}
 .hsent:empty{display:none}
 .hitem{padding:1px 0}
+.hitem.bad{color:var(--bad)}
+.rsnote{margin:4px 0}
+.rsnote:empty{display:none}
+.rsnote.bad{color:var(--bad)} .rsnote.ok{color:var(--ok)}
