@@ -18,17 +18,23 @@ permissions:
 concurrency:
   group: pages
   cancel-in-progress: false
+# 2026-11-27: build and deploy are two jobs (GitHub's starter layout). With one job,
+# deploy-pages kept failing "No artifacts named github-pages" right after a good upload.
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
           path: .
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v5
