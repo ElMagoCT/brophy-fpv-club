@@ -141,7 +141,8 @@ h1 .a{color:var(--rust)}
 /* signed in with Google: while the question is open it is the only thing to tap */
 #form.cred:has(.ask:not([hidden])) .go{display:none}
 #form.cred:has(.ask:not([hidden])) .ask{margin-top:0}
-#form.cred .roster:has(.none){display:none}
+#form.cred .ask .pick{max-height:min(42vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:2px}
+#gmsg.busy{color:var(--ink-soft)}
 .done .meter[hidden] + .next{margin-top:22px}
 
 footer{max-width:520px;margin:26px auto 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-soft)}
@@ -303,6 +304,8 @@ footer .sitelinks{display:none}
     var list = Roster.list(), q = Roster.slug(v.f), qq = Roster.slug(v.f + ' ' + v.l);
     var hits = q ? list.filter(function (x) { var s = Roster.slug(x.name); return s.indexOf(q) === 0 || s.indexOf('-' + q) >= 0; }) : list;
     if (q) hits.sort(function (a, b) { return (Roster.slug(b.name).indexOf(qq) === 0) - (Roster.slug(a.name).indexOf(qq) === 0); });
+    /* signed in with Google: a nickname ("Jake" for Jacob) still shows up by its last initial */
+    if (state.cred && !hits.length) hits = likely(v);
     var key = hits.map(function (x) { return x.slug; }).join(',');
     if (key !== drawChips.last) {
       drawChips.last = key;
@@ -352,7 +355,7 @@ footer .sitelinks{display:none}
     /* never sign in as someone just because the name matches: ask first */
     if (state.match) { taken(state.match); return; }
     if (state.newOk !== v.name) {
-      var alike = sameFirst(v.f, v.l);
+      var alike = state.cred ? likely(v) : sameFirst(v.f, v.l);
       if (alike.length) { askMany(alike, v.name); return; }
     }
     busy(true);
@@ -387,6 +390,19 @@ footer .sitelinks{display:none}
       return !(m && m[1].charAt(0) !== i);
     });
   }
+  /* After Google: roster names this could be under another spelling or a
+     nickname. Same last initial (same first letter first), or same first name. */
+  function likely(v) {
+    var w = firstWord(v.f), i = String(v.l || '').charAt(0).toLowerCase(), a = w.charAt(0), no = state.notThem || {};
+    if (!w || !i) return [];
+    var out = Roster.list().filter(function (x) {
+      if (no[x.slug]) return false;
+      var parts = Roster.slug(x.name).split('-'), lp = parts.length > 1 ? parts[parts.length - 1] : '';
+      return firstWord(x.name) === w || lp.charAt(0) === i;
+    });
+    function rank(x) { var f = firstWord(x.name); return f === w ? 0 : f.charAt(0) === a ? 1 : 2; }
+    return out.sort(function (x, y) { return rank(x) - rank(y) || (x.name < y.name ? -1 : 1); }).slice(0, 12);
+  }
   function openAsk(q, list, mode) {
     state.askMode = mode;
     var askQ = $('askQ'), askList = $('askList');
@@ -394,7 +410,7 @@ footer .sitelinks{display:none}
     if (q.name) { var b = document.createElement('b'); b.textContent = q.name; askQ.appendChild(b); askQ.appendChild(document.createTextNode(q.text)); }
     else askQ.textContent = q.text;
     askList.innerHTML = '';
-    list.slice(0, 6).forEach(function (p) {
+    list.slice(0, state.cred ? 12 : 6).forEach(function (p) {
       var b = document.createElement('button'); b.type = 'button'; b.textContent = p.name;
       b.onclick = function () { pick({ name: p.name, slug: p.slug }); };
       askList.appendChild(b);
@@ -493,15 +509,22 @@ footer .sitelinks{display:none}
   $('gpinBtn').onclick = function () { pinPath(''); };
   $('typeIt').onclick = function () { $('gate').hidden = true; cardIn('form'); first.focus(); };
 
+  /* one credential at a time; the button hides while the server checks it */
+  function checking(on) {
+    state.checking = on; $('gbtn').hidden = on;
+    $('gmsg').classList.toggle('busy', on); gsay(on ? 'Checking…' : '');
+  }
   function onCred(cred) {
-    gsay('');
+    if (state.checking) return;
+    checking(true);
     FPVAuth.call('google', { credential: cred }).then(function (res) {
       var j = res.j;
-      if (j.ok && j.token) return FPVAuth.signedIn(j, shared()).then(function () { showDone(j.pilot, false); });
-      if (j.ok && j.needPilot) return needPilot(cred, j.suggest || {});
+      if (j.ok && j.token) return FPVAuth.signedIn(j, shared()).then(function () { checking(false); showDone(j.pilot, false); });
+      if (j.ok && j.needPilot) { checking(false); return needPilot(cred, j.suggest || {}); }
+      checking(false);
       gsay(FPVAuth.say(j.code, j));
       if (j.code === 'mentor' || j.code === 'google') $('gpinBtn').hidden = false;
-    }, function () { gsay(FPVAuth.words.net); });
+    }, function () { checking(false); gsay(FPVAuth.words.net); });
   }
   /* a Google account with no pilot yet: the name from the account, then the usual checks */
   function needPilot(cred, sug) {
@@ -513,7 +536,7 @@ footer .sitelinks{display:none}
     var v = values();
     if (!v.ok) { first.focus(); return; }
     if (state.match) { taken(state.match); return; }
-    var alike = sameFirst(v.f, v.l);
+    var alike = likely(v);
     if (alike.length) { askMany(alike, v.name); return; }
     go.focus({ preventScroll: true });
   }
@@ -535,6 +558,8 @@ footer .sitelinks{display:none}
       return FPVAuth.signedIn(j, shared()).then(function () { showDone(j.pilot, fresh); });
     }
     if (j.code === 'taken' && j.pilot) { taken(j.pilot); return; }
+    /* the API links a name only when it matches the school account: a mentor links the rest. Never add a second pilot here. */
+    if (j.code === 'name-mismatch') { say('That name does not match your school account. Ask a mentor to link you.'); return; }
     if (j.code === 'google') { state.cred = null; $('form').classList.remove('cred'); $('lede').hidden = false; $('signed').hidden = true; gate(); gsay('Sign in again.'); return; }
     if (ERR[j.code] && j.code !== 'bad-name') { say(ERR[j.code]); return; }
     if (res.status === 429 && !j.code) { say('Too fast. Wait a few seconds and try again.'); return; }

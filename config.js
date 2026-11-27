@@ -15,7 +15,7 @@
      computer): {token, exp, pilot:{slug,name}}. FPV.post adds X-Pilot-Token
      only when there is a token AND the mode is on.
    - A 401 login / 403 not-you on a pilot write keeps the write in the outbox
-     (localStorage fpv.outbox.v1), opens the sign-in sheet (auth.js, injected
+     (fpv.outbox.v1; sessionStorage on a shared computer; cleared on sign-out), opens the sign-in sheet (auth.js, injected
      then), and the caller's promise waits: after sign-in the write is sent
      again and the caller gets that answer. Closing the sheet hands the caller
      the refusal; the write stays in the outbox for the next sign-in. */
@@ -63,8 +63,10 @@
     if (!res || !res.token) return;
     var v = JSON.stringify({ token: res.token, exp: res.exp || 0, pilot: res.pilot || null });
     try { (shared ? sessionStorage : localStorage).setItem(AKEY, v); } catch (e) {}
+    var b = box(); if (b.length) saveBox(b); /* moves the outbox to match */
   }
-  function signedOut() { setAuth(null); }
+  /* sign-out: the next pilot on this computer must not send these */
+  function signedOut() { setAuth(null); clearBox(); cancelled(); }
 
   /* auth.js (the sign-in UI) is loaded only when it is needed */
   var uiP = null;
@@ -79,11 +81,24 @@
     return uiP;
   }
 
-  /* a kept write waits at most a week */
+  /* a kept write waits at most a week. On a shared computer (signed in with
+     the box ticked) it lives in sessionStorage, so it goes when the browser closes. */
+  function shared() { try { return !!sessionStorage.getItem(AKEY); } catch (e) { return false; } }
+  function rd(st) { try { return JSON.parse(st.getItem(OKEY) || '[]') || []; } catch (e) { return []; } }
   function box() {
-    try { return (JSON.parse(localStorage.getItem(OKEY) || '[]') || []).filter(function (x) { return x && x.at > Date.now() - 7 * 864e5; }); } catch (e) { return []; }
+    var all = rd(localStorage).concat(rd(sessionStorage));
+    return all.filter(function (x) { return x && x.at > Date.now() - 7 * 864e5; });
   }
-  function saveBox(b) { try { if (b.length) localStorage.setItem(OKEY, JSON.stringify(b)); else localStorage.removeItem(OKEY); } catch (e) {} }
+  function saveBox(b) {
+    var to = shared() ? sessionStorage : localStorage, other = to === localStorage ? sessionStorage : localStorage;
+    try { other.removeItem(OKEY); } catch (e) {}
+    try { if (b.length) to.setItem(OKEY, JSON.stringify(b)); else to.removeItem(OKEY); } catch (e) {}
+  }
+  function clearBox() {
+    try { localStorage.removeItem(OKEY); } catch (e) {}
+    try { sessionStorage.removeItem(OKEY); } catch (e) {}
+    mem = {};
+  }
   function keep(path, body) {
     var b = box(), s = JSON.stringify(body);
     for (var i = 0; i < b.length; i++) if (b[i].path === path && JSON.stringify(b[i].body) === s) return b[i].id;
@@ -123,25 +138,31 @@
       return refused(r).then(function (code) {
         if (!code) return r;
         var id = keep(path, body);
-        return new Promise(function (ok) {
-          (waiting[id] = waiting[id] || []).push({ ok: ok, r: r });
+        return new Promise(function (ok, no) {
+          (waiting[id] = waiting[id] || []).push({ ok: ok, no: no, r: r });
           ui().then(function (A) { A.sheet({ why: code }); }, function () { cancelled(); });
         });
       });
     });
   }
-  /* after a sign-in: send what was kept; callers that are still waiting get the new answer */
+  /* after a sign-in: send what was kept. Every waiting caller is settled here:
+     with the new answer (even a refusal, so it shows its own error), or with an
+     Error when the network fails. A write refused as not-you is dropped (it was
+     another pilot's); a network failure or a login refusal keeps it for a retry. */
   function flush() {
     var items = box(); for (var k in mem) items.push(mem[k]);
+    function drop(id) { saveBox(box().filter(function (x) { return x.id !== id; })); delete mem[id]; }
+    function settle(id, fn) { var ws = waiting[id] || []; delete waiting[id]; ws.forEach(fn); }
     return items.reduce(function (p, it) {
       return p.then(function () {
         return send(it.path, it.body, false, true).then(function (r) {
           return refused(r).then(function (code) {
-            if (code) return;
-            saveBox(box().filter(function (x) { return x.id !== it.id; })); delete mem[it.id];
-            (waiting[it.id] || []).forEach(function (w) { w.ok(r.clone()); }); delete waiting[it.id];
+            if (code !== 'login') drop(it.id);
+            settle(it.id, function (w) { w.ok(r.clone()); });
           });
-        }, function () {});
+        }, function () {
+          settle(it.id, function (w) { w.no(new Error('network')); });
+        });
       });
     }, Promise.resolve());
   }

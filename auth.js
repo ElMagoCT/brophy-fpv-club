@@ -170,18 +170,21 @@
     F.authCfg().then(function (cfg) {
       if (!cfg.google) { showPin(); return; }
       g.appendChild(el('div', 'fa-wait'));
+      var busy = false;
+      function back(text) { busy = false; g.hidden = false; usePin.hidden = false; msg.className = 'fa-msg'; msg.textContent = text; }
       googleBtn(g, cfg, function (cred) {
-        msg.textContent = '';
+        if (busy) return;   /* one credential at a time */
+        busy = true; g.hidden = true; usePin.hidden = true;
+        msg.className = 'fa-msg fa-busy'; msg.textContent = 'Checking…';
         call('google', { credential: cred }).then(function (res) {
           var j = res.j;
-          if (j.ok && j.token) return signedIn(j, cb.checked).then(finish);
+          if (j.ok && j.token) return signedIn(j, cb.checked).then(finish, finish);
           if (j.ok && j.needPilot) {
             try { sessionStorage.setItem('fpv.auth.pending', JSON.stringify({ credential: cred, suggest: j.suggest || {}, shared: cb.checked })); } catch (e) {}
             done = true; location.href = F.BASE + 'join/?g=1'; return;
           }
-          msg.textContent = say(j.code, j);
-          if (j.code === 'mentor' || j.code === 'google') usePin.hidden = false;
-        }, function () { msg.textContent = WORDS.net; });
+          back(say(j.code, j));
+        }, function () { back(WORDS.net); });
       }).catch(function () { g.innerHTML = ''; msg.textContent = WORDS.blocked; showPin(); });
     });
     return cur;
