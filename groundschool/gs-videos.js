@@ -50,7 +50,7 @@
 (function(){
   var V = {
     /* Flight Clearance */
-    'safe-flight':           { drive:'', len:'', title:'Safe Flight' },
+    'safe-flight':           { drive:'1gn12LXkM8Uuwm93hJhG7ynSIIQTPICDc', len:'5:11', title:'Safe Flight' },
     'faa-trust':             { drive:'1Pynu7O4uuxMtHqie1PD48f-W0sDvJw__', len:'2:38', title:'FAA TRUST' },
     /* Tier 1 path */
     'proficient-flight':     { drive:'1NVKS-UqN231hVob04zYAH6k5Ug_pzt6A', len:'4:46', title:'Sim Flight' },
@@ -79,9 +79,9 @@
     /* 2026-11-26: the overviews, hosted on this site (media/). One line each to
        switch on: src:'media/<id>.mp4'. While src is '' the home intro is not
        shown at all and the other two show a quiet "Video soon" line. */
-    'home-intro':      { src:'media/home-intro.mp4', poster:'media/home-intro.jpg',      captions:'media/home-intro.vtt',      len:'0:51', title:'Who we are' },
-    'flight-overview': { src:'media/flight-overview.mp4', poster:'media/flight-overview.jpg', captions:'media/flight-overview.vtt', len:'1:35', title:'Brophy flight overview' },
-    'path-overview':   { src:'media/path-overview.mp4', poster:'media/path-overview.jpg',   captions:'media/path-overview.vtt',   len:'1:36', title:'How badges work' }
+    'home-intro':      { src:'media/home-intro.mp4', poster:'media/home-intro.jpg', srcLight:'media/home-intro-light.mp4', posterLight:'media/home-intro-light.jpg',      captions:'media/home-intro.vtt',      len:'0:51', title:'Who we are' },
+    'flight-overview': { src:'media/flight-overview.mp4', poster:'media/flight-overview.jpg', srcLight:'media/flight-overview-light.mp4', posterLight:'media/flight-overview-light.jpg', captions:'media/flight-overview.vtt', len:'1:35', title:'Brophy flight overview' },
+    'path-overview':   { src:'media/path-overview.mp4', poster:'media/path-overview.jpg', srcLight:'media/path-overview-light.mp4', posterLight:'media/path-overview-light.jpg',   captions:'media/path-overview.vtt',   len:'1:36', title:'How badges work' }
   };
   window.GS_VIDEOS = V;
 
@@ -164,6 +164,19 @@
   var SOON = '<svg viewBox="0 0 20 14" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3">' +
     '<rect x="1" y="1" width="18" height="12" rx="1.5" stroke-dasharray="2.5 2"/><path d="M8 4.5l5 2.5-5 2.5z"/></g></svg>';
 
+  /* light mode: <html data-theme> is the resolved scheme (theme.js) */
+  function light(){ return document.documentElement.getAttribute('data-theme') === 'light'; }
+  /* the theme switched: a site-hosted video that has not started is rebuilt with the matching file */
+  if(window.MutationObserver) new MutationObserver(function(){
+    var els = document.querySelectorAll('[data-gsv]');
+    for(var i = 0; i < els.length; i++){
+      var e = els[i], h = e._gsv, v = get(e.getAttribute('data-gsv')), vid = e.querySelector('video');
+      if(!h || !h.opts || h.live || !v || !v.srcLight || !!h.lt === light()) continue;
+      if(vid && vid.currentTime > 0) continue;
+      player(e, e.getAttribute('data-gsv'), h.opts);
+    }
+  }).observe(document.documentElement, { attributes:true, attributeFilter:['data-theme'] });
+
   /* ---- one player ---- */
   function player(el, id, opts){
     opts = opts || {};
@@ -190,11 +203,14 @@
         try{ opts.keepAlive(); }catch(e){}
       }, 4000);
     }
-    /* 2026-11-26: a file this site hosts (src): the browser's own player */
+    /* 2026-11-26: a file this site hosts (src): the browser's own player.
+       2026-11-27: srcLight/posterLight, when set, are used while the page is in light mode */
     if(own(v)){
+      var lt = light() && v.srcLight, vsrc = lt ? v.srcLight : v.src, vposter = lt ? (v.posterLight || v.poster) : v.poster;
+      H.opts = opts; H.lt = !!lt;
       el.innerHTML = '<div class="gsv-box"><video controls playsinline preload="none"' +
-        (v.poster ? ' poster="' + esc(media(v.poster)) + '"' : '') + ' aria-label="' + esc(v.title + ' video') + '">' +
-        '<source src="' + esc(media(v.src)) + '" type="video/mp4">' +
+        (vposter ? ' poster="' + esc(media(vposter)) + '"' : '') + ' aria-label="' + esc(v.title + ' video') + '">' +
+        '<source src="' + esc(media(vsrc)) + '" type="video/mp4">' +
         (v.captions ? '<track kind="captions" src="' + esc(media(v.captions)) + '" srclang="en" label="English" default>' : '') +
         '</video></div>' +
         '<div class="gsv-cap"><b>' + esc(v.title) + '</b>' + (v.len ? '<span>' + esc(v.len) + '</span>' : '') + '</div>';
