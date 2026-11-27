@@ -41,7 +41,12 @@ body{background-color:#f8f5ee}
 .mepanel .names button{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;background:var(--paper-2);
   border:1px solid var(--line-hard);border-radius:6px;padding:4px 9px;cursor:pointer;color:var(--ink)}
 .mepanel .names button:hover{border-color:var(--rust)}
-.mepanel .names button.new{border-style:dashed;color:var(--rust)}
+.mepanel .names button{font-size:15px;padding:8px 12px;border-radius:8px}
+.mepanel .names button.cur{border-color:var(--rust);color:var(--rust)}
+.mepanel .mjoin{display:block;margin-top:12px;padding:10px 12px;border:1.5px dashed var(--line-hard);border-radius:8px;
+  text-align:center;text-decoration:none;color:var(--ink-soft);font-size:15px}
+.mepanel .mjoin b{color:var(--rust)}
+.mepanel .mjoin:hover{border-color:var(--rust)}
 .mepanel .mhint{font-size:13.5px;color:var(--ink-soft);margin-top:8px;line-height:1.4}
 .mstats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
 .mstats div{background:var(--paper-2);border-radius:7px;padding:7px 8px;text-align:center}

@@ -267,6 +267,12 @@ footer a{color:var(--ink)}
   .cards2{grid-template-columns:1fr;flex-basis:100%;max-width:none}
   .title>div:first-child{flex-basis:100%}
 }
+.gate .gchips{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;max-height:260px;overflow:auto}
+.gate .gchips button{font-family:var(--font-mono);font-size:15px;letter-spacing:.04em;cursor:pointer;color:var(--ink);
+  background-color:var(--paper-2);border:1.5px solid var(--line-hard);border-radius:8px;padding:9px 13px}
+.gate .gchips button:hover{border-color:var(--rust);color:var(--rust)}
+.gate .gjoin{display:inline-block;margin-top:14px;color:var(--ink-soft);font-size:15px;text-underline-offset:3px}
+.gate .gjoin b{color:var(--rust)}
 </style>
 <link rel="stylesheet" href="../site.css">
 </head>
@@ -281,6 +287,8 @@ footer a{color:var(--ink)}
 <div class="wrap">
 
   <nav class="crumbs" aria-label="Site"></nav>
+  <script src="../config.js"></script>
+  <script src="../roster.js"></script>
   <script src="../pilots.js"></script>
   <script src="../site.js"></script>
 
@@ -400,7 +408,7 @@ var DD_HINT = 'About a minute: take off, fly, land safely. Upload it to Google D
 function drawTop(st) {
   var p = ST.pilot, cert = $('statCert'), perm = $('statPerm');
   $('who').innerHTML = p ? 'Flying as <b>' + esc(p.name) + '</b><button type="button" class="linkbtn" id="pickBtn">change</button>'
-                         : 'Flying as <b>nobody yet</b><button type="button" class="linkbtn" id="pickBtn">select profile</button>';
+                         : 'Flying as <b>nobody yet</b><button type="button" class="linkbtn" id="pickBtn">pick your name</button>';
   $('pickBtn').onclick = function () { SiteNav.open(); };
   /* card 1: the certification - grey until something is done, amber while in
      progress or a submission waits, green once all four badges are in */
@@ -408,7 +416,7 @@ function drawTop(st) {
   var c1 = !p ? 'none' : st.cleared ? 'green' : (st.done || waiting || st.parts.some(function (x) { return x.s.pct > 0; })) ? 'amber' : 'none';
   cert.className = 'stat ' + c1;
   cert.innerHTML = '<div class="k">1 &middot; Brophy Drone Certification</div>' +
-    '<div class="nm">' + (!p ? 'Pick your profile' : st.pending ? 'Checking&hellip;' : st.cleared ? 'Certified &#10003;' : st.done || waiting ? 'In progress' : 'Not started') + '</div>' +
+    '<div class="nm">' + (!p ? 'Pick your name' : st.pending ? 'Checking&hellip;' : st.cleared ? 'Certified &#10003;' : st.done || waiting ? 'In progress' : 'Not started') + '</div>' +
     '<div class="v">' + (!p ? 'Four badges and a drone in your portfolio.' : st.cleared ? '<b>' + st.done + ' of ' + st.of + ' badges.</b> You may ask to fly.' :
       '<b>' + st.done + ' of ' + st.of + ' badges</b>' + (waiting ? ' &middot; ' + waiting + ' pending review' : '') + (st.next ? ' &middot; next: ' + esc(st.next.badge.name) : '')) + '</div>' +
     (p ? '<div class="meter"><i style="width:' + Math.round(st.done / st.of * 100) + '%"></i></div>' : '');
@@ -420,14 +428,20 @@ function drawTop(st) {
     '<div class="nm">' + (!p ? 'Every flight' : st.cleared ? 'Ask before every flight' : 'Locked') + '</div>' +
     '<div class="v">' + (!p ? 'His form, at least 24 hours ahead. You fly once you have a yes.' : st.cleared ? 'Send his form at least <b>24 hours ahead</b> and he answers by email. Fly once you have a yes, and only what you asked for.' : 'Get certified first, a request from an uncertified pilot won\'t be approved.') + '</div>';
 }
+/* 2026-11-26: the roster's names as chips; new pilots join on /join/ */
 function picker() {
-  var names = ST.data && ST.data.pilots ? ST.data.pilots.map(function (p) { return p.name; }).sort() : [];
-  return '<div class="card gate"><div class="k">Who is asking?</div><h3>Select your profile</h3>' +
-    '<p>Pick your name (the same one you use on the kiosk) and the page shows your certification, your drones and Mr. Burr\'s form.</p>' +
-    '<input type="text" id="gateName" list="gateNames" placeholder="First name and last initial, e.g. Micah T." autocomplete="off" spellcheck="false" maxlength="28">' +
-    '<datalist id="gateNames">' + names.map(function (n) { return '<option value="' + esc(n) + '">'; }).join('') + '</datalist>' +
-    '<div class="row"><button type="button" class="btn primary" id="gateGo">That\'s me</button></div>' +
-    '<div class="hint">No password: picking a name is signing in. ' + (ST.loaded.data ? '' : 'Loading the roster&hellip;') + '</div></div>';
+  return '<div class="card gate"><div class="k">Who is asking?</div><h3>Tap your name</h3>' +
+    '<p>Then this page shows your certification, your drones and Mr. Burr\'s form.</p>' +
+    '<input type="search" id="gateName" placeholder="Find your name" aria-label="Find your name" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="28">' +
+    '<div class="gchips" id="gateChips"></div>' +
+    '<a class="gjoin" href="../join/">New here? <b>Join</b></a></div>';
+}
+function gateChips() {
+  var box = $('gateChips'), inp = $('gateName'); if (!box) return;
+  var q = Roster.slug(inp.value), list = Roster.list();
+  var hits = list.filter(function (x) { return !q || Roster.slug(x.name).indexOf(q) >= 0; }).slice(0, 60);
+  box.innerHTML = hits.map(function (x) { return '<button type="button" data-s="' + esc(x.slug) + '">' + esc(x.name) + '</button>'; }).join('') ||
+    '<span class="hint">' + (q ? 'No one by that name yet.' : 'Loading names&hellip;') + '</span>';
 }
 /* how-it-works: open until certified, closed after - unless the pilot toggles
    it themselves. `toggle` fires asynchronously, so a toggle that leaves the box
@@ -446,9 +460,21 @@ function render() {
   if (!howTouched && !st.pending) { howWant = !(p && st.cleared); $('howbox').open = howWant; }
   $('halves').className = !p ? 'nobody' : (st.cleared ? 'cleared' : '');
   $('gateSec').hidden = !!p;
-  if (!p) { $('gateSec').innerHTML = picker(); var go = $('gateGo'), inp = $('gateName'); go.onclick = function () { var v = inp.value.trim(); if (v.length >= 2) SiteNav.set(v); }; inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); }); }
+  if (!p && !$('gateChips')) {
+    $('gateSec').innerHTML = picker();
+    var inp = $('gateName');
+    inp.addEventListener('input', gateChips);
+    inp.addEventListener('keydown', function (e) { var b = $('gateChips').querySelectorAll('button'); if (e.key === 'Enter' && b.length === 1) b[0].click(); });
+    $('gateChips').addEventListener('click', function (e) {
+      var b = e.target.closest('button[data-s]'); if (!b) return;
+      var en = Roster.find(b.getAttribute('data-s'));
+      SiteNav.set(en ? { name: en.name, slug: en.slug } : { name: b.textContent, slug: b.getAttribute('data-s') });
+    });
+    gateChips(); Roster.load().then(gateChips);
+  }
+  if (p) $('gateSec').innerHTML = '';
   var ny = $('notYet');
-  if (!p) { ny.hidden = false; ny.innerHTML = '<b>Pick your profile above first.</b> The form is for certified pilots; you can still open it.'; }
+  if (!p) { ny.hidden = false; ny.innerHTML = '<b>Tap your name above first.</b> The form is for certified pilots; you can still open it.'; }
   else if (st.cleared) ny.hidden = true;
   else { ny.hidden = false; ny.innerHTML = '<b>' + esc(p.name) + ', you are not certified yet</b> (' + st.done + ' of ' + st.of + ' badges). Finish the <a href="#badges">Brophy Drone Certification</a> first; a request from an uncertified pilot will not be approved.'; }
   drawDrones(); drawBadges(st);

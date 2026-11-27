@@ -10,12 +10,29 @@
 
    A page that cares listens for `site:pilot` (detail = {name, slug} or null)
    and can open the menu with SiteNav.open(). Load it with `defer` after the
-   page's own <nav class="crumbs">, which it replaces. */
+   page's own <nav class="crumbs">, which it replaces.
+
+   2026-11-26: the names come from the club roster (roster.js, GET
+   /api/roster, falling back to data.json names). You tap your name; nobody
+   types a new one here any more. New pilots add themselves on /join/, which
+   puts them on the sims too. fs.pilot.v1 = {name, slug} with slug = the
+   roster key. config.js and roster.js are added here when a page did not
+   load them itself. */
 (function () {
   var KEY = 'fs.pilot.v1';
   var src = (document.currentScript && document.currentScript.src) || '';
   var BASE = src.replace(/site\.js(\?.*)?$/, '');
-  var DATA = null, panelOpen = false, picking = false;
+  var DATA = null, RAW = null, panelOpen = false, picking = false;
+
+  /* config.js + roster.js, for pages that only load site.js */
+  function need(file, ok) {
+    if (ok()) return;
+    var s = document.createElement('script'); s.src = BASE + file; s.async = false;
+    s.onload = function () { if (file === 'roster.js') { remerge(); draw(); Roster.load(); } };
+    document.head.appendChild(s);
+  }
+  need('config.js', function () { return !!window.FPV; });
+  need('roster.js', function () { return !!window.Roster; });
 
   function slug(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
@@ -26,8 +43,13 @@
   function get() {
     try { var v = JSON.parse(localStorage.getItem(KEY)); return v && v.name ? v : null; } catch (e) { return null; }
   }
-  function set(name) {
-    var p = name ? { name: String(name).trim(), slug: slug(name) } : null;
+  /* set('Name'), set({name, slug}) or set(null) */
+  function set(who) {
+    var p = null;
+    if (who) {
+      p = window.Roster ? Roster.canon(who) : (typeof who === 'string' ? { name: who.trim(), slug: slug(who) } : { name: who.name, slug: who.slug || slug(who.name) });
+      if (p && window.Roster) try { Roster.adopt(p); } catch (e) {}
+    }
     try { localStorage.setItem(KEY, JSON.stringify(p)); } catch (e) {}
     picking = false;
     close();
@@ -38,13 +60,15 @@
   function row(p) {
     p = p || get();
     if (!p || !DATA || !DATA.pilots) return null;
+    if (window.Roster) return Roster.row(DATA, p);
     for (var i = 0; i < DATA.pilots.length; i++) if (slug(DATA.pilots[i].name) === p.slug) return DATA.pilots[i];
     return null;
   }
 
   var page = /\/(pilot-path|progression|flightschool)\//.test(location.pathname) ? 'prog'
            : /\/(fly|clearance)\//.test(location.pathname) ? 'fly'
-           : /\/posters\//.test(location.pathname) ? 'res' : 'home';
+           : /\/posters\//.test(location.pathname) ? 'res'
+           : /\/join\//.test(location.pathname) ? 'join' : 'home';
 
   var bar = document.createElement('header');
   bar.className = 'sitebar';
@@ -84,16 +108,22 @@
     var p = get();
     if (!p || picking) {
       panel.innerHTML =
-        '<div class="mh">' + (p ? 'Switch profile' : 'Select your profile') + '</div>' +
-        '<input type="text" id="siteMeInput" placeholder="First name and last initial, e.g. Micah T." autocomplete="off" spellcheck="false" maxlength="28">' +
+        '<div class="mh">Tap your name</div>' +
+        '<input type="search" id="siteMeInput" placeholder="Find your name" aria-label="Find your name" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="28">' +
         '<div class="names" id="siteMeNames"></div>' +
-        '<div class="mhint">Same name you use at the kiosk. No password: progress only ever goes forward.</div>' +
+        '<a class="mjoin" href="' + BASE + 'join/">New here? <b>Join</b></a>' +
         (p ? '<button type="button" class="mlink" data-act="back">&larr; back to ' + esc(p.name) + '</button>' : '');
       var inp = panel.querySelector('#siteMeInput');
       inp.addEventListener('input', drawNames);
-      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter' && this.value.trim().length >= 2) set(this.value); });
+      inp.addEventListener('keydown', function (e) {
+        /* Enter picks the name only when exactly one is left */
+        if (e.key !== 'Enter') return;
+        var only = panel.querySelectorAll('#siteMeNames button[data-s]');
+        if (only.length === 1) only[0].click();
+      });
       drawNames();
-      setTimeout(function () { inp.focus(); }, 0);
+      if (window.Roster) Roster.load().then(drawNames);
+      if (window.matchMedia && matchMedia('(pointer:fine)').matches) setTimeout(function () { inp.focus(); }, 0);
       return;
     }
     var r = row(p);
@@ -103,7 +133,7 @@
           '<div><b>' + (rank(r) ? '#' + rank(r) : '&ndash;') + '</b><span>rank</span></div>' +
           '<div><b>' + countBadges(r) + '</b><span>badges</span></div>' +
         '</div>'
-      : '<div class="mhint">No kiosk time under this name yet. Fly at the kiosk with the same name and it shows up here.</div>';
+      : '<div class="mhint">No sim time yet. Tap your name on a sim and fly.</div>';
     panel.innerHTML =
       '<div class="mh">My profile</div>' +
       '<div class="mname">' + esc(p.name) + (r && r.tier != null ? ' <span class="mtier">Tier ' + r.tier + '</span>' : '') + '</div>' + stats +
@@ -126,13 +156,14 @@
   function drawNames() {
     var box = panel.querySelector('#siteMeNames'), inp = panel.querySelector('#siteMeInput');
     if (!box) return;
-    var raw = inp.value.trim(), q = slug(raw);
-    var names = DATA && DATA.pilots ? DATA.pilots.map(function (x) { return x.name; }) : [];
-    var hits = names.filter(function (n) { return !q || slug(n).indexOf(q) >= 0; }).sort().slice(0, 40);
-    var exact = hits.some(function (n) { return slug(n) === q; });
-    box.innerHTML = hits.map(function (n) { return '<button type="button" data-n="' + esc(n) + '">' + esc(n) + '</button>'; }).join('') +
-      (raw.length >= 2 && !exact ? '<button type="button" class="new" data-n="' + esc(raw) + '">+ new: ' + esc(raw) + '</button>' : '') +
-      (!hits.length && raw.length < 2 ? '<span class="mhint">' + (DATA ? 'Type your name.' : 'Loading names&hellip;') + '</span>' : '');
+    var q = slug(inp.value);
+    var list = window.Roster ? Roster.list() : (DATA && DATA.pilots ? DATA.pilots.map(function (x) { return { name: x.name, slug: slug(x.name) }; }) : []);
+    var hits = list.filter(function (x) { return !q || slug(x.name).indexOf(q) >= 0 || (x.aliases || []).some(function (a) { return a.indexOf(q) >= 0; }); }).slice(0, 60);
+    var me = get();
+    box.innerHTML = hits.map(function (x) {
+      return '<button type="button" data-s="' + esc(x.slug) + '"' + (me && me.slug === x.slug ? ' class="cur"' : '') + '>' + esc(x.name) + '</button>';
+    }).join('') +
+      (!hits.length ? '<span class="mhint">' + (q ? 'No one by that name yet.' : (list.length ? '' : 'Loading names&hellip;')) + '</span>' : '');
   }
 
   function open() { panelOpen = true; panel.hidden = false; btn.setAttribute('aria-expanded', 'true'); drawPanel(); }
@@ -146,7 +177,10 @@
     e.stopPropagation();
     var t = e.target.closest('button');
     if (!t) return;
-    if (t.hasAttribute('data-n')) return set(t.getAttribute('data-n'));
+    if (t.hasAttribute('data-s')) {
+      var s = t.getAttribute('data-s'), e = window.Roster && Roster.find(s);
+      return set(e ? { name: e.name, slug: e.slug } : { name: t.textContent, slug: s });
+    }
     var act = t.getAttribute('data-act');
     if (act === 'switch') { picking = true; drawPanel(); }
     else if (act === 'back') { picking = false; drawPanel(); }
@@ -161,8 +195,23 @@
     document.dispatchEvent(new CustomEvent('site:pilot', { detail: get() }));
   });
 
+  function remerge() {
+    if (!RAW) return;
+    var d = JSON.parse(JSON.stringify(RAW));
+    DATA = window.mergePilots ? window.mergePilots(d) : d;
+  }
   fetch(BASE + 'data.json', { cache: 'no-cache' }).then(function (r) { return r.json(); })
-    .then(function (d) { DATA = window.mergePilots ? window.mergePilots(d) : d; draw(); }).catch(function () {});
+    .then(function (d) { RAW = d; remerge(); draw(); }).catch(function () {});
+  /* the roster changed (fresh from the API): fold rows again, keep the
+     device's name in step with the roster's spelling */
+  document.addEventListener('roster:change', function () {
+    remerge();
+    var p = get(), c = p && window.Roster && Roster.entry(p);
+    if (c && (c.name !== p.name || c.slug !== p.slug)) { set({ name: c.name, slug: c.slug }); return; }
+    draw();
+    if (panelOpen && (picking || !get())) drawNames();
+  });
+  if (window.Roster) Roster.load();
 
   draw();
   /* 2026-10-20: every footer links the Pilot Agreement terms and Mr. Burr's

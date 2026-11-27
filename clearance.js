@@ -19,9 +19,9 @@
    with badge 'drone-portfolio' (picture + name + specs + a Google Drive
    video link) that a mentor passes in the console's Review tab.
 
-   Load after flightschool/badges.js, pilots.js and site.js. */
+   Load after flightschool/badges.js, config.js, roster.js, pilots.js and site.js. */
 (function () {
-  var FS = window.FS, API = FS.API;
+  var FS = window.FS, API = (window.FPV && FPV.API) || FS.API;
   var LS = { gs: 'gsWeb.profiles.v2', progress: 'fs.progress.v1' };
   function lsGet(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; } catch (e) { return d; } }
   function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
@@ -30,8 +30,7 @@
 
   function kioskRow() {
     if (!C.pilot || !C.data || !C.data.pilots) return null;
-    for (var i = 0; i < C.data.pilots.length; i++) if (FS.slug(C.data.pilots[i].name) === C.pilot.slug) return C.data.pilots[i];
-    return null;
+    return Roster.row(C.data, C.pilot);
   }
   function gsProfile() { var all = lsGet(LS.gs, {}); return C.pilot ? (all[C.pilot.slug] || null) : null; }
   function progress() { var all = lsGet(LS.progress, {}); return C.pilot ? (all[C.pilot.slug] || {}) : {}; }
@@ -105,7 +104,9 @@
   /* ---------- loading ---------- */
   function emit() { C.listeners.forEach(function (f) { try { f(); } catch (e) {} }); }
   function setPilot(p) {
-    C.pilot = p && p.name ? { name: p.name, slug: FS.slug(p.name) } : null;
+    /* 2026-11-26: slug = the roster key; lookups cover it and its aliases */
+    C.pilot = p && p.name ? Roster.canon(p) : null;
+    if (C.pilot) try { Roster.adopt(C.pilot); } catch (e) {}
     C.awards = null; C.subs = null; C.server = null; C.loaded.awards = C.loaded.subs = C.loaded.server = false;
     if (C.pilot) pullMine(); else { C.loaded.awards = C.loaded.subs = C.loaded.server = true; }
     emit();
@@ -121,18 +122,18 @@
   }
   function pullMine() {
     if (!C.pilot) return;
-    var me = C.pilot, q = encodeURIComponent(me.name);
+    var me = C.pilot;
     function mine() { return C.pilot && C.pilot.slug === me.slug; }
-    fetch(API + '/api/award?pilot=' + q, { cache: 'no-store' }).then(function (r) { return r.json(); })
-      .then(function (j) { if (!mine()) return; C.awards = (j && j.awards) || null; C.loaded.awards = true; emit(); })
+    Roster.awards(me)
+      .then(function (a) { if (!mine()) return; C.awards = a || null; C.loaded.awards = true; emit(); })
       .catch(function () { if (mine()) { C.loaded.awards = true; emit(); } });
-    fetch(API + '/api/submission?pilot=' + q, { cache: 'no-store' }).then(function (r) { return r.json(); })
-      .then(function (j) { if (!mine()) return; C.subs = (j && j.items) || []; C.loaded.subs = true; emit(); })
+    Roster.submissions(me)
+      .then(function (items) { if (!mine()) return; C.subs = items || []; C.loaded.subs = true; emit(); })
       .catch(function () { if (mine()) { C.subs = C.subs || []; C.loaded.subs = true; emit(); } });
-    fetch(API + '/api/progress?pilot=' + q, { cache: 'no-store' }).then(function (r) { return r.json(); })
-      .then(function (j) {
+    Roster.progress(me)
+      .then(function (sv) {
         if (!mine()) return;
-        C.server = (j && j.progress) || null; C.loaded.server = true;
+        C.server = sv || null; C.loaded.server = true;
         if (C.server) {   // forward-only merge of lessons done elsewhere into this device's profile (as the Pilot Path does)
           var all = lsGet(LS.gs, {}), p = all[me.slug] || { groundSchool: { lessons: {}, progressPct: 0, updated: 0 } }, RANK = { 'not-started': 0, 'in-progress': 1, complete: 2 };
           Object.keys(C.server.lessons || {}).forEach(function (id) {
@@ -158,7 +159,7 @@
     p[badgeId].steps[i] = !p[badgeId].steps[i]; p[badgeId].updated = Date.now(); saveProgress(p);
     if (p[badgeId].steps[i]) {
       var steps = {}; steps[badgeId] = {}; steps[badgeId][i] = true;
-      fetch(API + '/api/progress', { method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true, body: JSON.stringify({ name: C.pilot.name, steps: steps }) }).catch(function () {});
+      FPV.post('/api/progress', { name: C.pilot.name, steps: steps }, { keepalive: true }).catch(function () {});
     }
     emit();
   }
@@ -192,7 +193,7 @@
   function submit(badgeId, photo, note, extra) {
     var body = { pilot: C.pilot.name, badge: badgeId, note: note || '', photo: photo };
     if (extra) for (var k in extra) body[k] = extra[k];
-    return fetch(API + '/api/submission', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) })
+    return FPV.post('/api/submission', body)
       .then(function (r) { return r.json(); }).then(function (j) {
         if (!j || !j.ok) throw new Error((j && j.error) || 'try again');
         C.subs = (C.subs || []).concat([j.item]); emit(); return j.item;
@@ -234,6 +235,7 @@
   setPilot(p);
   pullData();
   document.addEventListener('site:pilot', function (e) { setPilot(e.detail); });
+  document.addEventListener('roster:change', function () { if (C.pilot && Roster.canon(C.pilot).slug !== C.pilot.slug) setPilot(C.pilot); else pullData(); });
   setInterval(function () { if (!document.hidden) refresh(); }, 60 * 1000);
   document.addEventListener('visibilitychange', function () { if (!document.hidden) refresh(); });
 })();

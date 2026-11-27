@@ -18,8 +18,14 @@
    publishes; nothing flows back). Instructors approve badges in ../admin/. */
 (function(){
   var KEY_PILOT = 'fs.pilot.v1', KEY_ALL = 'gsWeb.profiles.v2', KEY_OLD = 'gsWebProfile.v1';
-  var API = 'https://brophy-fpv-club-api.netlify.app';   // the club API: progress is mirrored there, monotonically, per pilot name
   var realFetch = window.fetch.bind(window);
+  /* 2026-11-26: the API address, the POST helper and the roster come from the
+     Pilot Path page this course is framed in (config.js, roster.js; same
+     origin). Opened on its own, the published API address stands in. */
+  var HOST = null; try{ if(window.parent !== window && window.parent.FPV) HOST = window.parent; }catch(e){}
+  var FPVC = window.FPV || (HOST && HOST.FPV) || null;
+  var API = (FPVC && FPVC.API) || 'https://brophy-fpv-club-api.netlify.app';
+  var ROSTER = window.Roster || (HOST && HOST.Roster) || null;
 
   function slug(n){ return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   function get(k, d){ try{ var v = JSON.parse(localStorage.getItem(k)); return v == null ? d : v; }catch(e){ return d; } }
@@ -98,14 +104,20 @@
     var body = { name: who.name, lessons: lessons };
     var bid = QUIZ_BADGE[lessonId];
     if(bid && L.score > 0){ body.quizzes = {}; body.quizzes[bid] = { best: L.score }; }
-    try{ realFetch(API + '/api/progress', { method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true,
-          body: JSON.stringify(body) }).catch(function(){}); }catch(e){}
+    try{
+      (FPVC && FPVC.post ? FPVC.post('/api/progress', body, { keepalive:true })
+        : realFetch(API + '/api/progress', { method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true, body: JSON.stringify(body) }))
+        .catch(function(){});
+    }catch(e){}
   }
   /* On load, pull what the API knows for this pilot and merge it in (forward only). */
   function pull(){
     var who = pilot(); if(who.slug === 'guest') return;
-    realFetch(API + '/api/progress?pilot=' + encodeURIComponent(who.name), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(j){
-      var srv = j && j.progress; if(!srv || !srv.lessons) return;
+    /* the roster's lookup covers the pilot's key and aliases */
+    var got = ROSTER ? ROSTER.progress(who)
+      : realFetch(API + '/api/progress?pilot=' + encodeURIComponent(who.slug), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(j){ return j && j.progress; });
+    got.then(function(srv){
+      if(!srv || !srv.lessons) return;
       var p = load(), RANK = { 'not-started':0, 'in-progress':1, 'complete':2 }, changed = false;
       Object.keys(srv.lessons).forEach(function(id){
         var S = srv.lessons[id], L = p.groundSchool.lessons[id] || { status:'not-started', score:0, attempts:0, firstStarted:0, completed:0, timeMs:0 };
@@ -155,7 +167,7 @@
       'padding:7px 14px;background:#1f3350;color:#f2ece0;font:14px/1.3 Barlow,system-ui,sans-serif;letter-spacing:.02em');
     d.innerHTML = '<span>' + (guest ? 'Progress is saved on this device as <b>Guest</b>.' : 'Lessons save on this device for <b></b>.') + '</span>' +
       '<a href="../pilot-path/" style="color:#f0a91a;font-family:\'Share Tech Mono\',monospace;font-size:13px;letter-spacing:.12em;text-transform:uppercase">' +
-      (guest ? 'Pick your pilot \u2192' : 'Flight School \u2192') + '</a>';
+      (guest ? 'Pick your name \u2192' : 'Pilot Path \u2192') + '</a>';
     if(!guest) d.querySelector('b').textContent = who.name;
     document.body.appendChild(d);
     document.body.style.paddingBottom = '44px';
