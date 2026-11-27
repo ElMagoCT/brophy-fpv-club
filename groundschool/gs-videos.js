@@ -79,9 +79,9 @@
     /* 2026-11-26: the overviews, hosted on this site (media/). One line each to
        switch on: src:'media/<id>.mp4'. While src is '' the home intro is not
        shown at all and the other two show a quiet "Video soon" line. */
-    'home-intro':      { src:'', poster:'media/home-intro.jpg',      captions:'media/home-intro.vtt',      len:'', title:'Who we are' },
+    'home-intro':      { src:'media/home-intro.mp4', poster:'media/home-intro.jpg',      captions:'media/home-intro.vtt',      len:'0:51', title:'Who we are' },
     'flight-overview': { src:'', poster:'media/flight-overview.jpg', captions:'media/flight-overview.vtt', len:'', title:'Brophy flight overview' },
-    'path-overview':   { src:'', poster:'media/path-overview.jpg',   captions:'media/path-overview.vtt',   len:'', title:'How badges work' }
+    'path-overview':   { src:'media/path-overview.mp4', poster:'media/path-overview.jpg',   captions:'media/path-overview.vtt',   len:'1:36', title:'How badges work' }
   };
   window.GS_VIDEOS = V;
 
