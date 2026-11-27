@@ -143,6 +143,7 @@ h1 .a{color:var(--rust)}
 #form.cred:has(.ask:not([hidden])) .ask{margin-top:0}
 #form.cred .ask .pick{max-height:min(42vh,300px);overflow-y:auto;overscroll-behavior:contain;padding:2px}
 #gmsg.busy{color:var(--ink-soft)}
+#form.linkme .go{display:none}
 .done .meter[hidden] + .next{margin-top:22px}
 
 footer{max-width:520px;margin:26px auto 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-soft)}
@@ -453,6 +454,7 @@ footer .sitelinks{display:none}
     el.addEventListener('input', function () {
       if (el === last) last.value = last.value.replace(/[^A-Za-zÀ-ɏ]/g, '').slice(0, state.lastMax);
       msg.style.color = ''; if (!state.busy) say(''); state.lettersMsg = false;
+      $('form').classList.remove('linkme');
       ask.hidden = true;
       update();
     });
@@ -478,7 +480,7 @@ footer .sitelinks{display:none}
   function reset() {
     first.value = ''; last.value = ''; state.lastMax = 1; last.maxLength = 1; state.newOk = null; state.notThem = {};
     $('lastBox').classList.remove('more'); $('lastLabel').textContent = 'Last initial'; last.placeholder = 'R';
-    msg.style.color = ''; say(''); ask.hidden = true; update();
+    msg.style.color = ''; say(''); ask.hidden = true; $('form').classList.remove('linkme'); update();
   }
 
   /* ---------- login (2026-11-26): only when GET /api/auth/config says so ----------
@@ -512,6 +514,7 @@ footer .sitelinks{display:none}
   /* one credential at a time; the button hides while the server checks it */
   function checking(on) {
     state.checking = on; $('gbtn').hidden = on;
+    if (state.cfg && state.cfg.mode === 'optional') $('typeIt').hidden = on;
     $('gmsg').classList.toggle('busy', on); gsay(on ? 'Checking…' : '');
   }
   function onCred(cred) {
@@ -559,7 +562,7 @@ footer .sitelinks{display:none}
     }
     if (j.code === 'taken' && j.pilot) { taken(j.pilot); return; }
     /* the API links a name only when it matches the school account: a mentor links the rest. Never add a second pilot here. */
-    if (j.code === 'name-mismatch') { say('That name does not match your school account. Ask a mentor to link you.'); return; }
+    if (j.code === 'name-mismatch') { $('form').classList.add('linkme'); say('That name does not match your school account. Ask a mentor to link you.'); return; }
     if (j.code === 'google') { state.cred = null; $('form').classList.remove('cred'); $('lede').hidden = false; $('signed').hidden = true; gate(); gsay('Sign in again.'); return; }
     if (ERR[j.code] && j.code !== 'bad-name') { say(ERR[j.code]); return; }
     if (res.status === 429 && !j.code) { say('Too fast. Wait a few seconds and try again.'); return; }
