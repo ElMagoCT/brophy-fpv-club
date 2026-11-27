@@ -59,6 +59,49 @@ body{background-color:#f8f5ee}
 .mlink{font:inherit;font-size:14px;background:none;border:0;padding:4px 0;cursor:pointer;color:var(--ink-soft);
   text-decoration:underline;text-underline-offset:3px}
 .mlink:hover{color:var(--rust)}
+.mepanel .msign{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-soft)}
+.mepanel .msign::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green,#2d7045)}
+.mepanel .min{display:block;width:100%;margin-top:10px;font-family:var(--font-mono);font-size:14px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink);background:var(--glass-2,#fff);border:1.5px solid var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer}
+
+/* Sign-in (auth.js, 2026-11-26): the sheet any page can open, and the PIN form
+   Join uses too. Only on the page when login is on. */
+.fa-sheet{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(20,28,40,.42);animation:faFade .18s ease both}
+dialog.fa-sheet{margin:0;padding:0;border:0;width:100%;height:100%;max-width:none;max-height:none;color:inherit;overflow:hidden}
+dialog.fa-sheet:not([open]){display:none}
+dialog.fa-sheet::backdrop{background:transparent}
+.fa-card{position:relative;width:100%;max-width:420px;max-height:92vh;overflow:auto;background:var(--glass-2,#fff);color:var(--ink);
+  border:1.5px solid var(--line-hard);border-radius:16px 16px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));
+  text-align:center;box-shadow:0 -6px 30px rgba(20,28,40,.2);animation:faUp .24s cubic-bezier(.2,.9,.3,1) both}
+@media (min-width:601px){ .fa-sheet{align-items:center} .fa-card{border-radius:16px} }
+.fa-card h2{font-family:var(--font-sketch,inherit);font-size:32px;margin:0 0 4px;line-height:1.1}
+.fa-lede{margin:0 0 18px;color:var(--ink-soft);font-size:16px}
+.fa-x{position:absolute;top:8px;right:10px;width:44px;height:44px;font-size:26px;line-height:1;background:none;border:0;color:var(--ink-soft);cursor:pointer}
+.fa-g{display:flex;justify-content:center;min-height:44px}
+.fa-g[hidden],.fa-link[hidden],.fa-shared[hidden],.fa-f[hidden]{display:none}
+.fa-wait{width:100%;max-width:300px;height:44px;border-radius:999px;border:1.5px dashed var(--line-hard);opacity:.6}
+.fa-msg{margin:12px 0 0;font-size:15.5px;line-height:1.4;color:var(--rust)}
+.fa-msg:empty{display:none}
+.fa-msg.fa-busy{color:var(--ink-soft);margin-top:4px;min-height:44px;line-height:44px}
+.fa-link{display:inline-block;margin-top:14px;font:inherit;font-size:15px;color:var(--ink-soft);background:none;border:0;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;padding:8px}
+.fa-shared{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:14px;color:var(--ink-soft);cursor:pointer}
+.fa-shared input{width:18px;height:18px;accent-color:var(--ink)}
+.fa-pin{display:flex;flex-direction:column;gap:12px;text-align:left}
+.fa-f{display:flex;flex-direction:column;gap:6px}
+.fa-f span{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.fa-f input{font:inherit;font-size:18px;font-weight:600;width:100%;padding:11px 14px;min-height:50px;color:var(--ink);
+  background:var(--glass,#f3eee2);border:1.5px solid var(--line-hard);border-radius:10px;outline:none}
+.fa-f input:focus{border-color:var(--ink)}
+.fa-go{min-height:52px;border-radius:12px;cursor:pointer;font-family:var(--font-mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--paper);background:var(--ink);border:1.5px solid var(--ink)}
+.fa-go[disabled]{opacity:.45}
+.fa-pin .fa-link{margin-top:0;align-self:center}
+.fa-pin .fa-msg{margin:0;text-align:center}
+@keyframes faFade{from{opacity:0}}
+@keyframes faUp{from{transform:translateY(24px);opacity:0}}
+@media (prefers-reduced-motion: reduce){ .fa-sheet,.fa-card{animation:none} }
 
 @media (max-width:600px){
   .sitenav a{padding:7px 12px;font-size:12.5px;letter-spacing:.1em}
@@ -150,3 +193,88 @@ footer .sitelinks a:hover{color:var(--rust)}
 .themeswitch button[aria-checked=true]{background:var(--ink);border-color:var(--ink);color:var(--paper);position:relative;z-index:1}
 .themeswitch button:focus-visible{outline:2px solid var(--sky);outline-offset:2px;position:relative;z-index:2}
 @media (max-width:600px){ .themeswitch{flex-basis:100%;margin-left:0;margin-top:4px} }
+
+/* ===========================================================================
+   BADGE CARDS + SHEETS (2026-11-26), Pilot Path and Flight Clearance.
+   One card anatomy: kind/category, name, one line; one row of actions in a
+   fixed order (Watch, quiz, Instructions, Resources, Submit); one status line.
+   Everything longer opens in a sheet: a native <dialog>, Escape and its own
+   Close button shut it, focus stays inside and goes back to the button.
+   =========================================================================== */
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
+.acts .btn{min-height:40px;padding:7px 12px;font-size:13px;letter-spacing:.07em;justify-content:center}
+@media (pointer:coarse){.acts .btn{min-height:44px}}
+.acts .btn .g{font-size:12px;line-height:1}
+.acts .vsoon{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 4px;font-family:var(--font-mono);font-size:13px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.acts .vsoon svg{width:20px;height:14px;flex:none}
+.stline{font-size:14.5px;line-height:1.4;color:var(--ink-soft);margin-top:2px}
+.stline b{font-weight:600;color:var(--ink)}
+.stline b.ok{color:var(--green)} .stline b.wait{color:var(--amber)} .stline b.no{color:var(--rust)}
+.stline .mnote{color:var(--ink);margin-top:2px}
+.one{font-size:14.5px;line-height:1.4;color:var(--ink)}
+.one b{font-weight:600;color:var(--rust)}
+.one a{font-weight:600;color:var(--rust);text-underline-offset:3px}
+@keyframes cardflash{0%{box-shadow:0 0 0 0 rgba(176,83,42,.0)}30%{box-shadow:0 0 0 4px rgba(176,83,42,.45)}100%{box-shadow:0 0 0 0 rgba(176,83,42,0)}}
+@media (prefers-reduced-motion:no-preference){.badge.flash{animation:cardflash 1.2s ease-out}}
+
+/* the overview video above a page's content: small, quiet until it exists */
+.ovw{max-width:560px;margin-top:18px}
+.ovw.gsv{margin:16px 0 0}
+
+dialog.sheet{border:2px solid var(--ink);border-radius:14px;padding:0;width:min(580px,calc(100vw - 24px));max-width:none;
+  max-height:calc(100vh - 32px);background-color:#fffdf7;color:var(--ink);box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+dialog.sheet[open]{display:flex;flex-direction:column}
+dialog.sheet.wide{width:min(880px,calc(100vw - 24px))}
+dialog.sheet::backdrop{background:rgba(16,24,38,.55)}
+.sheet .sh{display:flex;align-items:flex-start;gap:12px;padding:14px 16px 12px;border-bottom:1.5px solid var(--line)}
+.sheet .sh>div{flex:1;min-width:0}
+.sheet .sh .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
+.sheet .sh h3{font-family:var(--font-sketch);font-weight:700;font-size:26px;line-height:1.05;margin:2px 0 0}
+.sheet .sh .btn{min-height:44px;flex:none}
+.sheet .sb{padding:12px 16px 18px;overflow:auto;font-size:15px;line-height:1.45}
+.sheet .meta{font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.sheet .sec{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin:14px 0 4px}
+.sheet .sec:first-child{margin-top:0}
+.sheet .note{color:var(--ink-soft);margin:6px 0 0}
+.sheet .rulel{font-weight:600;color:var(--rust);margin-top:10px}
+.sheet .foot{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.sheet .foot .btn{min-height:44px}
+.sheet ul.chk{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.sheet ul.chk li{display:flex;gap:10px;align-items:flex-start;border-radius:7px;padding:6px 6px;margin:0 -6px}
+.sheet ul.chk li.step{cursor:pointer}
+.sheet ul.chk li.step:hover{background-color:var(--paper-2)}
+.sheet ul.chk .tick{width:26px;height:26px;flex:none;border:1.5px solid var(--line-hard);border-radius:6px;display:grid;place-items:center;
+  font-size:15px;line-height:1;color:var(--green);background-color:var(--glass);padding:0;font-family:inherit;cursor:inherit}
+.sheet ul.chk .tick.on{border-color:var(--green);background-color:rgba(31,82,48,.12)}
+.sheet ul.chk button.tick:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+.sheet ul.chk .rt{flex:1;min-width:0;padding-top:2px}
+.sheet ul.chk .rt small{display:block;color:var(--ink-soft);font-size:13.5px;line-height:1.3}
+.sheet ul.chk li.on .rt{color:var(--ink-soft)}
+.sheet ul.chk .rls{display:flex;gap:10px;flex:none;padding-top:3px}
+.sheet a.rl,.sheet span.rl{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap}
+.sheet a.rl:hover{text-decoration:underline}
+.sheet span.rl.k{color:var(--ink-soft)}
+.sheet ul.les{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.sheet ul.les li{display:flex;gap:10px;align-items:center;border-radius:7px;padding:6px;margin:0 -6px;cursor:pointer}
+.sheet ul.les li:hover{background-color:var(--paper-2)}
+.sheet ul.les .tick{width:22px;height:22px;flex:none;border:1.5px solid var(--line-hard);border-radius:5px;display:grid;place-items:center;font-size:13px;color:var(--green);background-color:var(--glass)}
+.sheet ul.les .tick.on{border-color:var(--green);background-color:rgba(31,82,48,.12)}
+.sheet ul.les .go{margin-left:auto;font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;
+  background:none;border:0;padding:6px 0;cursor:pointer}
+.sheet ul.les .dr{font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-left:6px}
+.sheet .rsteps ol{margin:4px 0 0;padding-left:20px}
+.sheet .rlinks{margin:4px 0 0;padding-left:18px}
+.sheet .rlinks li{margin:3px 0}
+.sheet .rlinks a{color:var(--sky)}
+.sheet .drv{display:flex;flex-direction:column;gap:8px}
+.sheet .drv input{font:inherit;font-size:16px;width:100%;box-sizing:border-box;border:1.5px solid var(--line-hard);border-radius:7px;padding:10px 12px;background-color:var(--glass-2);color:var(--ink)}
+.sheet .drv .dmsg{font-size:14px;color:var(--ink-soft)} .sheet .drv .dmsg.bad{color:var(--rust)}
+@media (prefers-reduced-motion:no-preference){dialog.sheet[open]{animation:sheetin .18s ease-out}}
+@keyframes sheetin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (max-width:600px){
+  dialog.sheet,dialog.sheet.wide{width:100%;margin:auto 0 0;border-radius:14px 14px 0 0;border-bottom:0;max-height:90vh;box-shadow:none}
+  .acts .btn{flex:1 1 auto}
+}
+[data-theme=dark] dialog.sheet{background-color:var(--glass-2);border-color:var(--line-hard);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+[data-theme=dark] dialog.sheet::backdrop{background:rgba(0,0,0,.6)}

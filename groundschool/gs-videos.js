@@ -8,7 +8,17 @@
                          (the Watch tab of a badge quiz, the module sheets)
      Pilot Path          pilot-path/, on each badge card
      Flight Clearance    clearance/, Safe Flight and FAA TRUST
-     the home page       the website how-to (site-howto)
+     the home page       the website how-to (site-howto) and, for a device
+                         with no pilot picked, the club intro (home-intro)
+
+   2026-11-26: an entry may instead point at a file this site hosts itself:
+     src      'media/<id>.mp4', relative to the site root (media/ beside
+              index.html). '' = not made yet. Set it and the entry is on: a
+              native <video controls playsinline preload="none"> with
+              poster 'media/<id>.jpg' and captions 'media/<id>.vtt' (a
+              captions track, English, on by default).
+   A drive entry and a src entry share everything else (len, title, slot,
+   render, stop).
 
    Plain ES5 and no outside script, like the rest of the course files: the
    kiosk loads this same file. NOTHING is requested until somebody taps a
@@ -27,7 +37,7 @@
    Helpers (non-enumerable, so Object.keys(GS_VIDEOS) is just the videos):
      GS_VIDEOS.get(id) / .ready(id)        the entry / whether it has a file
      GS_VIDEOS.player(el, id, opts)        draw the player into el; returns
-                                           { stop() }. opts.keepAlive: called
+                                           { stop(), play() }. opts.keepAlive: called
                                            every 4 s while a video plays
      GS_VIDEOS.slot(id)                    '<div data-gsv=id>' for templates
                                            ('' when the badge has no video)
@@ -64,8 +74,14 @@
     'racing':                { drive:'', len:'', title:'Racing' },
     'faa-event-exam':        { drive:'', len:'', title:'FAA Event Exam' },
     'event-pilot':           { drive:'', len:'', title:'Event Pilot' },
-    /* the website itself: home page and Pilot Path "How it works" (hidden while '') */
-    'site-howto':            { drive:'', len:'', title:'Using the club website' }
+    /* the website itself: the home page's "Using this site" button (hidden while '') */
+    'site-howto':            { drive:'', len:'', title:'Using the club website' },
+    /* 2026-11-26: the overviews, hosted on this site (media/). One line each to
+       switch on: src:'media/<id>.mp4'. While src is '' the home intro is not
+       shown at all and the other two show a quiet "Video soon" line. */
+    'home-intro':      { src:'', poster:'media/home-intro.jpg',      captions:'media/home-intro.vtt',      len:'', title:'Who we are' },
+    'flight-overview': { src:'', poster:'media/flight-overview.jpg', captions:'media/flight-overview.vtt', len:'', title:'Brophy flight overview' },
+    'path-overview':   { src:'', poster:'media/path-overview.jpg',   captions:'media/path-overview.vtt',   len:'', title:'How badges work' }
   };
   window.GS_VIDEOS = V;
 
@@ -73,8 +89,14 @@
     try{ Object.defineProperty(V, name, { value:fn, enumerable:false }); }
     catch(e){ V[name] = fn; }
   }
-  function get(id){ var v = V[id]; return (v && typeof v === 'object' && 'drive' in v) ? v : null; }
-  function ready(id){ var v = get(id); return !!(v && /^[\w-]{10,}$/.test(v.drive || '')); }
+  function get(id){ var v = V[id]; return (v && typeof v === 'object' && ('drive' in v || 'src' in v)) ? v : null; }
+  function own(v){ return !!(v && v.src && /^[\w./-]+$/.test(v.src)); }
+  function ready(id){ var v = get(id); return !!(v && (own(v) || /^[\w-]{10,}$/.test(v.drive || ''))); }
+  /* the site root, from this file's own address (…/groundschool/gs-videos.js),
+     so 'media/x.mp4' works from any page depth; '' (relative) elsewhere */
+  var ROOT = '';
+  try{ var me = document.currentScript && document.currentScript.src; if(me && /groundschool\/gs-videos\.js(\?.*)?$/.test(me)) ROOT = me.replace(/groundschool\/gs-videos\.js(\?.*)?$/, ''); }catch(e){}
+  function media(p){ return p ? (/^(https?:)?\/\//.test(p) ? p : ROOT + p) : ''; }
   function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
   function secs(len){
     var p = String(len || '').split(':'), n = 0;
@@ -112,9 +134,13 @@
     '.gsv-open{display:inline-block;margin-top:6px;font-family:var(--font-mono,"Share Tech Mono",Consolas,monospace);' +
       'font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--rust,#b0532a);text-decoration:none}' +
     '.gsv-open:hover{text-decoration:underline;text-underline-offset:3px}' +
-    '.gsv-soon{display:flex;align-items:center;gap:9px;border:1px dashed var(--line-hard,rgba(45,69,101,.42));' +
-      'padding:7px 10px;font-family:var(--font-mono,"Share Tech Mono",Consolas,monospace);font-size:13px;letter-spacing:.12em;' +
-      'text-transform:uppercase;color:var(--ink-soft,#62768e);background-color:transparent}' +
+    /* 2026-11-26: quiet, one line, no box */
+    '.gsv-soon{display:flex;align-items:center;gap:8px;padding:2px 0;font-family:var(--font-mono,"Share Tech Mono",Consolas,monospace);' +
+      'font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft,#62768e);background-color:transparent}' +
+    '.gsv-box video{position:absolute;top:0;left:0;width:100%;height:100%;display:block;background-color:#000;object-fit:contain}' +
+    '.gsv-cap{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-family:var(--font-mono,"Share Tech Mono",Consolas,monospace);' +
+      'font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft,#62768e)}' +
+    '.gsv-cap b,.gsv-soon .gsv-t{font-weight:400;color:var(--ink,#2d4565)}' +
     '.gsv-soon svg{width:20px;height:14px;flex:none;color:var(--ink-soft,#62768e)}' +
     '[data-theme=dark] .gsv-poster{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 14px),' +
         'repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 14px)}' +
@@ -149,11 +175,44 @@
     el.setAttribute('data-gsv', id);
     if(!ready(id)){
       el.className += ' gsv-soon';
-      el.innerHTML = SOON + '<span>Video coming soon</span>';
+      /* a site-hosted overview names itself: "How badges work · Video soon" */
+      el.innerHTML = SOON + ('src' in v ? '<span><b class="gsv-t">' + esc(v.title) + '</b> &middot; Video soon</span>' : '<span>Video soon</span>');
       el._gsv = { stop:function(){}, live:false };
       return el._gsv;
     }
     var timer = 0, H = { live:false };
+    function keep(){
+      if(typeof opts.keepAlive !== 'function' || timer) return;
+      var until = Date.now() + ((secs(v.len) || 600) + 60) * 1000;
+      try{ opts.keepAlive(); }catch(e){}
+      timer = setInterval(function(){
+        if(Date.now() > until || !el.isConnected){ clearInterval(timer); timer = 0; return; }
+        try{ opts.keepAlive(); }catch(e){}
+      }, 4000);
+    }
+    /* 2026-11-26: a file this site hosts (src): the browser's own player */
+    if(own(v)){
+      el.innerHTML = '<div class="gsv-box"><video controls playsinline preload="none"' +
+        (v.poster ? ' poster="' + esc(media(v.poster)) + '"' : '') + ' aria-label="' + esc(v.title + ' video') + '">' +
+        '<source src="' + esc(media(v.src)) + '" type="video/mp4">' +
+        (v.captions ? '<track kind="captions" src="' + esc(media(v.captions)) + '" srclang="en" label="English" default>' : '') +
+        '</video></div>' +
+        '<div class="gsv-cap"><b>' + esc(v.title) + '</b>' + (v.len ? '<span>' + esc(v.len) + '</span>' : '') + '</div>';
+      var vid = el.querySelector('video');
+      vid.addEventListener('play', function(){
+        if(!H.live){ el.className += ' gsv-live'; H.live = true; if(typeof opts.onPlay === 'function'){ try{ opts.onPlay(id); }catch(e){} } }
+        keep();
+      });
+      H.play = function(){ try{ var p = vid.play(); if(p && p.catch) p.catch(function(){}); }catch(e){} };
+      H.stop = function(quiet){
+        if(timer){ clearInterval(timer); timer = 0; }
+        try{ vid.pause(); }catch(e){}
+        if(!quiet) el.className = el.className.replace(/\s*gsv-live\b/, '');
+        H.live = false;
+      };
+      el._gsv = H;
+      return H;
+    }
     function poster(){
       el.className = el.className.replace(/\s*gsv-live\b/, '');
       el.innerHTML = '<div class="gsv-box"><button type="button" class="gsv-poster" aria-label="' +
@@ -176,14 +235,7 @@
          watching without touching anything looks idle: the kiosk would sign
          them out after 2 minutes and the lesson clock would stop. Tell the
          page they are here, for the length of the video and a minute more. */
-      if(typeof opts.keepAlive === 'function'){
-        var until = Date.now() + ((secs(v.len) || 600) + 60) * 1000;
-        try{ opts.keepAlive(); }catch(e){}
-        timer = setInterval(function(){
-          if(Date.now() > until || !el.isConnected){ clearInterval(timer); timer = 0; return; }
-          try{ opts.keepAlive(); }catch(e){}
-        }, 4000);
-      }
+      keep();
       if(typeof opts.onPlay === 'function'){ try{ opts.onPlay(id); }catch(e){} }
     }
     H.stop = function(quiet){
@@ -191,6 +243,7 @@
       if(H.live && !quiet){ H.live = false; poster(); }
       H.live = false;
     };
+    H.play = function(){ if(!H.live) play(); };
     el._gsv = H;
     poster();
     return H;
@@ -262,4 +315,5 @@
   def('stopIn', stopIn);
   def('stopAll', function(){ stopIn(document); });
   def('viewUrl', viewUrl);
+  def('media', media);
 })();

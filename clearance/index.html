@@ -127,10 +127,10 @@ section{margin-top:26px}
 
 /* ---------- badges: compact, collapsed, as on the Pilot Path ---------- */
 .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
-.badge{padding:13px 15px;border-left:6px solid var(--t);display:flex;flex-direction:column;gap:6px;cursor:pointer;position:relative}
+.badge{padding:13px 15px 14px;border-left:6px solid var(--t);display:flex;flex-direction:column;gap:7px;position:relative}
 .badge .lab{display:flex;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 .badge .lab .type{color:var(--rust)}
-.badge .nm{font-family:var(--font-sketch);font-weight:700;font-size:23px;line-height:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.badge .nm{font-family:var(--font-sketch);font-weight:700;font-size:24px;line-height:1;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .st{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;padding:2px 7px;background:var(--paper-2);border:1px solid var(--line-hard);color:var(--ink-soft);font-weight:400;white-space:nowrap}
 .st.earned{background:rgba(31,82,48,.12);border-color:var(--green);color:var(--green)}
 .st.progress{background:rgba(125,88,16,.10);border-color:var(--amber);color:var(--amber)}
@@ -138,8 +138,7 @@ section{margin-top:26px}
 .badge .body{display:flex;flex-direction:column;gap:6px}
 .badge .est{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.06em;color:var(--ink-soft)}
 .badge .do{font-size:15px;line-height:1.35}
-.badge:not(.open) .do{display:none}
-.badge .meter{height:7px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
+.badge .meter{height:6px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
 .badge .meter i{display:block;height:100%;background:var(--t)}
 .badge .more{display:none;border-top:1px dashed var(--line);padding-top:8px;margin-top:2px;font-size:14px;line-height:1.4}
 .badge.open .more{display:block}
@@ -187,9 +186,7 @@ section{margin-top:26px}
 .sub.pending b{color:var(--amber)} .sub.pass b{color:var(--green)} .sub.fail b{color:var(--rust)}
 /* a submission on file: the card is tinted, the rest of it fades back */
 .badge.pending{border-color:var(--amber);background-color:rgba(152,112,28,.10)}
-.badge.pending .body,.badge.pending .lab{opacity:.55}
 .badge.earned{border-color:var(--green);background-color:rgba(45,112,69,.10)}
-.badge.earned .body,.badge.earned .lab{opacity:.5}
 .badge.earned .nm{color:var(--green)}
 .badge.failed{border-color:var(--rust)}
 
@@ -305,6 +302,8 @@ footer a{color:var(--ink)}
     </div>
   </header>
 
+  <!-- 2026-11-26: "Brophy flight overview" (GS_VIDEOS['flight-overview'], a file in ../media/) -->
+  <div class="ovw" id="ovw"></div>
 
   <details class="howbox" id="howbox" open>
     <summary class="eyebrow"><h2>How it works</h2><span class="line"></span><span class="hint">certification once, permission every flight</span></summary>
@@ -392,6 +391,12 @@ footer a{color:var(--ink)}
   </div>
 </div>
 
+<!-- 2026-11-26: one sheet for a part's Watch, Instructions and Resources -->
+<dialog id="dlg" class="sheet" aria-labelledby="dlgTitle">
+  <div class="sh"><div><div class="k" id="dlgKind"></div><h3 id="dlgTitle"></h3></div><button class="btn" type="button" id="dlgClose">Close &#10005;</button></div>
+  <div class="sb" id="dlgBody"></div>
+</dialog>
+
 <script src="../confetti.js"></script>
 <script src="../flightschool/badges.js"></script>
 <script src="../groundschool/gs-videos.js"></script>
@@ -477,7 +482,7 @@ function render() {
   if (!p) { ny.hidden = false; ny.innerHTML = '<b>Tap your name above first.</b> The form is for certified pilots; you can still open it.'; }
   else if (st.cleared) ny.hidden = true;
   else { ny.hidden = false; ny.innerHTML = '<b>' + esc(p.name) + ', you are not certified yet</b> (' + st.done + ' of ' + st.of + ' badges). Finish the <a href="#badges">Brophy Drone Certification</a> first; a request from an uncertified pilot will not be approved.'; }
-  drawDrones(); drawBadges(st);
+  drawDrones(); drawBadges(st); dlgFill();
   setTimeout(celebrate, 0);
 }
 
@@ -503,102 +508,179 @@ function drawDrones() {
   $('drones').innerHTML = h;
 }
 
-/* ---------- badges ---------- */
-function chipFor(s) {
-  if (!ST.pilot) return '';
-  if (s.earned) return '<span class="st earned">approved</span>';
-  if (s.pending) return '<span class="st progress">pending</span>';
-  if (s.failed) return '<span class="st fail">not passed</span>';
-  return s.pct > 0 ? '<span class="st progress">' + s.pct + '%</span>' : '';
-}
+/* ---------- badges (2026-11-26: the Pilot Path's card anatomy) ----------
+   Each part: kind + category, name, one line; one row of actions in a fixed
+   order (Watch, the quiz or the TRUST test, Instructions, Resources, Submit);
+   one status line. Steps (with their ticks), the time and how it is approved
+   open in a sheet (#dlg). Nothing here changes what earns a part. */
+var SOON_ICON = '<svg viewBox="0 0 20 14" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="18" height="12" rx="1.5" stroke-dasharray="2.5 2"/><path d="M8 4.5l5 2.5-5 2.5z"/></g></svg>';
 function drawBadges(st) {
-  var open = {}; document.querySelectorAll('.badge.open').forEach(function (c) { open[c.getAttribute('data-id')] = true; });
-  $('badgeHint').textContent = ST.pilot ? st.done + ' of ' + st.of + ' · tap a badge' : 'tap a badge';
-  /* redrawn every minute: a club video that is playing keeps playing (2026-11-25) */
-  var html = st.parts.map(function (p) { return card(p.badge, p.s, open[p.badge.id]); }).join('');
+  $('badgeHint').textContent = ST.pilot ? st.done + ' of ' + st.of + ' done' : '';
+  var html = st.parts.map(function (p) { return card(p.badge, p.s); }).join('');
   if (window.GS_VIDEOS) GS_VIDEOS.render($('badges'), html); else $('badges').innerHTML = html;
+  hashKeep();
   /* the Pilot Path checkpoints: what unlocks the club drones */
   var kp = CL.kioskRow(), cps = FS.BADGES.filter(function (b) { return b.checkpoint; });
   $('cps').innerHTML = '<b style="font-family:var(--font-mono);font-weight:400;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase">Pilot Path' + (kp && kp.tier != null ? ' · Tier ' + kp.tier : '') + '</b>' +
     cps.map(function (b, i) { var on = !!CL.onFile(b.id); return '<span class="' + (on ? 'on' : '') + '">' + (on ? '&#10003; ' : '') + esc(b.name) + '</span>'; }).join('') +
     '<a href="../pilot-path/">open &rarr;</a>';
 }
-function card(b, s, isOpen) {
+function card(b, s) {
   var state = s.earned ? ' earned' : (s.pending ? ' pending' : (s.failed ? ' failed' : ''));
   var type = b.type === 'knowledge' ? 'Quiz' : (b.kind === 'drone' ? 'Video review' : 'Photo review');
   var h = '<div class="lab"><span class="type">' + type + '</span><span>' + esc(FS.TRACK[b.track]) + '</span></div>' +
-    '<div class="nm">' + esc(b.name) + chipFor(s) + '</div>' +
-    '<div class="body"><div class="do">' + esc(b.do) + '</div>' +
-    (b.est ? '<div class="est">Time: ' + esc(b.est) + '</div>' : '') +
-    (ST.pilot ? '<div class="meter"><i style="width:' + (s.earned ? 100 : s.pct) + '%"></i></div>' : '') +
-    '<div class="more">' + more(b, s) + '</div></div>';
-  return '<div class="card badge' + state + (isOpen ? ' open' : '') + '" data-id="' + b.id + '" style="--t:' + COL[b.track] + '">' + h + '</div>';
+    '<div class="nm">' + esc(b.name) + (ST.pilot && s.earned ? '<span class="st earned">done &#10003;</span>' : '') + '</div>' +
+    '<div class="do">' + esc(b.short || b.do) + '</div>' +
+    (ST.pilot && !s.earned && s.pct > 0 ? '<div class="meter"><i style="width:' + s.pct + '%"></i></div>' : '') +
+    oneLine(b) + actions(b, s) + statusLine(b, s);
+  return '<div class="card badge' + state + '" id="' + b.id + '" data-id="' + b.id + '" style="--t:' + COL[b.track] + '">' + h + '</div>';
 }
-function stepsList(b) {
-  var pr = CL.progress()[b.id] || {};
-  return '<div class="reqh">Steps</div><ul>' + (b.steps || []).map(function (t, i) {
-    var on = pr.steps && pr.steps[i], txt = FS.stepText(t);
-    return '<li class="step' + (on ? ' on' : '') + '" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(txt) + '</span>' +
-      (t && t.v ? '<a class="rl" href="' + esc(vidUrl(t.v)) + '" target="_blank" rel="noopener" title="' + esc(t.v.t + (t.v.by ? ' · ' + t.v.by : '')) + '">&#9654; video</a>' : '') +
-      /* 2026-11-25: a page the step needs (TRUST's test, Drive's share help), since Resources start closed */
-      (t && t.link && t.link.u ? '<a class="rl" href="' + esc(t.link.u) + '" target="_blank" rel="noopener" title="' + esc(t.link.t || '') + '">' + esc(t.link.l || 'link') + ' &#8599;</a>' : '') + '</li>';
-  }).join('') + '</ul>';
+function abtn(act, b, label, primary) {
+  return '<button type="button" class="btn' + (primary ? ' primary' : '') + '" data-act="' + act + '" data-b="' + b.id + '">' + label + '</button>';
+}
+function hasRes(b) { return !!(((b.resources || []).length) || ((b.res || []).length)); }
+/* FAA TRUST: the outside test is this part's "quiz" (its first step's link) */
+function testLink(b) { var t = (b.steps || [])[0]; return t && t.link && t.link.u && b.id === 'faa-trust' ? t.link : null; }
+function ticked(b, i) { var pr = CL.progress()[b.id] || {}; return !!(pr.steps && pr.steps[i]); }
+function submitLabel(b) { return b.kind === 'paper' ? 'Submit the signed paper' : 'Submit the certificate'; }
+function actions(b, s) {
+  var h = '', last = CL.mySubs(b.id)[0];
+  if (window.GS_VIDEOS && GS_VIDEOS.get(b.id))
+    h += GS_VIDEOS.ready(b.id) ? abtn('watch', b, '<span class="g" aria-hidden="true">&#9654;</span> Watch', false)
+                               : '<span class="vsoon">' + SOON_ICON + 'Video soon</span>';
+  if (b.quiz) {
+    var best = CL.quizBest(b), passed = best >= FS.PASS;
+    h += '<button type="button" class="btn' + (passed || s.earned ? '' : ' primary') + '" data-lesson="' + esc(b.quiz) + '">' + (passed || s.earned ? 'Retake the quiz' : 'Take the quiz') + '</button>';
+  }
+  var t = testLink(b), tookIt = t && (ticked(b, 0) || last);
+  if (t) h += '<a class="btn' + (s.earned || tookIt ? '' : ' primary') + '" href="' + esc(t.u) + '" target="_blank" rel="noopener">Take the TRUST test &#8599;</a>';
+  if (b.steps && b.steps.length) h += abtn('instr', b, 'Instructions', false);
+  if (hasRes(b)) h += abtn('res', b, 'Resources', false);
+  if (b.kind === 'drone') h += '<button type="button" class="btn' + (s.earned ? '' : ' primary') + '" data-add="1">Add a drone</button>';
+  else if (b.type === 'bench' && !s.earned && !s.pending) h += '<button type="button" class="btn' + (t && !tookIt ? '' : ' primary') + '" data-photo="' + b.id + '">' + submitLabel(b) + '</button>';
+  return '<div class="acts">' + h + '</div>';
+}
+/* the one line a part truly needs on its card */
+function oneLine(b) {
+  if (b.kind === 'paper') return '<div class="one"><a href="terms/">Read the terms</a> &middot; <a href="agreement.html" target="_blank" rel="noopener">Print the signing paper &#8599;</a></div>';
+  return '';
+}
+function statusLine(b, s) {
+  if (!ST.pilot) return '';
+  var bits = [], note = '';
+  if (b.kind === 'drone') {
+    var pf = CL.portfolio(), ok = pf.club.filter(function (d) { return d.unlocked; }).length + pf.mine.filter(function (d) { return d.status === 'pass'; }).length;
+    var wait = pf.mine.filter(function (d) { return d.status === 'pending'; }).length, lastD = pf.mine[0];
+    if (ok) bits.push('<b class="ok">' + ok + (ok === 1 ? ' drone' : ' drones') + ' approved</b>');
+    if (wait) bits.push('<b class="wait">' + wait + (wait === 1 ? ' drone' : ' drones') + ' waiting for a mentor</b>');
+    if (!ok && !wait && lastD && lastD.status === 'fail') { bits.push('<b class="no">Not approved</b>'); note = lastD.reviewNote || ''; }
+  } else if (!s.earned) {
+    if (b.quiz) { var best = CL.quizBest(b); if (best > 0) bits.push('Quiz best <b>' + best + ' %</b> &middot; ' + FS.PASS + ' % passes'); }
+    if (b.type === 'bench') {
+      var n = 0; (b.steps || []).forEach(function (x, i) { if (ticked(b, i)) n++; });
+      if (n) bits.push('Steps ' + n + ' of ' + b.steps.length);
+      var last = CL.mySubs(b.id)[0];
+      if (last && last.status === 'pending') bits.push('<b class="wait">Waiting for a mentor</b>');
+      else if (last && last.status === 'fail') { bits.push('<b class="no">Not passed</b>'); note = last.reviewNote || ''; }
+    }
+  }
+  if (!bits.length) return '';
+  return '<div class="stline">' + bits.join(' &middot; ') + (note ? '<div class="mnote">Mentor: ' + esc(note) + '</div>' : '') + '</div>';
 }
 /* a video reference: YouTube ({yt}) or, since 2026-11-25, a Google Drive file ({drive}) */
 function vidUrl(v) {
   return v.drive ? 'https://drive.google.com/file/d/' + encodeURIComponent(v.drive) + '/view' : 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.yt);
 }
-function subsList(b, s, label) {
-  var mine = CL.mySubs(b.id).slice(0, 3);
-  var h = '<div class="subs">' + mine.map(function (x) {
-    var head = x.status === 'pass' ? 'Approved' : (x.status === 'fail' ? 'Not passed' : 'Pending review');
-    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · sent ' + esc(new Date(x.at).toLocaleDateString()) + (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
-  }).join('') + '</div>';
-  if (!s.earned && !s.pending) h += '<div class="act"><button class="btn primary" type="button" data-photo="' + b.id + '">' + (mine.length && mine[0].status === 'fail' ? 'Try again: ' + label : label) + '</button></div>';
-  return h;
+
+/* ---------- the sheet: Watch, Instructions, Resources ---------- */
+var DLG = { kind: null, id: null, back: true };
+function badgeById(id) { return FS.clearance().filter(function (x) { return x.id === id; })[0] || null; }
+function tickBox(on, label) {
+  return '<button type="button" class="tick' + (on ? ' on' : '') + '" aria-pressed="' + (on ? 'true' : 'false') + '" aria-label="' + esc(label) + '">' + (on ? '✓' : '') + '</button>';
 }
-/* 2026-11-25: Resources, closed - the old lessons (still openable and
-   recorded), YouTube how-tos, and the tips and links. RESOPEN keeps an opened
-   group open across the minute-by-minute redraws. */
-var RESOPEN = {};
-function resources(b) {
-  var items = b.resources || [], tips = b.res || [];
-  if (!items.length && !tips.length) return '';
-  var h = '<details class="resg" data-res="' + b.id + '"' + (RESOPEN[b.id] ? ' open' : '') + '><summary>Resources<span class="rn">' + (items.length + tips.length) + '</span></summary>';
+function instrBody(b) {
+  var s = CL.partStatus(b), h = '';
+  if (b.est) h += '<div class="meta">Time: ' + esc(b.est) + '</div>';
+  h += '<div class="sec">Steps</div><ul class="chk">';
+  (b.steps || []).forEach(function (t, i) {
+    var on = ticked(b, i), txt = FS.stepText(t);
+    h += '<li class="req step' + (on ? ' on' : '') + '" data-step="' + i + '">' + tickBox(on, txt) + '<span class="rt">' + esc(txt) + '</span><span class="rls">' +
+      (t && t.v ? '<a class="rl" href="' + esc(vidUrl(t.v)) + '" target="_blank" rel="noopener" title="' + esc(t.v.t + (t.v.by ? ' · ' + t.v.by : '')) + '">&#9654; video</a>' : '') +
+      (t && t.link && t.link.u ? '<a class="rl" href="' + esc(t.link.u) + '" target="_blank" rel="noopener" title="' + esc(t.link.t || '') + '">' + esc(t.link.l || 'link') + ' &#8599;</a>' : '') + '</span></li>';
+  });
+  h += '</ul>';
+  var how = s.earned ? 'Done: this part is yours.'
+    : b.kind === 'drone' ? 'Add each drone with its flight video. A mentor watches it and approves the drone. Club drones are added when you pass their Pilot Path checkpoint.'
+    : b.kind === 'paper' ? 'Submit a photo of the signed paper and a mentor checks it. A pass shows here within a minute.'
+    : 'Submit a photo or PDF of the certificate and a mentor checks it. A pass shows here within a minute.';
+  h += '<div class="sec">How it gets approved</div><p style="margin:0">' + esc(how) + '</p>';
+  var foot = '';
+  if (b.kind === 'paper') foot += '<a class="btn" href="terms/">Read the terms</a><a class="btn" href="agreement.html" target="_blank" rel="noopener">Print the signing paper &#8599;</a>';
+  if (b.kind === 'drone') foot += '<button type="button" class="btn primary" data-add="1">Add a drone</button>';
+  else if (!s.earned && !s.pending) foot += '<button type="button" class="btn primary" data-photo="' + b.id + '">' + submitLabel(b) + '</button>';
+  return h + (foot ? '<div class="foot">' + foot + '</div>' : '');
+}
+function resBody(b) {
+  var items = b.resources || [], tips = b.res || [], h = '';
   var les = items.filter(function (r) { return r.id; });
-  if (les.length) h += '<ul>' + les.map(function (l) {
+  if (les.length) h += '<div class="sec">Lessons</div><ul class="les">' + les.map(function (l) {
     var on = CL.lessonDone(l.id);
-    return '<li class="les' + (on ? ' on' : '') + '" data-lesson="' + esc(l.id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(l.t) + (l.drill ? '<span class="soon">drill</span>' : '') + '</span><span class="go">' + (on ? 'review' : 'start &rsaquo;') + '</span></li>';
+    return '<li data-lesson="' + esc(l.id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + esc(l.t) + (l.drill ? '<span class="dr">drill</span>' : '') + '</span>' +
+      '<button type="button" class="go">' + (on ? 'Review' : 'Start') + ' &rsaquo;</button></li>';
   }).join('') + '</ul>';
   var links = items.filter(function (r) { return r.v; }).map(function (r) { return '<li><a href="' + esc(vidUrl(r.v)) + '" target="_blank" rel="noopener">&#9654; ' + esc(r.v.t) + (r.v.by ? ' · ' + esc(r.v.by) : '') + ' &#8599;</a></li>'; })
-    .concat(tips.map(function (r) { return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>'; }));
-  if (links.length) h += '<ul class="rlinks">' + links.join('') + '</ul>';
-  return h + '</details>';
+    .concat(tips.filter(function (r) { return r.u; }).map(function (r) { return '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>'; }));
+  if (links.length) h += '<div class="sec">Links</div><ul class="rlinks">' + links.join('') + '</ul>';
+  var tp = tips.filter(function (r) { return r.tip; });
+  if (tp.length) h += '<div class="sec">Tips</div><ul class="rlinks">' + tp.map(function (r) { return '<li>' + esc(r.tip) + '</li>'; }).join('') + '</ul>';
+  return h;
 }
-/* the club video (gs-videos.js; "coming soon" until it is on Drive) and the quiz button */
-function videoSlot(b) { return window.GS_VIDEOS ? GS_VIDEOS.slot(b.id) : ''; }
-function quizRow(b, s) {
-  if (!b.quiz) return '';
-  var best = CL.quizBest(b), passed = best >= FS.PASS;
-  return '<div class="qrow"><button class="btn primary" type="button" data-lesson="' + esc(b.quiz) + '">' + (passed ? 'Retake the quiz' : 'Take the quiz') + ' &rarr;</button>' +
-    '<span class="qmeta">' + (passed || s.earned ? '<b>Passed</b>' + (best ? ' · best ' + best : '') : FS.qn(b) + ' questions · ' + FS.PASS + ' % to pass' + (best > 0 ? ' · best ' + best : '')) + '</span></div>';
-}
-function more(b, s) {
-  var h = '<div class="why"><b>Why:</b> ' + esc(b.why) + '</div>' + videoSlot(b);
-  if (b.type === 'knowledge') {
-    h += quizRow(b, s) + '<div class="approve">Pass the quiz and the badge is yours, no sign-off needed.</div>';
-  } else if (b.kind === 'drone') {
-    h += stepsList(b) + '<div class="act"><button class="btn primary" type="button" data-add="1">Add a drone</button><a class="btn" href="#droneSec">Your drones</a></div>';
-  } else if (b.kind === 'paper') {
-    h += stepsList(b) + TERMS + subsList(b, s, 'Submit a photo of the signed paper');
+function dlgOpen(kind, id) {
+  var b = badgeById(id); if (!b) return;
+  if (window.GS_VIDEOS) GS_VIDEOS.stopAll();
+  DLG.kind = kind; DLG.id = id; DLG.back = true;
+  $('dlgKind').textContent = { watch: 'Video', instr: 'Instructions', res: 'Resources' }[kind];
+  $('dlgTitle').textContent = b.name;
+  $('dlg').classList.toggle('wide', kind === 'watch');
+  if (kind === 'watch') {
+    $('dlgBody').innerHTML = '<div id="dlgVid"></div>';
+    var H = GS_VIDEOS.player($('dlgVid'), id);
+    if (!$('dlg').open) $('dlg').showModal();
+    if (H && H.play) H.play();
   } else {
-    h += stepsList(b) + subsList(b, s, 'Submit the certificate (photo or PDF)');
+    if (!$('dlg').open) $('dlg').showModal();
+    dlgFill();
   }
-  return h + resources(b);
 }
-
-/* the Pilot Agreement terms are their own page, terms/ (2026-10-20) */
-var TERMS = '<div class="act"><a class="btn" href="terms/">Read the terms &rarr;</a><a class="btn" href="agreement.html" target="_blank" rel="noopener">Print the signing paper &nearr;</a></div>';
+/* redraw an open Instructions or Resources sheet; the focused tick keeps focus */
+function dlgFill() {
+  var b = badgeById(DLG.id); if (!b || !$('dlg').open || (DLG.kind !== 'instr' && DLG.kind !== 'res')) return;
+  var f = document.activeElement, key = f && $('dlgBody').contains(f) && f.closest('[data-step]') ? f.closest('[data-step]').getAttribute('data-step') : null;
+  $('dlgBody').innerHTML = DLG.kind === 'instr' ? instrBody(b) : resBody(b);
+  if (key != null) { var t = $('dlgBody').querySelector('[data-step="' + key + '"] button.tick'); if (t) t.focus(); }
+}
+function dlgClose(back) { DLG.back = back !== false; if ($('dlg').open) $('dlg').close(); }
+$('dlgClose').onclick = function () { dlgClose(); };
+$('dlg').addEventListener('click', function (e) {
+  if (e.target === this) { dlgClose(); return; }   // the backdrop
+  if (e.target.closest('a[target="_blank"]')) return;   // a video or a page: opens, never ticks
+  var step = e.target.closest('li.step[data-step]');
+  if (!step || DLG.kind !== 'instr') return;
+  if (!ST.pilot) { dlgClose(false); SiteNav.open(); return; }
+  CL.tickStep(DLG.id, +step.getAttribute('data-step'));   // saves, mirrors up, re-renders
+});
+$('dlg').addEventListener('close', function () {
+  if (window.GS_VIDEOS) GS_VIDEOS.stopIn($('dlg'));
+  $('dlgBody').innerHTML = '';
+  var kind = DLG.kind, id = DLG.id; DLG.kind = null;
+  if (!DLG.back) return;
+  var to = document.querySelector('#badges [data-act="' + kind + '"][data-b="' + id + '"]') ||
+           document.querySelector('#badges .badge[data-id="' + id + '"] .acts .btn');
+  if (to) to.focus();
+});
+$('badges').addEventListener('click', function (e) {
+  var a = e.target.closest('[data-act]'); if (a) dlgOpen(a.getAttribute('data-act'), a.getAttribute('data-b'));
+});
 
 /* ---------- lessons in a frame (the Ground School course app) ---------- */
 /* 2026-11-25: any clearance badge's quiz or resource lesson opens here (it was
@@ -654,22 +736,11 @@ $('lpBtns').addEventListener('click', function (e) {
 /* ---------- clicks ---------- */
 document.addEventListener('click', function (e) {
   var les = e.target.closest('[data-lesson]');
+  var ph = e.target.closest('[data-photo]'), add = e.target.closest('[data-add]');
+  if ((les || ph || add) && $('dlg').open) dlgClose(false);   // the frame and the photo / drone boxes sit under a modal sheet
   if (les) { e.preventDefault(); if (!ST.pilot) { SiteNav.open(); return; } openLesson(les.getAttribute('data-lesson')); return; }
-  var ph = e.target.closest('[data-photo]');
   if (ph) { camOpen(ph.getAttribute('data-photo')); return; }
-  if (e.target.closest('[data-add]')) { ddOpen(); return; }
-  if (e.target.closest('li.step a[target="_blank"]')) return;   // a step's video or test link opens; it doesn't tick the step
-  var step = e.target.closest('li.step'), card = e.target.closest('.badge');
-  if (step && card) { if (!ST.pilot) { SiteNav.open(); return; } CL.tickStep(card.getAttribute('data-id'), +step.getAttribute('data-step')); return; }
-  var sum = e.target.closest('details.resg > summary');
-  if (sum) { RESOPEN[sum.parentNode.getAttribute('data-res')] = !sum.parentNode.open; return; }
-  if (!card || e.target.closest('a,button,details,input,textarea,.gsv')) return;
-  /* open or close the whole visual row, as on the Pilot Path */
-  var want = !card.classList.contains('open'), top = card.offsetTop, sib = card.parentNode.children;
-  for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) {
-    sib[k].classList.toggle('open', want);
-    if (!want && window.GS_VIDEOS) GS_VIDEOS.stopIn(sib[k]);   // a closed card doesn't keep playing sound
-  }
+  if (add) { ddOpen(); return; }
 });
 
 /* ---------- photo / PDF submissions ---------- */
@@ -787,7 +858,7 @@ $('ddSend').onclick = function () {
     .catch(function (e) { btn.disabled = false; $('ddMsg').textContent = 'Could not send it: ' + (e.message || 'try again'); });
 };
 document.addEventListener('keydown', function (e) {
-  if (e.key !== 'Escape') return;
+  if (e.key !== 'Escape' || document.querySelector('.fa-sheet')) return;   // the sign-in sheet on top takes this Escape
   if ($('cam').classList.contains('open')) camClose(); else if ($('dd').classList.contains('open')) ddClose(); else if ($('lp').classList.contains('open')) closeLP();
 });
 
@@ -804,15 +875,29 @@ function celebrate() {
 }
 
 /* ---------- boot ---------- */
+if (window.GS_VIDEOS) GS_VIDEOS.player($('ovw'), 'flight-overview');
 CL.on(render);
 render();
 /* picking or switching a profile reloads the page (2026-10-20, Micah: things
    did not always load otherwise); signing out just re-renders */
 document.addEventListener('site:pilot', function (e) { if (e.detail && e.detail.name) setTimeout(function () { location.reload(); }, 50); });
+/* #hash: scroll to it and flash a card once. drawBadges() replaces the cards
+   when data lands, so hashKeep() puts the flash back (at the same point in its
+   1.2 s run) and scrolls again for the first few seconds, until the visitor
+   scrolls or types themselves. */
+var HASHGO = null;
+function hashKeep() {
+  if (!HASHGO) return;
+  var t = Date.now() - HASHGO.t0, el = $(HASHGO.id) || document.querySelector('.badge[data-id="' + HASHGO.id + '"]');
+  if (HASHGO.user || t > 4000) { HASHGO = null; return; }
+  if (!el) return;
+  el.scrollIntoView();
+  if (el.classList.contains('badge') && t < 1200 && !el.classList.contains('flash')) { el.style.animationDelay = (-t) + 'ms'; el.classList.add('flash'); }
+}
 if (location.hash && /^#(badges|droneSec|permission|faa-trust|safe-flight|pilot-agreement|drone-portfolio)$/.test(location.hash)) setTimeout(function () {
-  var id = location.hash.slice(1), el = $(id) || document.querySelector('.badge[data-id="' + id + '"]');
-  if (el && el.classList.contains('badge')) el.classList.add('open');
-  if (el) el.scrollIntoView();
+  HASHGO = { id: location.hash.slice(1), t0: Date.now() };
+  ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) { addEventListener(ev, function () { if (HASHGO) HASHGO.user = true; }, { once: true, passive: true }); });
+  hashKeep();
 }, 80);
 </script>
 </body>
