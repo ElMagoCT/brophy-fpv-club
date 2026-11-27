@@ -858,7 +858,7 @@ $('ddSend').onclick = function () {
     .catch(function (e) { btn.disabled = false; $('ddMsg').textContent = 'Could not send it: ' + (e.message || 'try again'); });
 };
 document.addEventListener('keydown', function (e) {
-  if (e.key !== 'Escape') return;
+  if (e.key !== 'Escape' || document.querySelector('.fa-sheet')) return;   // the sign-in sheet on top takes this Escape
   if ($('cam').classList.contains('open')) camClose(); else if ($('dd').classList.contains('open')) ddClose(); else if ($('lp').classList.contains('open')) closeLP();
 });
 

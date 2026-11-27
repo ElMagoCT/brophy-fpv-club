@@ -27,7 +27,11 @@ Kiosk: `../brophy-fpv-club-kiosk/` (has its own CLAUDE.md); API: `../brophy-fpv-
   the old site: no `auth.js`, no Google script, no header (FPV.post reads the config only
   when a token exists). `auth.js` is injected by `FPV.ui()`. Don't name a local function
   `google` in auth.js (it shadows the GIS global). Join is Google-first when the config has
-  Google; shapes in the API's `netlify/functions/auth.mjs`.
+  Google; shapes in the API's `netlify/functions/auth.mjs`. The sign-in sheet is a
+  `<dialog>` opened with `showModal()` so it sits above the card sheets (`#dlg`); Escape
+  reaches it as `cancel` and closes only it (the pages' own Escape handlers skip while
+  `.fa-sheet` is up). The course page opened on its own (`groundschool/gs-web.js`) waits
+  for `config.js` before its first push/pull, so those go through `FPV.post` too.
 - Escape every name (open form). Pushing `main` publishes: work on a branch.
   Local test: serve the folder, set `localStorage['fpv.dev.api']` to a mock on localhost.
 - Badge cards (2026-11-26, Pilot Path + Flight Clearance): one anatomy - kind/category,

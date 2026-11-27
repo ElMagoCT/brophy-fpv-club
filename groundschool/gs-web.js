@@ -24,8 +24,14 @@
      origin). Opened on its own, the published API address stands in. */
   var HOST = null; try{ if(window.parent !== window && window.parent.FPV) HOST = window.parent; }catch(e){}
   var FPVC = window.FPV || (HOST && HOST.FPV) || null;
+  /* 2026-11-27: opened on its own, the first push/pull waits for config.js, so
+     it goes through FPV.post (token, outbox) and honours a local test API */
+  var CFG = Promise.resolve();
   if(!FPVC){ try{ var cs = document.createElement('script'); cs.src = '../config.js';
-    cs.onload = function(){ FPVC = window.FPV || null; if(FPVC) API = FPVC.API; }; document.head.appendChild(cs); }catch(e){} }
+    CFG = new Promise(function(done){
+      cs.onload = function(){ FPVC = window.FPV || null; if(FPVC) API = FPVC.API; done(); };
+      cs.onerror = function(){ done(); };
+    }); document.head.appendChild(cs); }catch(e){} }
   var API = (FPVC && FPVC.API) || 'https://brophy-fpv-club-api.netlify.app';
   var ROSTER = window.Roster || (HOST && HOST.Roster) || null;
 
@@ -106,18 +112,17 @@
     var body = { name: who.name, lessons: lessons };
     var bid = QUIZ_BADGE[lessonId];
     if(bid && L.score > 0){ body.quizzes = {}; body.quizzes[bid] = { best: L.score }; }
-    try{
+    CFG.then(function(){ try{
       (FPVC && FPVC.post ? FPVC.post('/api/progress', body, { keepalive:true })
         : realFetch(API + '/api/progress', { method:'POST', headers:{'Content-Type':'application/json'}, keepalive:true, body: JSON.stringify(body) }))
         .catch(function(){});
-    }catch(e){}
+    }catch(e){} });
   }
   /* On load, pull what the API knows for this pilot and merge it in (forward only). */
   function pull(){
     var who = pilot(); if(who.slug === 'guest') return;
     /* the roster's lookup covers the pilot's key and aliases */
-    var got = ROSTER ? ROSTER.progress(who)
-      : realFetch(API + '/api/progress?pilot=' + encodeURIComponent(who.slug), { cache:'no-store' }).then(function(r){ return r.json(); }).then(function(j){ return j && j.progress; });
+    var got = ROSTER ? ROSTER.progress(who) : CFG.then(function(){ return realFetch(API + '/api/progress?pilot=' + encodeURIComponent(who.slug), { cache:'no-store' }); }).then(function(r){ return r.json(); }).then(function(j){ return j && j.progress; });
     got.then(function(srv){
       if(!srv || !srv.lessons) return;
       var p = load(), RANK = { 'not-started':0, 'in-progress':1, 'complete':2 }, changed = false;

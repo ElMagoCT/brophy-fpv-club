@@ -156,7 +156,10 @@
     var usePin = el('button', 'fa-link', 'Use a PIN instead'); usePin.type = 'button';
     [x, h, lede, g, msg, pinBox, usePin, shared].forEach(function (n) { card.appendChild(n); });
     wrap.appendChild(card); document.body.appendChild(wrap);
-    wrap.addEventListener('cancel', function (e) { e.preventDefault(); });   /* Escape: esc() below closes it */
+    /* Escape: a modal <dialog> gets it as 'cancel' (only the top one does, so a
+       card sheet under this one stays open); esc() covers the no-dialog fallback */
+    wrap.addEventListener('cancel', function (e) { e.preventDefault(); close(); });
+    wrap.addEventListener('close', function () { close(); });   /* closed by the browser itself (no cancel without a user gesture) */
     try { wrap.showModal(); } catch (e) { wrap.setAttribute('open', ''); }
     var done = false;
     function close(quiet) {
@@ -164,7 +167,8 @@
       wrap.remove(); cur = null; document.removeEventListener('keydown', esc);
       if (!done && !quiet) F.cancelled();
     }
-    function esc(e) { if (e.key === 'Escape') close(); }
+    function modal() { try { return wrap.matches(':modal'); } catch (e) { return false; } }
+    function esc(e) { if (e.key === 'Escape' && !modal()) close(); }
     document.addEventListener('keydown', esc);
     x.onclick = function () { close(); };
     wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });

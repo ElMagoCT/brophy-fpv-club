@@ -1097,6 +1097,7 @@ document.addEventListener('click', function (e) {
   if (b) { e.preventDefault(); if ($('dlg').open) dlgClose(false); camOpen(b.getAttribute('data-photo')); }
 });
 document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && document.querySelector('.fa-sheet')) return;   // the sign-in sheet on top takes this Escape
   if (e.key === 'Escape' && $('cam').classList.contains('open')) camClose();
   else if (e.key === 'Escape' && $('lp').classList.contains('open')) closeLP();
 });
