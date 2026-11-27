@@ -51,14 +51,14 @@
   var V = {
     /* Flight Clearance */
     'safe-flight':           { drive:'', len:'', title:'Safe Flight' },
-    'faa-trust':             { drive:'', len:'', title:'FAA TRUST' },
+    'faa-trust':             { drive:'1Pynu7O4uuxMtHqie1PD48f-W0sDvJw__', len:'2:38', title:'FAA TRUST' },
     /* Tier 1 path */
-    'proficient-flight':     { drive:'', len:'', title:'Sim Flight' },
+    'proficient-flight':     { drive:'1NVKS-UqN231hVob04zYAH6k5Ug_pzt6A', len:'4:46', title:'Sim Flight' },
     // The embed was tested with a 4-second public clip (1TxBJJsF8wjyag7X0xcHmGENzfc9E2xAh).
     // Fill in the real Battery Care video id and length when it is uploaded.
-    'battery-care':          { drive:'', len:'', title:'Battery Care' },
+    'battery-care':          { drive:'1-wYakLWCwPg2IIWBMFglyh5-d9N_31-U', len:'4:50', title:'Battery Care' },
     'betaflight-intro':      { drive:'', len:'', title:'Betaflight Intro' },
-    'line-of-sight':         { drive:'', len:'', title:'Line of Sight' },
+    'line-of-sight':         { drive:'13pM07wkU5EQsi9oLOwPpMqCvlyThKikK', len:'3:58', title:'Line of Sight' },
     'tiny-whoop':            { drive:'', len:'', title:'Meteor 75 Pro Certification' },
     /* Tier 2 path */
     'electrical-components': { drive:'', len:'', title:'Electrical Components' },
