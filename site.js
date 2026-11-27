@@ -28,7 +28,7 @@
   function need(file, ok) {
     if (ok()) return;
     var s = document.createElement('script'); s.src = BASE + file; s.async = false;
-    s.onload = function () { if (file === 'roster.js') { remerge(); draw(); Roster.load(); } };
+    s.onload = function () { if (file === 'roster.js') { remerge(); if (!follow()) draw(); Roster.load(); } };
     document.head.appendChild(s);
   }
   need('config.js', function () { return !!window.FPV; });
@@ -204,14 +204,18 @@
     .then(function (d) { RAW = d; remerge(); draw(); }).catch(function () {});
   /* the roster changed (fresh from the API): fold rows again, keep the
      device's name in step with the roster's spelling */
+  function follow() {
+    var p = get(), c = p && window.Roster && Roster.entry(p);
+    if (c && (c.name !== p.name || c.slug !== p.slug)) { set({ name: c.name, slug: c.slug }); return true; }
+    return false;
+  }
   document.addEventListener('roster:change', function () {
     remerge();
-    var p = get(), c = p && window.Roster && Roster.entry(p);
-    if (c && (c.name !== p.name || c.slug !== p.slug)) { set({ name: c.name, slug: c.slug }); return; }
+    if (follow()) return;
     draw();
     if (panelOpen && (picking || !get())) drawNames();
   });
-  if (window.Roster) Roster.load();
+  if (window.Roster) { follow(); Roster.load(); }
 
   draw();
   /* 2026-10-20: every footer links the Pilot Agreement terms and Mr. Burr's

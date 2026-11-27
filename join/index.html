@@ -87,7 +87,7 @@ h1 .a{color:var(--rust)}
 .ask p{margin:0 0 12px;font-size:17px}
 .ask p b{font-family:var(--font-mono);font-weight:400;letter-spacing:.04em}
 .ask .two{display:flex;gap:10px}
-.ask button{flex:1;min-height:50px;border-radius:10px;cursor:pointer;font-family:var(--font-mono);font-size:15px;letter-spacing:.1em;text-transform:uppercase;
+.ask button{flex:1;min-height:50px;padding:0 8px;border-radius:10px;cursor:pointer;font-family:var(--font-mono);font-size:15px;letter-spacing:.06em;white-space:nowrap;text-transform:uppercase;
   color:var(--ink);background-color:var(--glass-2);border:1.5px solid var(--line-hard)}
 .ask button.yes{color:#fff;background-color:var(--rust);border-color:var(--rust)}
 
@@ -136,7 +136,6 @@ footer .sitelinks{display:none}
 @media (max-width:600px){
   .wrap{padding:14px 16px 32px}
   .sitebar{display:none}
-  .mark{display:inline-block}
   main{margin-top:12px}
   .card{padding:18px 16px 16px}
   h1{font-size:40px}
@@ -187,8 +186,8 @@ footer .sitelinks{display:none}
         <div class="ask" id="ask" hidden>
           <p><b id="askName"></b> is already on the sims. Is that you?</p>
           <div class="two">
-            <button type="button" class="yes" id="askYes">Yes, that's me</button>
-            <button type="button" id="askNo">No</button>
+            <button type="button" class="yes" id="askYes">That's me</button>
+            <button type="button" id="askNo">Not me</button>
           </div>
         </div>
       </form>
