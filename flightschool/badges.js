@@ -105,7 +105,9 @@
    prep:    drill ids a witnessed badge reuses as practice
    steps:   the checklist a bench badge walks through: 'text', { t, v } or
             { t, v, link } (2026-11-25: link = { t, u, l } shown on the step)
-   standard: what the mentor is watching for */
+   standard: what the mentor is watching for
+   short:   (2026-11-26) the one line a badge card shows when `do` is too long
+            for it; `do` stays the full description (console, posters) */
 (function () {
   var TIERS = [
     { id: 't0', n: 0, name: 'Simulator',   gear: 'The five FPV sims in the IC',                     color: 'var(--sky)',    gate: 'Checkpoint: Meteor 75 Pro Certification' },
@@ -201,7 +203,7 @@
     /* 2026-11-25: bench -> knowledge (video + gs-bfi-quiz). The old steps are a resource, and
        the club Meteor's hands-on setup is still done with a mentor before the Meteor checkride. */
     { id: 'betaflight-intro', quiz: 'gs-bfi-quiz', tier: 't0', track: 'build', type: 'knowledge', name: 'Betaflight Intro', est: 'about 10 min',
-      do: 'What Betaflight does, calibrating the accelerometer, binding the receiver, and why a drone won\'t arm.', why: 'The things every Meteor needs before its first flight.',
+      do: 'What Betaflight does, calibrating the accelerometer, binding the receiver, and why a drone won\'t arm.', short: 'Calibrating, binding, and why a drone won\'t arm.', why: 'The things every Meteor needs before its first flight.',
       note: 'A mentor helps you set up the club Meteor (calibrate, bind) before your Meteor checkride. The rest of Betaflight is its own badge on the Tier 2 path.',
       resources: [{ t: 'Setting up the club Meteor, with a mentor before your Meteor checkride', steps: ['Props OFF, battery OUT, USB only', 'Connect to Betaflight (the kiosk reads the board)', 'Setup tab: calibrate the accelerometer, the drone flat and still', 'Bind the receiver (plug/unplug method)'] }] },
     { id: 'line-of-sight', quiz: 'gs-los-quiz', tier: 't0', track: 'flight', type: 'witnessed', name: 'Line of Sight', est: 'about 15 min', rule: ONE_GO,
@@ -275,7 +277,7 @@
                   { v: VID.failsafe }] },
     /* 2026-10-27 (Micah): the clip is submitted as a Google Drive link (drive: true) */
     { id: 'cinematography', quiz: 'gs-cin-quiz', tier: 't2', track: 'crew', type: 'witnessed', drive: true, name: 'Cinematography', est: 'one event',
-      do: 'Plan and shoot one usable clip at a real event, then submit it as a Google Drive link.', why: 'So Best of Brophy has more than one person who can shoot.',
+      do: 'Plan and shoot one usable clip at a real event, then submit it as a Google Drive link.', short: 'Plan and shoot one usable clip at a real event.', why: 'So Best of Brophy has more than one person who can shoot.',
       reqs: [WATCH('gs-cin-quiz'),
              { t: 'A shot list agreed with the coach or moderator', k: 0 },
              { t: 'A follow shot', k: 1 },
@@ -301,6 +303,7 @@
        rules in general as they apply to the club, not stadiums, and Event
        Pilots always fly by Part 107. Twenty questions (qn on the quiz lesson). */
     { id: 'faa-event-exam', quiz: 'gs-faa-quiz', qn: 20, tier: 't2', track: 'know', type: 'knowledge', name: 'FAA Event Exam', est: 'about 25 min',
+      short: 'The in-depth FAA test: Part 107 and how events run. Twenty questions.',
       do: 'The in-depth FAA test. Event Pilots always fly by Part 107: the pilot in command, limits, airspace, people, preflight, reporting, and how races and games are run. Twenty questions.', why: 'Every event flight is a Part 107 flight, often near a lot of people. This is the rulebook it runs on.',
       resources: [{ id: 'gs-faa-01', t: 'Part 107: who\'s in command' }, { id: 'gs-faa-02', t: 'The limits, the airspace and the aircraft' }, { id: 'gs-faa-03', t: 'People, preflight and reporting' }, { id: 'gs-faa-04', t: 'Race day and game day' }] },
     { id: 'event-pilot', quiz: 'gs-evp-quiz', tier: 't2', track: 'flight', type: 'witnessed', name: 'Event Pilot', checkpoint: true, est: 'one event',
@@ -319,11 +322,12 @@
       do: 'Know and follow the Brophy FPV safe-flight rules.', why: 'The rules everyone flies by once there\'s real hardware involved.',
       resources: [{ id: 'gs-saf-01', t: "Who's flying, who's watching" }, { id: 'gs-saf-02', t: 'The Brophy FPV rules sheet' }, { id: 'gs-saf-03', t: 'Go / No-Go', drill: true }] },
     { id: 'pilot-agreement', tier: 'cl', track: 'know', type: 'bench', kind: 'paper', name: 'Pilot Agreement', est: 'about 10 min, plus a parent',
-      do: 'Read the terms, print the signing paper, sign it with a parent, send a photo of it.',
+      do: 'Read the terms, print the signing paper, sign it with a parent, send a photo of it.', short: 'Read the terms, sign the paper with a parent, send a photo.',
       why: 'A simple, clear reminder that you\'re flying expensive equipment and are responsible for how you use it, signed by you and a parent or guardian (Mr. Reasy and Mr. Burr asked for that).',
       steps: ['Read the terms', 'Print the signing paper (one page) and sign it with a parent or guardian', 'Submit a photo of the signed paper'] },
     { id: 'drone-portfolio', tier: 'cl', track: 'flight', type: 'bench', kind: 'drone', name: 'Drone Portfolio', est: 'a minute of video per drone',
       do: 'Your list of drones the club has seen you fly safely, so you can get permission to fly them at Brophy. Club drones get added when you pass their checkpoint.',
+      short: 'Every drone you fly at Brophy, each with a minute of flight video.',
       why: 'Clearance is per drone, for every pilot (DJI, FPV, anything), so the club knows what you fly and has seen you fly it.',
       steps: ['Record about a minute: take off, fly, land safely', { t: 'Upload it to Google Drive, shared as "Anyone with the link"', link: DRIVE_HELP }, 'Add the drone: name, specs, a picture and the link'] },
 

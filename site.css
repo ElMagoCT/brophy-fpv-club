@@ -150,3 +150,86 @@ footer .sitelinks a:hover{color:var(--rust)}
 .themeswitch button[aria-checked=true]{background:var(--ink);border-color:var(--ink);color:var(--paper);position:relative;z-index:1}
 .themeswitch button:focus-visible{outline:2px solid var(--sky);outline-offset:2px;position:relative;z-index:2}
 @media (max-width:600px){ .themeswitch{flex-basis:100%;margin-left:0;margin-top:4px} }
+
+/* ===========================================================================
+   BADGE CARDS + SHEETS (2026-11-26), Pilot Path and Flight Clearance.
+   One card anatomy: kind/category, name, one line; one row of actions in a
+   fixed order (Watch, quiz, Instructions, Resources, Submit); one status line.
+   Everything longer opens in a sheet: a native <dialog>, Escape and its own
+   Close button shut it, focus stays inside and goes back to the button.
+   =========================================================================== */
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
+.acts .btn{min-height:44px;padding:9px 14px;justify-content:center}
+.acts .btn .g{font-size:12px;line-height:1}
+.acts .vsoon{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 4px;font-family:var(--font-mono);font-size:13px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.acts .vsoon svg{width:20px;height:14px;flex:none}
+.stline{font-size:14.5px;line-height:1.4;color:var(--ink-soft);margin-top:2px}
+.stline b{font-weight:600;color:var(--ink)}
+.stline b.ok{color:var(--green)} .stline b.wait{color:var(--amber)} .stline b.no{color:var(--rust)}
+.stline .mnote{color:var(--ink);margin-top:2px}
+.one{font-size:14.5px;line-height:1.4;color:var(--ink)}
+.one b{font-weight:600;color:var(--rust)}
+@keyframes cardflash{0%{box-shadow:0 0 0 0 rgba(176,83,42,.0)}30%{box-shadow:0 0 0 4px rgba(176,83,42,.45)}100%{box-shadow:0 0 0 0 rgba(176,83,42,0)}}
+@media (prefers-reduced-motion:no-preference){.badge.flash{animation:cardflash 1.2s ease-out}}
+
+/* the overview video above a page's content: small, quiet until it exists */
+.ovw{max-width:560px;margin-top:18px}
+.ovw .gsv{margin:0}
+
+dialog.sheet{border:2px solid var(--ink);border-radius:14px;padding:0;width:min(580px,calc(100vw - 24px));max-width:none;
+  max-height:calc(100vh - 32px);background-color:#fffdf7;color:var(--ink);box-shadow:4px 4px 0 var(--ink);overflow:hidden}
+dialog.sheet[open]{display:flex;flex-direction:column}
+dialog.sheet.wide{width:min(880px,calc(100vw - 24px))}
+dialog.sheet::backdrop{background:rgba(16,24,38,.55)}
+.sheet .sh{display:flex;align-items:flex-start;gap:12px;padding:14px 16px 12px;border-bottom:1.5px solid var(--line)}
+.sheet .sh>div{flex:1;min-width:0}
+.sheet .sh .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
+.sheet .sh h3{font-family:var(--font-sketch);font-weight:700;font-size:26px;line-height:1.05;margin:2px 0 0}
+.sheet .sh .btn{min-height:44px;flex:none}
+.sheet .sb{padding:12px 16px 18px;overflow:auto;font-size:15px;line-height:1.45}
+.sheet .meta{font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
+.sheet .sec{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin:14px 0 4px}
+.sheet .sec:first-child{margin-top:0}
+.sheet .note{color:var(--ink-soft);margin:6px 0 0}
+.sheet .rulel{font-weight:600;color:var(--rust);margin-top:10px}
+.sheet .foot{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;align-items:center}
+.sheet .foot .btn{min-height:44px}
+.sheet ul.chk{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.sheet ul.chk li{display:flex;gap:10px;align-items:flex-start;border-radius:7px;padding:6px 6px;margin:0 -6px}
+.sheet ul.chk li.step{cursor:pointer}
+.sheet ul.chk li.step:hover{background-color:var(--paper-2)}
+.sheet ul.chk .tick{width:26px;height:26px;flex:none;border:1.5px solid var(--line-hard);border-radius:6px;display:grid;place-items:center;
+  font-size:15px;line-height:1;color:var(--green);background-color:var(--glass);padding:0;font-family:inherit;cursor:inherit}
+.sheet ul.chk .tick.on{border-color:var(--green);background-color:rgba(31,82,48,.12)}
+.sheet ul.chk button.tick:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
+.sheet ul.chk .rt{flex:1;min-width:0;padding-top:2px}
+.sheet ul.chk .rt small{display:block;color:var(--ink-soft);font-size:13.5px;line-height:1.3}
+.sheet ul.chk li.on .rt{color:var(--ink-soft)}
+.sheet ul.chk .rls{display:flex;gap:10px;flex:none;padding-top:3px}
+.sheet a.rl,.sheet span.rl{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap}
+.sheet a.rl:hover{text-decoration:underline}
+.sheet span.rl.k{color:var(--ink-soft)}
+.sheet ul.les{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:2px}
+.sheet ul.les li{display:flex;gap:10px;align-items:center;border-radius:7px;padding:6px;margin:0 -6px;cursor:pointer}
+.sheet ul.les li:hover{background-color:var(--paper-2)}
+.sheet ul.les .tick{width:22px;height:22px;flex:none;border:1.5px solid var(--line-hard);border-radius:5px;display:grid;place-items:center;font-size:13px;color:var(--green);background-color:var(--glass)}
+.sheet ul.les .tick.on{border-color:var(--green);background-color:rgba(31,82,48,.12)}
+.sheet ul.les .go{margin-left:auto;font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;
+  background:none;border:0;padding:6px 0;cursor:pointer}
+.sheet ul.les .dr{font-family:var(--font-mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);margin-left:6px}
+.sheet .rsteps ol{margin:4px 0 0;padding-left:20px}
+.sheet .rlinks{margin:4px 0 0;padding-left:18px}
+.sheet .rlinks li{margin:3px 0}
+.sheet .rlinks a{color:var(--sky)}
+.sheet .drv{display:flex;flex-direction:column;gap:8px}
+.sheet .drv input{font:inherit;font-size:16px;width:100%;box-sizing:border-box;border:1.5px solid var(--line-hard);border-radius:7px;padding:10px 12px;background-color:var(--glass-2);color:var(--ink)}
+.sheet .drv .dmsg{font-size:14px;color:var(--ink-soft)} .sheet .drv .dmsg.bad{color:var(--rust)}
+@media (prefers-reduced-motion:no-preference){dialog.sheet[open]{animation:sheetin .18s ease-out}}
+@keyframes sheetin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (max-width:600px){
+  dialog.sheet,dialog.sheet.wide{width:100%;margin:auto 0 0;border-radius:14px 14px 0 0;border-bottom:0;max-height:90vh;box-shadow:none}
+  .acts .btn{flex:1 1 auto}
+}
+[data-theme=dark] dialog.sheet{background-color:var(--glass-2);border-color:var(--line-hard);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+[data-theme=dark] dialog.sheet::backdrop{background:rgba(0,0,0,.6)}

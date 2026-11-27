@@ -77,14 +77,12 @@ section{margin-top:30px}
 .howbox[open]>summary h2::before{transform:rotate(90deg)}
 .howbox[open]>summary{margin-bottom:12px}
 
-/* the short description shows only on an opened card - closed, it made the
-   page a long scroll (2026-10-10) */
-.badge:not(.open) .do{display:none}
-.how{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
 .how .h{padding:14px 16px}
 .how .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--rust)}
 .how .v{font-size:15px;margin-top:5px;line-height:1.4}
 .how .v b{font-weight:600}
+.how .v a{color:var(--rust);font-weight:600}
 
 /* ---------- tiers ---------- */
 /* 2026-10-07: the tier line runs beside the CHECKPOINT only. The badges before
@@ -103,44 +101,24 @@ section{margin-top:30px}
 .tier .prog.done,.group .prog.done{background:rgba(31,82,48,.12);border-color:var(--green);color:var(--green)}
 .badges{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
 
-/* ---------- badge card ---------- */
-.badge{padding:13px 15px 13px;border-left:6px solid var(--t);display:flex;flex-direction:column;gap:6px;cursor:pointer}
+/* ---------- badge card (2026-11-26): kind + name + one line, one row of
+   actions, one status line; the rest opens in a sheet (site.css) ---------- */
+.badge{padding:13px 15px 14px;border-left:6px solid var(--t);display:flex;flex-direction:column;gap:7px}
 .badge .lab{display:flex;justify-content:space-between;gap:8px;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft)}
 .badge .lab .type{color:var(--rust)}
-.badge .est{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.06em;color:var(--ink-soft);margin-top:6px}
-.badge .nm{font-family:var(--font-sketch);font-weight:700;font-size:23px;line-height:1;display:flex;align-items:center;gap:8px}
+.badge .nm{font-family:var(--font-sketch);font-weight:700;font-size:24px;line-height:1;display:flex;align-items:center;flex-wrap:wrap;gap:8px}
 .badge .nm .st{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;border-radius:6px;padding:2px 7px;background:var(--paper-2);border:1px solid var(--line-hard);color:var(--ink-soft);font-weight:400}
 .badge .nm .st.earned{background:rgba(31,82,48,.12);border-color:var(--green);color:var(--green)}
-.badge .nm .st.progress{background:rgba(125,88,16,.10);border-color:var(--amber);color:var(--amber)}
 .badge .do{font-size:15px;line-height:1.35}
-.badge .meter{height:7px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
+.badge .meter{height:6px;border-radius:4px;background:var(--paper-2);border:1px solid var(--line);overflow:hidden}
 .badge .meter i{display:block;height:100%;background:var(--t)}
-.badge .more{display:none;border-top:1px dashed var(--line);padding-top:8px;margin-top:2px;font-size:14px;line-height:1.4}
-.badge.open .more{display:block}
-.badge .more .why{color:var(--ink-soft)}
-.badge .more .why b{color:var(--ink);font-weight:600}
-.badge ul{margin:6px 0 0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:4px}
-.badge li{display:flex;gap:8px;align-items:flex-start}
-.badge li .tick{width:18px;height:18px;flex:none;border:1.5px solid var(--line-hard);border-radius:4px;display:grid;place-items:center;font-size:12px;color:var(--green);margin-top:2px;background:var(--glass)}
-.badge li .tick.on{border-color:var(--green);background:rgba(31,82,48,.12)}
-.badge li.step{cursor:pointer}
-.badge li.step:hover .tick{border-color:var(--green)}
-.badge li .soon{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);background:var(--paper-2);border:1px dashed var(--line-hard);border-radius:5px;padding:1px 6px;margin-left:6px}
-.badge .std{background-color:var(--glass);border:1px solid var(--line);border-radius:7px;padding:8px 10px;margin-top:6px}
-.badge .std .rule1{display:block;margin-top:5px;font-weight:600;color:var(--rust)}
-.badge .std b{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--rust);display:block;margin-bottom:2px}
-.badge .act{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.badge .tick{width:18px;height:18px;flex:none;border:1.5px solid var(--line-hard);border-radius:4px;display:grid;place-items:center;font-size:12px;color:var(--green);margin-top:2px;background:var(--glass)}
+.badge .tick.on{border-color:var(--green);background:rgba(31,82,48,.12)}
 .btn{font-family:var(--font-mono);font-size:13.5px;letter-spacing:.1em;text-transform:uppercase;background:var(--glass-2);color:var(--ink);text-decoration:none;border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
 .btn:hover{background:var(--paper-2)}
 .btn.primary{background:var(--ink);color:var(--paper);border-color:var(--ink)}
 .btn.primary:hover{background:#182740}
-.badge .res{border:1px dashed var(--line-hard);border-radius:7px;padding:7px 10px;margin-top:8px;font-size:13.5px}
-.badge .res b{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:400;color:var(--ink-soft)}
-.badge .res ul{display:block;margin:4px 0 0;padding-left:16px;list-style:disc}
-.badge .res li{display:list-item}
-.badge .res a{color:var(--sky)}
-.approve{font-size:13.5px;color:var(--ink-soft);margin-top:8px;line-height:1.4}
-.approve b{color:var(--ink);font-weight:600}
+.btn:focus-visible{outline:2px solid var(--rust);outline-offset:2px}
 
 /* ---------- checkpoints (2026-10-08): dashed until the rest of the tier is
    done, a check once ready to attempt, solid green once awarded ---------- */
@@ -155,7 +133,8 @@ section{margin-top:30px}
 .pre{background-color:var(--glass);border:1px solid var(--line);border-radius:8px;padding:10px 12px;display:grid;grid-template-columns:1fr auto;gap:4px 14px;align-items:start;cursor:default}
 .pre .ph{grid-column:1/-1;font-family:var(--font-mono);font-size:12.5px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust)}
 .pre ul{margin:2px 0 0;display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:5px 12px}
-.pre li{font-size:14.5px;line-height:1.25;cursor:pointer}
+.pre ul{list-style:none;padding:0}
+.pre li{font-size:14.5px;line-height:1.25;cursor:pointer;display:flex;gap:8px;align-items:flex-start}
 .pre li:hover span:last-child{text-decoration:underline;text-underline-offset:3px}
 .pre li.on span:last-child{color:var(--ink-soft)}
 .pre .big{width:74px;height:74px;border-radius:50%;border:3px dashed var(--line-hard);display:grid;place-items:center;font-size:42px;line-height:1;color:transparent;margin-top:2px;background:var(--glass-2)}
@@ -165,9 +144,9 @@ section{margin-top:30px}
 .badge.checkpoint.won .pre{color:var(--ink)}
 @media (max-width:760px){.cpwrap{grid-template-columns:1fr}}
 .badge.checkpoint.won{border-style:solid;border-color:var(--green);background-color:var(--green);color:#f2ece0}
-.badge.checkpoint.won .lab,.badge.checkpoint.won .lab .type,.badge.checkpoint.won .lab .type::before,.badge.checkpoint.won .est,
-.badge.checkpoint.won .more .why,.badge.checkpoint.won .more .why b,.badge.checkpoint.won .approve,.badge.checkpoint.won .approve b{color:#f2ece0}
-.badge.checkpoint.won .std{color:var(--ink)}
+.badge.checkpoint.won .lab,.badge.checkpoint.won .lab .type,.badge.checkpoint.won .lab .type::before,
+.badge.checkpoint.won .stline,.badge.checkpoint.won .stline b{color:#f2ece0}
+.badge.checkpoint.won .acts .btn:not(.primary){background-color:#f2ece0;color:#1f3350;border-color:#f2ece0}
 .badge.checkpoint.won .nm .st.earned{background:#f2ece0}
 /* 2026-10-15 (the grant's condition): every checkpoint card says passing is not permission */
 .permit{margin-top:10px;border:1.5px solid var(--rust);border-radius:7px;padding:8px 11px;font-size:14px;line-height:1.4;background-color:rgba(176,83,42,.06);color:var(--ink)}
@@ -176,45 +155,6 @@ section{margin-top:30px}
 .badge.checkpoint.won .permit{background-color:rgba(242,236,224,.16);border-color:#f2ece0;color:#f2ece0}
 .badge.checkpoint.won .permit b,.badge.checkpoint.won .permit a{color:#f2ece0}
 
-/* ---------- lessons inside the badge cards (2026-10-10: Ground School folded in) ---------- */
-.badge .reqh{font-family:var(--font-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--rust);margin-top:8px}
-.badge li.req{align-items:center;border-radius:5px;padding:2px 3px;margin:0 -3px}
-.badge li.req.step:hover{background:var(--paper-2)}
-.badge li.req .rt{flex:1;min-width:0}
-.badge li.req .rt small{display:block;color:var(--ink-soft);font-size:12.5px;line-height:1.25}
-.badge li.req.on .rt{color:var(--ink-soft)}
-.badge .rls{display:flex;gap:10px;flex:none;margin-left:8px}
-.badge a.rl,.badge span.rl{font-family:var(--font-mono);font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--rust);text-decoration:none;white-space:nowrap}
-.badge a.rl:hover{text-decoration:underline}
-.badge span.rl.k{color:var(--ink-soft)}
-.badge .rule1{margin-top:6px;font-size:13.5px;font-weight:600;color:var(--rust)}
-.badge li.les{cursor:pointer;border-radius:5px;padding:1px 3px;margin:0 -3px}
-.badge li.les:hover{background:var(--paper-2)}
-.badge li.les .go{margin-left:auto;font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--rust);white-space:nowrap;padding-left:8px}
-.badge li.les.on .go{color:var(--ink-soft)}
-/* ---------- 2026-11-25: video, quiz, then Resources (closed) ---------- */
-.badge .qrow{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-top:10px}
-.badge .qrow .qmeta{font-family:var(--font-mono);font-size:13px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-soft)}
-.badge .qrow .qmeta b{color:var(--green);font-weight:400}
-.badge details.resg{margin-top:10px;border:1px dashed var(--line-hard);border-radius:7px;padding:0 10px;font-size:14px}
-.badge details.resg>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:8px;padding:8px 0;font-family:var(--font-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft)}
-.badge details.resg>summary::-webkit-details-marker{display:none}
-.badge details.resg>summary::before{content:'\25B8';display:inline-block;transition:transform .15s}
-.badge details.resg[open]>summary::before{transform:rotate(90deg)}
-.badge details.resg>summary:hover{color:var(--ink)}
-.badge details.resg>summary .rn{margin-left:auto;letter-spacing:.08em}
-.badge details.resg[open]{padding-bottom:9px}
-.badge details.resg>ul:first-of-type{margin-top:0}
-.badge .rlinks{display:block;margin:8px 0 0;padding-left:16px;list-style:disc}
-.badge .rlinks li{display:list-item}
-.badge .rlinks a{color:var(--sky)}
-.badge .rsteps{margin-top:8px}
-.badge .rsteps b{display:block;font-weight:600}
-.badge .rsteps ol{margin:4px 0 0;padding-left:20px}
-.badge .rsteps li{display:list-item}
-.badge .std b + span{display:block}
-.howvid{max-width:600px;margin:0 0 14px}
-.howvid[hidden]{display:none}
 #lp{position:fixed;inset:0;z-index:60;background:var(--paper);display:none;flex-direction:column}
 #lp.open{display:flex}
 #lp .bar{display:flex;align-items:center;gap:12px;padding:8px 14px;border-bottom:1.5px solid var(--line-hard);background:var(--glass)}
@@ -228,16 +168,6 @@ section{margin-top:30px}
 #lpDone .nx{margin-top:14px;font-size:15px}
 #lpDone .row{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
 
-/* ---------- photo submissions ---------- */
-.subs{margin-top:8px;display:flex;flex-direction:column;gap:5px}
-.sub{font-size:13.5px;border:1px solid var(--line);border-radius:7px;padding:6px 9px;background-color:var(--glass)}
-.sub b{font-family:var(--font-mono);font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:400}
-.sub.pending b{color:var(--amber)} .sub.pass b{color:var(--green)} .sub.fail b{color:var(--rust)}
-.sub a{color:var(--rust)}
-/* 2026-10-27: a Drive-link submission (Cinematography) */
-.drv{margin-top:8px;display:flex;flex-direction:column;gap:6px}
-.drv input{font:inherit;font-size:14px;width:100%;box-sizing:border-box;border:1.5px solid var(--line-hard);border-radius:7px;padding:8px 10px;background:var(--glass-2);color:var(--ink)}
-.drv .dmsg{font-size:13.5px;color:var(--ink-soft)} .drv .dmsg.bad{color:var(--rust)}
 #cam{position:fixed;inset:0;z-index:50;background:rgba(16,24,38,.55);display:none;align-items:center;justify-content:center;padding:16px}
 #cam.open{display:flex}
 #cam .box{background:#fffdf7;border:2px solid var(--ink);border-radius:14px;width:100%;max-width:560px;padding:16px;display:flex;flex-direction:column;gap:10px;max-height:calc(100vh - 32px);overflow:auto}
@@ -282,15 +212,17 @@ footer a{color:var(--ink)}
     <div class="upnext" id="upNext"></div>
   </header>
 
+  <!-- 2026-11-26: "How badges work" (GS_VIDEOS['path-overview'], a file in ../media/) -->
+  <div class="ovw" id="ovw"></div>
+
   <details class="howbox">
-    <summary class="eyebrow"><h2>How it works</h2><span class="rule"></span><span class="hint">video + quiz &middot; bench &middot; witnessed &middot; checkpoints</span></summary>
-    <!-- 2026-11-25: the website how-to video (GS_VIDEOS['site-howto']); stays hidden until it has a Drive file -->
-    <div class="howvid" id="howVid" hidden></div>
+    <summary class="eyebrow"><h2>How it works</h2><span class="rule"></span><span class="hint">video + quiz &middot; hands-on &middot; flying &middot; checkpoints</span></summary>
     <div class="how">
-      <div class="card h"><div class="k">Video + quiz</div><div class="v">Most badges start with a short club video and a quiz. <b>80 % passes</b>, retakes are free and your best score counts. A quiz badge is yours as soon as you pass. Older lessons and how-to videos are under <b>Resources</b>.</div></div>
-      <div class="card h"><div class="k">Bench badges</div><div class="v">Building, Soldering, Betaflight and Tuning are hands-on. Tick the steps as you go, then <b>submit a photo</b> of your work from the card and a mentor checks it.</div></div>
-      <div class="card h"><div class="k">Witnessed badges</div><div class="v">Video and quiz first (bonus badges skip them), then a mentor who holds the badge watches you do it. <b>Sim Flight</b> is recorded instead: one minute in Liftoff on the kiosk, and a mentor passes the clip.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Tiers 1, 2 and 3 each open with a <b>checkpoint flight</b>. The Tier 1 path is on purpose just the drone things: four quick parts you can do in one community period, plus Sim Flight (about 5 sim hours of practice is typical, not required). Its card lists the prerequisite badges and ticks each one as you earn it. Once they're all done it gets a <b>big green &#10003;</b> and you can try it with a mentor watching. Pass it and <b>you're on that tier.</b> Passing a checkpoint <b>isn't permission to fly</b> by itself: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr before every campus flight, 24 h ahead. Each checkpoint adds that club drone to your portfolio. Bonus badges are extra, any time, and don&rsquo;t count toward your total. <b>Mentor</b> is for Event Pilots (Tier 3), at most 5 at a time.</div></div>
+      <div class="card h"><div class="k">Video + quiz</div><div class="v">Most badges start with a short club video and a quiz. <b>80 % passes</b> and your best score counts. A quiz badge is yours as soon as you pass.</div></div>
+      <div class="card h"><div class="k">Hands-on</div><div class="v">Building, Soldering, Betaflight and Tuning: follow the <b>Instructions</b>, then <b>submit a photo</b> and a mentor checks it.</div></div>
+      <div class="card h"><div class="k">Flying</div><div class="v">Video and quiz first, then a mentor watches you fly it. <b>Sim Flight</b> is recorded on a sim instead.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Each tier ends in a checkpoint flight. It opens once <b>every badge before it</b> is earned, Event Pilot included. Passing <b>isn&rsquo;t permission to fly</b>: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr 24 h before every campus flight.</div></div>
+      <div class="card h"><div class="k">Already fly?</div><div class="v">If you&rsquo;ve already proven a skill, a <b>mentor can check that badge off</b>. Show them at the club.</div></div>
     </div>
   </details>
 
@@ -315,6 +247,12 @@ footer a{color:var(--ink)}
     <div class="row" id="lpBtns"></div>
   </div></div>
 </div>
+
+<!-- 2026-11-26: one sheet for a card's Watch, Instructions, Resources and Drive-link Submit -->
+<dialog id="dlg" class="sheet" aria-labelledby="dlgTitle">
+  <div class="sh"><div><div class="k" id="dlgKind"></div><h3 id="dlgTitle"></h3></div><button class="btn" type="button" id="dlgClose">Close &#10005;</button></div>
+  <div class="sb" id="dlgBody"></div>
+</dialog>
 
 <div id="cam" role="dialog" aria-modal="true" aria-labelledby="camTitle">
   <div class="box">
@@ -531,26 +469,6 @@ function lesDoneFor(b, id, gp) {
 function vidUrl(v) {
   return v.drive ? 'https://drive.google.com/file/d/' + encodeURIComponent(v.drive) + '/view' : 'https://www.youtube.com/watch?v=' + encodeURIComponent(v.yt);
 }
-/* a page a bench step needs (2026-11-25: { t, v, link }, e.g. FAA TRUST's test) */
-function stepLink(l) {
-  return l && l.u ? '<a class="rl" href="' + esc(l.u) + '" target="_blank" rel="noopener" title="' + esc(l.t || '') + '">' + esc(l.l || 'link') + ' &#8599;</a>' : '';
-}
-function vidLink(v) {
-  return v ? '<a class="rl" href="' + esc(vidUrl(v)) + '" target="_blank" rel="noopener" title="' + esc(v.t + (v.by ? ' · ' + v.by : '')) + '">&#9654; video</a>' : '';
-}
-function reqRow(b, r, i, gp, pr, kh) {
-  var auto = !!(r.hours || (r.lessons && r.lessons.length)), done = reqDone(b, r, i, gp, pr, kh), links = '';
-  /* the video + quiz box ticks itself; the card's quiz button is right above it, so no link here */
-  if (r.lessons && r.lessons.length && !r.watch) {
-    var nx = r.lessons.filter(function (id) { return !lesDoneFor(b, id, gp); })[0] || r.lessons[0];
-    links += '<a href="#" class="rl" data-lesson="' + esc(nx) + '">' + (r.lessons.length > 1 ? r.lessons.length + ' lessons' : (nx === b.quiz ? 'quiz' : 'lesson')) + ' &rsaquo;</a>';
-  }
-  if (r.hours) links += '<span class="rl k">' + kh.toFixed(1) + ' / ' + r.hours + ' h</span>';
-  links += vidLink(r.v);
-  return '<li class="req' + (auto ? '' : ' step') + (done ? ' on' : '') + '"' + (auto ? '' : ' data-step="' + FS.tickKey(r, i) + '"') + '>' +
-    '<span class="tick' + (done ? ' on' : '') + '">' + (done ? '✓' : '') + '</span>' +
-    '<span class="rt">' + esc(FS.reqText(b, r)) + (r.d ? '<small>' + esc(r.d) + '</small>' : '') + '</span><span class="rls">' + links + '</span></li>';
-}
 function quizBest(b, gp) {
   var q = gp && gp.groundSchool && b.quiz && gp.groundSchool.lessons[b.quiz];
   return Math.max(q ? (q.score || 0) : 0, (SERVER && SERVER.quizzes && SERVER.quizzes[b.id]) ? (SERVER.quizzes[b.id].best || 0) : 0);
@@ -605,7 +523,7 @@ function drawUpNext() {
     (b ? '<div class="un">' + esc(b.name) + '</div>' : '<div class="un">Bonus badges</div>') +
     '<div class="uv">' + esc(n.verb.charAt(0).toUpperCase() + n.verb.slice(1)) + (b && b.est ? ' &middot; ' + esc(b.est) : '') + '</div>' +
     (b && s && s.pct > 0 && !s.earned ? '<div class="meter"><i style="width:' + s.pct + '%"></i></div>' : '') +
-    '<button type="button" class="ubtn" data-up="' + (b ? b.id : 'el') + '">Open it &darr;</button>';
+    '<button type="button" class="ubtn" data-up="' + (b ? b.id : 'el') + '">Show me &darr;</button>';
 }
 
 /* ---------- render ---------- */
@@ -617,7 +535,6 @@ function render() {
   drawUpNext();
   var kp = kioskPilot();
 
-  var open = {}; var cur = document.querySelectorAll('.badge.open'); for (var i = 0; i < cur.length; i++) open[cur[i].getAttribute('data-id')] = true;
   var html = '';
   function head(cls, id, c, tn, nm, gear, d, gate, sticker) {
     return '<div class="' + cls + '" id="' + id + '" style="--c:' + c + '"><div class="th">' +
@@ -627,7 +544,7 @@ function render() {
       (pilot && d ? '<span class="prog' + (d.n === d.of ? ' done' : '') + '">' + d.n + ' / ' + d.of + '</span>' : '') +
       (gate ? '<span class="gate">' + esc(gate) + '</span>' : '') + '</div>';
   }
-  function grid(bs) { return '<div class="badges">' + bs.map(function (b) { return card(b, open); }).join('') + '</div>'; }
+  function grid(bs) { return '<div class="badges">' + bs.map(function (b) { return card(b); }).join('') + '</div>'; }
   /* Page order: prerequisites for Tier 1, the Tier 1 checkpoint (the only
      thing beside the Tier 1 line), prerequisites for Tier 2, and so on. The
      anchors #t0..#t3 still land on "where Tier N is". */
@@ -636,36 +553,96 @@ function render() {
     html += head('group', i === 0 ? 't0' : 'pre' + (i + 1), T.color, '',
                  'Tier ' + (i + 1) + ' path', 'You fly: ' + T.gear, countDone(bs), 'Then the Tier ' + (i + 1) + ' checkpoint ↓',
                  i === 0 ? 'Bonus Challenge: do this all in one CP and get to fly!' : '') + grid(bs) + '</div>';
-    if (cp) html += head('tier', 't' + (i + 1), N.color, 'Tier ' + (i + 1), N.name, N.gear, null, 'Checkpoint') + card(cp, open) + '</div>';
+    if (cp) html += head('tier', 't' + (i + 1), N.color, 'Tier ' + (i + 1), N.name, N.gear, null, 'Checkpoint') + card(cp) + '</div>';
   }
   var el = FS.TIERS.filter(function (t) { return t.id === 'el'; })[0];
   html += head('group', 'el', el.color, 'Bonus', el.name, el.gear, countDone(FS.BADGES.filter(function (b) { return b.tier === 'el'; })), '') +
     grid(FS.BADGES.filter(function (b) { return b.tier === 'el'; })) + '</div>';
-  /* the page redraws every minute; a club video that is playing keeps playing */
-  if (window.GS_VIDEOS) GS_VIDEOS.render($('tiers'), html); else $('tiers').innerHTML = html;
+  /* 2026-11-26: videos play in the sheet, so the cards redraw plainly */
+  $('tiers').innerHTML = html;
+  dlgFill();
   setTimeout(celebrate, 0);
 }
-function card(b, open) {
+/* ---------- the card (2026-11-26) ----------
+   Same anatomy on every badge, so nothing blends: kind + category, name, one
+   line; one row of actions, always in this order and each only when it
+   applies (Watch, the quiz, Instructions, Resources, Submit); one status
+   line. The checklist, the time, how it is approved and the old lessons and
+   links open in a sheet (#dlg). Nothing here changes what earns a badge. */
+var SOON_ICON = '<svg viewBox="0 0 20 14" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="1.3"><rect x="1" y="1" width="18" height="12" rx="1.5" stroke-dasharray="2.5 2"/><path d="M8 4.5l5 2.5-5 2.5z"/></g></svg>';
+function card(b) {
   var s = status(b), col = { flight: 'var(--sky)', build: 'var(--amber)', know: 'var(--green)', crew: 'var(--violet)' }[b.track];
   var type = { knowledge: 'Quiz', bench: 'Bench', witnessed: 'Witnessed', auto: 'Automatic' }[b.type];
   if (FS.both(b)) type = 'Quiz + ' + (b.record ? 'recording' : type.toLowerCase());
-  var st = s.earned ? '<span class="st earned">earned</span>' : (pilot && s.pct > 0 ? '<span class="st progress">' + s.pct + '%</span>' : '');
   var cp = b.checkpoint ? ' checkpoint' + (s.earned ? ' won' : (s.ready ? ' ready' : '')) : '';
   var main = '<div class="lab"><span class="type">' + type + '</span><span>' + esc(FS.TRACK[b.track]) + '</span></div>' +
-    '<div class="nm">' + esc(b.name) + st + '</div>' +
-    '<div class="do">' + esc(b.do) + '</div>' +
-    (b.est ? '<div class="est">Time: ' + esc(b.est) + '</div>' : '') +
-    (pilot ? '<div class="meter"><i style="width:' + (s.earned ? 100 : s.pct) + '%"></i></div>' : '') +
-    '<div class="more">' + more(b, s) + '</div>';
+    '<div class="nm">' + esc(b.name) + (s.earned ? '<span class="st earned">earned &#10003;</span>' : '') + '</div>' +
+    '<div class="do">' + esc(b.short || b.do) + '</div>' +
+    (pilot && !s.earned && s.pct > 0 ? '<div class="meter"><i style="width:' + s.pct + '%"></i></div>' : '') +
+    actions(b, s) + oneLine(b) + statusLine(b, s);
   if (b.checkpoint) main = '<div class="cpwrap"><div class="cpmain">' + main + permitLine(b) + '</div>' + prereqPanel(b) + '</div>';
-  return '<div class="card badge' + cp + (open[b.id] ? ' open' : '') + '" data-id="' + b.id + '" style="--t:' + col + '">' + main + '</div>';
+  return '<div class="card badge' + cp + '" data-id="' + b.id + '" style="--t:' + col + '">' + main + '</div>';
+}
+function hasInstr(b) { return !!((b.steps && b.steps.length) || (b.reqs && b.reqs.length)); }
+function hasRes(b) { return !!(((b.resources || []).length) || ((b.res || []).length) || b.note); }
+function abtn(act, b, label, primary) {
+  return '<button type="button" class="btn' + (primary ? ' primary' : '') + '" data-act="' + act + '" data-b="' + b.id + '">' + label + '</button>';
+}
+function actions(b, s) {
+  var h = '', best = b.quiz ? quizBest(b, gsProfile()) : 0, qDone = !b.quiz || best >= FS.PASS || s.earned;
+  var last = mySubs(b)[0], waiting = last && last.status === 'pending';
+  if (window.GS_VIDEOS && GS_VIDEOS.get(b.id))
+    h += GS_VIDEOS.ready(b.id) ? abtn('watch', b, '<span class="g" aria-hidden="true">&#9654;</span> Watch', false)
+                               : '<span class="vsoon">' + SOON_ICON + 'Video soon</span>';
+  if (b.quiz) h += '<button type="button" class="btn' + (qDone ? '' : ' primary') + '" data-lesson="' + esc(b.quiz) + '">' + (best >= FS.PASS ? 'Retake the quiz' : 'Take the quiz') + '</button>';
+  if (hasInstr(b)) h += abtn('instr', b, 'Instructions', false);
+  if (hasRes(b)) h += abtn('res', b, 'Resources', false);
+  if (!s.earned) {
+    var go = qDone && !waiting;
+    if (FS.photoOk(b)) h += '<button type="button" class="btn' + (go ? ' primary' : '') + '" data-photo="' + b.id + '">' + (last && last.status === 'fail' ? 'Submit a new photo' : 'Submit a photo') + '</button>';
+    else if (FS.driveOk && FS.driveOk(b)) h += abtn('link', b, last && last.status === 'fail' ? 'Submit a new link' : 'Submit the link', go);
+  }
+  return '<div class="acts">' + h + '</div>';
+}
+/* the one line a badge truly needs on its card */
+function oneLine(b) {
+  if (b.record) return '<div class="one">Submit on a sim: sign in, pick <b>Liftoff</b>, tap <b>Record flight</b>. Everything in one minute, one recording a day.</div>';
+  return '';
+}
+function statusLine(b, s) {
+  if (!pilot) return '';
+  if (s.earned) return '';
+  var bits = [], note = '', best = b.quiz ? quizBest(b, gsProfile()) : 0, last = mySubs(b)[0];
+  if (s.detail === 'revoked') bits.push('<b class="no">Revoked</b>');
+  if ((b.minTier != null || b.minHours) && s.detail) bits.push(esc(s.detail));
+  if (b.quiz) bits.push(best >= FS.PASS ? '<b class="ok">Quiz passed</b>' : (best > 0 ? 'Quiz best <b>' + best + ' %</b> &middot; ' + FS.PASS + ' % passes' : ''));
+  var c = checklist(b);
+  if (c && c.n) bits.push('Checklist ' + c.n + ' of ' + c.of);
+  if (last) {
+    if (last.status === 'pending') bits.push('<b class="wait">' + (last.flight ? 'Recording w' : 'W') + 'aiting for a mentor</b>');
+    else if (last.status === 'fail') { bits.push('<b class="no">Not passed</b>'); note = last.reviewNote || ''; }
+    else if (last.status === 'pass') bits.push('<b class="ok">Passed</b>');
+  }
+  bits = bits.filter(Boolean);
+  if (!bits.length) return '';
+  return '<div class="stline">' + bits.join(' &middot; ') + (note ? '<div class="mnote">Mentor: ' + esc(note) + '</div>' : '') + '</div>';
+}
+/* ticked boxes / steps, for the status line */
+function checklist(b) {
+  var pr = progress()[b.id] || {}, n = 0;
+  if (b.steps && b.steps.length) { b.steps.forEach(function (t, i) { if (pr.steps && pr.steps[i]) n++; }); return { n: n, of: b.steps.length }; }
+  if (b.reqs && b.reqs.length) {
+    var kp = kioskPilot(), kh = kp ? (kp.totalMs || 0) / 3600000 : 0, gp = gsProfile();
+    b.reqs.forEach(function (r, i) { if (reqDone(b, r, i, gp, pr, kh)) n++; });
+    return { n: n, of: b.reqs.length };
+  }
+  return null;
 }
 /* 2026-10-15: Pete Burr's condition on the grant. Passing a checkpoint is a
    licence to ASK, never permission to fly: every campus flight is requested
    from Mr. Burr (his form on ../clearance/) at least 24 h ahead. Said
-   on every checkpoint card, closed or open. 2026-10-20: it also takes Flight
-   Clearance, and a passed checkpoint unlocks that club drone in the
-   pilot's Drone Portfolio there. */
+   on every checkpoint card. 2026-10-20: it also takes Flight Clearance, and a
+   passed checkpoint unlocks that club drone in the pilot's Drone Portfolio there. */
 function permitLine(b) {
   var what = b.id === 'tiny-whoop' ? 'Passing this certification <b>isn\'t permission to fly</b> by itself.' : 'Passing this <b>isn\'t permission to fly</b> by itself.';
   var drone = { 'tiny-whoop': 'the club Meteor 75 Pro', 'pavo-flight': 'the club Pavo 20 Pro' }[b.id];
@@ -680,85 +657,152 @@ function prereqPanel(b) {
     return '<li class="' + (on ? 'on' : '') + '" data-goto="' + m.id + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + esc(m.name) + '</span></li>';
   }).join('');
   var all = pilot && done === mates.length;
-  var msg = !pilot ? 'Pick your name and each box ticks itself as you earn the badge.'
-    : (all ? '<b>All done.</b> You can try the checkpoint, just ask a mentor to watch.' : (mates.length - done) + ' to go. Once every box is ticked you get the big check and can try the checkpoint.');
-  return '<div class="pre"><div class="ph">Prerequisites' + (pilot ? ' · ' + done + ' of ' + mates.length : ' · ' + mates.length + ' badges') + '</div>' +
+  var msg = !pilot ? 'Every badge on this path comes first. Each box ticks itself as you earn it.'
+    : (all ? '<b>All done.</b> Ask a mentor to watch your checkpoint.' : (mates.length - done) + ' to go. Every badge on this path comes first.');
+  return '<div class="pre"><div class="ph">Needs every badge' + (pilot ? ' · ' + done + ' of ' + mates.length : ' · ' + mates.length + ' badges') + '</div>' +
     '<ul>' + li + '</ul><div class="big' + (all ? ' on' : '') + '" title="' + (all ? 'Ready to attempt' : 'Not yet') + '">✓</div>' +
     '<div class="pmsg">' + msg + '</div></div>';
 }
-/* 2026-11-25: every card leads with its club video (gs-videos.js; "coming
-   soon" until the Drive file exists) and its quiz, then what the badge asks
-   for, then Resources: the old lessons, YouTube how-tos and tips, closed. */
-function quizRow(b, gp) {
-  if (!b.quiz) return '';
-  var best = quizBest(b, gp), passed = best >= FS.PASS;
-  return '<div class="qrow"><button class="btn primary" type="button" data-lesson="' + esc(b.quiz) + '">' + (passed ? 'Retake the quiz' : 'Take the quiz') + ' &rarr;</button>' +
-    '<span class="qmeta">' + (passed ? '<b>Passed</b> · best ' + best : FS.qn(b) + ' questions · ' + FS.PASS + ' % to pass' + (best > 0 ? ' · best ' + best : '')) + '</span></div>';
+
+/* ---------- the sheet: Watch, Instructions, Resources, Submit the link ---------- */
+var DLG = { kind: null, id: null, subs: 0, back: true };
+function badgeById(id) { return FS.BADGES.filter(function (x) { return x.id === id; })[0] || null; }
+function vidLink(v) {
+  return v ? '<a class="rl" href="' + esc(vidUrl(v)) + '" target="_blank" rel="noopener" title="' + esc(v.t + (v.by ? ' · ' + v.by : '')) + '">&#9654; video</a>' : '';
 }
-var RESOPEN = {};   // Resources groups the pilot opened, kept across redraws
-function resBlock(b) {
-  var items = b.resources || [], tips = b.res || [];
-  if (!items.length && !tips.length) return '';
-  var les = items.filter(function (r) { return r.id; }), vids = items.filter(function (r) { return r.v; }), steps = items.filter(function (r) { return r.steps; });
-  var h = '<details class="resg" data-res="' + b.id + '"' + (RESOPEN[b.id] ? ' open' : '') + '><summary>Resources<span class="rn">' + (items.length + tips.length) + '</span></summary>';
-  if (les.length) h += '<ul>' + les.map(function (l) { return lesRow(l.id, lessonDone(l.id), esc(l.t) + (l.drill ? ' <span class="soon">drill</span>' : '')); }).join('') + '</ul>';
-  steps.forEach(function (r) { h += '<div class="rsteps"><b>' + esc(r.t) + '</b><ol>' + r.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol></div>'; });
-  var links = vids.map(function (r) { return '<li><a href="' + esc(vidUrl(r.v)) + '" target="_blank" rel="noopener">&#9654; ' + esc(r.v.t) + (r.v.by ? ' · ' + esc(r.v.by) : '') + ' &#8599;</a></li>'; })
-    .concat(tips.map(function (r) { return r.u ? '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>' : '<li>Tip: ' + esc(r.tip) + '</li>'; }));
-  if (links.length) h += '<ul class="rlinks">' + links.join('') + '</ul>';
-  return h + '</details>';
+/* a page a bench step needs (2026-11-25: { t, v, link }, e.g. FAA TRUST's test) */
+function stepLink(l) {
+  return l && l.u ? '<a class="rl" href="' + esc(l.u) + '" target="_blank" rel="noopener" title="' + esc(l.t || '') + '">' + esc(l.l || 'link') + ' &#8599;</a>' : '';
 }
-/* Sim Flight (record: true): a minute recorded on the kiosk, passed in the
-   console. Its submissions carry `flight` (the kiosk's recording); older
-   photo submissions still list. No upload button here. */
-function recordBlock(b, s) {
-  var mine = (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse();
-  var h = b.standard ? '<div class="std"><b>The recording</b><span>' + esc(b.standard) + '</span></div>' : '';
-  h += '<div class="subs">' + mine.map(function (x) {
-    var f = x.flight, when = new Date((f && f.recordedAt) || x.at).toLocaleDateString();
-    var head = x.status === 'pass' ? 'Passed' : (x.status === 'fail' ? 'Not passed' : 'Waiting for review');
-    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · ' + (f ? 'flight recorded ' + esc(when) + (f.simName ? ' in ' + esc(f.simName) : '') : 'photo sent ' + esc(when)) +
-      (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
-  }).join('') + '</div>';
-  h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : 'record it on the IC room kiosk (sign in, <b>Liftoff</b>, <b>Record flight</b>). A pass shows here within a minute.') + '</div>';
-  return h;
+function tickBox(on, label) {
+  return '<button type="button" class="tick' + (on ? ' on' : '') + '" aria-pressed="' + (on ? 'true' : 'false') + '" aria-label="' + esc(label) + '">' + (on ? '✓' : '') + '</button>';
 }
-function more(b, s) {
-  var gp = gsProfile(), pr = progress()[b.id] || {}, h = '<div class="why"><b>Why:</b> ' + esc(b.why) + '</div>';
-  if (b.note) h += '<div class="why" style="margin-top:4px">' + esc(b.note) + '</div>';
-  if (window.GS_VIDEOS) h += GS_VIDEOS.slot(b.id);
-  h += quizRow(b, gp);
-  if (b.type === 'knowledge') {
-    h += '<div class="approve">Pass the quiz and the badge is yours, no sign-off needed.</div>';
-  } else if (b.type === 'bench') {
-    h += '<ul>';
+/* one requirement box: ticks itself (hours, lessons, the quiz) or the pilot ticks it */
+function reqRow(b, r, i, gp, pr, kh) {
+  var auto = !!(r.hours || (r.lessons && r.lessons.length)), done = reqDone(b, r, i, gp, pr, kh), links = '';
+  if (r.lessons && r.lessons.length && !r.watch) {
+    var nx = r.lessons.filter(function (id) { return !lesDoneFor(b, id, gp); })[0] || r.lessons[0];
+    links += '<a href="#" class="rl" data-lesson="' + esc(nx) + '">' + (r.lessons.length > 1 ? r.lessons.length + ' lessons' : (nx === b.quiz ? 'quiz' : 'lesson')) + ' &rsaquo;</a>';
+  }
+  if (r.hours) links += '<span class="rl k">' + kh.toFixed(1) + ' / ' + r.hours + ' h</span>';
+  links += vidLink(r.v);
+  var txt = FS.reqText(b, r);
+  return '<li class="req' + (auto ? '' : ' step') + (done ? ' on' : '') + '"' + (auto ? '' : ' data-step="' + FS.tickKey(r, i) + '"') + '>' +
+    (auto ? '<span class="tick' + (done ? ' on' : '') + '">' + (done ? '✓' : '') + '</span>' : tickBox(done, txt)) +
+    '<span class="rt">' + esc(txt) + (r.d ? '<small>' + esc(r.d) + '</small>' : '') + '</span><span class="rls">' + links + '</span></li>';
+}
+function instrBody(b) {
+  var s = status(b), gp = gsProfile(), pr = progress()[b.id] || {}, h = '';
+  if (b.est) h += '<div class="meta">Time: ' + esc(b.est) + '</div>';
+  if (b.type === 'bench') {
+    h += '<div class="sec">Steps</div><ul class="chk">';
     (b.steps || []).forEach(function (t, i) {
-      var on = pr.steps && pr.steps[i];
-      h += '<li class="req step" data-step="' + i + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span class="rt">' + esc(FS.stepText(t)) + '</span><span class="rls">' + vidLink(t && t.v) + stepLink(t && t.link) + '</span></li>';
+      var on = !!(pr.steps && pr.steps[i]), txt = FS.stepText(t);
+      h += '<li class="req step' + (on ? ' on' : '') + '" data-step="' + i + '">' + tickBox(on, txt) + '<span class="rt">' + esc(txt) + '</span><span class="rls">' + vidLink(t && t.v) + stepLink(t && t.link) + '</span></li>';
     });
     h += '</ul>';
-    h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done — passed by a mentor.' : 'submit a photo of your work below and a mentor checks it. A pass shows here within a minute.') + '</div>';
-  } else if (b.type === 'witnessed') {
-    if (b.reqs) {
-      var kp2 = kioskPilot(), kh2 = kp2 ? (kp2.totalMs || 0) / 3600000 : 0;
-      h += '<div class="reqh">Requirements</div><ul>' + b.reqs.map(function (r, i) { return reqRow(b, r, i, gp, pr, kh2); }).join('') + '</ul>';
-      if (b.rule) h += '<div class="rule1">' + esc(b.rule) + '</div>';
-    }
-    if (b.record) h += recordBlock(b, s);
-    else h += '<div class="approve"><b>Approval:</b> ' + (s.earned ? 'done.' : (((b.minTier != null || b.minHours) && s.detail) ? esc(s.detail) + '. ' : '') + (b.drive ? 'submit your clip\'s Google Drive link below; a mentor watches it and signs it off. A pass shows here within a minute.' : 'a mentor who holds this badge watches you, then signs it off.')) + '</div>';
+  } else if (b.reqs) {
+    var kp = kioskPilot(), kh = kp ? (kp.totalMs || 0) / 3600000 : 0;
+    h += '<div class="sec">' + (b.record ? 'In the recording' : 'Checklist') + '</div><ul class="chk">' + b.reqs.map(function (r, i) { return reqRow(b, r, i, gp, pr, kh); }).join('') + '</ul>';
   }
-  if (FS.photoOk(b)) h += photoBlock(b, s);
-  /* 2026-11-25: Betaflight Intro and Field Diagnostics stopped taking photos;
-     a photo already sent for one still shows its review, read-only */
-  else if (!b.record && !(FS.driveOk && FS.driveOk(b))) h += photoSubs(b);
-  if (FS.driveOk && FS.driveOk(b)) h += driveBlock(b, s);
-  h += resBlock(b);
-  if (b.type === 'auto') {
-    h += '<div class="std"><b>Automatic</b>' + esc(b.standard) + (s.detail ? ' · ' + esc(s.detail) : '') + '</div>';
-    h += '<div class="act"><a class="btn" href="../">Lab hours &amp; leaderboard &rarr;</a></div>';
-  }
+  if (b.rule) h += '<div class="rulel">' + esc(b.rule) + '</div>';
+  if (b.standard && b.record) h += '<p class="note">' + esc(b.standard) + '</p>';
+  if (b.note) h += '<p class="note">' + esc(b.note) + '</p>';
+  /* how it gets approved */
+  var how;
+  if (s.earned) how = 'Done: this badge is yours.';
+  else if (b.record) how = 'Record it on a sim: sign in, pick Liftoff, tap Record flight. A mentor passes the clip and it shows here within a minute.';
+  else if (b.type === 'bench') how = 'Submit a photo of your work and a mentor checks it. A pass shows here within a minute.';
+  else if (b.drive) how = 'Submit your clip\'s Google Drive link; a mentor watches it and signs it off.';
+  else how = ((b.minTier != null || b.minHours) && s.detail ? s.detail + '. ' : '') + 'A mentor who holds this badge watches you, then signs it off.';
+  h += '<div class="sec">How it gets approved</div><p style="margin:0">' + esc(how) + '</p>';
+  var foot = '';
+  if (!s.earned && FS.photoOk(b)) foot += '<button type="button" class="btn primary" data-photo="' + b.id + '">Submit a photo</button>';
+  if (!s.earned && FS.driveOk && FS.driveOk(b)) foot += abtn('link', b, 'Submit the link', true);
+  return h + (foot ? '<div class="foot">' + foot + '</div>' : '');
+}
+function resBody(b) {
+  var items = b.resources || [], tips = b.res || [], h = '';
+  if (b.note && !hasInstr(b)) h += '<p class="note" style="margin-top:0">' + esc(b.note) + '</p>';
+  var les = items.filter(function (r) { return r.id; }), vids = items.filter(function (r) { return r.v; }), steps = items.filter(function (r) { return r.steps; });
+  if (les.length) h += '<div class="sec">Lessons</div><ul class="les">' + les.map(function (l) {
+    var on = lessonDone(l.id);
+    return '<li data-lesson="' + esc(l.id) + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + esc(l.t) + (l.drill ? '<span class="dr">drill</span>' : '') + '</span>' +
+      '<button type="button" class="go">' + (on ? 'Review' : 'Start') + ' &rsaquo;</button></li>';
+  }).join('') + '</ul>';
+  steps.forEach(function (r) { h += '<div class="sec">' + esc(r.t) + '</div><div class="rsteps"><ol>' + r.steps.map(function (t) { return '<li>' + esc(t) + '</li>'; }).join('') + '</ol></div>'; });
+  var links = vids.map(function (r) { return '<li><a href="' + esc(vidUrl(r.v)) + '" target="_blank" rel="noopener">&#9654; ' + esc(r.v.t) + (r.v.by ? ' · ' + esc(r.v.by) : '') + ' &#8599;</a></li>'; })
+    .concat(tips.filter(function (r) { return r.u; }).map(function (r) { return '<li><a href="' + esc(r.u) + '" target="_blank" rel="noopener">' + esc(r.t) + ' &#8599;</a></li>'; }));
+  if (links.length) h += '<div class="sec">Links</div><ul class="rlinks">' + links.join('') + '</ul>';
+  var tp = tips.filter(function (r) { return r.tip; });
+  if (tp.length) h += '<div class="sec">Tips</div><ul class="rlinks">' + tp.map(function (r) { return '<li>' + esc(r.tip) + '</li>'; }).join('') + '</ul>';
   return h;
 }
+/* 2026-10-27 (Micah): Cinematography is submitted as a Google Drive link. */
+function linkBody(b) {
+  var d = DRV[b.id] || {};
+  return '<div class="drv" data-drv="' + b.id + '">' +
+    '<input type="url" inputmode="url" autocomplete="off" placeholder="Google Drive link to your clip" aria-label="Google Drive link to your clip" value="' + esc(d.url || '') + '" data-drvurl="' + b.id + '">' +
+    '<input type="text" maxlength="300" placeholder="Anything the mentor should know? (optional)" aria-label="Note for the mentor" value="' + esc(d.note || '') + '" data-drvnote="' + b.id + '">' +
+    '<div class="foot" style="margin-top:2px"><button class="btn primary" type="button" data-drvsend="' + b.id + '">Submit the link</button></div>' +
+    '<div class="dmsg' + (d.bad ? ' bad' : '') + '">' + esc(d.msg || 'Share it in Drive as "Anyone with the link" first.') + '</div></div>';
+}
+function subCount(id) { return (SUBS || []).filter(function (x) { return x.badge === id; }).length; }
+function dlgOpen(kind, id) {
+  var b = badgeById(id); if (!b) return;
+  if (window.GS_VIDEOS) GS_VIDEOS.stopAll();
+  DLG.kind = kind; DLG.id = id; DLG.subs = subCount(id); DLG.back = true;
+  $('dlgKind').textContent = { watch: 'Video', instr: 'Instructions', res: 'Resources', link: 'Submit' }[kind];
+  $('dlgTitle').textContent = b.name;
+  $('dlg').classList.toggle('wide', kind === 'watch');
+  if (kind === 'watch') {
+    $('dlgBody').innerHTML = '<div id="dlgVid"></div>';
+    var H = GS_VIDEOS.player($('dlgVid'), id);
+    if (!$('dlg').open) $('dlg').showModal();
+    if (H && H.play) H.play();
+  } else {
+    dlgFill();
+    if (!$('dlg').open) $('dlg').showModal();
+    if (kind === 'link') { var u = $('dlgBody').querySelector('input'); if (u) u.focus(); }
+  }
+}
+/* redraw an open Instructions or Resources sheet (ticks, lessons done); the
+   focused tick keeps focus. Watch and the link form are never redrawn. */
+function dlgFill() {
+  var b = badgeById(DLG.id); if (!b || !$('dlg').open) return;
+  if (DLG.kind === 'link') {
+    if (!$('dlgBody').querySelector('[data-drv]')) $('dlgBody').innerHTML = linkBody(b);
+    else if (subCount(b.id) > DLG.subs) $('dlg').close();   // sent: the card's status line says so
+    return;
+  }
+  if (DLG.kind !== 'instr' && DLG.kind !== 'res') return;
+  var f = document.activeElement, key = f && $('dlgBody').contains(f) && f.closest('[data-step]') ? f.closest('[data-step]').getAttribute('data-step') : null;
+  $('dlgBody').innerHTML = DLG.kind === 'instr' ? instrBody(b) : resBody(b);
+  if (key != null) { var t = $('dlgBody').querySelector('[data-step="' + key + '"] button.tick'); if (t) t.focus(); }
+}
+function dlgClose(back) { DLG.back = back !== false; if ($('dlg').open) $('dlg').close(); }
+$('dlgClose').onclick = function () { dlgClose(); };
+$('dlg').addEventListener('click', function (e) {
+  if (e.target === this) { dlgClose(); return; }   // the backdrop
+  if (e.target.closest('a[target="_blank"]')) return;   // a video or a page: opens, never ticks
+  var step = e.target.closest('li.step[data-step]');
+  if (!step || DLG.kind !== 'instr') return;
+  if (!pilot) { dlgClose(false); SiteNav.open(); return; }
+  var id = DLG.id, i = +step.getAttribute('data-step');
+  var p = progress(); p[id] = p[id] || { steps: {} }; p[id].steps = p[id].steps || {};
+  p[id].steps[i] = !p[id].steps[i]; p[id].updated = Date.now(); saveProgress(p);
+  if (p[id].steps[i]) pushStep(id, i);     // ticks go up; unticks stay on this device only
+  render();
+});
+$('dlg').addEventListener('close', function () {
+  if (window.GS_VIDEOS) GS_VIDEOS.stopIn($('dlg'));
+  $('dlgBody').innerHTML = '';
+  var kind = DLG.kind, id = DLG.id; DLG.kind = null;
+  if (!DLG.back) return;
+  var to = document.querySelector('#tiers [data-act="' + kind + '"][data-b="' + id + '"]') ||
+           document.querySelector('#tiers .badge[data-id="' + id + '"] .acts button');
+  if (to) to.focus();
+});
 
 /* ---------- lessons, right in the badge cards (2026-10-10) ----------
    Ground School no longer has its own page: every lesson, drill and quiz is
@@ -878,41 +922,28 @@ $('lpBtns').addEventListener('click', function (e) {
 });
 
 /* ---------- events ---------- */
+/* a card's place on the page: scroll to it and flash it once */
+function goTo(el) {
+  if (!el) return;
+  el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (el.classList.contains('badge')) { el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash'); }
+}
 $('tiers').addEventListener('click', function (e) {
-  var step = e.target.closest ? e.target.closest('li.step') : null;
-  var les = e.target.closest ? e.target.closest('[data-lesson]') : null;
-  if (les) { e.preventDefault(); openLesson(les.getAttribute('data-lesson')); return; }
-  if (e.target.closest && e.target.closest('a[target="_blank"]')) return;   // a video / resource link, not a tick
-  var go = e.target.closest ? e.target.closest('[data-goto]') : null;
-  if (go) {
-    var to = document.querySelector('.badge[data-id="' + go.getAttribute('data-goto') + '"]');
-    if (to) { to.classList.add('open'); to.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
-    return;
-  }
-  if (e.target.closest && e.target.closest('.pre')) return;
-  var card = e.target.closest ? e.target.closest('.badge') : null;
-  if (!card) return;
-  if (step) {
-    if (!pilot) { SiteNav.open(); return; }
-    var id = card.getAttribute('data-id'), i = +step.getAttribute('data-step');
-    var p = progress(); p[id] = p[id] || { steps: {} }; p[id].steps = p[id].steps || {};
-    p[id].steps[i] = !p[id].steps[i]; p[id].updated = Date.now(); saveProgress(p);
-    if (p[id].steps[i]) pushStep(id, i);     // ticks go up; unticks stay on this device only
-    render(); return;
-  }
-  /* Resources open and close on their own and stay that way across redraws */
-  var sum = e.target.closest('details.resg > summary');
-  if (sum) { RESOPEN[sum.parentNode.getAttribute('data-res')] = !sum.parentNode.open; return; }
-  if (e.target.closest('a,button,input,.drv,details,.gsv')) return;
-  // open or close the whole visual row, not just the card that was tapped
-  var want = !card.classList.contains('open'), top = card.offsetTop, sib = card.parentNode.children;
-  for (var k = 0; k < sib.length; k++) if (sib[k].offsetTop === top) {
-    sib[k].classList.toggle('open', want);
-    if (!want && window.GS_VIDEOS) GS_VIDEOS.stopIn(sib[k]);   // a closed card doesn't keep playing sound
-  }
+  var go = e.target.closest('[data-goto]');
+  if (go) { goTo(document.querySelector('.badge[data-id="' + go.getAttribute('data-goto') + '"]')); return; }
+  var a = e.target.closest('[data-act]');
+  if (a) dlgOpen(a.getAttribute('data-act'), a.getAttribute('data-b'));
 });
-/* 2026-11-25: the website how-to, once it has a Drive file */
-if (window.GS_VIDEOS && GS_VIDEOS.ready('site-howto')) { $('howVid').hidden = false; GS_VIDEOS.player($('howVid'), 'site-howto'); }
+/* a quiz or a lesson, from a card or a sheet: the sheet closes first */
+document.addEventListener('click', function (e) {
+  var les = e.target.closest ? e.target.closest('[data-lesson]') : null;
+  if (!les) return;
+  e.preventDefault();
+  if ($('dlg').open) dlgClose(false);
+  openLesson(les.getAttribute('data-lesson'));
+});
+/* 2026-11-26: "How badges work", top of the page (a file in ../media/ once it exists) */
+if (window.GS_VIDEOS) GS_VIDEOS.player($('ovw'), 'path-overview');
 /* The profile lives in the site bar now (site.js, top right on every page);
    the Flying-as box's button opens it, and a pick there re-renders this page. */
 $('pChange').onclick = function () { SiteNav.open(); };
@@ -921,10 +952,7 @@ $('upNext').addEventListener('click', function (e) {
   if (!b) return;
   var id = b.getAttribute('data-up');
   if (id === 'pick') { SiteNav.open(); return; }
-  var to = id === 'el' ? $('el') : document.querySelector('.badge[data-id="' + id + '"]');
-  if (!to) return;
-  if (to.classList.contains('badge')) to.classList.add('open');
-  to.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  goTo(id === 'el' ? $('el') : document.querySelector('.badge[data-id="' + id + '"]'));
 });
 document.addEventListener('site:pilot', function (e) { setPilot(e.detail || null); });
 document.addEventListener('roster:change', function () { if (pilot) { var c = Roster.canon(pilot); if (c.slug !== pilot.slug) { pilot = c; Roster.adopt(pilot); } } pullData(false); });
@@ -945,21 +973,6 @@ function pullSubs() {
   }).catch(function () {});
 }
 function mySubs(b) { return (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse(); }
-function photoSubs(b) {
-  var mine = mySubs(b);
-  return mine.length ? '<div class="subs">' + mine.map(function (x) {
-    var when = new Date(x.at).toLocaleDateString();
-    var head = x.status === 'pass' ? 'Passed' : (x.status === 'fail' ? 'Not passed' : 'Waiting for review');
-    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · photo sent ' + esc(when) +
-      (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
-  }).join('') + '</div>' : '';
-}
-function photoBlock(b, s) {
-  var mine = mySubs(b), h = photoSubs(b);
-  if (!s.earned) h += '<div class="act"><button class="btn primary" type="button" data-photo="' + b.id + '">' +
-    (mine.length && mine[0].status === 'fail' ? 'Try again: submit a new photo' : 'Submit a photo') + '</button></div>';
-  return h;
-}
 /* 2026-10-27 (Micah): Cinematography is submitted as a Google Drive link, not
    a photo. Public is checked the way the Drone Portfolio does it: Drive serves
    a file's thumbnail only to someone allowed to open it, so a private link
@@ -969,25 +982,6 @@ var DRV = {};
 function driveId(u) {
   var m = /\/file\/d\/([\w-]{15,})/.exec(String(u || '')) || /[?&]id=([\w-]{15,})/.exec(String(u || ''));
   return m && /^https?:\/\/(drive|docs)\.google\.com\//.test(String(u || '').trim()) ? m[1] : null;
-}
-function driveBlock(b, s) {
-  var mine = (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse();
-  var h = '<div class="subs">' + mine.map(function (x) {
-    var when = new Date(x.at).toLocaleDateString();
-    var head = x.status === 'pass' ? 'Passed' : (x.status === 'fail' ? 'Not passed' : 'Waiting for review');
-    return '<div class="sub ' + esc(x.status) + '"><b>' + head + '</b> · link sent ' + esc(when) +
-      (x.video ? ' · <a href="' + esc(x.video) + '" target="_blank" rel="noopener">your clip &#8599;</a>' : '') +
-      (x.reviewNote ? '<br>Mentor: ' + esc(x.reviewNote) : '') + '</div>';
-  }).join('') + '</div>';
-  if (s.earned) return h;
-  var d = DRV[b.id] || {};
-  h += '<div class="drv" data-drv="' + b.id + '">' +
-    '<input type="url" inputmode="url" autocomplete="off" placeholder="Google Drive link to your clip" value="' + esc(d.url || '') + '" data-drvurl="' + b.id + '">' +
-    '<input type="text" maxlength="300" placeholder="Anything the mentor should know? (optional)" value="' + esc(d.note || '') + '" data-drvnote="' + b.id + '">' +
-    '<div class="act"><button class="btn primary" type="button" data-drvsend="' + b.id + '">' +
-    (mine.length && mine[0].status === 'fail' ? 'Try again: submit a new link' : 'Submit the Drive link') + '</button></div>' +
-    '<div class="dmsg' + (d.bad ? ' bad' : '') + '">' + esc(d.msg || 'Share it in Drive as "Anyone with the link" first.') + '</div></div>';
-  return h;
 }
 function drvSay(id, msg, isBad) {
   DRV[id] = DRV[id] || {}; DRV[id].msg = msg; DRV[id].bad = !!isBad;
@@ -1081,7 +1075,11 @@ $('camFile').onchange = function () {
   img.src = url;
 };
 $('camRetake').onclick = camLive;
-function camClose() { camStop(); $('cam').classList.remove('open'); cam.badge = null; cam.data = null; }
+function camClose() {
+  var id = cam.badge && cam.badge.id;
+  camStop(); $('cam').classList.remove('open'); cam.badge = null; cam.data = null;
+  var to = id && document.querySelector('#tiers [data-photo="' + id + '"]'); if (to) to.focus();   // back to the button (2026-11-26)
+}
 $('camCancel').onclick = camClose;
 $('cam').addEventListener('click', function (e) { if (e.target === this) camClose(); });
 $('camSend').onclick = function () {
@@ -1096,7 +1094,7 @@ $('camSend').onclick = function () {
 };
 document.addEventListener('click', function (e) {
   var b = e.target.closest ? e.target.closest('[data-photo]') : null;
-  if (b) { e.preventDefault(); camOpen(b.getAttribute('data-photo')); }
+  if (b) { e.preventDefault(); if ($('dlg').open) dlgClose(false); camOpen(b.getAttribute('data-photo')); }
 });
 document.addEventListener('keydown', function (e) {
   if (e.key === 'Escape' && $('cam').classList.contains('open')) camClose();
