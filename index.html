@@ -175,6 +175,10 @@ header.title{
 section{margin-top:30px}
 .howvid{max-width:600px;margin:14px 0 0}
 .howvid[hidden],header.title .side .btn[hidden]{display:none}
+/* 2026-11-26: the newcomer intro, under the club name (above the fold on a phone) */
+.intro{max-width:520px;margin-top:16px}
+.intro[hidden]{display:none}
+.intro.gsv{margin:16px 0 0}
 .eyebrow{
   display:flex;align-items:baseline;gap:12px;
   margin:0 2px 12px;
@@ -477,6 +481,9 @@ header.title .side .btn{text-align:center;justify-content:center}
       <h1>Brophy FPV Club</h1>
       <div class="sub">Flight Simulator Lab &middot; Club Room</div>
       <div class="stamp">open to anyone</div>
+      <!-- 2026-11-26: "Who we are" (GS_VIDEOS['home-intro'], media/home-intro.mp4), only
+           while no pilot is picked on this device and only once its src is set -->
+      <div class="intro" id="intro" hidden></div>
     </div>
     <div class="side">
       <div class="status" id="status" role="status" aria-live="polite">
@@ -561,6 +568,21 @@ header.title .side .btn{text-align:center;justify-content:center}
 
 <script src="flightschool/badges.js"></script>
 <script src="groundschool/gs-videos.js"></script>
+<script>
+/* 2026-11-26: the club intro for a newcomer: shown while nobody is picked on
+   this device, gone once a pilot is (and nothing at all until it has a file) */
+(function () {
+  var box = document.getElementById('intro');
+  if (!box || !window.GS_VIDEOS || !GS_VIDEOS.ready('home-intro')) return;
+  function show() {
+    var nobody = !(window.SiteNav && SiteNav.pilot());
+    if (nobody && box.hidden) { box.hidden = false; GS_VIDEOS.player(box, 'home-intro'); }
+    else if (!nobody && !box.hidden) { GS_VIDEOS.stopIn(box); box.hidden = true; box.innerHTML = ''; }
+  }
+  show();
+  document.addEventListener('site:pilot', show);
+})();
+</script>
 <script>
 /* 2026-11-25: the website how-to video, once it has a Drive file: a button in
    the header opens it right under the header (and starts it); again closes it */

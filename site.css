@@ -171,12 +171,13 @@ footer .sitelinks a:hover{color:var(--rust)}
 .stline .mnote{color:var(--ink);margin-top:2px}
 .one{font-size:14.5px;line-height:1.4;color:var(--ink)}
 .one b{font-weight:600;color:var(--rust)}
+.one a{font-weight:600;color:var(--rust);text-underline-offset:3px}
 @keyframes cardflash{0%{box-shadow:0 0 0 0 rgba(176,83,42,.0)}30%{box-shadow:0 0 0 4px rgba(176,83,42,.45)}100%{box-shadow:0 0 0 0 rgba(176,83,42,0)}}
 @media (prefers-reduced-motion:no-preference){.badge.flash{animation:cardflash 1.2s ease-out}}
 
 /* the overview video above a page's content: small, quiet until it exists */
 .ovw{max-width:560px;margin-top:18px}
-.ovw .gsv{margin:0}
+.ovw.gsv{margin:16px 0 0}
 
 dialog.sheet{border:2px solid var(--ink);border-radius:14px;padding:0;width:min(580px,calc(100vw - 24px));max-width:none;
   max-height:calc(100vh - 32px);background-color:#fffdf7;color:var(--ink);box-shadow:4px 4px 0 var(--ink);overflow:hidden}

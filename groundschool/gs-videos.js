@@ -140,7 +140,7 @@
     '.gsv-box video{position:absolute;top:0;left:0;width:100%;height:100%;display:block;background-color:#000;object-fit:contain}' +
     '.gsv-cap{display:flex;gap:10px;align-items:baseline;margin-top:6px;font-family:var(--font-mono,"Share Tech Mono",Consolas,monospace);' +
       'font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-soft,#62768e)}' +
-    '.gsv-cap b{font-weight:400;color:var(--ink,#2d4565)}' +
+    '.gsv-cap b,.gsv-soon .gsv-t{font-weight:400;color:var(--ink,#2d4565)}' +
     '.gsv-soon svg{width:20px;height:14px;flex:none;color:var(--ink-soft,#62768e)}' +
     '[data-theme=dark] .gsv-poster{background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.05) 0 1px,transparent 1px 14px),' +
         'repeating-linear-gradient(90deg,rgba(255,255,255,.05) 0 1px,transparent 1px 14px)}' +
@@ -175,7 +175,8 @@
     el.setAttribute('data-gsv', id);
     if(!ready(id)){
       el.className += ' gsv-soon';
-      el.innerHTML = SOON + '<span>Video soon</span>';
+      /* a site-hosted overview names itself: "How badges work · Video soon" */
+      el.innerHTML = SOON + ('src' in v ? '<span><b class="gsv-t">' + esc(v.title) + '</b> &middot; Video soon</span>' : '<span>Video soon</span>');
       el._gsv = { stop:function(){}, live:false };
       return el._gsv;
     }
