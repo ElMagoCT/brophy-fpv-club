@@ -1575,7 +1575,7 @@ var GS_COURSE = [
       cols:{ tone:'vs', ha:'Higher packet rate', hb:'Lower packet rate',
         a:['250-500 Hz','less latency','shorter range, more sensitive to interference'],
         b:['50-100 Hz','more range','fine for cinewhoops and long shots'] },
-      tip:'The club bind phrase is the same on every club receiver. Flashing a new receiver with it\'s part of the Betaflight badge.' },
+      tip:'The club bind phrase is the same on every club receiver, so keep one club radio and one club quad on at a time unless a mentor has given a pair its own phrase. Flashing a new receiver with it\'s part of the Betaflight badge.' },
     { h:'Failsafe is the thing you set before you need it', tab:'Failsafe',
       p:['When the receiver stops hearing the radio, the flight controller runs the <b>failsafe</b> - and what that does <b>depends on how that drone is set up</b>. Small quads with no GPS are usually set to drop (motors off); others may be set to land or, with GPS, to fly home. Know what the one in your hands does.'],
       steps:[
@@ -1598,7 +1598,7 @@ var GS_COURSE = [
       ],
       art:'linkBlockers', cap:'people are mostly water, and water eats 2.4 GHz' },
     { h:'Two pilots, one room', tab:'Sharing the air',
-      p:['Control links share fine - ELRS hops channels. <b>Video doesn\'t</b>. Two pilots on the same 5.8 GHz channel see each other\'s feed, and digital systems need a channel each too. Before anyone powers up at an event, the spotter runs the channel list.'],
+      p:['Control links on different bind phrases share fine - ELRS hops channels. Club radios share one phrase, so keep one club radio and one club quad on at a time unless a mentor has given a pair its own phrase. <b>Video doesn\'t</b>. Two pilots on the same 5.8 GHz channel see each other\'s feed, and digital systems need a channel each too. Before anyone powers up at an event, the spotter runs the channel list.'],
       steps:[
         { t:'Agree channels before power-up', d:'Raceband, one per pilot, written on the board' },
         { t:'Power up one at a time',          d:'and confirm the picture is yours' },

@@ -5,30 +5,173 @@
 
    Local testing only: on localhost / 127.0.0.1, localStorage['fpv.dev.api']
    points the site at another API (a mock, or `netlify dev`). It is ignored on
-   the published site. */
+   the published site.
+
+   Login (2026-11-26, follows GET /api/auth/config at run time):
+   - FPV.authCfg() reads the config once per page, only when something asks
+     (Join, the profile panel, or a POST from a signed-in device). With mode
+     off nothing else happens: no script, no header, no UI.
+   - The token is in localStorage fpv.auth.v1 (sessionStorage on a shared
+     computer): {token, exp, pilot:{slug,name}}. FPV.post adds X-Pilot-Token
+     only when there is a token AND the mode is on.
+   - A 401 login / 403 not-you on a pilot write keeps the write in the outbox
+     (fpv.outbox.v1; sessionStorage on a shared computer; cleared on sign-out), opens the sign-in sheet (auth.js, injected
+     then), and the caller's promise waits: after sign-in the write is sent
+     again and the caller gets that answer. Closing the sheet hands the caller
+     the refusal; the write stays in the outbox for the next sign-in. */
 (function () {
   var API = 'https://brophy-fpv-club-api.netlify.app';
+  var BASE = ((document.currentScript && document.currentScript.src) || '').replace(/config\.js(\?.*)?$/, '');
   try {
     if (/^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname)) {
       var dev = localStorage.getItem('fpv.dev.api');
       if (dev && /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(dev)) API = dev;
     }
   } catch (e) {}
+  var AKEY = 'fpv.auth.v1', OKEY = 'fpv.outbox.v1';
+  var cfgP = null, cfgNow = null, waiting = {};
+
   window.FPV = {
     API: API,
+    BASE: BASE,
     SITE: 'https://elmagoct.github.io/brophy-fpv-club/',
     /* this exact address is in the QR on the sims */
     JOIN_URL: 'https://elmagoct.github.io/brophy-fpv-club/join/',
-    post: post
+    post: post,
+    authCfg: authCfg,
+    auth: auth, setAuth: setAuth, signedOut: signedOut,
+    ui: ui, flush: flush, cancelled: cancelled,
+    outbox: function () { return box(); }
   };
-  /* Every pilot-side POST goes through here (progress, submissions, join), so
-     a login token header (X-Pilot-Token, DESIGN.md section 2) can be added in
-     this one place later. `path` is an API path such as '/api/progress'.
-     Returns the fetch promise; callers keep their own error handling. */
-  function post(path, body, opts) {
-    var headers = { 'Content-Type': 'application/json' };
-    var o = { method: 'POST', headers: headers, body: JSON.stringify(body) };
-    if (opts && opts.keepalive) o.keepalive = true;
-    return fetch(window.FPV.API + path, o);
+
+  /* GET /api/auth/config, once. Any failure counts as mode off. */
+  function authCfg() {
+    if (!cfgP) cfgP = fetch(API + '/api/auth/config', { cache: 'no-store' })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { return j && (j.mode === 'optional' || j.mode === 'required') ? j : { mode: 'off', google: null, pin: false }; })
+      .catch(function () { return { mode: 'off', google: null, pin: false }; })
+      .then(function (c) { cfgNow = c; return c; });
+    return cfgP;
   }
+
+  function read(st) { try { var v = JSON.parse(st.getItem(AKEY) || 'null'); return v && v.token && (!v.exp || v.exp > Date.now()) ? v : null; } catch (e) { return null; } }
+  /* the saved sign-in, or null */
+  function auth() { var s = null, l = null; try { s = read(sessionStorage); } catch (e) {} try { l = read(localStorage); } catch (e) {} return s || l; }
+  function setAuth(res, shared) {
+    try { sessionStorage.removeItem(AKEY); } catch (e) {}
+    try { localStorage.removeItem(AKEY); } catch (e) {}
+    if (!res || !res.token) return;
+    var v = JSON.stringify({ token: res.token, exp: res.exp || 0, pilot: res.pilot || null });
+    try { (shared ? sessionStorage : localStorage).setItem(AKEY, v); } catch (e) {}
+    var b = box(); if (b.length) saveBox(b); /* moves the outbox to match */
+  }
+  /* sign-out: the next pilot on this computer must not send these */
+  function signedOut() { setAuth(null); clearBox(); cancelled(); }
+
+  /* auth.js (the sign-in UI) is loaded only when it is needed */
+  var uiP = null;
+  function ui() {
+    if (window.FPVAuth) return Promise.resolve(window.FPVAuth);
+    if (!uiP) uiP = new Promise(function (ok, no) {
+      var s = document.createElement('script'); s.src = BASE + 'auth.js';
+      s.onload = function () { window.FPVAuth ? ok(window.FPVAuth) : no(new Error('auth.js')); };
+      s.onerror = function () { uiP = null; no(new Error('auth.js')); };
+      document.head.appendChild(s);
+    });
+    return uiP;
+  }
+
+  /* a kept write waits at most a week. On a shared computer (signed in with
+     the box ticked) it lives in sessionStorage, so it goes when the browser closes. */
+  function shared() { try { return !!sessionStorage.getItem(AKEY); } catch (e) { return false; } }
+  function rd(st) { try { return JSON.parse(st.getItem(OKEY) || '[]') || []; } catch (e) { return []; } }
+  function box() {
+    var all = rd(localStorage).concat(rd(sessionStorage));
+    return all.filter(function (x) { return x && x.at > Date.now() - 7 * 864e5; });
+  }
+  function saveBox(b) {
+    var to = shared() ? sessionStorage : localStorage, other = to === localStorage ? sessionStorage : localStorage;
+    try { other.removeItem(OKEY); } catch (e) {}
+    try { if (b.length) to.setItem(OKEY, JSON.stringify(b)); else to.removeItem(OKEY); } catch (e) {}
+  }
+  function clearBox() {
+    try { localStorage.removeItem(OKEY); } catch (e) {}
+    try { sessionStorage.removeItem(OKEY); } catch (e) {}
+    mem = {};
+  }
+  function keep(path, body) {
+    var b = box(), s = JSON.stringify(body);
+    for (var i = 0; i < b.length; i++) if (b[i].path === path && JSON.stringify(b[i].body) === s) return b[i].id;
+    var id = 'o' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    b.push({ id: id, path: path, body: body, at: Date.now() });
+    /* a photo can be big; if it does not fit, the caller's promise still waits */
+    saveBox(b); if (!box().some(function (x) { return x.id === id; })) mem[id] = { id: id, path: path, body: body };
+    return id;
+  }
+  var mem = {};
+
+  function send(path, body, keepalive, withToken) {
+    var headers = { 'Content-Type': 'application/json' };
+    var a = withToken ? auth() : null;
+    if (a) headers['X-Pilot-Token'] = a.token;
+    var o = { method: 'POST', headers: headers, body: JSON.stringify(body) };
+    if (keepalive) o.keepalive = true;
+    return fetch(API + path, o);
+  }
+  /* the gate said no: 401 login or 403 not-you (never anything else) */
+  function refused(r) {
+    if (r.status !== 401 && r.status !== 403) return Promise.resolve(false);
+    return r.clone().json().then(function (j) { return !!j && (j.code === 'login' || j.code === 'not-you') ? j.code : false; }, function () { return false; });
+  }
+
+  /* Every pilot-side POST goes through here (progress, submissions, join).
+     `path` is an API path such as '/api/progress'. Returns the fetch promise;
+     callers keep their own error handling. */
+  function post(path, body, opts) {
+    var ka = !!(opts && opts.keepalive);
+    var a = auth();
+    /* no token: exactly the old request; with one, the header only when the mode is on */
+    var go = !a ? send(path, body, ka, false)
+      : cfgNow ? send(path, body, ka, cfgNow.mode !== 'off')
+      : authCfg().then(function (c) { return send(path, body, ka, c.mode !== 'off'); });
+    return go.then(function (r) {
+      return refused(r).then(function (code) {
+        if (!code) return r;
+        var id = keep(path, body);
+        return new Promise(function (ok, no) {
+          (waiting[id] = waiting[id] || []).push({ ok: ok, no: no, r: r });
+          ui().then(function (A) { A.sheet({ why: code }); }, function () { cancelled(); });
+        });
+      });
+    });
+  }
+  /* after a sign-in: send what was kept. Every waiting caller is settled here:
+     with the new answer (even a refusal, so it shows its own error), or with an
+     Error when the network fails. A write refused as not-you is dropped (it was
+     another pilot's); a network failure or a login refusal keeps it for a retry. */
+  function flush() {
+    var items = box(); for (var k in mem) items.push(mem[k]);
+    function drop(id) { saveBox(box().filter(function (x) { return x.id !== id; })); delete mem[id]; }
+    function settle(id, fn) { var ws = waiting[id] || []; delete waiting[id]; ws.forEach(fn); }
+    return items.reduce(function (p, it) {
+      return p.then(function () {
+        return send(it.path, it.body, false, true).then(function (r) {
+          return refused(r).then(function (code) {
+            if (code !== 'login') drop(it.id);
+            settle(it.id, function (w) { w.ok(r.clone()); });
+          });
+        }, function () {
+          settle(it.id, function (w) { w.no(new Error('network')); });
+        });
+      });
+    }, Promise.resolve());
+  }
+  /* the sheet was closed without signing in: callers get the refusal, the outbox keeps the writes */
+  function cancelled() {
+    for (var id in waiting) waiting[id].forEach(function (w) { w.ok(w.r); });
+    waiting = {};
+  }
+
+  /* a signed-in device reads the config early, so a write sends the header right away */
+  if (auth()) authCfg();
 })();

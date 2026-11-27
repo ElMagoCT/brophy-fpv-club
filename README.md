@@ -2,7 +2,8 @@
 
 A one-page public site showing the club sim lab's **opening hours**, the **pilot
 leaderboard**, the **YouTube playlist** and three **randomly picked videos** from
-it. Anyone can open it, any time, from any device. No login. It is hosted on
+it. Anyone can open it, any time, from any device. Reading needs no login
+(pilot sign-in, when the API turns it on, is below). It is hosted on
 **GitHub Pages** (https://elmagoct.github.io/brophy-fpv-club/): a push to
 `main` publishes, so work on a branch. Pilot names, website progress, awards and
 submissions come from the club API (`../brophy-fpv-club-api`, a set of Netlify
@@ -56,8 +57,29 @@ themselves on `/join/` (the QR on the sims points there), which posts
 
 - `config.js` holds the API address (`FPV.API`), the Join address and
   `FPV.post`, the one helper every pilot-side POST goes through (progress,
-  submissions, join), so a login header can be added in one place later. On
-  localhost, `localStorage['fpv.dev.api']` points the site at a local mock.
+  submissions, join). On localhost, `localStorage['fpv.dev.api']` points the
+  site at a local mock.
+- Pilot sign-in (2026-11-26) follows `GET /api/auth/config` at run time, so
+  turning it on is an API change only (API README, "Login"). With mode `off`
+  (today) the site reads that config once on Join and when the profile panel
+  opens, and nothing else changes: no script, no header, no login UI.
+  With `optional` or `required`:
+  - Join opens on one Sign in with Google button (Google's script is injected
+    then, `hd` from the config, no One Tap). A new account fills the name from
+    Google and runs the usual roster checks, then claims the entry or joins and
+    claims in one tap. `optional` keeps "or type your name"; `required` has no
+    typing path. If Google's script is blocked or the account is refused, the
+    page offers the PIN path (a mentor's one-time code, then username + PIN).
+  - `auth.js` is that UI (Google button, PIN form, the sign-in sheet). config.js
+    loads it only when the mode is on.
+  - The token is in localStorage `fpv.auth.v1` (sessionStorage when "Shared
+    computer" is ticked, desktop only). `FPV.post` sends `X-Pilot-Token` only
+    when there is a token and the mode is on.
+  - A `401 login` / `403 not-you` on a pilot write keeps the write in
+    `fpv.outbox.v1` (kept a week), opens the sign-in sheet and sends it after
+    sign-in; the caller's promise gets that answer.
+  - The profile panel shows Sign in, or Signed in + Sign out, only when the
+    mode is on.
 - `roster.js` loads and caches the roster (`fpv.roster.v1`). If the API cannot
   be reached it falls back to the names in `data.json`, silently. It matches
   `data.json` rows to entries by slug or alias (two rows that are one pilot
