@@ -219,12 +219,19 @@
   }
 
   // ---------------------------------------------------------------- commands
-  function send(action, args, label) {
-    var m = S.machine, id = randId(), issuedAt = Date.now(), argsJson = JSON.stringify(args || {});
-    var row = addResult(id, m, label);
-    hmac('v1\n' + m + '\n' + id + '\n' + action + '\n' + argsJson + '\n' + issuedAt).then(function (sig) {
+  // The one signer for kiosk commands: files commands/<m>/<id>.json through the
+  // API. Resolves {id, issuedAt, args} once the API has filed it.
+  function postCommand(m, action, args, id) {
+    var issuedAt = Date.now(), argsJson = JSON.stringify(args || {});
+    id = id || randId();
+    return hmac('v1\n' + m + '\n' + id + '\n' + action + '\n' + argsJson + '\n' + issuedAt).then(function (sig) {
       return api('POST', '/api/command', { id: id, machine: m, action: action, args: argsJson, issuedAt: issuedAt, sig: sig });
-    }).then(function () {
+    }).then(function () { return { id: id, issuedAt: issuedAt, args: argsJson }; });
+  }
+  function send(action, args, label) {
+    var m = S.machine, id = randId();
+    var row = addResult(id, m, label);
+    postCommand(m, action, args, id).then(function () {
       setRow(row, 'st-wait', 'sent - waiting for the kiosk (≈15 s)…');
       poll(row, m, id, Date.now());
     }).catch(function (e) { setRow(row, 'st-bad', 'could not send: ' + e.message); });
@@ -1330,6 +1337,8 @@
         }));
         bar.appendChild(btn('Link account', RS.mode === 'link' ? 'on' : '', mode('link')));
       }
+      bar.appendChild(btn('Hours', RS.mode === 'hours' ? 'on' : '', mode('hours')));
+      bar.appendChild(btn('Reset hours', 'danger' + (RS.mode === 'reset' ? ' on' : ''), mode('reset')));
       bar.appendChild(btn('Remove', 'danger' + (RS.mode === 'remove' ? ' on' : ''), mode('remove')));
     }
     var info = document.createElement('span'); info.className = 'muted small rinfo';
@@ -1400,6 +1409,10 @@
       var lh = document.createElement('span'); lh.className = 'muted small'; lh.textContent = 'Moves it here if another pilot had it.';
       sub.appendChild(ui); sub.appendChild(link); sub.appendChild(lh);
       if (RS.focus) { RS.focus = false; setTimeout(function () { ui.focus(); }, 0); }
+    } else if (RS.mode === 'hours') {
+      hoursForm(p, sub, msg, busy);
+    } else if (RS.mode === 'reset') {
+      resetForm(p, sub, msg, busy);
     } else if (RS.mode === 'remove') {
       var t = document.createElement('span'); t.className = 'small';
       t.textContent = 'Hide ' + p.name + ' from the sims and pickers? Their hours are kept, and Restore brings them back.';
@@ -1435,6 +1448,169 @@
     if (RS.flash) { msg.className = 'small rmsg ok'; msg.textContent = RS.flash.replace(/\.\.$/, '.'); RS.flash = ''; }
     pan.appendChild(msg);
     return pan;
+  }
+  // ---------------------------------------------------------------- hours
+  // 2026-11-27: hours corrections moved off the sim's password-protected editor.
+  // The console files a signed hours.adjust / hours.reset command for ONE kiosk
+  // through postCommand (same signature as every kiosk command); that kiosk's
+  // sync agent hands it to its bridge, which applies it once through the sim
+  // editor's own code path. Hours are kept per kiosk and summed through the
+  // ledgers, so an adjust goes to the kiosk that should hold the time and a
+  // reset goes to both. Only with a checked password, like approvals.
+  var PCS = [{ m: 'KIOSK-A', t: 'FPV Sim 1' }, { m: 'KIOSK-B', t: 'FPV Sim 2' }];
+  var MAX_MIN = 720, NOTE_MAX = 80, HC_KEY = 'fpv.admin.hours.v1';
+  var HC = { pc: PCS[0].m, sim: '', dir: 'add', sent: {} };
+  try { HC.sent = JSON.parse(sessionStorage.getItem(HC_KEY) || '{}') || {}; } catch (e) { HC.sent = {}; }
+  function pcName(m) { var x = PCS.filter(function (c) { return c.m === m; })[0]; return x ? x.t : m; }
+  function simList() { return ((KSNAP && KSNAP.sims) || []).filter(function (s) { return s && s.id; }); }
+  function simName(id) { var x = simList().filter(function (s) { return s.id === id; })[0]; return x ? x.name : id; }
+  function cleanNote(t) { return String(t || '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, NOTE_MAX); }
+  function fmtH(ms) { return ((ms || 0) / 3600000).toFixed(1) + ' h'; }
+  function remember(slug, rec) {
+    (HC.sent[slug] = HC.sent[slug] || []).unshift(rec);
+    HC.sent[slug] = HC.sent[slug].slice(0, 20);
+    try { sessionStorage.setItem(HC_KEY, JSON.stringify(HC.sent)); } catch (e) { /* memory only */ }
+  }
+  function commandError(e) {
+    if (e && e.name === 'TypeError') return 'Could not reach the club API. Check the connection and send again.';
+    var t = String((e && e.message) || '');
+    if (/unknown action/.test(t)) return 'The club API does not take hours corrections yet. Nothing was sent.';
+    if (/too old/.test(t)) return 'This computer\'s clock is more than 10 minutes off. Fix the clock, then send again.';
+    if (e && e.status === 429) return 'The club API is busy. Wait a minute and send again.';
+    if (e && e.status === 404) return 'This club API cannot do that yet.';
+    return t || 'Something went wrong. Nothing was sent.';
+  }
+  function notSent(e) { var t = String((e && e.message) || ''); return 'Not sent: ' + t.replace(/^not filed - /, '').replace(/ Nothing was filed\.$/, ''); }
+  // This pilot's hours per simulator, both sims together (data.json is the summed snapshot).
+  function hoursLine(p) {
+    var per = {}, rows = kioskRows(p), d = document.createElement('div'); d.className = 'small hrs';
+    rows.forEach(function (r) { Object.keys(r.perSimMs || {}).forEach(function (k) { per[k] = (per[k] || 0) + (+r.perSimMs[k] || 0); }); });
+    if (!KSNAP) { d.textContent = 'Could not load data.json, so hours and the simulator list are missing. Press Refresh.'; return d; }
+    if (!rows.length) { d.textContent = 'No sim time yet.'; return d; }
+    var tot = document.createElement('b'); tot.textContent = fmtH(hoursOf(rows) * 3600000); d.appendChild(tot);
+    simList().forEach(function (s) {
+      var c = document.createElement('span'); c.className = 'hsim' + (per[s.id] ? '' : ' zero');
+      c.textContent = s.name + ' ' + fmtH(per[s.id]); d.appendChild(c);
+    });
+    var asof = document.createElement('span'); asof.className = 'muted';
+    asof.textContent = 'both sims, as of ' + (KSNAP.generatedIso || '').slice(0, 16).replace('T', ' ');
+    d.appendChild(asof);
+    return d;
+  }
+  function sentList(p) {
+    var list = HC.sent[p.slug] || [], box = document.createElement('div'); box.className = 'hsent small';
+    if (!list.length) return box;
+    var h = document.createElement('div'); h.className = 'muted';
+    h.textContent = 'Sent from this tab (the club API cannot list sent commands, so this list is kept for this tab only):';
+    box.appendChild(h);
+    list.forEach(function (r) {
+      var li = document.createElement('div'); li.className = 'hitem';
+      var w = new Date(r.at).toLocaleString(undefined, { month: 'numeric', day: 'numeric', hour: 'numeric', minute: '2-digit' });
+      li.textContent = w + ' · ' + (r.kind === 'reset'
+        ? 'reset to zero on ' + r.machines.map(pcName).join(' and ')
+        : (r.deltaMs > 0 ? 'added ' : 'took away ') + Math.abs(r.deltaMs / 60000) + ' min of ' + simName(r.simId) + ' on ' + pcName(r.machines[0])) +
+        ' · "' + r.note + '"' + (r.failed && r.failed.length ? ' · NOT sent to ' + r.failed.map(pcName).join(' and ') : '');
+      box.appendChild(li);
+    });
+    return box;
+  }
+  function sel(opts, value, onch) {
+    var s = document.createElement('select');
+    opts.forEach(function (o) { var op = document.createElement('option'); op.value = o[0]; op.textContent = o[1]; s.appendChild(op); });
+    if (value != null) s.value = value;
+    s.onchange = function () { onch(s.value); };
+    return s;
+  }
+  function hoursForm(p, sub, msg, busy) {
+    sub.classList.add('hform');
+    sub.appendChild(hoursLine(p));
+    var sims = simList();
+    if (!sims.length) { sub.appendChild(sentList(p)); return; }
+    if (!HC.sim || !sims.some(function (s) { return s.id === HC.sim; })) HC.sim = sims[0].id;
+    var pc = sel(PCS.map(function (c) { return [c.m, c.t]; }), HC.pc, function (v) { HC.pc = v; });
+    var sm = sel(sims.map(function (s) { return [s.id, s.name]; }), HC.sim, function (v) { HC.sim = v; });
+    var dir = sel([['add', 'Add'], ['sub', 'Take away']], HC.dir, function (v) { HC.dir = v; });
+    var mins = document.createElement('input'); mins.type = 'number'; mins.min = '1'; mins.max = String(MAX_MIN); mins.step = '1';
+    mins.placeholder = 'min'; mins.className = 'hmin'; mins.setAttribute('aria-label', 'Minutes');
+    var ml = document.createElement('span'); ml.className = 'small muted'; ml.textContent = 'min';
+    var note = document.createElement('input'); note.placeholder = 'Reason, e.g. timer ran while away'; note.maxLength = NOTE_MAX;
+    note.className = 'hnote'; note.autocomplete = 'off'; note.setAttribute('aria-label', 'Reason');
+    pc.setAttribute('aria-label', 'Sim PC'); sm.setAttribute('aria-label', 'Simulator'); dir.setAttribute('aria-label', 'Add or take away');
+    var go = btn('Send', 'primary flush', function () {
+      var raw = mins.value.trim(), n = Number(raw), why = cleanNote(note.value);
+      msg.className = 'small rmsg bad';
+      if (!/^\d+$/.test(raw) || n < 1 || n > MAX_MIN) { msg.textContent = 'Minutes: a whole number from 1 to ' + MAX_MIN + '.'; mins.focus(); return; }
+      if (why.length < 2) { msg.textContent = 'Write a short reason.'; note.focus(); return; }
+      var deltaMs = (HC.dir === 'sub' ? -1 : 1) * n * 60000;
+      var args = { slug: p.slug, simId: HC.sim, deltaMs: deltaMs, note: why }, m = HC.pc;
+      busy(true); msg.className = 'small rmsg'; msg.textContent = 'Sending…';
+      passwordChecked().then(function () {
+        return postCommand(m, 'hours.adjust', args).then(function (c) {
+          remember(p.slug, { at: c.issuedAt, kind: 'adjust', machines: [m], simId: args.simId, deltaMs: deltaMs, note: why, ids: [c.id] });
+          RS.flash = 'Sent. The sim applies it within a couple of minutes while it is on.'; drawRoster();
+        }, function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = commandError(e); });
+      }, function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = notSent(e); });
+    });
+    note.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
+    mins.addEventListener('keydown', function (e) { if (e.key === 'Enter') go.click(); });
+    var line = document.createElement('div'); line.className = 'row wrapline hline';
+    [pc, sm, dir, mins, ml, note, go].forEach(function (x) { line.appendChild(x); });
+    sub.appendChild(line);
+    var help = document.createElement('div'); help.className = 'muted small';
+    help.textContent = 'Changes one simulator\'s time on one sim PC, 1 to ' + MAX_MIN + ' minutes. It never goes below zero.';
+    sub.appendChild(help);
+    sub.appendChild(sentList(p));
+    if (RS.focus) { RS.focus = false; setTimeout(function () { mins.focus(); }, 0); }
+  }
+  function resetForm(p, sub, msg, busy) {
+    sub.classList.add('hform');
+    sub.appendChild(hoursLine(p));
+    var say = document.createElement('div'); say.className = 'small rsay hwarn';
+    say.textContent = dot('Sets ' + p.name + '\'s simulator hours to zero on both sims (FPV Sim 1 and FPV Sim 2). Lessons, badges and the profile stay. This cannot be undone.');
+    sub.appendChild(say);
+    var note = document.createElement('input'); note.placeholder = 'Reason'; note.maxLength = NOTE_MAX; note.className = 'hnote';
+    note.autocomplete = 'off'; note.setAttribute('aria-label', 'Reason'); note.value = HC.resetNote || '';
+    note.addEventListener('input', function () { HC.resetNote = note.value; });
+    var line = document.createElement('div'); line.className = 'row wrapline hline';
+    line.appendChild(note);
+    if (!RS.armed) {
+      line.appendChild(btn('Reset ' + p.name + '\'s hours', 'danger', function () {
+        if (cleanNote(note.value).length < 2) { msg.className = 'small rmsg bad'; msg.textContent = 'Write a short reason.'; note.focus(); return; }
+        RS.armed = true; drawRoster();
+      }));
+    } else {
+      var sure = document.createElement('span'); sure.className = 'small hwarn';
+      sure.textContent = 'Sure? Both sims, all of ' + p.name + '\'s time, for good.';
+      line.appendChild(sure);
+      line.appendChild(btn('Yes, reset on both sims', 'danger solid', function () {
+        var why = cleanNote(note.value);
+        if (why.length < 2) { msg.className = 'small rmsg bad'; msg.textContent = 'Write a short reason.'; return; }
+        busy(true); msg.className = 'small rmsg'; msg.textContent = 'Sending…';
+        passwordChecked().then(function () {
+          var args = { slug: p.slug, note: why }, ids = [], sent = [], failed = [], firstErr = null, at = Date.now();
+          // one command per kiosk, one after the other, so a failure names the sim it missed
+          return PCS.reduce(function (chain, c) {
+            return chain.then(function () {
+              return postCommand(c.m, 'hours.reset', args).then(function (r) { ids.push(r.id); sent.push(c.m); },
+                function (e) { failed.push(c.m); firstErr = firstErr || e; });
+            });
+          }, Promise.resolve()).then(function () {
+            if (sent.length) remember(p.slug, { at: at, kind: 'reset', machines: sent, note: why, ids: ids, failed: failed });
+            if (!failed.length) { HC.resetNote = ''; RS.mode = 'reset'; RS.armed = false; RS.flash = 'Sent to both sims. Each applies it within a couple of minutes while it is on.'; drawRoster(); return; }
+            RS.armed = false; drawRoster();
+            var m2 = el('rsList').querySelector('.rrow.on .rmsg');
+            if (m2) {
+              m2.className = 'small rmsg bad';
+              m2.textContent = (sent.length ? 'Sent to ' + sent.map(pcName).join(' and ') + ' only. ' + pcName(failed[0]) + ' did not get it: ' : 'Not sent: ') +
+                commandError(firstErr) + (sent.length ? ' Reset again to send it there.' : '');
+            }
+          });
+        }, function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = notSent(e); });
+      }));
+      line.appendChild(btn('Cancel', '', function () { RS.armed = false; drawRoster(); }));
+    }
+    sub.appendChild(line);
+    sub.appendChild(sentList(p));
   }
   function addPilot() {
     var n = el('rsAddName').value.trim().replace(/\s+/g, ' '), m = el('rsAddMsg');
