@@ -176,3 +176,39 @@ button.primary.flush{margin-top:0}
 #apAudit ul{margin:6px 0 0 18px;padding:0}
 #apAudit li{margin:3px 0}
 button.linklike{background:none;border:0;padding:0;margin:0;color:var(--accent);text-decoration:underline;font:inherit;cursor:pointer}
+
+/* Pilots: the roster list (2026-11-26) */
+#rs [hidden]{display:none!important}
+#rsFilter{width:180px;padding:6px 10px}
+label.inline.tight{margin:0;font-size:14px}
+.note{font-size:13.5px;color:var(--warn);background:var(--chip);border-radius:6px;padding:6px 10px;margin:4px 0 8px}
+.rlist{max-height:440px;overflow:auto;border:1px solid var(--line);border-radius:8px;margin-top:8px}
+.rnone{padding:10px 12px}
+.rrow{border-top:1px solid var(--line)}
+.rrow:first-child{border-top:0}
+.rrow.on{background-color:var(--bg)}
+.rhead{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:transparent;border:0;border-radius:0;padding:4px 12px;font-size:15px}
+.rhead:hover{background-color:var(--chip)}
+.rhead b{font-weight:600}
+.rrow.gone .rhead b{color:var(--muted);text-decoration:line-through}
+.rstat{margin-left:auto;font:13px "Share Tech Mono",ui-monospace,monospace;color:var(--muted);white-space:nowrap}
+.rtag{font:12px "Share Tech Mono",ui-monospace,monospace;letter-spacing:.5px;text-transform:uppercase;padding:0 6px;border-radius:4px;color:var(--muted);border:1px solid var(--line)}
+.rtag.new{color:#fff;background-color:var(--ok);border-color:var(--ok)}
+.rtag.bad{color:var(--bad);border-color:var(--bad)}
+.rpanel{padding:4px 12px 10px}
+.rpanel button{padding:5px 12px;font-size:14px}
+.rpanel button.on{border-color:var(--accent);color:var(--accent)}
+.rpanel button.danger.solid{background-color:var(--bad);color:#fff}
+.rpanel input,.rpanel select{padding:5px 8px;font-size:14px}
+.rinfo{margin-left:auto}
+.rsub{margin-top:8px}
+.rsay{flex-basis:100%}
+.rmsg{margin-top:6px;min-height:0}
+.rmsg:empty{display:none}
+.rmsg.bad,#rsAddMsg.bad{color:var(--bad)} .rmsg.ok,#rsAddMsg.ok{color:var(--ok)}
+.linkish{background:transparent;border:0;padding:0;color:var(--accent);font-size:inherit;text-decoration:underline;cursor:pointer}
+#rsLoose{margin-top:8px}
+.pincode{font:700 34px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;color:var(--ink)}
+.ralias{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;padding:0 2px 0 10px;font-size:13px}
+.rpanel .ralias button.rx{border:0;background:none;padding:2px 8px;font-size:15px;line-height:1;color:var(--muted)}
+.rpanel .ralias button.rx:hover{color:var(--bad)}
