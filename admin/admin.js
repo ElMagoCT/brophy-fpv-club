@@ -1489,7 +1489,7 @@
     if (!rows.length) { d.textContent = 'No sim time yet.'; return d; }
     var tot = document.createElement('b'); tot.textContent = fmtH(hoursOf(rows) * 3600000); d.appendChild(tot);
     simList().forEach(function (s) {
-      var c = document.createElement('span'); c.className = 'hsim' + (per[s.id] ? '' : ' zero');
+      var c = document.createElement('span'); c.className = 'hsim' + ((per[s.id] || 0) >= 180000 ? '' : ' zero');
       c.textContent = s.name + ' ' + fmtH(per[s.id]); d.appendChild(c);
     });
     var asof = document.createElement('span'); asof.className = 'muted';

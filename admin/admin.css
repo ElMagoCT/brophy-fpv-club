@@ -213,7 +213,8 @@ label.inline.tight{margin:0;font-size:14px}
 .rpanel .ralias button.rx{border:0;background:none;padding:2px 8px;font-size:15px;line-height:1;color:var(--muted)}
 .rpanel .ralias button.rx:hover{color:var(--bad)}
 /* Pilots: hours corrections (2026-11-27) */
-.hform{flex-direction:column;align-items:stretch;gap:6px}
+.rsub.hform{display:block}
+.hform>*+*{margin-top:6px}
 .hrs{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline}
 .hrs b{font:600 14px "Share Tech Mono",ui-monospace,monospace}
 .hsim{font:13px "Share Tech Mono",ui-monospace,monospace}
