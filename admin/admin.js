@@ -587,6 +587,7 @@
       st.bits.push(best ? 'quiz best ' + best + ' %' + (st.quizPass ? ' ✓' : ' (needs ' + FS.PASS + ')') : 'quiz not taken');
     }
     var ls = (b.lessons || []).filter(function (l) { return l && l.id; });
+    if (!ls.length && FS.resLessons) ls = FS.resLessons(b);   // 2026-11-26: converted badges keep their lessons as resources
     if (ls.length) st.bits.push('lessons ' + ls.filter(function (l) { return lessons[l.id] && lessons[l.id].status === 'complete'; }).length + '/' + ls.length);
     if (Array.isArray(b.steps) && b.steps.length) {
       var ticks = (pr.steps && pr.steps[b.id]) || {};
@@ -1137,7 +1138,7 @@
     el('rsCount').textContent = active.length + (fresh ? ' · ' + fresh + ' new this week' : '');
     el('rsRemovedL').lastChild.textContent = ' Show removed' + (gone ? ' (' + gone + ')' : '');
     var shown = RS.list.filter(function (p) {
-      if (p.status === 'removed' && !RS.showRemoved) return false;
+      if (p.status === 'removed' && !RS.showRemoved && p.slug !== RS.sel) return false;   // a just-removed pilot stays in view, with Restore
       return !q || keysOf(p).some(function (k) { return k.indexOf(q) >= 0; });
     }).sort(function (a, b) { return (b.at || 0) - (a.at || 0) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0); });
     if (!shown.length) { var none = document.createElement('div'); none.className = 'muted small rnone'; none.textContent = q ? 'No pilot matches.' : 'Nobody on the roster yet.'; box.appendChild(none); }
@@ -1159,8 +1160,10 @@
         if (open) pickName(p.name);
       };
       r.appendChild(head);
+      var flash = RS.sel === p.slug && RS.flash;
       if (RS.sel === p.slug) r.appendChild(rosterPanel(p));
       box.appendChild(r);
+      if (flash) setTimeout(function () { r.scrollIntoView({ block: 'nearest' }); }, 0);   // after a change, keep its row in view
     });
     // kiosk names that no roster entry claims (before seeding, or a typo on a sim)
     var claimed = {};
@@ -1267,14 +1270,14 @@
         if (keep) {
           var fold = keep === p ? other : p;
           var say = document.createElement('div'); say.className = 'small rsay';
-          say.textContent = 'One pilot named ' + keep.name + '. ' + fold.name + ' goes away; their hours add up.';
+          say.textContent = keep.name + ' stays and ' + fold.name + ' goes away. One pilot; their hours add up.';
           sub.appendChild(say);
           sub.appendChild(btn('Merge', 'primary flush', function () { run({ action: 'merge', slug: fold.slug, into: keep.slug }, keep.slug, fold.name + ' merged into ' + keep.name + '.'); }));
         }
       }
     }
     if (sub.childNodes.length) pan.appendChild(sub);
-    if (RS.flash) { msg.className = 'small rmsg ok'; msg.textContent = RS.flash; RS.flash = ''; }
+    if (RS.flash) { msg.className = 'small rmsg ok'; msg.textContent = RS.flash.replace(/\.\.$/, '.'); RS.flash = ''; }
     pan.appendChild(msg);
     return pan;
   }
