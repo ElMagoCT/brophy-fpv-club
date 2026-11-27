@@ -23,6 +23,11 @@
   var src = (document.currentScript && document.currentScript.src) || '';
   var BASE = src.replace(/site\.js(\?.*)?$/, '');
   var DATA = null, RAW = null, panelOpen = false, picking = false;
+  /* login (2026-11-26): the panel asks GET /api/auth/config the first time it
+     opens; Sign in / Sign out show only when the mode is not off */
+  var AUTH = null;
+  function authOn() { return !!(AUTH && AUTH.mode !== 'off'); }
+  function token() { return window.FPV && FPV.auth ? FPV.auth() : null; }
 
   /* config.js + roster.js, for pages that only load site.js */
   function need(file, ok) {
@@ -111,6 +116,7 @@
         '<div class="mh">Tap your name</div>' +
         '<input type="search" id="siteMeInput" placeholder="Find your name" aria-label="Find your name" autocomplete="off" autocapitalize="words" spellcheck="false" maxlength="28">' +
         '<div class="names" id="siteMeNames"></div>' +
+        (authOn() && !token() ? '<button type="button" class="min" data-act="signin">Sign in</button>' : '') +
         '<a class="mjoin" href="' + BASE + 'join/">New here? <b>Join</b></a>' +
         (p ? '<button type="button" class="mlink" data-act="back">&larr; back to ' + esc(p.name) + '</button>' : '');
       var inp = panel.querySelector('#siteMeInput');
@@ -138,7 +144,8 @@
       '<div class="mh">My profile</div>' +
       '<div class="mname">' + esc(p.name) + (r && r.tier != null ? ' <span class="mtier">Tier ' + r.tier + '</span>' : '') + '</div>' + stats +
       '<a class="mgo" href="' + BASE + 'pilot-path/">My Pilot Path &rarr;</a>' +
-      '<div class="mrow"><button type="button" class="mlink" data-act="switch">Switch profile</button>' +
+      (authOn() ? (token() ? '<div class="msign">Signed in</div>' : '<button type="button" class="min" data-act="signin">Sign in</button>') : '') +
+      '<div class="mrow">' + (authOn() && token() ? '<span></span>' : '<button type="button" class="mlink" data-act="switch">Switch profile</button>') +
       '<button type="button" class="mlink" data-act="out">Sign out</button></div>';
   }
   /* rank over the last 7 days, 0 = did not fly in them */
@@ -166,7 +173,10 @@
       (!hits.length ? '<span class="mhint">' + (q ? 'No one by that name yet.' : (list.length ? '' : 'Loading names&hellip;')) + '</span>' : '');
   }
 
-  function open() { panelOpen = true; panel.hidden = false; btn.setAttribute('aria-expanded', 'true'); drawPanel(); }
+  function open() {
+    panelOpen = true; panel.hidden = false; btn.setAttribute('aria-expanded', 'true'); drawPanel();
+    if (!AUTH && window.FPV && FPV.authCfg) FPV.authCfg().then(function (c) { AUTH = c; if (authOn() && panelOpen) drawPanel(); });
+  }
   function close() { panelOpen = false; panel.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
 
   btn.addEventListener('click', function () { if (panelOpen) { close(); picking = false; } else open(); });
@@ -184,7 +194,11 @@
     var act = t.getAttribute('data-act');
     if (act === 'switch') { picking = true; drawPanel(); }
     else if (act === 'back') { picking = false; drawPanel(); }
-    else if (act === 'out') set(null);
+    else if (act === 'signin') { close(); FPV.ui().then(function (A) { A.sheet({}); }, function () {}); }
+    else if (act === 'out') {
+      if (token()) FPV.ui().then(function (A) { A.signOut(); }, function () { FPV.signedOut(); });
+      set(null);
+    }
   });
   document.addEventListener('click', function (e) { if (panelOpen && e.target.isConnected && !bar.querySelector('.sitme').contains(e.target)) { close(); picking = false; } });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && panelOpen) { close(); picking = false; btn.focus(); } });
@@ -209,6 +223,7 @@
     if (c && (c.name !== p.name || c.slug !== p.slug)) { set({ name: c.name, slug: c.slug }); return true; }
     return false;
   }
+  document.addEventListener('auth:change', function () { draw(); });
   document.addEventListener('roster:change', function () {
     remerge();
     if (follow()) return;

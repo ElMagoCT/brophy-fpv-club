@@ -59,6 +59,45 @@ body{background-color:#f8f5ee}
 .mlink{font:inherit;font-size:14px;background:none;border:0;padding:4px 0;cursor:pointer;color:var(--ink-soft);
   text-decoration:underline;text-underline-offset:3px}
 .mlink:hover{color:var(--rust)}
+.mepanel .msign{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13.5px;color:var(--ink-soft)}
+.mepanel .msign::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green,#2d7045)}
+.mepanel .min{display:block;width:100%;margin-top:10px;font-family:var(--font-mono);font-size:14px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--ink);background:var(--glass-2,#fff);border:1.5px solid var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer}
+
+/* Sign-in (auth.js, 2026-11-26): the sheet any page can open, and the PIN form
+   Join uses too. Only on the page when login is on. */
+.fa-sheet{position:fixed;inset:0;z-index:300;display:flex;align-items:flex-end;justify-content:center;
+  background:rgba(20,28,40,.42);animation:faFade .18s ease both}
+.fa-card{position:relative;width:100%;max-width:420px;max-height:92vh;overflow:auto;background:var(--glass-2,#fff);color:var(--ink);
+  border:1.5px solid var(--line-hard);border-radius:16px 16px 0 0;padding:22px 20px calc(20px + env(safe-area-inset-bottom));
+  text-align:center;box-shadow:0 -6px 30px rgba(20,28,40,.2);animation:faUp .24s cubic-bezier(.2,.9,.3,1) both}
+@media (min-width:601px){ .fa-sheet{align-items:center} .fa-card{border-radius:16px} }
+.fa-card h2{font-family:var(--font-sketch,inherit);font-size:32px;margin:0 0 4px;line-height:1.1}
+.fa-lede{margin:0 0 18px;color:var(--ink-soft);font-size:16px}
+.fa-x{position:absolute;top:8px;right:10px;width:44px;height:44px;font-size:26px;line-height:1;background:none;border:0;color:var(--ink-soft);cursor:pointer}
+.fa-g{display:flex;justify-content:center;min-height:44px}
+.fa-g[hidden],.fa-link[hidden],.fa-shared[hidden],.fa-f[hidden]{display:none}
+.fa-wait{width:100%;max-width:300px;height:44px;border-radius:999px;border:1.5px dashed var(--line-hard);opacity:.6}
+.fa-msg{margin:12px 0 0;font-size:15.5px;line-height:1.4;color:var(--rust)}
+.fa-msg:empty{display:none}
+.fa-link{display:inline-block;margin-top:14px;font:inherit;font-size:15px;color:var(--ink-soft);background:none;border:0;cursor:pointer;
+  text-decoration:underline;text-underline-offset:3px;padding:8px}
+.fa-shared{display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;font-size:14px;color:var(--ink-soft);cursor:pointer}
+.fa-shared input{width:18px;height:18px;accent-color:var(--ink)}
+.fa-pin{display:flex;flex-direction:column;gap:12px;text-align:left}
+.fa-f{display:flex;flex-direction:column;gap:6px}
+.fa-f span{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+.fa-f input{font:inherit;font-size:18px;font-weight:600;width:100%;padding:11px 14px;min-height:50px;color:var(--ink);
+  background:var(--glass,#f3eee2);border:1.5px solid var(--line-hard);border-radius:10px;outline:none}
+.fa-f input:focus{border-color:var(--ink)}
+.fa-go{min-height:52px;border-radius:12px;cursor:pointer;font-family:var(--font-mono);font-size:16px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--paper);background:var(--ink);border:1.5px solid var(--ink)}
+.fa-go[disabled]{opacity:.45}
+.fa-pin .fa-link{margin-top:0;align-self:center}
+.fa-pin .fa-msg{margin:0;text-align:center}
+@keyframes faFade{from{opacity:0}}
+@keyframes faUp{from{transform:translateY(24px);opacity:0}}
+@media (prefers-reduced-motion: reduce){ .fa-sheet,.fa-card{animation:none} }
 
 @media (max-width:600px){
   .sitenav a{padding:7px 12px;font-size:12.5px;letter-spacing:.1em}
