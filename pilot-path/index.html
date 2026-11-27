@@ -68,6 +68,7 @@ section{margin-top:30px}
 .ubtn{align-self:flex-start;margin-top:8px;font-family:var(--font-mono);font-size:13px;letter-spacing:.12em;text-transform:uppercase;
   color:#fff;background:var(--rust);border:0;border-radius:7px;padding:8px 14px;cursor:pointer}
 .ubtn:hover{filter:brightness(1.08)}
+a.ubtn{display:inline-block;text-decoration:none}
 
 /* ---------- how it works (a closed dropdown, 2026-10-10) ---------- */
 .howbox{margin-top:30px}
@@ -137,6 +138,10 @@ section{margin-top:30px}
 .pre li{font-size:14.5px;line-height:1.25;cursor:pointer;display:flex;gap:8px;align-items:flex-start}
 .pre li:hover span:last-child{text-decoration:underline;text-underline-offset:3px}
 .pre li.on span:last-child{color:var(--ink-soft)}
+.pre li.cl a{display:flex;gap:8px;align-items:flex-start;color:inherit;text-decoration:none}
+.pre li.cl a:hover span:nth-child(2){text-decoration:underline;text-underline-offset:3px}
+.pre li.cl small{color:var(--rust);font-size:13px}
+.pre li.cl.on span:nth-child(2){color:var(--ink-soft)}
 .pre .big{width:74px;height:74px;border-radius:50%;border:3px dashed var(--line-hard);display:grid;place-items:center;font-size:42px;line-height:1;color:transparent;margin-top:2px;background:var(--glass-2)}
 .pre .big.on{border:3px solid var(--green);background:var(--green);color:#f2ece0}
 .pre .pmsg{grid-column:1/-1;font-size:13.5px;color:var(--ink-soft);line-height:1.35;margin-top:4px}
@@ -221,7 +226,7 @@ footer a{color:var(--ink)}
       <div class="card h"><div class="k">Video + quiz</div><div class="v">Most badges start with a short club video and a quiz. <b>80 % passes</b> and your best score counts. A quiz badge is yours as soon as you pass.</div></div>
       <div class="card h"><div class="k">Hands-on</div><div class="v">Building, Soldering, Betaflight and Tuning: follow the <b>Instructions</b>, then <b>submit a photo</b> and a mentor checks it.</div></div>
       <div class="card h"><div class="k">Flying</div><div class="v">Video and quiz first, then a mentor watches you fly it. <b>Sim Flight</b> is recorded on a sim instead.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Each tier ends in a checkpoint flight. It opens once <b>every badge before it</b> is earned. Event Pilot works the same way. Passing <b>isn&rsquo;t permission to fly</b>: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr 24 h before every campus flight.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Each tier ends in a checkpoint flight. It opens once <b>every badge before it</b> is earned. The Meteor checkpoint also needs <a href="../clearance/">TRUST, Safe Flight and the Pilot Agreement</a>. Event Pilot works the same way. Passing <b>isn&rsquo;t permission to fly</b>: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr 24 h before every campus flight.</div></div>
       <div class="card h"><div class="k">Already fly?</div><div class="v">If you&rsquo;ve already proven a skill, a <b>mentor can check that badge off</b>. Show them at the club.</div></div>
     </div>
   </details>
@@ -366,7 +371,7 @@ function pilotTier() {
 function status(b) {
   var s = rawStatus(b);
   if (!b.checkpoint || !pilot) return s;
-  var mates = FS.mates(b), left = mates.filter(function (m) { return !rawStatus(m).earned; }).length;
+  var mates = FS.prereqs(b), left = mates.filter(function (m) { return !rawStatus(m).earned; }).length;
   s.checkpoint = true; s.ready = left === 0;
   if (s.earned) return s;          // approved: counts (2026-10-15)
   if (left > 0) {
@@ -505,6 +510,10 @@ function nextUpRaw() {
       return { line: '<b>Tier ' + (i + 1) + ' path · ' + (bs.length - open.length) + ' of ' + bs.length + ' badges</b>',
                badge: pick, label: 'Tier ' + (i + 1) + ' path', verb: verb };
     }
+    var clOpen = cp && !status(cp).earned ? FS.prereqs(cp).filter(function (b) { return b.tier === 'cl' && !status(b).earned; }) : [];
+    if (clOpen.length)
+      return { line: '<b>Tier ' + (i + 1) + ' path · every badge done ✓</b> Flight Clearance next',
+               badge: clOpen[0], label: 'Before the Tier ' + (i + 1) + ' checkpoint', verb: 'finish it on the Flight Clearance page' };
     if (cp && !status(cp).earned)
       return { line: '<b>Tier ' + (i + 1) + ' path · every prerequisite done ✓</b>',
                badge: cp, label: 'Tier ' + (i + 1) + ' checkpoint', verb: 'ask a mentor to watch your attempt' };
@@ -523,7 +532,8 @@ function drawUpNext() {
     (b ? '<div class="un">' + esc(b.name) + '</div>' : '<div class="un">Bonus badges</div>') +
     '<div class="uv">' + esc(n.verb.charAt(0).toUpperCase() + n.verb.slice(1)) + (b && b.est ? ' &middot; ' + esc(b.est) : '') + '</div>' +
     (b && s && s.pct > 0 && !s.earned ? '<div class="meter"><i style="width:' + s.pct + '%"></i></div>' : '') +
-    '<button type="button" class="ubtn" data-up="' + (b ? b.id : 'el') + '">Show me &darr;</button>';
+    (b && b.tier === 'cl' ? '<a class="ubtn" href="../clearance/#' + b.id + '">Open Flight Clearance &rarr;</a>'
+                          : '<button type="button" class="ubtn" data-up="' + (b ? b.id : 'el') + '">Show me &darr;</button>');
 }
 
 /* ---------- render ---------- */
@@ -651,14 +661,18 @@ function permitLine(b) {
 /* the checkpoint's prerequisites: a box per badge, ticked once earned (tap one
    to jump to it), and the big check once every box is ticked */
 function prereqPanel(b) {
-  var mates = FS.mates(b), done = 0;
+  var mates = FS.prereqs(b), done = 0, cl = (b.needs || []).length;
   var li = mates.map(function (m) {
     var on = pilot && status(m).earned; if (on) done++;
-    return '<li class="' + (on ? 'on' : '') + '" data-goto="' + m.id + '"><span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + esc(m.name) + '</span></li>';
+    var inner = '<span class="tick' + (on ? ' on' : '') + '">' + (on ? '✓' : '') + '</span><span>' + esc(m.name) + '</span>';
+    /* a Flight Clearance part lives on its own page: the box links there (2026-11-27) */
+    if (m.tier === 'cl') return '<li class="cl' + (on ? ' on' : '') + '"><a href="../clearance/#' + m.id + '">' + inner + '<small title="On the Flight Clearance page">&#8599;</small></a></li>';
+    return '<li class="' + (on ? 'on' : '') + '" data-goto="' + m.id + '">' + inner + '</li>';
   }).join('');
   var all = pilot && done === mates.length;
-  var msg = !pilot ? 'Every badge on this path comes first. Each box ticks itself as you earn it.'
-    : (all ? '<b>All done.</b> Ask a mentor to watch your checkpoint.' : (mates.length - done) + ' to go. Every badge on this path comes first.');
+  var first = cl ? 'Every badge on this path comes first, plus TRUST, Safe Flight and the Pilot Agreement from Flight Clearance.' : 'Every badge on this path comes first.';
+  var msg = !pilot ? first + ' Each box ticks itself as you earn it.'
+    : (all ? '<b>All done.</b> Ask a mentor to watch your checkpoint.' : (mates.length - done) + ' to go. ' + first);
   return '<div class="pre"><div class="ph">Needs every badge' + (pilot ? ' · ' + done + ' of ' + mates.length : ' · ' + mates.length + ' badges') + '</div>' +
     '<ul>' + li + '</ul><div class="big' + (all ? ' on' : '') + '" title="' + (all ? 'Ready to attempt' : 'Not yet') + '">✓</div>' +
     '<div class="pmsg">' + msg + '</div></div>';

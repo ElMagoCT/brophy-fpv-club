@@ -216,6 +216,8 @@
       resources: [{ id: 'gs-los-01', t: 'Which way is left?', drill: true }, { id: 'gs-fly-03', t: 'Hover Trainer', drill: true }, { id: 'gs-los-02', t: 'Gate Run', drill: true }, { id: 'gs-los-03', t: 'Lost orientation recovery', drill: true },
                   { v: VID.los }, { v: VID.throttle }] },
     { id: 'tiny-whoop', quiz: 'gs-met-quiz', tier: 't0', track: 'flight', type: 'witnessed', name: 'Meteor 75 Pro Certification', checkpoint: true, est: 'one flight · about 15 min', rule: ONE_GO,
+      /* 2026-11-27 (Micah): FAA TRUST, Safe Flight and the Pilot Agreement come before this checkpoint too */
+      needs: ['faa-trust', 'safe-flight', 'pilot-agreement'],
       do: 'Checkpoint into Tier 1: the Meteor 75 Pro in goggles.', why: 'Your first real flight. Pass it and you\'re Tier 1, and the club Meteor goes into your Drone Portfolio.',
       reqs: [WATCH('gs-met-quiz'),
              { t: 'The Meteor set up with a mentor', d: 'accelerometer calibrated and receiver bound, before you fly (the Betaflight Intro steps)', k: 10 },
@@ -416,6 +418,12 @@
     clearance: function () { return B.filter(function (b) { return b.tier === 'cl'; }); },
     /* the other badges of a checkpoint's tier */
     mates: function (b) { return B.filter(function (x) { return x !== b && x.tier === b.tier && !x.checkpoint; }); },
+    /* everything a checkpoint needs: its tier's other badges, then any Flight Clearance parts it
+       names in `needs` (the Meteor checkpoint: TRUST, Safe Flight, the Pilot Agreement; 2026-11-27) */
+    prereqs: function (b) {
+      var extra = (b.needs || []).map(function (id) { return B.filter(function (x) { return x.id === id; })[0]; }).filter(Boolean);
+      return window.FS.mates(b).concat(extra);
+    },
     /* a photo can be submitted for any badge a mentor signs off - not one sent as a Drive
        link, and not Sim Flight, which is recorded on the kiosk (2026-11-25) */
     photoOk: function (b) { return (b.type === 'bench' || b.type === 'witnessed') && !b.drive && !b.record; },
