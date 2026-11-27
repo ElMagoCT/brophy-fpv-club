@@ -24,6 +24,8 @@
      origin). Opened on its own, the published API address stands in. */
   var HOST = null; try{ if(window.parent !== window && window.parent.FPV) HOST = window.parent; }catch(e){}
   var FPVC = window.FPV || (HOST && HOST.FPV) || null;
+  if(!FPVC){ try{ var cs = document.createElement('script'); cs.src = '../config.js';
+    cs.onload = function(){ FPVC = window.FPV || null; if(FPVC) API = FPVC.API; }; document.head.appendChild(cs); }catch(e){} }
   var API = (FPVC && FPVC.API) || 'https://brophy-fpv-club-api.netlify.app';
   var ROSTER = window.Roster || (HOST && HOST.Roster) || null;
 

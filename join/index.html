@@ -168,11 +168,11 @@ footer .sitelinks{display:none}
         <div class="fields">
           <div class="f first">
             <label for="first">First name</label>
-            <input id="first" name="fpv-first" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" maxlength="16" placeholder="Micah" enterkeyhint="next">
+            <input id="first" name="fpv-first" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" maxlength="16" placeholder="Alex" enterkeyhint="next">
           </div>
           <div class="f last" id="lastBox">
             <label for="last" id="lastLabel">Last initial</label>
-            <input id="last" name="fpv-last" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="1" placeholder="T" enterkeyhint="go">
+            <input id="last" name="fpv-last" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="1" placeholder="R" enterkeyhint="go">
           </div>
         </div>
 
@@ -340,7 +340,7 @@ footer .sitelinks{display:none}
     /* one more letter of the last name tells the two apart */
     state.lastMax = 3; last.maxLength = 3;
     $('lastBox').classList.add('more'); $('lastLabel').textContent = 'Last name';
-    last.placeholder = 'Tu';
+    last.placeholder = 'Ri';
     say('');
     msg.style.color = 'var(--ink-soft)'; msg.textContent = 'Add the next letter of your last name.';
     last.focus(); last.setSelectionRange(last.value.length, last.value.length);
@@ -372,7 +372,7 @@ footer .sitelinks{display:none}
   $('again').onclick = function () {
     $('done').hidden = true; $('form').hidden = false;
     first.value = ''; last.value = ''; state.lastMax = 1; last.maxLength = 1;
-    $('lastBox').classList.remove('more'); $('lastLabel').textContent = 'Last initial'; last.placeholder = 'T';
+    $('lastBox').classList.remove('more'); $('lastLabel').textContent = 'Last initial'; last.placeholder = 'R';
     say(''); update(); first.focus();
   };
 
