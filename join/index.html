@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Join — Brophy FPV Club</title>
+<meta name="description" content="Add your name to the Brophy FPV Club sims.">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="noindex, nofollow">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' fill='%23f2ece0'/><g stroke='%231f3350' stroke-width='2.4' fill='none' stroke-linecap='round'><circle cx='16' cy='16' r='3.4'/><path d='M8 8 13 13M24 8 19 13M8 24 13 19M24 24 19 19'/><circle cx='7' cy='7' r='3.2'/><circle cx='25' cy='7' r='3.2'/><circle cx='7' cy='25' r='3.2'/><circle cx='25' cy='25' r='3.2'/></g></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Cabin+Sketch:wght@400;700&family=Architects+Daughter&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<script src="../theme.js"></script>
+<style>
+/* /join/ (2026-11-26): the page a student opens from the QR on a sim, on a
+   phone. First name + last initial goes on the club roster (POST /api/roster)
+   and the sims pick it up within about a minute. Same design system as the
+   rest of the site: the grid is the desk, the boxes are white, pencil faces
+   for the big name and the stamp only. Phone first: 360 px wide, the button
+   always on the first screen, 16 px+ inputs so iOS does not zoom. */
+:root{
+  --paper:#f2ece0;--paper-2:#eae2d1;--ink:#2d4565;--ink-soft:#62768e;
+  --rust:#b0532a;--amber:#98701c;--green:#2d7045;--sky:#2a72a0;--violet:#6450ab;--gold:#f0a91a;
+  --line:rgba(45,69,101,.20);--line-hard:rgba(45,69,101,.42);--glass:#f3eee2;--glass-2:#ffffff;
+  --font-sketch:'Cabin Sketch','Architects Daughter',cursive;--font-hand:'Architects Daughter','Segoe Print',cursive;
+  --font-mono:'Share Tech Mono','Consolas',monospace;--font-body:'Barlow','Segoe UI',system-ui,sans-serif;
+  --r:10px;--shadow:0 1px 0 rgba(45,69,101,.14),0 6px 18px rgba(45,69,101,.07);
+}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--paper);color:var(--ink);font-family:var(--font-body);font-size:16px;line-height:1.45;min-height:100vh;-webkit-text-size-adjust:100%}
+#paper-bg{position:fixed;inset:0;z-index:0;pointer-events:none}
+#paper-bg .grid{position:absolute;inset:0;opacity:.28;background-image:linear-gradient(var(--line) 1px,transparent 1px),linear-gradient(90deg,var(--line) 1px,transparent 1px);background-size:28px 28px}
+#paper-bg .grid-fine{position:absolute;inset:0;opacity:.5;background-image:linear-gradient(rgba(45,69,101,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(45,69,101,.10) 1px,transparent 1px);background-size:7px 7px}
+#paper-bg .vignette{position:absolute;inset:0;background:radial-gradient(ellipse at 45% 32%,rgba(255,255,255,.42) 0%,rgba(255,255,255,0) 48%),radial-gradient(ellipse at 50% 50%,rgba(0,0,0,0) 55%,rgba(120,100,60,.13) 100%)}
+.wrap{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:28px 20px 48px}
+
+.mark{display:none;font-family:var(--font-mono);font-size:13px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-soft);text-decoration:none}
+.mark b{color:var(--rust);font-weight:400}
+
+main{max-width:520px;margin:28px auto 0}
+.card{background-color:var(--glass-2);border:1.5px solid var(--line-hard);border-radius:14px;box-shadow:var(--shadow);padding:22px 22px 20px}
+h1{font-family:var(--font-sketch);font-weight:700;font-size:46px;line-height:1;margin:0 0 4px;letter-spacing:.5px}
+h1 .a{color:var(--rust)}
+.lede{margin:0 0 18px;color:var(--ink-soft);font-size:16.5px}
+
+/* ---------- the two fields ---------- */
+.fields{display:flex;gap:10px;align-items:flex-end}
+.f{display:flex;flex-direction:column;gap:6px;min-width:0}
+.f.first{flex:1}
+.f.last{flex:0 0 118px;transition:flex-basis .2s ease}
+.f.last.more{flex-basis:132px}
+.f label{font-family:var(--font-mono);font-size:13px;letter-spacing:.1em;white-space:nowrap;text-transform:uppercase;color:var(--ink-soft)}
+.f input{font:inherit;font-size:20px;font-weight:600;width:100%;padding:12px 14px;min-height:54px;color:var(--ink);
+  background-color:var(--glass);border:1.5px solid var(--line-hard);border-radius:10px;outline:none;
+  transition:border-color .15s ease,box-shadow .15s ease}
+.f.last input{text-align:center;text-transform:uppercase;letter-spacing:.06em}
+.f input:focus{border-color:var(--ink);box-shadow:0 0 0 3px rgba(42,114,160,.18)}
+.f input::placeholder{color:var(--ink-soft);opacity:.55;font-weight:500}
+.f input[aria-invalid=true]{border-color:var(--rust)}
+
+/* ---------- the name as the sims show it ---------- */
+.preview{display:flex;align-items:center;gap:12px;margin:16px 0 14px;padding:12px 14px;border-radius:10px;
+  background-color:var(--paper-2);border:1.5px dashed var(--line-hard)}
+.preview .k{font-family:var(--font-mono);font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);flex:0 0 auto}
+.preview .chip{font-family:var(--font-mono);font-size:20px;letter-spacing:.04em;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:6px 14px;border-radius:999px;background-color:var(--glass-2);border:1.5px solid var(--line-hard);transition:border-color .2s ease,color .2s ease}
+.preview .chip.ghost{color:var(--ink-soft);opacity:.6;border-style:dashed}
+.preview.ok .chip{border-color:var(--rust);color:var(--rust)}
+
+.go{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;border-radius:12px;cursor:pointer;
+  font-family:var(--font-mono);font-size:17px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--paper);background-color:var(--ink);border:1.5px solid var(--ink);box-shadow:var(--shadow);
+  transition:transform .12s ease,opacity .2s ease,background-color .2s ease}
+.go:active{transform:translateY(1px) scale(.995)}
+.go[disabled]{opacity:.38;cursor:default}
+.go.me{background-color:var(--rust);border-color:var(--rust);color:#fff}
+.go .spin{width:16px;height:16px;border-radius:50%;border:2px solid currentColor;border-right-color:transparent;display:none}
+.go.busy .spin{display:inline-block;animation:spin .7s linear infinite}
+
+.msg{min-height:0;margin:12px 0 0;font-size:16px;line-height:1.4;color:var(--rust)}
+.msg:empty{display:none}
+
+/* ---------- 409: is that you? ---------- */
+.ask{margin-top:14px;padding:14px;border-radius:10px;border:1.5px solid var(--rust);background-color:rgba(176,83,42,.06)}
+.ask[hidden]{display:none}
+.ask p{margin:0 0 12px;font-size:17px}
+.ask p b{font-family:var(--font-mono);font-weight:400;letter-spacing:.04em}
+.ask .two{display:flex;gap:10px}
+.ask button{flex:1;min-height:50px;border-radius:10px;cursor:pointer;font-family:var(--font-mono);font-size:15px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--ink);background-color:var(--glass-2);border:1.5px solid var(--line-hard)}
+.ask button.yes{color:#fff;background-color:var(--rust);border-color:var(--rust)}
+
+/* ---------- already flying ---------- */
+.roster{margin-top:22px}
+.roster .k{font-family:var(--font-mono);font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);margin:0 2px 10px;display:flex;gap:10px;align-items:center}
+.roster .k::after{content:"";flex:1;height:1px;background:var(--line-hard);opacity:.7}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{font-family:var(--font-mono);font-size:16px;letter-spacing:.03em;cursor:pointer;color:var(--ink);min-height:44px;
+  padding:8px 14px;border-radius:999px;background-color:var(--glass-2);border:1.5px solid var(--line-hard);box-shadow:0 1px 0 rgba(45,69,101,.08)}
+.chips button.hit{border-color:var(--rust);color:var(--rust)}
+.chips .none{color:var(--ink-soft);font-size:15px;padding:4px 2px}
+.chips button.in{animation:chipIn .22s ease both}
+
+/* ---------- done ---------- */
+.done{text-align:center;padding:30px 22px 24px}
+.done[hidden],#form[hidden]{display:none}
+.stampbig{display:inline-block;font-family:var(--font-hand);font-size:20px;color:var(--rust);border:3px solid var(--rust);border-radius:8px;
+  padding:4px 14px;transform:rotate(-4deg);opacity:.92}
+.done.go-anim .stampbig{animation:stamp .42s cubic-bezier(.2,.9,.25,1.15) both}
+.done .who{font-family:var(--font-sketch);font-weight:700;font-size:56px;line-height:1;margin:18px 0 10px;overflow-wrap:anywhere}
+.done .say{font-size:20px;font-weight:600;margin:0}
+.done .hint{color:var(--ink-soft);font-size:15px;margin:8px 0 0}
+.meter{height:4px;border-radius:4px;background:var(--paper-2);overflow:hidden;margin:14px auto 22px;max-width:220px}
+.meter i{display:block;height:100%;width:0;background:var(--green);border-radius:4px}
+.done.go-anim .meter i{animation:fill 60s linear forwards}
+.done .next{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;min-height:56px;border-radius:12px;text-decoration:none;
+  font-family:var(--font-mono);font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:var(--paper);background-color:var(--ink);border:1.5px solid var(--ink)}
+.done .again{display:inline-block;margin-top:14px;font-size:15px;color:var(--ink-soft);background:none;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px}
+
+footer{max-width:520px;margin:26px auto 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-soft)}
+footer .sitelinks{display:none}
+
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes chipIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes stamp{0%{opacity:0;transform:rotate(-14deg) scale(1.9)}70%{opacity:1;transform:rotate(-3deg) scale(.96)}100%{opacity:.92;transform:rotate(-4deg) scale(1)}}
+@keyframes fill{to{width:100%}}
+@keyframes rise{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.done.go-anim .who{animation:rise .35s .18s ease both}
+.done.go-anim .say,.done.go-anim .hint{animation:rise .35s .28s ease both}
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:0s!important;animation-delay:0s!important;transition:none!important}
+  .done.go-anim .meter i{animation:none!important;width:100%}
+}
+
+@media (max-width:600px){
+  .wrap{padding:14px 16px 32px}
+  .sitebar{display:none}
+  .mark{display:inline-block}
+  main{margin-top:12px}
+  .card{padding:18px 16px 16px}
+  h1{font-size:40px}
+  .lede{margin-bottom:14px}
+  .done{padding:26px 16px 20px}
+  .done .who{font-size:48px}
+}
+
+/* dark: site.css holds the palette; only what this page hard-codes */
+[data-theme=dark] .go{color:var(--paper)}
+[data-theme=dark] .f input:focus{box-shadow:0 0 0 3px rgba(111,179,227,.22)}
+[data-theme=dark] .ask{background-color:rgba(232,134,92,.08)}
+[data-theme=dark] .go.me,[data-theme=dark] .ask button.yes{color:#1b1206}
+</style>
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+<div id="paper-bg" aria-hidden="true"><div class="grid"></div><div class="grid-fine"></div><div class="vignette"></div></div>
+<div class="wrap">
+  <nav class="crumbs" aria-label="Site"></nav>
+  <a class="mark" href="../">Brophy <b>FPV</b> Club</a>
+
+  <main>
+    <section class="card" id="form" aria-labelledby="h">
+      <h1 id="h">Join the <span class="a">sims</span></h1>
+      <p class="lede">Your name, the way the sims will show it.</p>
+
+      <form id="f" novalidate autocomplete="off">
+        <div class="fields">
+          <div class="f first">
+            <label for="first">First name</label>
+            <input id="first" name="fpv-first" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="words" spellcheck="false" maxlength="16" placeholder="Micah" enterkeyhint="next">
+          </div>
+          <div class="f last" id="lastBox">
+            <label for="last" id="lastLabel">Last initial</label>
+            <input id="last" name="fpv-last" type="text" inputmode="text" autocomplete="off" autocorrect="off" autocapitalize="characters" spellcheck="false" maxlength="1" placeholder="T" enterkeyhint="go">
+          </div>
+        </div>
+
+        <div class="preview" id="preview" aria-live="polite">
+          <span class="k">On the sims</span>
+          <span class="chip ghost" id="chip">First L.</span>
+        </div>
+
+        <button type="submit" class="go" id="go" disabled><span class="spin" aria-hidden="true"></span><span id="goText">Add me</span></button>
+        <p class="msg" id="msg" role="alert"></p>
+
+        <div class="ask" id="ask" hidden>
+          <p><b id="askName"></b> is already on the sims. Is that you?</p>
+          <div class="two">
+            <button type="button" class="yes" id="askYes">Yes, that's me</button>
+            <button type="button" id="askNo">No</button>
+          </div>
+        </div>
+      </form>
+
+      <div class="roster" id="roster">
+        <div class="k" id="rosterK">Already flying? Tap your name</div>
+        <div class="chips" id="chips"></div>
+      </div>
+    </section>
+
+    <section class="card done" id="done" hidden aria-live="polite">
+      <span class="stampbig">On the roster</span>
+      <div class="who" id="doneName"></div>
+      <p class="say" id="doneSay">You're on the sims. Tap your name and fly.</p>
+      <p class="hint" id="doneHint">It takes about a minute to show up.</p>
+      <div class="meter" id="meter" aria-hidden="true"><i></i></div>
+      <a class="next" href="../pilot-path/">Pilot Path &rarr;</a>
+      <button type="button" class="again" id="again">Add someone else</button>
+    </section>
+  </main>
+
+  <footer></footer>
+</div>
+
+<script src="../config.js"></script>
+<script src="../roster.js"></script>
+<script src="../pilots.js"></script>
+<script src="../site.js"></script>
+<script src="../confetti.js"></script>
+<script>
+(function () {
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+
+  var first = $('first'), last = $('last'), go = $('go'), goText = $('goText'), msg = $('msg'), chip = $('chip'), preview = $('preview');
+  var ask = $('ask'), chips = $('chips');
+  var state = { busy: false, lastMax: 1, match: null };
+
+  /* ---------- the API's name rule, so the preview is exactly what the sims show ---------- */
+  function fold(s) { return String(s || '').normalize ? String(s).normalize('NFD').replace(/[̀-ͯ]/g, '') : String(s || ''); }
+  function cleanFirst(s) {
+    s = fold(s).replace(/\s+/g, ' ').replace(/-+/g, '-').trim();
+    return s;
+  }
+  function firstOk(s) { return /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/.test(s) && s.replace(/[ -]/g, '').length >= 2 && s.length <= 16; }
+  function lastOk(s) { return /^[A-Za-z]{1,3}$/.test(s) && s.length <= state.lastMax; }
+  function titleCase(s) { return s.toLowerCase().replace(/(^|[ -])([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); }); }
+  function nameOf(f, l) { return titleCase(f) + ' ' + l.charAt(0).toUpperCase() + l.slice(1).toLowerCase() + '.'; }
+
+  function values() {
+    var f = cleanFirst(first.value), l = fold(last.value).replace(/[^A-Za-z]/g, '');
+    return { f: f, l: l, ok: firstOk(f) && lastOk(l), name: firstOk(f) && l ? nameOf(f, l) : '' };
+  }
+
+  /* ---------- live preview + button ---------- */
+  function update() {
+    var v = values();
+    var shown = v.f ? titleCase(v.f.replace(/[^A-Za-z -]/g, '')) + ' ' + (v.l ? v.l.charAt(0).toUpperCase() + v.l.slice(1).toLowerCase() + '.' : 'L.') : 'First L.';
+    chip.textContent = shown;
+    chip.classList.toggle('ghost', !v.f);
+    preview.classList.toggle('ok', v.ok);
+    state.match = v.ok ? Roster.entry(v.name) : null;
+    go.disabled = state.busy || !v.ok;
+    go.classList.toggle('me', !!state.match);
+    goText.textContent = state.match ? "That's me" : 'Add me';
+    drawChips(v);
+  }
+  function drawChips(v) {
+    var list = Roster.list(), q = Roster.slug(v.f), qq = Roster.slug(v.f + ' ' + v.l);
+    var hits = q ? list.filter(function (x) { var s = Roster.slug(x.name); return s.indexOf(q) === 0 || s.indexOf('-' + q) >= 0; }) : list;
+    if (q) hits.sort(function (a, b) { return (Roster.slug(b.name).indexOf(qq) === 0) - (Roster.slug(a.name).indexOf(qq) === 0); });
+    var key = hits.map(function (x) { return x.slug; }).join(',');
+    if (key !== drawChips.last) {
+      drawChips.last = key;
+      chips.innerHTML = hits.slice(0, 48).map(function (x) {
+        return '<button type="button" class="in" data-s="' + esc(x.slug) + '">' + esc(x.name) + '</button>';
+      }).join('') || (list.length ? '<span class="none">' + (q ? 'Nobody by that name yet.' : '') + '</span>' : '');
+    }
+    var m = state.match;
+    Array.prototype.forEach.call(chips.querySelectorAll('button'), function (b) { b.classList.toggle('hit', !!m && b.getAttribute('data-s') === m.slug); });
+    $('roster').hidden = !list.length;
+  }
+
+  function say(t) { msg.textContent = t || ''; }
+  function busy(on) { state.busy = on; go.classList.toggle('busy', on); go.disabled = on || !values().ok; }
+
+  /* ---------- this device is that pilot (no write) ---------- */
+  function useMe(p, fresh) {
+    if (window.SiteNav) SiteNav.set({ name: p.name, slug: p.slug });
+    else try { localStorage.setItem('fs.pilot.v1', JSON.stringify({ name: p.name, slug: p.slug })); } catch (e) {}
+    showDone(p, fresh);
+  }
+  function showDone(p, fresh) {
+    $('form').hidden = true;
+    var d = $('done');
+    $('doneName').textContent = p.name;
+    $('doneSay').textContent = fresh ? "You're on the sims. Tap your name and fly." : 'Tap your name on a sim and fly.';
+    $('doneHint').hidden = !fresh; $('meter').hidden = !fresh;
+    d.classList.remove('go-anim'); d.hidden = false;
+    void d.offsetWidth; d.classList.add('go-anim');
+    if (fresh && window.FPVConfetti) setTimeout(function () { FPVConfetti.burst(); }, 180);
+    window.scrollTo(0, 0);
+  }
+
+  /* ---------- add me ---------- */
+  var ERR = {
+    'bad-name': 'Use your real first name, letters only.',
+    removed: 'That name was taken off the roster. Ask a mentor.',
+    full: 'The roster is full. Ask a mentor.',
+    'busy-day': 'Lots of people joined today. Try again tomorrow, or ask a mentor.'
+  };
+  function submit() {
+    var v = values();
+    if (!v.ok || state.busy) return;
+    say(''); ask.hidden = true;
+    if (state.match) { useMe(state.match, false); return; }
+    busy(true);
+    FPV.post('/api/roster', { first: v.f, last: v.l })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, j: j || {} }; }); })
+      .then(function (res) {
+        busy(false);
+        var j = res.j;
+        if (res.status === 200 && j.ok && j.pilot) {
+          Roster.add({ slug: j.pilot.slug, name: j.pilot.name, aliases: [], at: Date.now() });
+          useMe(j.pilot, true);
+          return;
+        }
+        if (j.code === 'taken' && j.pilot) { taken(j.pilot); return; }
+        if (ERR[j.code]) return say(ERR[j.code]);
+        if (res.status === 429) return say('Too fast. Wait a few seconds and try again.');
+        if (res.status === 400) return say(ERR['bad-name']);
+        say("Couldn't reach the club server. Try again in a minute.");
+      })
+      .catch(function () { busy(false); say("Couldn't reach the club server. Try again in a minute."); });
+  }
+  function taken(p) {
+    state.taken = p;
+    $('askName').textContent = p.name;
+    ask.hidden = false;
+    $('askYes').focus({ preventScroll: true });
+  }
+  $('askYes').onclick = function () {
+    var p = state.taken; if (!p) return;
+    Roster.add({ slug: p.slug, name: p.name, aliases: [], at: 0 });
+    useMe(p, false);
+  };
+  $('askNo').onclick = function () {
+    ask.hidden = true;
+    /* one more letter of the last name tells the two apart */
+    state.lastMax = 3; last.maxLength = 3;
+    $('lastBox').classList.add('more'); $('lastLabel').textContent = 'Last name';
+    last.placeholder = 'Tu';
+    say('');
+    msg.style.color = 'var(--ink-soft)'; msg.textContent = 'Add the next letter of your last name.';
+    last.focus(); last.setSelectionRange(last.value.length, last.value.length);
+  };
+
+  $('f').addEventListener('submit', function (e) { e.preventDefault(); submit(); });
+  first.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); last.focus(); } });
+  [first, last].forEach(function (el) {
+    el.addEventListener('input', function () {
+      if (el === last) last.value = last.value.replace(/[^A-Za-zÀ-ɏ]/g, '').slice(0, state.lastMax);
+      msg.style.color = ''; if (!state.busy) say('');
+      ask.hidden = true;
+      update();
+    });
+  });
+  /* the first name filled with the last letter by mistake: "Micah T" -> both boxes */
+  first.addEventListener('blur', function () {
+    var m = /^(.*\S)\s+([A-Za-z])\.?$/.exec(first.value.trim());
+    if (m && !last.value && /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/.test(fold(m[1])) && m[1].replace(/[ -]/g, '').length >= 2) {
+      first.value = m[1]; last.value = m[2].toUpperCase(); update();
+    }
+  });
+
+  chips.addEventListener('click', function (e) {
+    var b = e.target.closest('button[data-s]'); if (!b) return;
+    var p = Roster.find(b.getAttribute('data-s'));
+    if (p) useMe({ name: p.name, slug: p.slug }, false);
+  });
+  $('again').onclick = function () {
+    $('done').hidden = true; $('form').hidden = false;
+    first.value = ''; last.value = ''; state.lastMax = 1; last.maxLength = 1;
+    $('lastBox').classList.remove('more'); $('lastLabel').textContent = 'Last initial'; last.placeholder = 'T';
+    say(''); update(); first.focus();
+  };
+
+  document.addEventListener('roster:change', function () { drawChips.last = null; update(); });
+  update();
+  Roster.load(true).then(function () { drawChips.last = null; update(); });
+})();
+</script>
+</body>
+</html>
