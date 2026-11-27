@@ -81,6 +81,26 @@
       <!-- 2026-11-25: decisions on file not signed with the instructor password
            (the API checks them with the review key); filled by admin.js loadAudit -->
       <div class="card" id="apAudit" hidden></div>
+      <!-- 2026-11-26: the roster (/api/roster with the review key) is the list of
+           pilots; kiosk hours and badges from data.json are folded in by slug or alias -->
+      <div class="card" id="rs">
+        <div class="row between wrapline">
+          <h2>Pilots <span class="muted small" id="rsCount"></span></h2>
+          <div class="row wrapline">
+            <input id="rsFilter" type="search" placeholder="Find a pilot" autocomplete="off" spellcheck="false">
+            <label class="inline tight" id="rsRemovedL" hidden><input id="rsRemoved" type="checkbox"> Show removed</label>
+            <button id="rsRefresh">Refresh</button>
+          </div>
+        </div>
+        <div class="note" id="rsOff" hidden></div>
+        <div id="rsList" class="rlist"><div class="muted small">Loading…</div></div>
+        <div class="muted small" id="rsLoose"></div>
+        <div class="row wrapline gap-top" id="rsAdd" hidden>
+          <input id="rsAddName" placeholder="First L." maxlength="28" autocomplete="off" spellcheck="false">
+          <button id="rsAddGo">Add pilot</button>
+          <span class="small" id="rsAddMsg"></span>
+        </div>
+      </div>
       <div class="card">
         <h2>Approve a badge</h2>
         <p class="muted small">For bench and witnessed badges. The pilot has DM'd their photo (or you watched them do it);
@@ -117,11 +137,6 @@
              load here; every badge with submissions gets a + that opens them -->
         <div id="ppDocs" class="ppdocs"></div>
         <div id="ppList"></div>
-      </div>
-                  <div class="card">
-        <h2>Who holds what</h2>
-        <p class="muted small" id="apRosterNote">Kiosk snapshot plus instructor decisions on file.</p>
-        <div id="apRoster" class="roster"></div>
       </div>
     </div>
 

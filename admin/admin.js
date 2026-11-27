@@ -1,9 +1,9 @@
 /* Brophy FPV Club instructor console - see C:\BrophyUAV\remote\REMOTE.md.
 
-   Talks ONLY to api.github.com, to the private repo below. It holds no secret
-   of its own: the admin brings a GitHub token (kept in sessionStorage, this tab
-   only) and the instructor password (hashed on the spot, kept in memory only,
-   never sent anywhere). Every command is signed with
+   Talks ONLY to the club API (brophy-fpv-club-api.netlify.app). It holds no
+   secret of its own: the instructor password is hashed on the spot, kept in
+   memory only and never sent; its hex SHA-256 is the review key (X-Review-Key)
+   for review, awards and the roster. Every command is signed with
      HMAC-SHA256(key = hex SHA-256(password), "v1\n"+machine+"\n"+id+"\n"+action+"\n"+args+"\n"+issuedAt)
    and the kiosk agent refuses anything that does not verify. Results and
    status come back signed the same way, so a forged reply shows as unverified. */
@@ -55,7 +55,7 @@
     if (body) { opt.body = JSON.stringify(body); opt.headers['Content-Type'] = 'application/json'; }
     return fetch(API + path, opt).then(function (r) {
       return r.json().catch(function () { return { ok: false, error: 'HTTP ' + r.status }; }).then(function (j) {
-        if (!r.ok || j.ok === false) { var e = new Error(j.error || ('API ' + r.status)); e.status = r.status; throw e; }
+        if (!r.ok || j.ok === false) { var e = new Error(j.error || ('API ' + r.status)); e.status = r.status; e.code = j.code || ''; e.body = j; throw e; }
         return j;
       });
     });
@@ -258,14 +258,15 @@
   }
 
   // ---------------------------------------------------------------- approvals
-  var ROSTER = null;
+  var KSNAP = null;   // the kiosks' data.json snapshot (hours, badges); the real roster is RS.list
   // Review photos is the first view (2026-10-10): no hash, or one we do not
   // know, opens it. #approvals and #kiosks still deep-link.
   function showView() {
     var ap = location.hash === '#approvals' || location.hash === '#pilots', ki = location.hash === '#kiosks', rv = !ap && !ki;
     el('approvals').hidden = !ap; el('review').hidden = !rv; el('kiosks').hidden = !ki;
     el('vKiosks').className = ki ? 'on' : ''; el('vApprovals').className = ap ? 'on' : ''; el('vReview').className = rv ? 'on' : '';
-    if ((ap || rv) && !ROSTER) loadRoster();
+    if (rv && !KSNAP) loadSnap();
+    if (ap) loadRoster();
     if (rv && S.key) loadReview();
     if (ap && S.key) loadAudit();
   }
@@ -287,7 +288,7 @@
     el('apPilot').addEventListener('change', pickPilot);
     el('apPilot').addEventListener('input', function () {   // a roster name picked or typed in full loads at once
       clearTimeout(t); var v = el('apPilot').value.trim();
-      if (rosterPilot(FS.slug(v))) t = setTimeout(pickPilot, 150);
+      if (kioskPilot(FS.slug(v)) || entryFor(FS.slug(v))) t = setTimeout(pickPilot, 150);
     });
     el('ppRefresh').onclick = function () { PP.slug = null; pickPilot(); };
     el('apAward').onclick = function () { award('earned'); };
@@ -351,12 +352,18 @@
   //            asked rather than refused, because an approval filed a minute
   //            ago may not be in the snapshot yet - and the kiosks will not
   //            count it until the tier is done anyway
-  function rosterPilot(s) { return (ROSTER && ROSTER.pilots || []).filter(function (p) { return FS.slug(p.name) === s; })[0]; }
+  // The kiosk snapshot row(s) for a pilot key. With the roster loaded, every row
+  // whose name matches the entry's slug or an alias is folded into one (hours
+  // add up, badges are united), the same way the kiosk shows a merged pilot.
+  function kioskPilot(s) {
+    var e = entryFor(s), rows = e ? kioskRows(e) : snapRows().filter(function (r) { return FS.slug(r.name) === s; });
+    return rows.length > 1 ? foldRows(rows) : rows[0];
+  }
   function checkRules(pilot, bd) {
     if (!bd) return null;
-    var rp = rosterPilot(FS.slug(pilot));
+    var rp = kioskPilot(FS.slug(pilot));
     if (bd.id === 'mentor' && FS.MENTOR_CAP) {
-      var mentors = ((ROSTER && ROSTER.pilots) || []).filter(function (p) { return (p.badges || []).indexOf('mentor') >= 0 && FS.slug(p.name) !== FS.slug(pilot); });
+      var mentors = ((KSNAP && KSNAP.pilots) || []).filter(function (p) { return (p.badges || []).indexOf('mentor') >= 0 && FS.slug(p.name) !== FS.slug(pilot); });
       if (mentors.length >= FS.MENTOR_CAP) return { ask: 'Warning: the club already has ' + mentors.length + ' mentors (' + mentors.map(function (p) { return p.name; }).join(', ') + ') and the limit is ' + FS.MENTOR_CAP +
         '. A new mentor must be noticeably more active and knowledgeable than an active mentor, and one steps down. Approve it anyway? It will count.' };
     }
@@ -555,7 +562,7 @@
       awardsOf(name).then(function (j) { return j.awards || null; }),
       api('GET', '/api/progress?pilot=' + q).then(function (j) { return j.progress || null; }),
       loadPilotSubs(s),
-      ROSTER ? Promise.resolve() : fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) { ROSTER = ROSTER || (window.mergePilots ? window.mergePilots(d) : d); })
+      loadSnap()
     ]).then(function (r) {
       if (PP.slug !== s) return;
       PP.awards = r[0]; PP.prog = r[1]; PP.subs = r[2]; PP.loaded = true; el('ppMsg').textContent = ''; drawDocs(); drawProgress();
@@ -565,7 +572,7 @@
   // Flight School uses (kiosk wins; an approval counts; a revoke clears; a quiz
   // at FS.PASS earns a quiz badge) so the console and the pilot see the same.
   function badgeState(b) {
-    var rp = rosterPilot(PP.slug), pr = PP.prog || {}, aws = (PP.awards && PP.awards.badges) || {};
+    var rp = kioskPilot(PP.slug), pr = PP.prog || {}, aws = (PP.awards && PP.awards.badges) || {};
     var lessons = pr.lessons || {}, aw = aws[b.id] || null;
     // 2026-11-25: a decision that does not verify (verified:false) is not one: the kiosks ignore it
     var st = { kiosk: !!(rp && rp.badges && rp.badges.indexOf(b.id) >= 0), aw: aw, untrusted: !!(aw && aw.verified === false),
@@ -641,7 +648,7 @@
     }
     if (st.both) chips.appendChild(chip(st.quizPass ? 'src' : '', st.quizPass ? 'quiz ✓' : 'quiz ✗'));
     else if (b.type === 'knowledge' && st.quizPass) chips.appendChild(chip('src', 'quiz ✓'));
-    if (st.revoked && st.earned) chips.appendChild(chip('bad', 'revoked ' + when(st.aw.at) + ' · ' + (ROSTER && st.aw.at > (ROSTER.generated || 0) ? 'kiosk not synced yet' : 'kiosk still shows it')));
+    if (st.revoked && st.earned) chips.appendChild(chip('bad', 'revoked ' + when(st.aw.at) + ' · ' + (KSNAP && st.aw.at > (KSNAP.generated || 0) ? 'kiosk not synced yet' : 'kiosk still shows it')));
     main.appendChild(chips);
     var det = document.createElement('div'); det.className = 'pdet';
     det.textContent = st.bits.concat(extra || []).concat(st.aw && st.aw.note ? ['note: “' + st.aw.note + '”'] : []).join(' · ');
@@ -668,7 +675,7 @@
   }
   function drawProgress() {
     var list = el('ppList'); list.textContent = '';
-    var rp = rosterPilot(PP.slug), states = {};
+    var rp = kioskPilot(PP.slug), states = {};
     FS.BADGES.forEach(function (b) { states[b.id] = badgeState(b); });
     function head(text, sub) {
       var h = document.createElement('h3'); h.className = 'phead'; h.textContent = text;
@@ -1006,7 +1013,7 @@
           if (card.rvVideo) card.rvVideo.pause();
           setTimeout(function () { if (RV.stage === card) rvNext(card); }, 1500);
           var n = +(el('rvCount').textContent || 0) - 1; el('rvCount').textContent = n > 0 ? String(n) : '';
-          if (result === 'pass') { ROSTER = null; loadRoster(); }
+          if (result === 'pass') { KSNAP = null; SNAP_P = null; loadSnap(); }
         }).catch(function (e) {
           live();
           if (!e.quiet) window.alert('Could not record it: ' + e.message);
@@ -1036,30 +1043,261 @@
     var b = FS.BADGES.filter(function (x) { return x.id === el('apBadge').value; })[0];
     el('apBadgeInfo').textContent = b ? ((b.minTier != null ? 'Tier ' + b.minTier + ' pilots only. ' : '') + (b.minHours ? 'Only after ' + b.minHours + ' h in the sim. ' : '') + (b.tier === 'el' ? 'Bonus badge. ' : '') + b.do + (b.standard ? ' — Standard: ' + b.standard : '')) : '';
   }
+  // ---------------------------------------------------------------- roster (2026-11-26)
+  // RS.list = every roster entry from GET /api/roster with the review key
+  // ({slug, name, pids, aliases, status, at, by, mergedInto?}); null when the
+  // API has no roster yet (404) or refused the key, and then RS.off says why in
+  // one line and the list falls back to the kiosk snapshot. Every write is a
+  // POST /api/roster {action,...} with the review key, behind passwordChecked()
+  // like approvals. Names only ever reach the page through textContent.
+  var RS = { list: null, off: '', sel: null, mode: null, other: '', keep: '', showRemoved: false, armed: false };
+  var SNAP_P = null, NEW_MS = 7 * 86400000;
+  var BY = { web: 'web', seed: 'seed', mentor: 'mentor' };
+  function snapRows() { return (KSNAP && KSNAP.pilots) || []; }
+  function loadSnap() {
+    if (KSNAP) return Promise.resolve(KSNAP);
+    if (!SNAP_P) SNAP_P = fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); })
+      .then(function (d) { KSNAP = window.mergePilots ? window.mergePilots(d) : d; return KSNAP; }, function (e) { SNAP_P = null; throw e; });
+    return SNAP_P;
+  }
+  function keysOf(p) { return [p.slug].concat(p.aliases || []); }
+  function kioskRows(p) { var ks = keysOf(p); return snapRows().filter(function (r) { return ks.indexOf(FS.slug(r.name)) >= 0; }); }
+  function entryFor(s) {   // an active entry wins over a removed one holding the same key
+    var hits = (RS.list || []).filter(function (p) { return keysOf(p).indexOf(s) >= 0; });
+    return hits.filter(function (p) { return p.status !== 'removed'; })[0] || hits[0] || null;
+  }
+  function foldRows(rows) {
+    var out = { name: rows[0].name, totalMs: 0, badges: [], tier: null };
+    rows.forEach(function (r) {
+      out.totalMs += r.totalMs || 0;
+      (r.badges || []).forEach(function (b) { if (out.badges.indexOf(b) < 0) out.badges.push(b); });
+      if (r.tier != null && (out.tier == null || r.tier > out.tier)) out.tier = r.tier;
+    });
+    return out;
+  }
+  function bySlug(s) { return (RS.list || []).filter(function (p) { return p.slug === s; })[0] || null; }
+  // The kiosk's own name rule (Format-PilotName / cleanPilot), checked here so a
+  // typo gets a plain answer before anything is sent; the API checks it again.
+  function nameProblem(n) {
+    if (n.length < 2 || n.length > 28) return 'Names are 2 to 28 characters.';
+    if (/["'<>&\u0000-\u001f\u007f]/.test(n)) return 'Names cannot have quotes or < > &.';
+    if ((n.match(/[A-Za-z0-9]/g) || []).length < 2) return 'A name needs at least 2 letters or digits.';
+    return '';
+  }
+  function rosterError(e) {
+    var p = e.body && e.body.pilot;
+    switch (e.code) {
+      case 'slug-change': return 'That is a different name. Have them join under the new name, then use Same person as.';
+      case 'taken': return 'Already on the roster' + (p && p.name ? ' as ' + p.name : '') + '.';
+      case 'removed': return 'A removed pilot has that name. Show removed and restore them instead.';
+      case 'bad-name': return 'That name will not work: 2 to 28 characters, no quotes or < > &.';
+      case 'full': return 'The roster is full (200 pilots). Remove someone first.';
+    }
+    if (e.status === 404) return 'This club API cannot do that yet.';
+    return e.message;
+  }
+  function rosterPost(body) {
+    return passwordChecked().then(function () { return api('POST', '/api/roster', body, reviewHeaders()); });
+  }
+  function fetchRoster() {
+    if (!S.keyHex) { RS.list = null; RS.off = ''; return Promise.resolve(); }
+    return api('GET', '/api/roster', null, reviewHeaders()).then(function (j) {
+      var ps = j.pilots || [];
+      if (ps.length && ps[0].status === undefined) { RS.list = null; RS.off = 'Roster tools are off: the club API sent only the public roster (review key not accepted).'; return; }
+      RS.list = ps; RS.off = '';
+    }, function (e) {
+      RS.list = null;
+      RS.off = e.status === 404 ? 'Roster tools are off: this club API has no roster yet. Showing the kiosk snapshot.'
+        : (e.status === 401 || e.status === 403) ? 'Roster tools are off: the club API refused the review key.'
+        : 'Roster tools are off: could not load the roster (' + e.message + ').';
+    });
+  }
   function loadRoster() {
-    fetch('../data.json?t=' + Date.now(), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (d) {
-      ROSTER = window.mergePilots ? window.mergePilots(d) : d;
-      var dl = el('apPilots'); dl.textContent = '';
-      (d.pilots || []).forEach(function (p) { var o = document.createElement('option'); o.value = p.name; dl.appendChild(o); });
-      var box = el('apRoster'); box.textContent = '';
-      var any = false;
-      (d.pilots || []).forEach(function (p) {
-        var div = document.createElement('div'), b = document.createElement('b'), s = document.createElement('span');
-        b.textContent = p.name;
-        // 2026-10-10: sim hours always shown (they used to appear only for pilots with no badges)
-        var t = document.createElement('i'); t.className = 'tier';
-        t.textContent = (p.tier != null ? 'T' + p.tier + ' · ' : '') + ((p.totalMs || 0) / 3600000).toFixed(1) + ' h';
-        b.appendChild(t);
-        var badges = p.badges || [];
-        if (badges.length) any = true;
-        s.textContent = badges.length ? badges.map(badgeName).join(' · ') : 'no badges published by the kiosk';
-        div.appendChild(b); div.appendChild(s); box.appendChild(div);
-        div.title = 'Show ' + p.name + '’s progress';
-        div.onclick = function () { el('apPilot').value = p.name; pickPilot(); el('pp').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+    return Promise.all([loadSnap().catch(function () { return null; }), fetchRoster()]).then(drawRoster);
+  }
+  function hoursOf(rows) { return rows.reduce(function (t, r) { return t + (r.totalMs || 0); }, 0) / 3600000; }
+  function tag(cls, text) { var t = document.createElement('span'); t.className = 'rtag ' + cls; t.textContent = text; return t; }
+  function pickName(name) { el('apPilot').value = name; pickPilot(); }
+  function drawRoster() {
+    var box = el('rsList'), q = FS.slug(el('rsFilter').value), now = Date.now();
+    box.textContent = '';
+    el('rsOff').textContent = RS.off; el('rsOff').hidden = !RS.off;
+    el('rsAdd').hidden = el('rsRemovedL').hidden = !RS.list;
+    // the Approve form's name list: roster names first, then kiosk names
+    var dl = el('apPilots'), seen = {}; dl.textContent = '';
+    (RS.list || []).filter(function (p) { return p.status !== 'removed'; }).map(function (p) { return p.name; })
+      .concat(snapRows().map(function (r) { return r.name; })).forEach(function (n) {
+        if (seen[FS.slug(n)]) return; seen[FS.slug(n)] = 1;
+        var o = document.createElement('option'); o.value = n; dl.appendChild(o);
       });
-      el('apRosterNote').textContent = (any ? 'From the kiosk\'s last published snapshot (' + (d.generatedIso || '').slice(0, 16).replace('T', ' ') + ').'
-        : 'The kiosk is not publishing badges yet (Flight School v2, Phase 3).') + ' Pick a name above (or click one here) to see their whole path and edit it.';
-    }).catch(function (e) { el('apRosterNote').textContent = 'Could not load data.json: ' + e.message; });
+    if (!RS.list) { drawSnapOnly(box, q); return; }
+    var active = RS.list.filter(function (p) { return p.status !== 'removed'; });
+    var gone = RS.list.length - active.length;
+    var fresh = active.filter(function (p) { return now - (p.at || 0) < NEW_MS; }).length;
+    el('rsCount').textContent = active.length + (fresh ? ' · ' + fresh + ' new this week' : '');
+    el('rsRemovedL').lastChild.textContent = ' Show removed' + (gone ? ' (' + gone + ')' : '');
+    var shown = RS.list.filter(function (p) {
+      if (p.status === 'removed' && !RS.showRemoved) return false;
+      return !q || keysOf(p).some(function (k) { return k.indexOf(q) >= 0; });
+    }).sort(function (a, b) { return (b.at || 0) - (a.at || 0) || (a.name < b.name ? -1 : a.name > b.name ? 1 : 0); });
+    if (!shown.length) { var none = document.createElement('div'); none.className = 'muted small rnone'; none.textContent = q ? 'No pilot matches.' : 'Nobody on the roster yet.'; box.appendChild(none); }
+    shown.forEach(function (p) {
+      var rows = kioskRows(p), k = rows.length ? foldRows(rows) : null;
+      var r = document.createElement('div'); r.className = 'rrow' + (p.status === 'removed' ? ' gone' : '') + (RS.sel === p.slug ? ' on' : '');
+      var head = document.createElement('button'); head.type = 'button'; head.className = 'rhead';
+      var nm = document.createElement('b'); nm.textContent = p.name; head.appendChild(nm);
+      if (now - (p.at || 0) < NEW_MS && p.status !== 'removed') head.appendChild(tag('new', 'new'));
+      if (BY[p.by]) head.appendChild(tag('by', BY[p.by]));
+      if (p.status === 'removed') head.appendChild(tag('bad', p.mergedInto ? 'merged' : 'removed'));
+      var stat = document.createElement('span'); stat.className = 'rstat';
+      stat.textContent = k ? (k.tier != null ? 'T' + k.tier + ' · ' : '') + hoursOf(rows).toFixed(1) + ' h · ' + k.badges.length + ' badge' + (k.badges.length === 1 ? '' : 's') : 'not on a kiosk yet';
+      head.appendChild(stat);
+      head.onclick = function () {
+        var open = RS.sel !== p.slug;
+        RS.sel = open ? p.slug : null; RS.mode = null; RS.armed = false; RS.other = ''; RS.keep = '';
+        drawRoster();
+        if (open) pickName(p.name);
+      };
+      r.appendChild(head);
+      if (RS.sel === p.slug) r.appendChild(rosterPanel(p));
+      box.appendChild(r);
+    });
+    // kiosk names that no roster entry claims (before seeding, or a typo on a sim)
+    var claimed = {};
+    RS.list.forEach(function (p) { keysOf(p).forEach(function (k) { claimed[k] = 1; }); });
+    var loose = snapRows().filter(function (r) { return !claimed[FS.slug(r.name)]; });
+    var lz = el('rsLoose'); lz.textContent = '';
+    if (loose.length) {
+      lz.appendChild(document.createTextNode('On a kiosk, not on the roster: '));
+      loose.forEach(function (r, i) {
+        var a = document.createElement('button'); a.type = 'button'; a.className = 'linkish'; a.textContent = r.name;
+        a.onclick = function () { pickName(r.name); el('pp').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+        if (i) lz.appendChild(document.createTextNode(', '));
+        lz.appendChild(a);
+      });
+    }
+  }
+  // Older API (or no key): the old "who holds what" list from the kiosk snapshot.
+  function drawSnapOnly(box, q) {
+    var rows = snapRows().filter(function (r) { return !q || FS.slug(r.name).indexOf(q) >= 0; });
+    el('rsCount').textContent = snapRows().length ? snapRows().length + ' on the kiosks' : '';
+    el('rsLoose').textContent = KSNAP ? 'Kiosk snapshot from ' + (KSNAP.generatedIso || '').slice(0, 16).replace('T', ' ') + '.' : 'Could not load data.json.';
+    rows.forEach(function (p) {
+      var r = document.createElement('div'); r.className = 'rrow';
+      var head = document.createElement('button'); head.type = 'button'; head.className = 'rhead';
+      var nm = document.createElement('b'); nm.textContent = p.name; head.appendChild(nm);
+      var stat = document.createElement('span'); stat.className = 'rstat';
+      stat.textContent = (p.tier != null ? 'T' + p.tier + ' · ' : '') + ((p.totalMs || 0) / 3600000).toFixed(1) + ' h · ' + (p.badges || []).length + ' badges';
+      head.appendChild(stat);
+      head.onclick = function () { pickName(p.name); el('pp').scrollIntoView({ behavior: 'smooth', block: 'start' }); };
+      r.appendChild(head); box.appendChild(r);
+    });
+  }
+  function btn(text, cls, fn) { var b = document.createElement('button'); b.type = 'button'; b.textContent = text; if (cls) b.className = cls; b.onclick = fn; return b; }
+  function rosterPanel(p) {
+    var pan = document.createElement('div'); pan.className = 'rpanel';
+    var bar = document.createElement('div'); bar.className = 'row wrapline';
+    var msg = document.createElement('div'); msg.className = 'small rmsg';
+    function mode(m) { return function () { RS.mode = RS.mode === m ? null : m; RS.armed = false; RS.focus = true; drawRoster(); }; }
+    function run(body, keepSel, okText) {
+      msg.className = 'small rmsg'; msg.textContent = 'Saving…';
+      pan.querySelectorAll('button,input,select').forEach(function (x) { x.disabled = true; });
+      return rosterPost(body).then(function () {
+        RS.sel = keepSel; RS.mode = null; RS.armed = false; RS.flash = okText;
+        return fetchRoster().then(drawRoster);
+      }).catch(function (e) {
+        pan.querySelectorAll('button,input,select').forEach(function (x) { x.disabled = false; });
+        msg.className = 'small rmsg bad'; msg.textContent = rosterError(e);
+      });
+    }
+    bar.appendChild(btn('Show path', '', function () { pickName(p.name); el('pp').scrollIntoView({ behavior: 'smooth', block: 'start' }); }));
+    if (p.status === 'removed') {
+      var into = p.mergedInto && bySlug(p.mergedInto);
+      if (p.mergedInto) {
+        var m = document.createElement('span'); m.className = 'muted small';
+        m.textContent = 'Same person as ' + (into ? into.name : p.mergedInto) + '. Their hours count there.';
+        bar.appendChild(m);
+      } else bar.appendChild(btn('Restore', 'primary flush', function () { run({ action: 'restore', slug: p.slug }, p.slug, p.name + ' is back on the sims.'); }));
+    } else {
+      bar.appendChild(btn('Rename', RS.mode === 'rename' ? 'on' : '', mode('rename')));
+      bar.appendChild(btn('Same person as…', RS.mode === 'merge' ? 'on' : '', mode('merge')));
+      bar.appendChild(btn('Remove', 'danger' + (RS.mode === 'remove' ? ' on' : ''), mode('remove')));
+    }
+    var info = document.createElement('span'); info.className = 'muted small rinfo';
+    info.textContent = [(p.pids || []).length > 1 ? (p.pids.length + ' kiosk profiles') : '', (p.aliases || []).length ? 'also ' + p.aliases.join(', ') : '',
+      p.at ? 'since ' + new Date(p.at).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : ''].filter(Boolean).join(' · ');
+    bar.appendChild(info);
+    pan.appendChild(bar);
+
+    var sub = document.createElement('div'); sub.className = 'row wrapline rsub';
+    if (RS.mode === 'rename') {
+      var inp = document.createElement('input'); inp.value = p.name; inp.maxLength = 28; inp.spellcheck = false; inp.autocomplete = 'off';
+      var save = btn('Save name', 'primary flush', function () {
+        var n = inp.value.trim().replace(/\s+/g, ' ');
+        if (n === p.name) { msg.textContent = 'That is the same name.'; return; }
+        var bad = nameProblem(n); if (bad) { msg.className = 'small rmsg bad'; msg.textContent = bad; return; }
+        run({ action: 'rename', slug: p.slug, name: n }, p.slug, 'Renamed to ' + n + '.');
+      });
+      inp.addEventListener('keydown', function (e) { if (e.key === 'Enter') save.click(); });
+      var h = document.createElement('span'); h.className = 'muted small'; h.textContent = 'Case and punctuation only.';
+      sub.appendChild(inp); sub.appendChild(save); sub.appendChild(h);
+      if (RS.focus) { RS.focus = false; setTimeout(function () { inp.focus(); inp.select(); }, 0); }
+    } else if (RS.mode === 'remove') {
+      var t = document.createElement('span'); t.className = 'small';
+      t.textContent = 'Hide ' + p.name + ' from the sims and pickers? Their hours are kept, and Restore brings them back.';
+      sub.appendChild(t);
+      sub.appendChild(btn('Remove ' + p.name, 'danger solid', function () { run({ action: 'remove', slug: p.slug }, p.slug, p.name + ' removed. Hours kept.'); }));
+    } else if (RS.mode === 'merge') {
+      var others = RS.list.filter(function (o) { return o.status !== 'removed' && o.slug !== p.slug; })
+        .sort(function (a, b) { return a.name < b.name ? -1 : a.name > b.name ? 1 : 0; });
+      var sel = document.createElement('select');
+      var o0 = document.createElement('option'); o0.value = ''; o0.textContent = 'Pick the other entry…'; sel.appendChild(o0);
+      others.forEach(function (o) { var op = document.createElement('option'); op.value = o.slug; op.textContent = o.name + ' (' + o.slug + ')'; sel.appendChild(op); });
+      sel.value = RS.other;
+      sel.onchange = function () { RS.other = sel.value; RS.keep = ''; drawRoster(); };
+      sub.appendChild(sel);
+      var other = RS.other && bySlug(RS.other);
+      if (other) {
+        var pair = [p, other];
+        var kl = document.createElement('span'); kl.className = 'small'; kl.textContent = 'Keep:'; sub.appendChild(kl);
+        pair.forEach(function (x) {
+          sub.appendChild(btn(x.name, RS.keep === x.slug ? 'on' : '', function () { RS.keep = x.slug; drawRoster(); }));
+        });
+        var keep = RS.keep && bySlug(RS.keep);
+        if (keep) {
+          var fold = keep === p ? other : p;
+          var say = document.createElement('div'); say.className = 'small rsay';
+          say.textContent = 'One pilot named ' + keep.name + '. ' + fold.name + ' goes away; their hours add up.';
+          sub.appendChild(say);
+          sub.appendChild(btn('Merge', 'primary flush', function () { run({ action: 'merge', slug: fold.slug, into: keep.slug }, keep.slug, fold.name + ' merged into ' + keep.name + '.'); }));
+        }
+      }
+    }
+    if (sub.childNodes.length) pan.appendChild(sub);
+    if (RS.flash) { msg.className = 'small rmsg ok'; msg.textContent = RS.flash; RS.flash = ''; }
+    pan.appendChild(msg);
+    return pan;
+  }
+  function addPilot() {
+    var n = el('rsAddName').value.trim().replace(/\s+/g, ' '), m = el('rsAddMsg');
+    m.className = 'small'; m.textContent = '';
+    var bad = nameProblem(n); if (bad) { m.className = 'small bad'; m.textContent = bad; return; }
+    el('rsAddGo').disabled = true; m.textContent = 'Adding…';
+    rosterPost({ action: 'add', name: n }).then(function (j) {
+      el('rsAddName').value = '';
+      var s = (j.pilot && j.pilot.slug) || FS.slug(n);
+      m.className = 'small ok'; m.textContent = ((j.pilot && j.pilot.name) || n) + ' is on the sims.';
+      RS.sel = s; RS.mode = null; el('rsFilter').value = '';
+      return fetchRoster().then(drawRoster);
+    }).catch(function (e) { m.className = 'small bad'; m.textContent = rosterError(e); })
+      .then(function () { el('rsAddGo').disabled = false; });
+  }
+  function wireRoster() {
+    el('rsFilter').addEventListener('input', drawRoster);
+    el('rsRemoved').addEventListener('change', function () { RS.showRemoved = el('rsRemoved').checked; drawRoster(); });
+    el('rsRefresh').onclick = function () { KSNAP = null; SNAP_P = null; loadRoster(); };
+    el('rsAddGo').onclick = addPilot;
+    el('rsAddName').addEventListener('keydown', function (e) { if (e.key === 'Enter') addPilot(); });
   }
 
   // ---------------------------------------------------------------- boot
@@ -1071,4 +1309,5 @@
   el('refresh').onclick = loadStatus;
   el('rvRefresh').onclick = function () { loadReview(); };
   el('signout').onclick = signOut;
+  wireRoster();
 })();
