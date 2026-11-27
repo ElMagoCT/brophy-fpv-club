@@ -1506,6 +1506,8 @@
     if (e && e.status === 404) return 'This club API cannot do that yet.';
     return t || 'Something went wrong. Nothing was sent.';
   }
+  // No answer, or a server error: the command may have been filed anyway.
+  function unclear(e) { return !e || e.name === 'TypeError' || !e.status || e.status >= 500; }
   function notSent(e) { var t = String((e && e.message) || ''); return 'Not sent: ' + t.replace(/^not filed - /, '').replace(/ Nothing was filed\.$/, ''); }
   // This pilot's hours per simulator. data.json only has both sim PCs summed, so
   // the console cannot say which PC the time was flown on.
@@ -1593,8 +1595,9 @@
           done(p, 'Sent. The sim applies it within a couple of minutes while it is on.');
         }, function (e) {
           busy(false);
+          if (!unclear(e)) { if (HC.pend[p.slug] === q) delete HC.pend[p.slug]; tell(p, commandError(e), false); return; }
           if (RS.sel !== p.slug) remember(p.slug, { at: Date.now(), kind: 'adjust', machines: [m], simId: args.simId, deltaMs: deltaMs, note: why, ids: [q.ids[m]], unclear: true });
-          tell(p, commandError(e) + ' Send again goes as the same command, so it cannot count twice.', false);
+          tell(p, endDot(commandError(e)) + ' Send again goes as the same command, so it cannot count twice.', false);
         });
       }, function (e) { busy(false); tell(p, notSent(e), false); });
     });
@@ -1642,6 +1645,7 @@
         }, Promise.resolve()).then(function () {
           var failed = rec.miss.slice(), mine = RS.sel === p.slug;
           if (sent.length) remember(p.slug, { at: at, kind: 'reset', machines: sent, note: rec.note, ids: ids, failed: failed });
+          else if (!mine && unclear(firstErr)) remember(p.slug, { at: at, kind: 'reset', machines: failed, note: rec.note, ids: failed.map(function (m) { return rec.ids[m]; }), failed: [], unclear: true });
           if (!failed.length) {
             if (HC.rp[p.slug] === rec) delete HC.rp[p.slug];
             delete HC.rnote[p.slug];
@@ -1655,7 +1659,8 @@
           tell(p, held.length
             ? 'Sent to ' + pcList(held) + ' only. ' + pcList(failed) + ' did not get it: ' + endDot(commandError(firstErr)) +
               ' Reset again sends it to ' + pcList(failed) + ' only, as the same command.'
-            : 'Not sent: ' + endDot(commandError(firstErr)) + ' Sending again goes as the same command, so it cannot count twice.', false);
+            : unclear(firstErr) ? endDot(commandError(firstErr)) + ' Sending again goes as the same command, so it cannot count twice.'
+              : 'Not sent: ' + commandError(firstErr), false);
         });
       }, function (e) { busy(false); tell(p, notSent(e), false); });
     }

@@ -42,3 +42,8 @@ Kiosk: `../brophy-fpv-club-kiosk/` (has its own CLAUDE.md); API: `../brophy-fpv-
   `media/` (see `media/README.txt`): set `src` on `home-intro`, `flight-overview` or
   `path-overview` in `groundschool/gs-videos.js` to switch one on. The home intro shows
   only while no pilot is picked on the device.
+- Console Hours (2026-11-27, `admin/`): Hours and Reset hours on a pilot's card send signed
+  `hours.adjust` / `hours.reset` commands through `postCommand` (the one signer), one command per
+  sim PC (a reset is two: KIOSK-A, then KIOSK-B). A send with no clear answer keeps its id, and
+  sending again with the same values reuses it (the API answers `already:true`, a 409 gets a new id);
+  "Reset again" after a half-sent reset goes only to the PC that missed, under the id it failed with.
