@@ -124,7 +124,7 @@ h1 .a{color:var(--rust)}
 .done .again{display:inline-block;margin-top:14px;font-size:15px;color:var(--ink-soft);background:none;border:0;cursor:pointer;text-decoration:underline;text-underline-offset:3px;padding:6px}
 
 /* ---------- sign in first (login on, Google configured) ---------- */
-.gate[hidden]{display:none}
+.gate[hidden],.gbtn[hidden]{display:none}
 .gate{text-align:center;padding:30px 22px 22px}
 .gate .lede{margin-bottom:22px}
 .gbtn{display:flex;justify-content:center;min-height:44px;margin:0 auto;max-width:400px}
@@ -138,6 +138,11 @@ h1 .a{color:var(--rust)}
 .signed{display:inline-flex;align-items:center;gap:8px;margin:0 0 14px;font-size:15px;color:var(--ink-soft)}
 .signed::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--green)}
 .signed[hidden]{display:none}
+/* signed in with Google: while the question is open it is the only thing to tap */
+#form.cred:has(.ask:not([hidden])) .go{display:none}
+#form.cred:has(.ask:not([hidden])) .ask{margin-top:0}
+#form.cred .roster:has(.none){display:none}
+.done .meter[hidden] + .next{margin-top:22px}
 
 footer{max-width:520px;margin:26px auto 0;display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:14px;color:var(--ink-soft)}
 footer .sitelinks{display:none}
@@ -450,7 +455,7 @@ footer .sitelinks{display:none}
     if (p) pick({ name: p.name, slug: p.slug });
   });
   $('again').onclick = function () {
-    if (window.FPVAuth && FPV.auth()) { FPVAuth.signOut(); if (window.SiteNav) SiteNav.set(null); state.cred = null; $('done').hidden = true; reset(); gate(); return; }
+    if (window.FPVAuth && FPV.auth()) { FPVAuth.signOut(); if (window.SiteNav) SiteNav.set(null); state.cred = null; $('form').classList.remove('cred'); $('lede').hidden = false; $('signed').hidden = true; $('done').hidden = true; reset(); gate(); return; }
     $('done').hidden = true; $('form').hidden = false;
     reset(); first.focus();
   };
@@ -500,7 +505,7 @@ footer .sitelinks{display:none}
   }
   /* a Google account with no pilot yet: the name from the account, then the usual checks */
   function needPilot(cred, sug) {
-    state.cred = cred; reset();
+    state.cred = cred; reset(); $('form').classList.add('cred');
     $('gate').hidden = true; cardIn('form');
     $('lede').hidden = true; $('signed').hidden = false;
     first.value = sug.first || ''; last.value = (sug.last || '').slice(0, 1).toUpperCase();
@@ -526,11 +531,11 @@ footer .sitelinks{display:none}
     var j = res.j;
     if (j.ok && j.token) {
       Roster.add({ slug: j.pilot.slug, name: j.pilot.name, aliases: [], at: fresh ? Date.now() : 0 });
-      state.cred = null;
+      state.cred = null; $('form').classList.remove('cred');
       return FPVAuth.signedIn(j, shared()).then(function () { showDone(j.pilot, fresh); });
     }
     if (j.code === 'taken' && j.pilot) { taken(j.pilot); return; }
-    if (j.code === 'google') { state.cred = null; $('lede').hidden = false; $('signed').hidden = true; gate(); gsay('Sign in again.'); return; }
+    if (j.code === 'google') { state.cred = null; $('form').classList.remove('cred'); $('lede').hidden = false; $('signed').hidden = true; gate(); gsay('Sign in again.'); return; }
     if (ERR[j.code] && j.code !== 'bad-name') { say(ERR[j.code]); return; }
     if (res.status === 429 && !j.code) { say('Too fast. Wait a few seconds and try again.'); return; }
     say(FPVAuth.say(j.code, j));

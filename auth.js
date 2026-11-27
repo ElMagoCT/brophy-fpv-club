@@ -22,18 +22,19 @@
   function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
 
   function loadGoogle() {
-    if (window.google && google.accounts && google.accounts.id) return Promise.resolve(google.accounts.id);
+    var G = window.google;
+    if (G && G.accounts && G.accounts.id) return Promise.resolve(G.accounts.id);
     if (!gP) gP = new Promise(function (ok, no) {
       var s = document.createElement('script'), t;
       s.src = GSI; s.async = true;
-      s.onload = function () { clearTimeout(t); window.google && google.accounts && google.accounts.id ? ok(google.accounts.id) : no(new Error('blocked')); };
+      s.onload = function () { clearTimeout(t); var G = window.google; G && G.accounts && G.accounts.id ? ok(G.accounts.id) : no(new Error('blocked')); };
       s.onerror = function () { clearTimeout(t); no(new Error('blocked')); };
       t = setTimeout(function () { no(new Error('blocked')); }, 9000);
       document.head.appendChild(s);
     }).catch(function (e) { gP = null; throw e; });
     return gP;
   }
-  function google(box, cfg, onCred) {
+  function googleBtn(box, cfg, onCred) {
     return loadGoogle().then(function (id) {
       id.initialize({
         client_id: cfg.google.clientId, hd: cfg.google.hd,
@@ -169,7 +170,7 @@
     F.authCfg().then(function (cfg) {
       if (!cfg.google) { showPin(); return; }
       g.appendChild(el('div', 'fa-wait'));
-      google(g, cfg, function (cred) {
+      googleBtn(g, cfg, function (cred) {
         msg.textContent = '';
         call('google', { credential: cred }).then(function (res) {
           var j = res.j;
@@ -186,5 +187,5 @@
     return cur;
   }
 
-  window.FPVAuth = { google: google, call: call, signedIn: signedIn, signOut: signOut, pin: pin, sheet: sheet, say: say, words: WORDS };
+  window.FPVAuth = { google: googleBtn, call: call, signedIn: signedIn, signOut: signOut, pin: pin, sheet: sheet, say: say, words: WORDS };
 })();

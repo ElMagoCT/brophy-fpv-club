@@ -59,7 +59,7 @@ body{background-color:#f8f5ee}
 .mlink{font:inherit;font-size:14px;background:none;border:0;padding:4px 0;cursor:pointer;color:var(--ink-soft);
   text-decoration:underline;text-underline-offset:3px}
 .mlink:hover{color:var(--rust)}
-.mepanel .msign{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:13.5px;color:var(--ink-soft)}
+.mepanel .msign{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-soft)}
 .mepanel .msign::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--green,#2d7045)}
 .mepanel .min{display:block;width:100%;margin-top:10px;font-family:var(--font-mono);font-size:14px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--ink);background:var(--glass-2,#fff);border:1.5px solid var(--ink);border-radius:8px;padding:9px 12px;cursor:pointer}

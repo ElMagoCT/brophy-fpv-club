@@ -79,7 +79,10 @@
     return uiP;
   }
 
-  function box() { try { return JSON.parse(localStorage.getItem(OKEY) || '[]') || []; } catch (e) { return []; } }
+  /* a kept write waits at most a week */
+  function box() {
+    try { return (JSON.parse(localStorage.getItem(OKEY) || '[]') || []).filter(function (x) { return x && x.at > Date.now() - 7 * 864e5; }); } catch (e) { return []; }
+  }
   function saveBox(b) { try { if (b.length) localStorage.setItem(OKEY, JSON.stringify(b)); else localStorage.removeItem(OKEY); } catch (e) {} }
   function keep(path, body) {
     var b = box(), s = JSON.stringify(body);

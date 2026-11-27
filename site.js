@@ -144,8 +144,8 @@
       '<div class="mh">My profile</div>' +
       '<div class="mname">' + esc(p.name) + (r && r.tier != null ? ' <span class="mtier">Tier ' + r.tier + '</span>' : '') + '</div>' + stats +
       '<a class="mgo" href="' + BASE + 'pilot-path/">My Pilot Path &rarr;</a>' +
-      (authOn() ? (token() ? '<div class="msign">Signed in</div>' : '<button type="button" class="min" data-act="signin">Sign in</button>') : '') +
-      '<div class="mrow">' + (authOn() && token() ? '<span></span>' : '<button type="button" class="mlink" data-act="switch">Switch profile</button>') +
+      (authOn() && !token() ? '<button type="button" class="min" data-act="signin">Sign in</button>' : '') +
+      '<div class="mrow">' + (authOn() && token() ? '<span class="msign">Signed in</span>' : '<button type="button" class="mlink" data-act="switch">Switch profile</button>') +
       '<button type="button" class="mlink" data-act="out">Sign out</button></div>';
   }
   /* rank over the last 7 days, 0 = did not fly in them */
