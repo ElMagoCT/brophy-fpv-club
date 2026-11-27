@@ -24,3 +24,11 @@ Kiosk: `../brophy-fpv-club-kiosk/` (has its own CLAUDE.md); API: `../brophy-fpv-
   look a pilot up with `Roster.keys/row/awards/progress/submissions` so aliases count.
   Escape every name (open form). Pushing `main` publishes: work on a branch.
   Local test: serve the folder, set `localStorage['fpv.dev.api']` to a mock on localhost.
+- Badge cards (2026-11-26, Pilot Path + Flight Clearance): one anatomy - kind/category,
+  name, one line (`short` in badges.js, else `do`); one `.acts` row in a fixed order
+  (Watch / "Video soon", quiz or TRUST test, Instructions, Resources, Submit); one
+  `.stline` status line. Steps, ticks, time and approval live in the `<dialog class=sheet>`
+  (`#dlg`; CSS in site.css). No `why` on cards. Overview videos are self-hosted in
+  `media/` (see `media/README.txt`): set `src` on `home-intro`, `flight-overview` or
+  `path-overview` in `groundschool/gs-videos.js` to switch one on. The home intro shows
+  only while no pilot is picked on the device.
