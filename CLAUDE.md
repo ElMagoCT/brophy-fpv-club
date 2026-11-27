@@ -17,3 +17,10 @@ Kiosk: `../brophy-fpv-club-kiosk/` (has its own CLAUDE.md); API: `../brophy-fpv-
 - Posters (`posters/src/`, 2026-10-23): `drones.py` renders the drones/gates as SVG,
   `gen_map.py` writes 02-cert + 03-06 from `flightschool/badges.js`, `build.py` makes
   the PDFs (run it in the background: Chrome can take >2 min for six sheets).
+- Roster (2026-11-26): names come from `GET /api/roster` via `roster.js` (falls back to
+  `data.json` names); new pilots add themselves on `join/` (the sims' QR). No free-text
+  name entry anywhere. `config.js` = API address + `FPV.post`, the one helper for every
+  pilot-side POST (add a login header there). `fs.pilot.v1.slug` is the roster key;
+  look a pilot up with `Roster.keys/row/awards/progress/submissions` so aliases count.
+  Escape every name (open form). Pushing `main` publishes: work on a branch.
+  Local test: serve the folder, set `localStorage['fpv.dev.api']` to a mock on localhost.

@@ -255,6 +255,8 @@ footer a{color:var(--ink)}
 @media (max-width:900px){.how{grid-template-columns:repeat(2,1fr)}}
 @media (max-width:600px){.wrap{padding:18px 13px 52px}header.title{padding:18px 16px}.how{grid-template-columns:1fr}.pilot,.upnext{min-width:0;max-width:none;flex-basis:100%}.title>div:first-child{flex-basis:100%}.howbox>summary .hint{display:none}.tier .gate,.group .gate{margin-left:0}}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.upnext .ujoin{display:inline-block;margin-left:10px;font-size:14px;color:var(--ink-soft);text-underline-offset:3px}
+.upnext .ujoin:hover{color:var(--rust)}
 </style>
 <link rel="stylesheet" href="../site.css">
 </head>
@@ -263,6 +265,8 @@ footer a{color:var(--ink)}
 <div class="wrap">
 
   <nav class="crumbs" aria-label="Site"></nav>
+  <script src="../config.js"></script>
+  <script src="../roster.js"></script>
   <script src="../pilots.js"></script>
   <script src="../site.js"></script>
 
@@ -341,7 +345,7 @@ footer a{color:var(--ink)}
      3. bench-step ticks made on this page (fs.progress.v1).
    Earned-from-kiosk always wins. Nothing here can take a badge away. */
 var FS = window.FS, DATA = null, pilot = null, SERVER = null, AWARDS = null, LOADED = {};
-var API = 'https://brophy-fpv-club-api.netlify.app';   // the club API: per-pilot progress mirror (forward-only)
+var API = FPV.API;   // the club API (config.js): per-pilot progress mirror (forward-only)
 var LS = { pilot: 'fs.pilot.v1', progress: 'fs.progress.v1', gs: 'gsWeb.profiles.v2' };
 
 function $(id) { return document.getElementById(id); }
@@ -350,23 +354,29 @@ function lsGet(k, d) { try { var v = JSON.parse(localStorage.getItem(k)); return
 function lsSet(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
 
 /* ---------- pilot ---------- */
-function setPilot(name) {
-  pilot = name ? { name: name.trim(), slug: FS.slug(name) } : null;
-  lsSet(LS.pilot, pilot);
+/* 2026-11-26: the pilot is {name, slug} with slug = the roster key (site.js
+   stores it); the roster's lookups cover the key and its aliases */
+function setPilot(p) {
+  pilot = p ? (window.Roster ? Roster.canon(p) : { name: String(p.name || p).trim(), slug: p.slug || FS.slug(p.name || p) }) : null;
+  if (pilot && window.Roster) try { Roster.adopt(pilot); } catch (e) {}
   SERVER = null; AWARDS = null; SUBS = null; LOADED = {}; render(); pullServer(); pullAwards(); pullSubs();
 }
 function pullAwards() {
   if (!pilot) return;
-  fetch(API + '/api/award?pilot=' + encodeURIComponent(pilot.name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-    AWARDS = (j && j.awards) || null; LOADED.awards = true; render();
+  var who = pilot.slug;
+  Roster.awards(pilot).then(function (a) {
+    if (!pilot || pilot.slug !== who) return;
+    AWARDS = a || null; LOADED.awards = true; render();
   }).catch(function () {});
 }
 /* What the API already knows for this pilot (lessons done elsewhere, ticks from
    another device). Merged forward-only on top of what this device has. */
 function pullServer() {
   if (!pilot) return;
-  fetch(API + '/api/progress?pilot=' + encodeURIComponent(pilot.name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-    SERVER = (j && j.progress) || null; LOADED.server = true; if (!SERVER) render();
+  var who = pilot.slug;
+  Roster.progress(pilot).then(function (sv) {
+    if (!pilot || pilot.slug !== who) return;
+    SERVER = sv || null; LOADED.server = true; if (!SERVER) render();
     if (!SERVER) return;
     var all = lsGet(LS.gs, {}), p = all[pilot.slug] || { groundSchool: { lessons: {}, progressPct: 0, updated: 0 } }, RANK = { 'not-started': 0, 'in-progress': 1, complete: 2 };
     Object.keys(SERVER.lessons || {}).forEach(function (id) {
@@ -385,12 +395,11 @@ function pullServer() {
 function pushStep(badgeId, i) {
   if (!pilot) return;
   var steps = {}; steps[badgeId] = {}; steps[badgeId][i] = true;
-  fetch(API + '/api/progress', { method: 'POST', headers: { 'Content-Type': 'application/json' }, keepalive: true, body: JSON.stringify({ name: pilot.name, steps: steps }) }).catch(function () {});
+  FPV.post('/api/progress', { name: pilot.name, steps: steps }, { keepalive: true }).catch(function () {});
 }
 function kioskPilot() {
   if (!pilot || !DATA || !DATA.pilots) return null;
-  for (var i = 0; i < DATA.pilots.length; i++) if (FS.slug(DATA.pilots[i].name) === pilot.slug) return DATA.pilots[i];
-  return null;
+  return Roster.row(DATA, pilot);
 }
 function gsProfile() {
   var all = lsGet(LS.gs, {});
@@ -587,8 +596,8 @@ function nextUpRaw() {
 function drawUpNext() {
   var n = nextUp(), box = $('upNext');
   if (!n) {
-    box.innerHTML = '<div class="k">Next up</div><div class="un none">Pick your profile to see your next badge.</div>' +
-      '<button type="button" class="ubtn" data-up="pick">Select profile</button>';
+    box.innerHTML = '<div class="k">Next up</div><div class="un none">Pick your name to see your next badge.</div>' +
+      '<button type="button" class="ubtn" data-up="pick">Pick your name</button> <a class="ujoin" href="../join/">New here? Join</a>';
     return;
   }
   var b = n.badge, s = b ? status(b) : null;
@@ -917,7 +926,8 @@ $('upNext').addEventListener('click', function (e) {
   if (to.classList.contains('badge')) to.classList.add('open');
   to.scrollIntoView({ behavior: 'smooth', block: 'center' });
 });
-document.addEventListener('site:pilot', function (e) { setPilot(e.detail ? e.detail.name : null); });
+document.addEventListener('site:pilot', function (e) { setPilot(e.detail || null); });
+document.addEventListener('roster:change', function () { if (pilot) { var c = Roster.canon(pilot); if (c.slug !== pilot.slug) { pilot = c; Roster.adopt(pilot); } } pullData(false); });
 
 /* ---------- photo submissions (2026-10-08) ----------
    Any badge a mentor signs off can take a photo: the camera (the browser asks
@@ -928,8 +938,10 @@ document.addEventListener('site:pilot', function (e) { setPilot(e.detail ? e.det
 var SUBS = null, cam = { badge: null, stream: null, data: null };
 function pullSubs() {
   if (!pilot) return;
-  fetch(API + '/api/submission?pilot=' + encodeURIComponent(pilot.name), { cache: 'no-store' }).then(function (r) { return r.json(); }).then(function (j) {
-    SUBS = (j && j.items) || []; render();
+  var who = pilot.slug;
+  Roster.submissions(pilot).then(function (items) {
+    if (!pilot || pilot.slug !== who) return;
+    SUBS = items || []; render();
   }).catch(function () {});
 }
 function mySubs(b) { return (SUBS || []).filter(function (x) { return x.badge === b.id; }).slice(-3).reverse(); }
@@ -992,8 +1004,7 @@ function drvSend(btn, badgeId) {
     if (done) return; done = true;
     if (pub === false) { btn.disabled = false; drvSay(badgeId, 'That file isn\'t shared. In Drive: Share > General access > "Anyone with the link", then send it again.', true); return; }
     drvSay(badgeId, 'Sending…');
-    fetch(API + '/api/submission', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ pilot: pilot.name, badge: badgeId, note: String(d.note || '').trim(), video: url }) })
+    FPV.post('/api/submission', { pilot: pilot.name, badge: badgeId, note: String(d.note || '').trim(), video: url })
       .then(function (r) { return r.json(); }).then(function (j) {
         btn.disabled = false;
         if (!j || !j.ok) { drvSay(badgeId, 'Could not send it: ' + ((j && j.error) || 'try again'), true); return; }
@@ -1076,8 +1087,7 @@ $('cam').addEventListener('click', function (e) { if (e.target === this) camClos
 $('camSend').onclick = function () {
   if (!cam.data || !cam.badge || !pilot) return;
   var btn = this; btn.disabled = true; $('camMsg').textContent = 'Sending…';
-  fetch(API + '/api/submission', { method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ pilot: pilot.name, badge: cam.badge.id, note: $('camNote').value.trim(), photo: cam.data }) })
+  FPV.post('/api/submission', { pilot: pilot.name, badge: cam.badge.id, note: $('camNote').value.trim(), photo: cam.data })
     .then(function (r) { return r.json(); }).then(function (j) {
       btn.disabled = false;
       if (!j || !j.ok) { $('camMsg').textContent = 'Could not send it: ' + ((j && j.error) || 'try again'); return; }
@@ -1126,6 +1136,7 @@ function celebrate() {
 
 /* ---------- boot ---------- */
 pilot = lsGet(LS.pilot, null);
+if (pilot && pilot.name) { pilot = Roster.canon(pilot); try { Roster.adopt(pilot); } catch (e) {} } else pilot = null;
 render(); pullServer(); pullAwards(); pullSubs();
 /* The kiosk snapshot (hours, earned badges, tier). ?t= skips GitHub Pages'
    10-minute CDN cache. Re-read every minute (2026-10-06) together with this

@@ -2,7 +2,11 @@
 
 A one-page public site showing the club sim lab's **opening hours**, the **pilot
 leaderboard**, the **YouTube playlist** and three **randomly picked videos** from
-it. Anyone can open it, any time, from any device. No login, no server.
+it. Anyone can open it, any time, from any device. No login. It is hosted on
+**GitHub Pages** (https://elmagoct.github.io/brophy-fpv-club/): a push to
+`main` publishes, so work on a branch. Pilot names, website progress, awards and
+submissions come from the club API (`../brophy-fpv-club-api`, a set of Netlify
+Functions); everything else is static files.
 
 It is the outward-facing companion to the kiosk in `C:\BrophyUAV` — read that
 folder's `CLAUDE.md` first if you are touching either side.
@@ -12,7 +16,7 @@ C:\BrophyUAV\data\profiles.json  ─┐
 C:\BrophyUAV\data\schedule.json   ├─> Publish-Dashboard.ps1 ─> data.json ─> git push
 C:\BrophyUAV\config.json          │        (scheduled task,      (this repo)      │
 C:\BrophyUAV\index.html          ─┘         every 15 min)                         v
-                                                                            Netlify build
+                                                                         GitHub Pages
                                                                                   │
                                                           index.html fetches data.json
 ```
@@ -34,69 +38,41 @@ without knowing anything about Phoenix time.
 
 ---
 
-## Finishing the setup
+## Hosting
 
-Everything in this folder is built and committed. What is left needs your GitHub
-account, which is why it is not done.
+GitHub Pages serves `main` as is: no build step. `netlify.toml` is left over
+from the first Netlify setup (2026-08) and is not used by Pages. The kiosk's
+`Publish-Dashboard.ps1` pushes `data.json` to `main`, so `git pull` before you
+work. Only the API lives on Netlify (site `brophy-fpv-club-api`).
 
-> **Run these in PowerShell, not Git Bash.** In bash a Windows path gets its
-> backslashes eaten — `C:\BrophyUAV-web` arrives as `C:BrophyUAV-web` and git
-> answers `cannot change to 'C:BrophyUAV-web'`. If you would rather use bash,
-> write the path with forward slashes: `git -C /c/BrophyUAV-web …`.
+## Names: the roster (2026-11-26)
 
-### 1. Sign in to GitHub, and create the repo
+A pilot is one entry on the club roster, `{slug, name, aliases}`, read from
+`GET /api/roster`. `slug` is the pilot's permanent key; `aliases` are other
+slugs that are the same person. The roster is the list of names in every
+picker. Nobody types a new name into a picker any more: new pilots add
+themselves on `/join/` (the QR on the sims points there), which posts
+`{first, last}` to `POST /api/roster`.
 
-As of 2026-08-23 Chrome on this machine is **not signed in to GitHub** — that is
-the actual blocker, and it is the one step nobody can do for you.
-
-Then make a **new, empty** repo called `brophy-fpv-club` (no README, no
-.gitignore — this folder already has both). Public or private both work; Netlify
-can build from either.
-
-Then, from PowerShell:
-
-```powershell
-git -C C:\BrophyUAV-web remote add origin https://github.com/YOUR-USER/brophy-fpv-club.git
-```
-
-### 2. Push once, by hand
-
-The first push has to be interactive, because it is what signs git in to GitHub.
-A browser window opens, you approve, and Git Credential Manager caches the token
-in Windows Credential Manager for this user. Every later push is silent.
-
-```powershell
-git -C C:\BrophyUAV-web push -u origin main
-```
-
-### 3. Point Netlify at it
-
-In Netlify: **Add new site → Import an existing project → GitHub →** pick the
-repo. Netlify reads `netlify.toml` and needs no other answers:
-
-| | |
-|---|---|
-| Build command | *(none)* |
-| Publish directory | `.` |
-
-Deploy. You get a `something-something.netlify.app` URL; rename it under
-**Site configuration → Site details** if you want something you can say out loud.
-
-### 4. Turn on the every-15-minutes publish
-
-```powershell
-C:\BrophyUAV\Install-DashboardTask.ps1
-Start-ScheduledTask -TaskName 'Brophy FPV Club Dashboard Publish'
-Get-Content C:\BrophyUAV-web\publish.log -Tail 20
-```
-
-That is it. From then on the kiosk pushes a fresh snapshot whenever the numbers
-change, Netlify rebuilds in a few seconds, and the site is current.
+- `config.js` holds the API address (`FPV.API`), the Join address and
+  `FPV.post`, the one helper every pilot-side POST goes through (progress,
+  submissions, join), so a login header can be added in one place later. On
+  localhost, `localStorage['fpv.dev.api']` points the site at a local mock.
+- `roster.js` loads and caches the roster (`fpv.roster.v1`). If the API cannot
+  be reached it falls back to the names in `data.json`, silently. It matches
+  `data.json` rows to entries by slug or alias (two rows that are one pilot
+  show as one), and reads a pilot's awards, progress and submissions under the
+  key and every alias.
+- The device's pilot stays `fs.pilot.v1 = {name, slug}` with slug = the roster
+  key. A saved name that is an alias follows its entry on the next load.
+- Every name is escaped or set with `textContent`: roster names come from an
+  open form.
 
 ## The other pages
 
 | Path | What it is |
 |---|---|
+| `join/` | **Join** (2026-11-26): first name + last initial, a live preview of the name as the sims show it, the roster as tap-your-name chips (an exact match turns the button into "That's me", no write). A taken name asks "Is that you?"; "Not me" opens the box to three letters of the last name. Phone first |
 | `groundschool/` | the course app (same as the kiosk's), no longer a page of its own: Flight School opens one lesson at a time in a frame as `groundschool/?lesson=<id>`; the bare URL redirects to `flightschool/`. A badge quiz opens on a **Watch** tab with the badge's club video once that video is on Drive (2026-11-25). `gs-videos.js` is new and the kiosk needs it too |
 | `pilot-path/` | **Pilot Path** (was Flight School until 2026-10-10) — the whole badge curriculum (20 counted badges in three tiers plus 4 bonus badges that do not count; quiz, bench and witnessed badges; a time estimate on each), with a pilot picker so progress is per pilot. `badges.js` is the one badge catalogue the site uses; keep it in step with the kiosk's `config.json` catalogue. Progress merges the kiosk snapshot (earned badges, hours), Ground School lessons done on this device, and bench-step ticks made on the page. Since 2026-11-25 each card leads with the badge's club video (Google Drive, `groundschool/gs-videos.js`: the manifest and the one tap-to-load player every page and the course app use) and a **Take the quiz** button; the older lessons, YouTube how-tos and tips are under a closed **Resources** group. Sim Flight (`record: true`) is proven by a minute recorded on the kiosk and passed in the console |
 | `flightschool/` | redirect to `pilot-path/` for old links; **`flightschool/badges.js` stays here** - it is still the badge catalogue |
@@ -172,7 +148,7 @@ same tiers 1–3, so its "Gate 1" badges are the Tier 0 badges here.
 
 `Publish-Dashboard.ps1` runs every 15 minutes and **only commits when the data
 actually changed**, ignoring its own timestamp. A room that is shut all weekend
-produces zero commits and zero Netlify builds; an afternoon of flying produces
+produces zero commits and zero Pages builds; an afternoon of flying produces
 one commit per 15-minute slice that saw activity.
 
 If a push fails — network down, token expired — the commit is already made
@@ -278,7 +254,9 @@ plays.
 |---|---|
 | `index.html` | the entire site |
 | `data.json` | the generated snapshot. **Do not hand-edit** — the next publish overwrites it |
-| `netlify.toml` | publish dir and cache headers. No build command, on purpose |
+| `config.js`, `roster.js` | the API address + POST helper, and the roster (see "Names: the roster") |
+| `site.js`, `site.css` | the shared top bar, profile picker, footer and dark palette |
+| `netlify.toml` | left from the Netlify days; GitHub Pages ignores it |
 | `robots.txt` | crawlable; the page is meant to be found |
 | `pilot-path/`, `posters/` | the badge curriculum and the printed posters — see "The other pages" |
 | `publish.log` | what the exporter did. Git-ignored |

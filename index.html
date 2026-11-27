@@ -467,6 +467,8 @@ header.title .side .btn{text-align:center;justify-content:center}
 <div class="wrap">
 
   <nav class="crumbs" aria-label="Site"></nav>
+  <script src="config.js"></script>
+  <script src="roster.js"></script>
   <script src="pilots.js"></script>
   <script src="site.js"></script>
 
@@ -769,7 +771,7 @@ function renderStats(){
   var hoursTotal = Math.floor((t.clubMs || 0) / 3600000);
   var minsTotal  = Math.round(((t.clubMs || 0) % 3600000) / 60000);
   var me = window.SiteNav && SiteNav.pilot();
-  var mine = me ? (DATA.pilots || []).filter(function (p) { return SiteNav.slug(p.name) === me.slug; })[0] || null : null;
+  var mine = me ? (DATA.pilots || []).filter(function (p) { return sameP(p, me); })[0] || null : null;
   var pilots = DATA.pilots || [];
 
   function rankBy(key){
@@ -864,7 +866,7 @@ function renderBoard(){
 
 function isMe(p){
   var me = window.SiteNav && SiteNav.pilot();
-  return !!(me && SiteNav.slug(p.name) === me.slug);
+  return !!(me && sameP(p, me));
 }
 
 function countedBadges(p){
@@ -1186,6 +1188,8 @@ function fail(msg){
 document.addEventListener('site:pilot', function (){
   if (DATA){ renderStats(); renderBoard(); renderLadder(); renderCerts(); }
 });
+/* the roster arrived or changed: fold the kiosk rows again under it */
+document.addEventListener('roster:change', function (){ if (DATA) load(true); });
 
 /* 2026-10-21: console approvals, live from the club API, merged into the snapshot's
    badge lists (forward-only: nothing here removes a badge). The kiosk publishes the
@@ -1193,17 +1197,22 @@ document.addEventListener('site:pilot', function (){
    carry a badge id it does not know yet, so without this the certification section
    lagged every approval. Matched by slug, like every page. */
 function slugOf(n){ return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
+/* 2026-11-26: a row is "me" when the roster says it is the same pilot (key or alias) */
+function sameP(p, me){ return window.Roster ? Roster.is(p, me) : slugOf(p.name) === me.slug; }
+function keysOf(p){ return window.Roster ? Roster.keys(p) : [slugOf(p.name)]; }
 var AWARDS = null;
 function mergeAwards(){
   if (!DATA || !AWARDS) return;
   (DATA.pilots || []).forEach(function (p){
-    var a = AWARDS[slugOf(p.name)]; if (!a) return;
     p.badges = p.badges || [];
-    a.badges.forEach(function (id){ if (p.badges.indexOf(id) < 0) p.badges.push(id); });
+    keysOf(p).forEach(function (k){
+      var a = AWARDS[k]; if (!a) return;
+      a.badges.forEach(function (id){ if (p.badges.indexOf(id) < 0) p.badges.push(id); });
+    });
   });
 }
 function loadAwards(){
-  fetch('https://brophy-fpv-club-api.netlify.app/api/award?all=1', { cache: 'no-store' })
+  fetch(FPV.API + '/api/award?all=1', { cache: 'no-store' })
     .then(function (r){ return r.json(); })
     .then(function (j){
       if (!j || !j.pilots) return;

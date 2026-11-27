@@ -5,7 +5,12 @@
    the wrong tier. mergePilots(data) folds same-slug rows together, in place:
    times and per-sim times add up, badges are united, tier / percentages /
    last-seen take the highest, and the name of the row with the most badges
-   (then the most time) is kept. Load before any page script reads data.json. */
+   (then the most time) is kept. Load before any page script reads data.json.
+
+   2026-11-26: rows are grouped by the roster key when roster.js is loaded
+   (the row's own `slug` from the kiosk, else its name, looked up with its
+   aliases), so two kiosk rows that are one pilot show as one, under the
+   roster name. Without the roster it is slug(name), as before. */
 (function () {
   function slug(n) { return String(n || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, ''); }
   var MAX = { tier: 1, gsPct: 1, gsLessons: 1, lastSeen: 1 };
@@ -28,12 +33,16 @@
     if (!d || !Array.isArray(d.pilots)) return d;
     var by = {}, order = [];
     d.pilots.forEach(function (p) {
-      var s = slug(p.name);
+      var s = window.Roster ? Roster.keyOf(p) : (p.slug || slug(p.name));
       if (!s) { order.push(p); return; }
       if (by[s]) by[s].p = merge(by[s].p, p);
       else { by[s] = { p: p }; order.push(by[s]); }
     });
-    d.pilots = order.map(function (x) { return x.p || x; });
+    d.pilots = order.map(function (x) {
+      var p = x.p || x, e = window.Roster && Roster.entry(p);
+      if (e) { p.name = e.name; p.slug = e.slug; }
+      return p;
+    });
     return d;
   };
 })();
