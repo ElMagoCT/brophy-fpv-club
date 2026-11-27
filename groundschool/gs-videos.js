@@ -80,7 +80,7 @@
        switch on: src:'media/<id>.mp4'. While src is '' the home intro is not
        shown at all and the other two show a quiet "Video soon" line. */
     'home-intro':      { src:'media/home-intro.mp4', poster:'media/home-intro.jpg',      captions:'media/home-intro.vtt',      len:'0:51', title:'Who we are' },
-    'flight-overview': { src:'', poster:'media/flight-overview.jpg', captions:'media/flight-overview.vtt', len:'', title:'Brophy flight overview' },
+    'flight-overview': { src:'media/flight-overview.mp4', poster:'media/flight-overview.jpg', captions:'media/flight-overview.vtt', len:'1:35', title:'Brophy flight overview' },
     'path-overview':   { src:'media/path-overview.mp4', poster:'media/path-overview.jpg',   captions:'media/path-overview.vtt',   len:'1:36', title:'How badges work' }
   };
   window.GS_VIDEOS = V;
