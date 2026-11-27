@@ -90,6 +90,11 @@ h1 .a{color:var(--rust)}
 .ask button{flex:1;min-height:50px;padding:0 8px;border-radius:10px;cursor:pointer;font-family:var(--font-mono);font-size:15px;letter-spacing:.06em;white-space:nowrap;text-transform:uppercase;
   color:var(--ink);background-color:var(--glass-2);border:1.5px solid var(--line-hard)}
 .ask button.yes{color:#fff;background-color:var(--rust);border-color:var(--rust)}
+.ask button[hidden]{display:none}
+.ask .pick{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.ask .pick:empty{display:none}
+.ask .pick button{flex:1 1 auto;min-height:50px;padding:0 16px;font-size:18px;letter-spacing:.03em;text-transform:none;color:var(--rust);border-color:var(--rust)}
+.preview .chip .gl{opacity:.4}
 
 /* ---------- already flying ---------- */
 .roster{margin-top:22px}
@@ -135,7 +140,7 @@ footer .sitelinks{display:none}
 
 @media (max-width:600px){
   .wrap{padding:14px 16px 32px}
-  .sitebar{display:none}
+  body .sitebar{display:none}
   main{margin-top:12px}
   .card{padding:18px 16px 16px}
   h1{font-size:40px}
@@ -184,7 +189,8 @@ footer .sitelinks{display:none}
         <p class="msg" id="msg" role="alert"></p>
 
         <div class="ask" id="ask" hidden>
-          <p><b id="askName"></b> is already on the sims. Is that you?</p>
+          <p id="askQ"></p>
+          <div class="pick" id="askList"></div>
           <div class="two">
             <button type="button" class="yes" id="askYes">That's me</button>
             <button type="button" id="askNo">Not me</button>
@@ -229,7 +235,7 @@ footer .sitelinks{display:none}
   /* ---------- the API's name rule, so the preview is exactly what the sims show ---------- */
   function fold(s) { return String(s || '').normalize ? String(s).normalize('NFD').replace(/[̀-ͯ]/g, '') : String(s || ''); }
   function cleanFirst(s) {
-    s = fold(s).replace(/\s+/g, ' ').replace(/-+/g, '-').trim();
+    s = fold(s).replace(/['.\u2019\u2018`]/g, '').replace(/\s+/g, ' ').replace(/-+/g, '-').trim();
     return s;
   }
   function firstOk(s) { return /^[A-Za-z]+(?:[ -][A-Za-z]+)*$/.test(s) && s.replace(/[ -]/g, '').length >= 2 && s.length <= 16; }
@@ -245,14 +251,18 @@ footer .sitelinks{display:none}
   /* ---------- live preview + button ---------- */
   function update() {
     var v = values();
-    var shown = v.f ? titleCase(v.f.replace(/[^A-Za-z -]/g, '')) + ' ' + (v.l ? v.l.charAt(0).toUpperCase() + v.l.slice(1).toLowerCase() + '.' : 'L.') : 'First L.';
+    var shown = v.f ? titleCase(v.f.replace(/[^A-Za-z -]/g, '')) + ' ' + (v.l ? v.l.charAt(0).toUpperCase() + v.l.slice(1).toLowerCase() + '.' : '') : 'First L.';
     chip.textContent = shown;
+    if (v.f && !v.l) { var g = document.createElement('span'); g.className = 'gl'; g.textContent = 'L.'; chip.appendChild(g); }
+    /* a character the sims can't show: say so instead of a grey button */
+    var bad = !!v.f && /[^A-Za-z -]/.test(v.f);
+    if (bad) { state.lettersMsg = true; msg.style.color = ''; say('Letters only.'); }
+    else if (state.lettersMsg) { state.lettersMsg = false; if (msg.textContent === 'Letters only.') say(''); }
+    first.setAttribute('aria-invalid', bad ? 'true' : 'false');
     chip.classList.toggle('ghost', !v.f);
     preview.classList.toggle('ok', v.ok);
     state.match = v.ok ? Roster.entry(v.name) : null;
     go.disabled = state.busy || !v.ok;
-    go.classList.toggle('me', !!state.match);
-    goText.textContent = state.match ? "That's me" : 'Add me';
     drawChips(v);
   }
   function drawChips(v) {
@@ -303,7 +313,12 @@ footer .sitelinks{display:none}
     var v = values();
     if (!v.ok || state.busy) return;
     say(''); ask.hidden = true;
-    if (state.match) { useMe(state.match, false); return; }
+    /* never sign in as someone just because the name matches: ask first */
+    if (state.match) { taken(state.match); return; }
+    if (state.newOk !== v.name) {
+      var alike = sameFirst(v.f, v.l);
+      if (alike.length) { askMany(alike, v.name); return; }
+    }
     busy(true);
     FPV.post('/api/roster', { first: v.f, last: v.l })
       .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, j: j || {} }; }); })
@@ -323,11 +338,43 @@ footer .sitelinks{display:none}
       })
       .catch(function () { busy(false); say("Couldn't reach the club server. Try again in a minute."); });
   }
+  /* roster pilots whose first word is the typed first name ("carson", "Carter.B", "Ari. K") */
+  function firstWord(s) { return Roster.slug(s).split('-')[0]; }
+  function sameFirst(f, l) {
+    var w = firstWord(f), i = String(l || '').charAt(0).toLowerCase(), no = state.notThem || {};
+    if (!w) return [];
+    return Roster.list().filter(function (x) {
+      var s = Roster.slug(x.name), m = /^[a-z]+-([a-z]{1,3})$/.exec(s);
+      if (firstWord(x.name) !== w || no[x.slug]) return false;
+      /* a plain "Sam R." is somebody else when you typed K */
+      return !(m && m[1].charAt(0) !== i);
+    });
+  }
+  function openAsk(q, list, mode) {
+    state.askMode = mode;
+    var askQ = $('askQ'), askList = $('askList');
+    askQ.textContent = '';
+    if (q.name) { var b = document.createElement('b'); b.textContent = q.name; askQ.appendChild(b); askQ.appendChild(document.createTextNode(q.text)); }
+    else askQ.textContent = q.text;
+    askList.innerHTML = '';
+    list.slice(0, 6).forEach(function (p) {
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = p.name;
+      b.onclick = function () { useMe({ name: p.name, slug: p.slug }, false); };
+      askList.appendChild(b);
+    });
+    $('askYes').hidden = mode !== 'one';
+    $('askNo').textContent = mode === 'one' ? 'Not me' : 'No, add me';
+    ask.hidden = false;
+    ask.scrollIntoView({ block: 'nearest' });
+    (mode === 'one' ? $('askYes') : askList.firstChild).focus({ preventScroll: true });
+  }
   function taken(p) {
     state.taken = p;
-    $('askName').textContent = p.name;
-    ask.hidden = false;
-    $('askYes').focus({ preventScroll: true });
+    openAsk({ name: p.name, text: ' is already on the sims. Is that you?' }, [], 'one');
+  }
+  function askMany(list, name) {
+    state.askFor = name;
+    openAsk({ text: 'Is one of these you?' }, list, 'many');
   }
   $('askYes').onclick = function () {
     var p = state.taken; if (!p) return;
@@ -335,7 +382,9 @@ footer .sitelinks{display:none}
     useMe(p, false);
   };
   $('askNo').onclick = function () {
+    if (state.askMode === 'many') { ask.hidden = true; state.newOk = state.askFor; submit(); return; }
     ask.hidden = true;
+    if (state.taken) (state.notThem = state.notThem || {})[state.taken.slug] = 1;
     /* one more letter of the last name tells the two apart */
     state.lastMax = 3; last.maxLength = 3;
     $('lastBox').classList.add('more'); $('lastLabel').textContent = 'Last name';
@@ -350,7 +399,7 @@ footer .sitelinks{display:none}
   [first, last].forEach(function (el) {
     el.addEventListener('input', function () {
       if (el === last) last.value = last.value.replace(/[^A-Za-zÀ-ɏ]/g, '').slice(0, state.lastMax);
-      msg.style.color = ''; if (!state.busy) say('');
+      msg.style.color = ''; if (!state.busy) say(''); state.lettersMsg = false;
       ask.hidden = true;
       update();
     });
@@ -370,7 +419,7 @@ footer .sitelinks{display:none}
   });
   $('again').onclick = function () {
     $('done').hidden = true; $('form').hidden = false;
-    first.value = ''; last.value = ''; state.lastMax = 1; last.maxLength = 1;
+    first.value = ''; last.value = ''; state.lastMax = 1; last.maxLength = 1; state.newOk = null; state.notThem = {};
     $('lastBox').classList.remove('more'); $('lastLabel').textContent = 'Last initial'; last.placeholder = 'R';
     say(''); update(); first.focus();
   };
