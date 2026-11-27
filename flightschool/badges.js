@@ -186,7 +186,7 @@
     // part of Flight Clearance now.
     /* 2026-11-25: recorded on the kiosk (record: true), reviewed in the console - no photo, no live checkride */
     { id: 'proficient-flight', quiz: 'gs-fly-quiz', record: true, tier: 't0', track: 'flight', type: 'witnessed', name: 'Sim Flight', est: 'one recorded minute · about 5 h of sim practice first is typical', rule: ONE_REC,
-      do: 'Record one minute in Liftoff on the kiosk: an orbit, a Split-S, three gaps.', why: 'Acro muscle memory where crashes are free.',
+      do: 'Record one minute in Liftoff on the kiosk: an orbit, a Split-S, three gaps.', short: 'An orbit, a Split-S and three gaps, all in one recorded minute.', why: 'Acro muscle memory where crashes are free.',
       standard: 'Rate mode, all in one flight.',
       reqs: [WATCH('gs-fly-quiz'),
              { t: 'A clean orbit around a gate', d: 'nose and camera on the gate the whole way', k: 1 },

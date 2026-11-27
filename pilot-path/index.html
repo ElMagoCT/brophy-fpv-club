@@ -215,13 +215,13 @@ footer a{color:var(--ink)}
   <!-- 2026-11-26: "How badges work" (GS_VIDEOS['path-overview'], a file in ../media/) -->
   <div class="ovw" id="ovw"></div>
 
-  <details class="howbox">
+  <details class="howbox" open>
     <summary class="eyebrow"><h2>How it works</h2><span class="rule"></span><span class="hint">video + quiz &middot; hands-on &middot; flying &middot; checkpoints</span></summary>
     <div class="how">
       <div class="card h"><div class="k">Video + quiz</div><div class="v">Most badges start with a short club video and a quiz. <b>80 % passes</b> and your best score counts. A quiz badge is yours as soon as you pass.</div></div>
       <div class="card h"><div class="k">Hands-on</div><div class="v">Building, Soldering, Betaflight and Tuning: follow the <b>Instructions</b>, then <b>submit a photo</b> and a mentor checks it.</div></div>
       <div class="card h"><div class="k">Flying</div><div class="v">Video and quiz first, then a mentor watches you fly it. <b>Sim Flight</b> is recorded on a sim instead.</div></div>
-      <div class="card h"><div class="k">Checkpoints</div><div class="v">Each tier ends in a checkpoint flight. It opens once <b>every badge before it</b> is earned, Event Pilot included. Passing <b>isn&rsquo;t permission to fly</b>: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr 24 h before every campus flight.</div></div>
+      <div class="card h"><div class="k">Checkpoints</div><div class="v">Each tier ends in a checkpoint flight. It opens once <b>every badge before it</b> is earned. Event Pilot works the same way. Passing <b>isn&rsquo;t permission to fly</b>: get <a href="../clearance/">Flight Clearance</a>, then ask Mr. Burr 24 h before every campus flight.</div></div>
       <div class="card h"><div class="k">Already fly?</div><div class="v">If you&rsquo;ve already proven a skill, a <b>mentor can check that badge off</b>. Show them at the club.</div></div>
     </div>
   </details>
@@ -594,7 +594,7 @@ function actions(b, s) {
   if (window.GS_VIDEOS && GS_VIDEOS.get(b.id))
     h += GS_VIDEOS.ready(b.id) ? abtn('watch', b, '<span class="g" aria-hidden="true">&#9654;</span> Watch', false)
                                : '<span class="vsoon">' + SOON_ICON + 'Video soon</span>';
-  if (b.quiz) h += '<button type="button" class="btn' + (qDone ? '' : ' primary') + '" data-lesson="' + esc(b.quiz) + '">' + (best >= FS.PASS ? 'Retake the quiz' : 'Take the quiz') + '</button>';
+  if (b.quiz) h += '<button type="button" class="btn' + (qDone ? '' : ' primary') + '" data-lesson="' + esc(b.quiz) + '">' + (best >= FS.PASS || s.earned ? 'Retake the quiz' : 'Take the quiz') + '</button>';
   if (hasInstr(b)) h += abtn('instr', b, 'Instructions', false);
   if (hasRes(b)) h += abtn('res', b, 'Resources', false);
   if (!s.earned) {
@@ -606,7 +606,7 @@ function actions(b, s) {
 }
 /* the one line a badge truly needs on its card */
 function oneLine(b) {
-  if (b.record) return '<div class="one">Submit on a sim: sign in, pick <b>Liftoff</b>, tap <b>Record flight</b>. Everything in one minute, one recording a day.</div>';
+  if (b.record) return '<div class="one">Sign in on a sim, pick <b>Liftoff</b>, tap <b>Record flight</b>. One recording a day.</div>';
   return '';
 }
 function statusLine(b, s) {
@@ -716,9 +716,9 @@ function instrBody(b) {
   else if (b.drive) how = 'Submit your clip\'s Google Drive link; a mentor watches it and signs it off.';
   else how = ((b.minTier != null || b.minHours) && s.detail ? s.detail + '. ' : '') + 'A mentor who holds this badge watches you, then signs it off.';
   h += '<div class="sec">How it gets approved</div><p style="margin:0">' + esc(how) + '</p>';
-  var foot = '';
-  if (!s.earned && FS.photoOk(b)) foot += '<button type="button" class="btn primary" data-photo="' + b.id + '">Submit a photo</button>';
-  if (!s.earned && FS.driveOk && FS.driveOk(b)) foot += abtn('link', b, 'Submit the link', true);
+  var foot = '', failed = (function (l) { return !!(l && l.status === 'fail'); })(mySubs(b)[0]);
+  if (!s.earned && FS.photoOk(b)) foot += '<button type="button" class="btn primary" data-photo="' + b.id + '">' + (failed ? 'Submit a new photo' : 'Submit a photo') + '</button>';
+  else if (!s.earned && FS.driveOk && FS.driveOk(b)) foot += abtn('link', b, failed ? 'Submit a new link' : 'Submit the link', true);
   return h + (foot ? '<div class="foot">' + foot + '</div>' : '');
 }
 function resBody(b) {

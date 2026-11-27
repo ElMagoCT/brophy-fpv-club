@@ -518,6 +518,7 @@ function drawBadges(st) {
   $('badgeHint').textContent = ST.pilot ? st.done + ' of ' + st.of + ' done' : '';
   var html = st.parts.map(function (p) { return card(p.badge, p.s); }).join('');
   if (window.GS_VIDEOS) GS_VIDEOS.render($('badges'), html); else $('badges').innerHTML = html;
+  hashKeep();
   /* the Pilot Path checkpoints: what unlocks the club drones */
   var kp = CL.kioskRow(), cps = FS.BADGES.filter(function (b) { return b.checkpoint; });
   $('cps').innerHTML = '<b style="font-family:var(--font-mono);font-weight:400;font-size:12.5px;letter-spacing:.16em;text-transform:uppercase">Pilot Path' + (kp && kp.tier != null ? ' · Tier ' + kp.tier : '') + '</b>' +
@@ -531,7 +532,7 @@ function card(b, s) {
     '<div class="nm">' + esc(b.name) + (ST.pilot && s.earned ? '<span class="st earned">done &#10003;</span>' : '') + '</div>' +
     '<div class="do">' + esc(b.short || b.do) + '</div>' +
     (ST.pilot && !s.earned && s.pct > 0 ? '<div class="meter"><i style="width:' + s.pct + '%"></i></div>' : '') +
-    actions(b, s) + oneLine(b) + statusLine(b, s);
+    oneLine(b) + actions(b, s) + statusLine(b, s);
   return '<div class="card badge' + state + '" id="' + b.id + '" data-id="' + b.id + '" style="--t:' + COL[b.track] + '">' + h + '</div>';
 }
 function abtn(act, b, label, primary) {
@@ -549,7 +550,7 @@ function actions(b, s) {
                                : '<span class="vsoon">' + SOON_ICON + 'Video soon</span>';
   if (b.quiz) {
     var best = CL.quizBest(b), passed = best >= FS.PASS;
-    h += '<button type="button" class="btn' + (passed || s.earned ? '' : ' primary') + '" data-lesson="' + esc(b.quiz) + '">' + (passed ? 'Retake the quiz' : 'Take the quiz') + '</button>';
+    h += '<button type="button" class="btn' + (passed || s.earned ? '' : ' primary') + '" data-lesson="' + esc(b.quiz) + '">' + (passed || s.earned ? 'Retake the quiz' : 'Take the quiz') + '</button>';
   }
   var t = testLink(b), tookIt = t && (ticked(b, 0) || last);
   if (t) h += '<a class="btn' + (s.earned || tookIt ? '' : ' primary') + '" href="' + esc(t.u) + '" target="_blank" rel="noopener">Take the TRUST test &#8599;</a>';
@@ -880,10 +881,23 @@ render();
 /* picking or switching a profile reloads the page (2026-10-20, Micah: things
    did not always load otherwise); signing out just re-renders */
 document.addEventListener('site:pilot', function (e) { if (e.detail && e.detail.name) setTimeout(function () { location.reload(); }, 50); });
+/* #hash: scroll to it and flash a card once. drawBadges() replaces the cards
+   when data lands, so hashKeep() puts the flash back (at the same point in its
+   1.2 s run) and scrolls again for the first few seconds, until the visitor
+   scrolls or types themselves. */
+var HASHGO = null;
+function hashKeep() {
+  if (!HASHGO) return;
+  var t = Date.now() - HASHGO.t0, el = $(HASHGO.id) || document.querySelector('.badge[data-id="' + HASHGO.id + '"]');
+  if (HASHGO.user || t > 4000) { HASHGO = null; return; }
+  if (!el) return;
+  el.scrollIntoView();
+  if (el.classList.contains('badge') && t < 1200 && !el.classList.contains('flash')) { el.style.animationDelay = (-t) + 'ms'; el.classList.add('flash'); }
+}
 if (location.hash && /^#(badges|droneSec|permission|faa-trust|safe-flight|pilot-agreement|drone-portfolio)$/.test(location.hash)) setTimeout(function () {
-  var id = location.hash.slice(1), el = $(id) || document.querySelector('.badge[data-id="' + id + '"]');
-  if (el) el.scrollIntoView();
-  if (el && el.classList.contains('badge')) el.classList.add('flash');
+  HASHGO = { id: location.hash.slice(1), t0: Date.now() };
+  ['wheel', 'touchstart', 'keydown', 'mousedown'].forEach(function (ev) { addEventListener(ev, function () { if (HASHGO) HASHGO.user = true; }, { once: true, passive: true }); });
+  hashKeep();
 }, 80);
 </script>
 </body>
