@@ -298,8 +298,8 @@
   function showHas() {
     var pilot = el('apPilot').value.trim(); el('apHas').textContent = '';
     if (pilot.length < 2) return;
-    awardsOf(pilot).then(function (j) {
-      var aw = j.awards && j.awards.badges ? j.awards.badges : {};
+    awardsAll(pilotKeys(pilot)).then(function (a) {
+      var aw = a && a.badges ? a.badges : {};
       var earned = Object.keys(aw).filter(function (k) { return aw[k].status === 'earned' && trusted(aw[k]); });
       var bad = Object.keys(aw).filter(function (k) { return aw[k] && aw[k].verified === false; });
       el('apHas').textContent = (earned.length ? 'On file: ' + earned.map(badgeName).join(', ') : 'No sign-offs on file yet.') +
@@ -429,7 +429,7 @@
   function quizAsk(pilot, bd) {
     if (!needsQuiz(bd)) return Promise.resolve(null);
     var got = PP.slug === FS.slug(pilot) && PP.loaded ? Promise.resolve(PP.prog)
-      : api('GET', '/api/progress?pilot=' + encodeURIComponent(pilot)).then(function (j) { return j.progress || null; }, function () { return null; });
+      : progressAll(pilotKeys(pilot)).catch(function () { return null; });
     return got.then(function (prog) {
       var best = quizBest(prog, bd);
       if (best >= FS.PASS) return null;
@@ -480,11 +480,63 @@
   var PP = { slug: null, name: '', awards: null, prog: null, subs: null };
   // 2026-10-20: every submission this pilot ever sent (photos, PDFs, drone videos),
   // from the review queue's `all` view - needs the instructor password like review.
-  function loadPilotSubs(s) {
+  function loadPilotSubs(keys) {
     if (!S.keyHex) return Promise.resolve(null);
     return api('GET', '/api/submission?review=all', null, reviewHeaders()).then(function (j) {
-      return (j.items || []).filter(function (it) { return FS.slug(it.pilot) === s; }).sort(function (a, b) { return b.at - a.at; });
+      return (j.items || []).filter(function (it) { return keys.indexOf(FS.slug(it.pilot)) >= 0; }).sort(function (a, b) { return b.at - a.at; });
     }, function () { return null; });
+  }
+  // 2026-11-26: a roster entry's record is spread over its slug AND every alias
+  // (a merge folds a name in, but the award and progress files keep their old
+  // slug). Read each key and merge: newest decision per badge; for progress the
+  // union of finished lessons and ticks and the best quiz score.
+  function pilotKeys(name) { var s = FS.slug(name), e = entryFor(s); return e ? keysOf(e) : [s]; }
+  function mergeAwards(list) {
+    var out = null;
+    list.forEach(function (a) {
+      if (!a || !a.badges) return;
+      if (!out) out = { name: a.name, badges: {} };
+      Object.keys(a.badges).forEach(function (id) {
+        var r = a.badges[id], c = out.badges[id];
+        if (r && (!c || (+r.at || 0) > (+c.at || 0))) out.badges[id] = r;
+      });
+    });
+    return out;
+  }
+  function mergeProg(list) {
+    var out = null;
+    list.forEach(function (p) {
+      if (!p) return;
+      if (!out) out = { name: p.name, lessons: {}, steps: {}, quizzes: {}, updated: 0 };
+      out.updated = Math.max(out.updated, +p.updated || 0);
+      Object.keys(p.lessons || {}).forEach(function (id) {
+        var l = p.lessons[id] || {}, c = out.lessons[id];
+        if (!c) { out.lessons[id] = { status: l.status, score: +l.score || 0, at: l.at }; return; }
+        if (l.status === 'complete') c.status = 'complete'; else if (c.status !== 'complete' && l.status) c.status = l.status;
+        c.score = Math.max(+c.score || 0, +l.score || 0);
+      });
+      Object.keys(p.steps || {}).forEach(function (b) {
+        var t = out.steps[b] = out.steps[b] || {};
+        Object.keys(p.steps[b] || {}).forEach(function (i) { if (p.steps[b][i] && !t[i]) t[i] = p.steps[b][i]; });
+      });
+      Object.keys(p.quizzes || {}).forEach(function (b) {
+        var q = p.quizzes[b] || {}, c = out.quizzes[b];
+        if (!c || (+q.best || 0) > (+c.best || 0)) out.quizzes[b] = q;
+      });
+    });
+    return out;
+  }
+  function awardsAll(keys) {
+    return Promise.all(keys.map(function (k, i) {
+      var got = awardsOf(k).then(function (j) { return j.awards || null; });
+      return i ? got.catch(function () { return null; }) : got;   // an alias file that fails to load does not hide the rest
+    })).then(mergeAwards);
+  }
+  function progressAll(keys) {
+    return Promise.all(keys.map(function (k, i) {
+      var got = api('GET', '/api/progress?pilot=' + encodeURIComponent(k)).then(function (j) { return j.progress || null; });
+      return i ? got.catch(function () { return null; }) : got;
+    })).then(mergeProg);
   }
   var PHOTOS = {};   // photo path -> data URL, so opening a badge twice does not refetch
   function photoInto(box, it) {
@@ -557,11 +609,11 @@
     PP.slug = s; PP.name = name; PP.awards = PP.prog = PP.subs = null; PP.loaded = false; el('ppDocs').textContent = '';
     el('pp').hidden = false; el('ppName').textContent = name + ' · progress';
     el('ppMsg').textContent = 'Loading…'; el('ppList').textContent = ''; el('ppSum').textContent = '';
-    var q = encodeURIComponent(name);
+    var keys = pilotKeys(name);
     Promise.all([
-      awardsOf(name).then(function (j) { return j.awards || null; }),
-      api('GET', '/api/progress?pilot=' + q).then(function (j) { return j.progress || null; }),
-      loadPilotSubs(s),
+      awardsAll(keys),
+      progressAll(keys),
+      loadPilotSubs(keys),
       loadSnap()
     ]).then(function (r) {
       if (PP.slug !== s) return;
@@ -1052,6 +1104,11 @@
   // POST /api/roster {action,...} with the review key, behind passwordChecked()
   // like approvals. Names only ever reach the page through textContent.
   var RS = { list: null, off: '', sel: null, mode: null, other: '', keep: '', showRemoved: false, armed: false };
+  // 2026-11-26: login tools. GET /api/auth/config says the mode; with it off (or
+  // no auth route at all) PIN code and Link account never appear. A PIN code is
+  // shown once and kept only in this variable, never in storage.
+  var AU = { mode: 'off', off: '', code: null };
+  var USER_RE = /^[a-z0-9][a-z0-9._-]{1,39}$/;
   var SNAP_P = null, NEW_MS = 7 * 86400000;
   var BY = { web: 'web', seed: 'seed', mentor: 'mentor' };
   function snapRows() { return (KSNAP && KSNAP.pilots) || []; }
@@ -1113,8 +1170,38 @@
         : 'Roster tools are off: could not load the roster (' + e.message + ').';
     });
   }
+  function fetchAuth() {
+    return api('GET', '/api/auth/config').then(function (j) {
+      AU.mode = j.mode === 'optional' || j.mode === 'required' ? j.mode : 'off'; AU.off = '';
+    }, function (e) {
+      AU.mode = 'off';
+      AU.off = e.status === 404 ? 'Login tools are off: this club API has no sign-in yet.' : '';
+    });
+  }
+  function authOn() { return AU.mode !== 'off'; }
+  function dot(t) { return t.replace(/\.\.$/, '.'); }   // "Ava P." + "." reads once
   function loadRoster() {
-    return Promise.all([loadSnap().catch(function () { return null; }), fetchRoster()]).then(drawRoster);
+    return Promise.all([loadSnap().catch(function () { return null; }), fetchRoster(), fetchAuth()]).then(drawRoster);
+  }
+  function authPost(route, body) {
+    return passwordChecked().then(function () { return api('POST', '/api/auth/' + route, body, reviewHeaders()); });
+  }
+  function authError(e) {
+    switch (e.code) {
+      case 'login-off': return 'Sign-in is off on the club API.';
+      case 'bad-user': return 'A username is 2 to 40 letters, digits, dots, dashes or underscores.';
+      case 'busy': return 'The API was busy. Try again.';
+    }
+    if (e.status === 404) return 'This club API cannot do that yet.';
+    return rosterError(e);
+  }
+  function aliasError(e) {
+    switch (e.code) {
+      case 'is-entry': return 'That name is its own roster entry. Use Same person as instead.';
+      case 'bad-alias': return 'An alias is a name like sawyer-murphy.';
+      case 'merged': return 'That name was merged in, so it stays.';
+    }
+    return rosterError(e);
   }
   function hoursOf(rows) { return rows.reduce(function (t, r) { return t + (r.totalMs || 0); }, 0) / 3600000; }
   function tag(cls, text) { var t = document.createElement('span'); t.className = 'rtag ' + cls; t.textContent = text; return t; }
@@ -1123,6 +1210,7 @@
     var box = el('rsList'), q = FS.slug(el('rsFilter').value), now = Date.now();
     box.textContent = '';
     el('rsOff').textContent = RS.off; el('rsOff').hidden = !RS.off;
+    el('rsAuthOff').textContent = RS.list ? AU.off : ''; el('rsAuthOff').hidden = !RS.list || !AU.off;
     el('rsAdd').hidden = el('rsRemovedL').hidden = !RS.list;
     // the Approve form's name list: roster names first, then kiosk names
     var dl = el('apPilots'), seen = {}; dl.textContent = '';
@@ -1155,7 +1243,7 @@
       head.appendChild(stat);
       head.onclick = function () {
         var open = RS.sel !== p.slug;
-        RS.sel = open ? p.slug : null; RS.mode = null; RS.armed = false; RS.other = ''; RS.keep = '';
+        RS.sel = open ? p.slug : null; RS.mode = null; RS.armed = false; RS.other = ''; RS.keep = ''; AU.code = null;
         drawRoster();
         if (open) pickName(p.name);
       };
@@ -1201,7 +1289,8 @@
     var pan = document.createElement('div'); pan.className = 'rpanel';
     var bar = document.createElement('div'); bar.className = 'row wrapline';
     var msg = document.createElement('div'); msg.className = 'small rmsg';
-    function mode(m) { return function () { RS.mode = RS.mode === m ? null : m; RS.armed = false; RS.focus = true; drawRoster(); }; }
+    function mode(m) { return function () { RS.mode = RS.mode === m ? null : m; RS.armed = false; RS.focus = true; AU.code = null; drawRoster(); }; }
+    function busy(on) { pan.querySelectorAll('button,input,select').forEach(function (x) { x.disabled = on; }); }
     function run(body, keepSel, okText) {
       msg.className = 'small rmsg'; msg.textContent = 'Saving…';
       pan.querySelectorAll('button,input,select').forEach(function (x) { x.disabled = true; });
@@ -1224,6 +1313,23 @@
     } else {
       bar.appendChild(btn('Rename', RS.mode === 'rename' ? 'on' : '', mode('rename')));
       bar.appendChild(btn('Same person as…', RS.mode === 'merge' ? 'on' : '', mode('merge')));
+      bar.appendChild(btn('Aliases', RS.mode === 'alias' ? 'on' : '', mode('alias')));
+      if (authOn()) {
+        bar.appendChild(btn('PIN code', RS.mode === 'code' ? 'on' : '', function () {
+          if (RS.mode === 'code') { mode('code')(); return; }
+          RS.mode = 'code'; AU.code = null; drawRoster();
+          var m2 = el('rsList').querySelector('.rrow.on .rmsg');
+          if (m2) { m2.className = 'small rmsg'; m2.textContent = 'Making a code…'; }
+          authPost('code', { slug: p.slug }).then(function (j) {
+            if (RS.sel !== p.slug || RS.mode !== 'code') return;
+            AU.code = { slug: p.slug, code: String(j.code || ''), exp: +j.exp || 0 }; drawRoster();
+          }).catch(function (e) {
+            var m3 = el('rsList').querySelector('.rrow.on .rmsg');
+            if (m3) { m3.className = 'small rmsg bad'; m3.textContent = authError(e); }
+          });
+        }));
+        bar.appendChild(btn('Link account', RS.mode === 'link' ? 'on' : '', mode('link')));
+      }
       bar.appendChild(btn('Remove', 'danger' + (RS.mode === 'remove' ? ' on' : ''), mode('remove')));
     }
     var info = document.createElement('span'); info.className = 'muted small rinfo';
@@ -1245,6 +1351,55 @@
       var h = document.createElement('span'); h.className = 'muted small'; h.textContent = 'Case and punctuation only.';
       sub.appendChild(inp); sub.appendChild(save); sub.appendChild(h);
       if (RS.focus) { RS.focus = false; setTimeout(function () { inp.focus(); inp.select(); }, 0); }
+    } else if (RS.mode === 'alias') {
+      (p.aliases || []).forEach(function (a) {
+        var chipA = document.createElement('span'); chipA.className = 'ralias';
+        var t0 = document.createElement('span'); t0.textContent = a; chipA.appendChild(t0);
+        var x = btn('×', 'rx', function () {
+          busy(true); msg.className = 'small rmsg'; msg.textContent = 'Saving…';
+          rosterPost({ action: 'unalias', slug: p.slug, alias: a }).then(function () {
+            RS.flash = a + ' no longer counts as ' + p.name + '.'; return fetchRoster().then(drawRoster);
+          }).catch(function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = aliasError(e); });
+        });
+        x.title = 'Unlink ' + a; x.setAttribute('aria-label', 'Unlink ' + a);
+        chipA.appendChild(x); sub.appendChild(chipA);
+      });
+      var ai = document.createElement('input'); ai.placeholder = 'Old name, e.g. Sawyer M'; ai.maxLength = 48; ai.spellcheck = false; ai.autocomplete = 'off';
+      var addA = btn('Add alias', 'primary flush', function () {
+        var a = FS.slug(ai.value);
+        if (a.length < 2) { msg.className = 'small rmsg bad'; msg.textContent = 'Type the old name.'; return; }
+        busy(true); msg.className = 'small rmsg'; msg.textContent = 'Saving…';
+        rosterPost({ action: 'alias', slug: p.slug, alias: a }).then(function () {
+          RS.flash = a + ' now counts as ' + p.name + '.'; return fetchRoster().then(drawRoster);
+        }).catch(function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = aliasError(e); });
+      });
+      ai.addEventListener('keydown', function (e) { if (e.key === 'Enter') addA.click(); });
+      var ah = document.createElement('span'); ah.className = 'muted small rsay';
+      ah.textContent = dot('An old name from a kiosk or award file. Its badges and hours count for ' + p.name + '.');
+      sub.appendChild(ai); sub.appendChild(addA); sub.appendChild(ah);
+      if (RS.focus) { RS.focus = false; setTimeout(function () { ai.focus(); }, 0); }
+    } else if (RS.mode === 'code') {
+      if (AU.code && AU.code.slug === p.slug) {
+        var big = document.createElement('span'); big.className = 'pincode'; big.textContent = AU.code.code.replace(/^(\d{3})(\d{3})$/, '$1 $2');
+        var ex = document.createElement('span'); ex.className = 'small rsay';
+        ex.textContent = 'For ' + p.name + ', once, until ' + new Date(AU.code.exp).toLocaleString(undefined, { weekday: 'short', hour: 'numeric', minute: '2-digit' }) +
+          '. They type it on the site with a username and PIN they pick.';
+        sub.appendChild(big); sub.appendChild(ex);
+      }
+    } else if (RS.mode === 'link') {
+      var ui = document.createElement('input'); ui.placeholder = 'School username'; ui.maxLength = 64; ui.spellcheck = false; ui.autocomplete = 'off';
+      var link = btn('Link', 'primary flush', function () {
+        var u = ui.value.trim().toLowerCase().replace(/@.*$/, '');
+        if (!USER_RE.test(u)) { msg.className = 'small rmsg bad'; msg.textContent = 'A username is 2 to 40 letters, digits, dots, dashes or underscores.'; return; }
+        busy(true); msg.className = 'small rmsg'; msg.textContent = 'Linking…';
+        authPost('link', { slug: p.slug, username: u }).then(function () {
+          busy(false); ui.value = ''; msg.className = 'small rmsg ok'; msg.textContent = dot(u + ' now signs in as ' + p.name + '.');
+        }).catch(function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = authError(e); });
+      });
+      ui.addEventListener('keydown', function (e) { if (e.key === 'Enter') link.click(); });
+      var lh = document.createElement('span'); lh.className = 'muted small'; lh.textContent = 'Moves it here if another pilot had it.';
+      sub.appendChild(ui); sub.appendChild(link); sub.appendChild(lh);
+      if (RS.focus) { RS.focus = false; setTimeout(function () { ui.focus(); }, 0); }
     } else if (RS.mode === 'remove') {
       var t = document.createElement('span'); t.className = 'small';
       t.textContent = 'Hide ' + p.name + ' from the sims and pickers? Their hours are kept, and Restore brings them back.';

@@ -208,3 +208,7 @@ label.inline.tight{margin:0;font-size:14px}
 .rmsg.bad,#rsAddMsg.bad{color:var(--bad)} .rmsg.ok,#rsAddMsg.ok{color:var(--ok)}
 .linkish{background:transparent;border:0;padding:0;color:var(--accent);font-size:inherit;text-decoration:underline;cursor:pointer}
 #rsLoose{margin-top:8px}
+.pincode{font:700 34px/1.1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.08em;color:var(--ink)}
+.ralias{display:inline-flex;align-items:center;gap:2px;border:1px solid var(--line);border-radius:999px;padding:0 2px 0 10px;font-size:13px}
+.rpanel .ralias button.rx{border:0;background:none;padding:2px 8px;font-size:15px;line-height:1;color:var(--muted)}
+.rpanel .ralias button.rx:hover{color:var(--bad)}
