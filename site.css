@@ -159,9 +159,10 @@ footer .sitelinks a:hover{color:var(--rust)}
    Close button shut it, focus stays inside and goes back to the button.
    =========================================================================== */
 .acts{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:6px}
-.acts .btn{min-height:44px;padding:9px 14px;justify-content:center}
+.acts .btn{min-height:40px;padding:7px 12px;font-size:13px;letter-spacing:.07em;justify-content:center}
+@media (pointer:coarse){.acts .btn{min-height:44px}}
 .acts .btn .g{font-size:12px;line-height:1}
-.acts .vsoon{display:inline-flex;align-items:center;gap:7px;min-height:44px;padding:0 4px;font-family:var(--font-mono);font-size:13px;
+.acts .vsoon{display:inline-flex;align-items:center;gap:7px;min-height:40px;padding:0 4px;font-family:var(--font-mono);font-size:13px;
   letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
 .acts .vsoon svg{width:20px;height:14px;flex:none}
 .stline{font-size:14.5px;line-height:1.4;color:var(--ink-soft);margin-top:2px}

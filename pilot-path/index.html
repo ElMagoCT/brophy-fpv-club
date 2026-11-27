@@ -761,8 +761,8 @@ function dlgOpen(kind, id) {
     if (!$('dlg').open) $('dlg').showModal();
     if (H && H.play) H.play();
   } else {
-    dlgFill();
     if (!$('dlg').open) $('dlg').showModal();
+    dlgFill();
     if (kind === 'link') { var u = $('dlgBody').querySelector('input'); if (u) u.focus(); }
   }
 }
