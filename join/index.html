@@ -327,7 +327,14 @@ footer .sitelinks{display:none}
     if (window.SiteNav) SiteNav.set({ name: p.name, slug: p.slug });
     else try { localStorage.setItem('fs.pilot.v1', JSON.stringify({ name: p.name, slug: p.slug })); } catch (e) {}
     showDone(p, fresh);
+    /* 2026-11-27: "Is this you?" - Google or a code at the school email (site.js -> auth.js; only when login is on) */
+    if (window.SiteNav && SiteNav.confirm) SiteNav.confirm({ name: p.name, slug: p.slug }, true);
   }
+  /* a sign-in from that sheet: the done card says "Signed in" and offers Sign out */
+  document.addEventListener('auth:change', function () {
+    var p = window.SiteNav && SiteNav.pilot();
+    if (p && !$('done').hidden) showDone(p, false);
+  });
   function showDone(p, fresh) {
     $('form').hidden = true; $('gate').hidden = true;
     var d = $('done'), signed = !!(window.FPV && FPV.auth() && state.cfg && state.cfg.mode !== 'off');

@@ -80,6 +80,10 @@ dialog.fa-sheet::backdrop{background:transparent}
 .fa-x{position:absolute;top:8px;right:10px;width:44px;height:44px;font-size:26px;line-height:1;background:none;border:0;color:var(--ink-soft);cursor:pointer}
 .fa-g{display:flex;justify-content:center;min-height:44px}
 .fa-g[hidden],.fa-link[hidden],.fa-shared[hidden],.fa-f[hidden]{display:none}
+/* 2026-11-27: the "Is this you?" confirm - the email-code box under the Google button */
+.fa-go[hidden],.fa-mailbox[hidden]{display:none}
+.fa-mailbox{margin-top:14px;padding-top:14px;border-top:1px dashed var(--line-hard,rgba(45,69,101,.42))}
+.fa-msg.fa-note{color:var(--ink-soft)}
 .fa-wait{width:100%;max-width:300px;height:44px;border-radius:999px;border:1.5px dashed var(--line-hard);opacity:.6}
 .fa-msg{margin:12px 0 0;font-size:15.5px;line-height:1.4;color:var(--rust)}
 .fa-msg:empty{display:none}

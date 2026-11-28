@@ -1198,6 +1198,7 @@
       case 'login-off': return 'Sign-in is off on the club API.';
       case 'bad-user': return 'A username is 2 to 40 letters, digits, dots, dashes or underscores.';
       case 'busy': return 'The API was busy. Try again.';
+      case 'bad-email': return 'Use a @brophybroncos.org or @brophyprep.org address.';
     }
     if (e.status === 404) return 'This club API cannot do that yet.';
     return rosterError(e);
@@ -1336,6 +1337,18 @@
           });
         }));
         bar.appendChild(btn('Link account', RS.mode === 'link' ? 'on' : '', mode('link')));
+        // 2026-11-27: the school address "Email me a code" sends this pilot's sign-in code to
+        bar.appendChild(btn('School email', RS.mode === 'email' ? 'on' : '', function () {
+          if (RS.mode === 'email') { mode('email')(); return; }
+          RS.mode = 'email'; AU.mail = { slug: p.slug, loading: true }; drawRoster();
+          authPost('email', { action: 'get', slug: p.slug }).then(function (j) {
+            if (RS.sel !== p.slug || RS.mode !== 'email') return;
+            AU.mail = { slug: p.slug, email: j.email || '', loading: false }; RS.focus = true; drawRoster();
+          }).catch(function (e) {
+            if (RS.sel !== p.slug || RS.mode !== 'email') return;
+            AU.mail = { slug: p.slug, email: '', loading: false, err: authError(e) }; drawRoster();
+          });
+        }));
       }
       bar.appendChild(btn('Hours', RS.mode === 'hours' ? 'on' : '', mode('hours')));
       bar.appendChild(btn('Reset hours', 'danger' + (RS.mode === 'reset' ? ' on' : ''), mode('reset')));
@@ -1409,6 +1422,38 @@
       var lh = document.createElement('span'); lh.className = 'muted small'; lh.textContent = 'Moves it here if another pilot had it.';
       sub.appendChild(ui); sub.appendChild(link); sub.appendChild(lh);
       if (RS.focus) { RS.focus = false; setTimeout(function () { ui.focus(); }, 0); }
+    } else if (RS.mode === 'email') {
+      var mi = AU.mail && AU.mail.slug === p.slug ? AU.mail : { loading: true };
+      if (mi.loading) {
+        var wl = document.createElement('span'); wl.className = 'muted small'; wl.textContent = 'Reading…'; sub.appendChild(wl);
+      } else {
+        var ei = document.createElement('input'); ei.type = 'email'; ei.placeholder = 'name@brophybroncos.org'; ei.maxLength = 80;
+        ei.spellcheck = false; ei.autocomplete = 'off'; ei.value = mi.email || '';
+        var MAIL_RE = /^[a-z0-9][a-z0-9._-]*@(brophybroncos|brophyprep)\.org$/;
+        var saveE = btn('Save', 'primary flush', function () {
+          var v = ei.value.trim().toLowerCase();
+          if (!MAIL_RE.test(v)) { msg.className = 'small rmsg bad'; msg.textContent = 'Use a @brophybroncos.org or @brophyprep.org address.'; return; }
+          busy(true); msg.className = 'small rmsg'; msg.textContent = 'Saving…';
+          authPost('email', { action: 'set', slug: p.slug, email: v }).then(function () {
+            busy(false); AU.mail = { slug: p.slug, email: v, loading: false };
+            msg.className = 'small rmsg ok'; msg.textContent = dot('Codes for ' + p.name + ' go to ' + v + '.');
+          }).catch(function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = authError(e); });
+        });
+        ei.addEventListener('keydown', function (e) { if (e.key === 'Enter') saveE.click(); });
+        sub.appendChild(ei); sub.appendChild(saveE);
+        if (mi.email) sub.appendChild(btn('Clear', 'danger flush', function () {
+          busy(true); msg.className = 'small rmsg'; msg.textContent = 'Saving…';
+          authPost('email', { action: 'clear', slug: p.slug }).then(function () {
+            busy(false); AU.mail = { slug: p.slug, email: '', loading: false }; ei.value = '';
+            msg.className = 'small rmsg ok'; msg.textContent = dot('No school email for ' + p.name + ' now. Google sign-in still works.');
+          }).catch(function (e) { busy(false); msg.className = 'small rmsg bad'; msg.textContent = authError(e); });
+        }));
+        var eh = document.createElement('span'); eh.className = 'muted small rsay';
+        eh.textContent = mi.err || ('Where "Email me a code" sends ' + p.name + "'s sign-in code. Never shown on the site.");
+        if (mi.err) eh.className = 'small rsay bad';
+        sub.appendChild(eh);
+        if (RS.focus) { RS.focus = false; setTimeout(function () { ei.focus(); }, 0); }
+      }
     } else if (RS.mode === 'hours') {
       hoursForm(p, sub, msg, busy);
     } else if (RS.mode === 'reset') {

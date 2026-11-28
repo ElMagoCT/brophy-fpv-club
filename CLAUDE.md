@@ -32,6 +32,15 @@ Kiosk: `../brophy-fpv-club-kiosk/` (has its own CLAUDE.md); API: `../brophy-fpv-
   reaches it as `cancel` and closes only it (the pages' own Escape handlers skip while
   `.fa-sheet` is up). The course page opened on its own (`groundschool/gs-web.js`) waits
   for `config.js` before its first push/pull, so those go through `FPV.post` too.
+- Confirm-on-pick (2026-11-27): after somebody picks a profile in the site-bar panel or
+  taps a name on Join, `SiteNav.confirm` -> `FPVAuth.confirm` shows "Is this you?"
+  (Google claims exactly that slug, or "Email me a code" to the school address a mentor
+  stored; "Not now" in optional mode). Also once per browser session on page load for a
+  picked profile this device has no token for (`fpv.confirm.seen.v1`; dismissals in
+  `fpv.confirm.skip.v1`) - that is one GET `/api/auth/config` per session even in mode
+  off. Never from `SiteNav.set()` itself (roster spelling sync, sign-in results, other
+  tabs), never on `admin/` or over another open `<dialog>`. Closing a confirm never calls
+  `FPV.cancelled()` (no write is waiting on it). Console: "School email" on a pilot's card.
 - Escape every name (open form). Pushing `main` publishes: work on a branch.
   Local test: serve the folder, set `localStorage['fpv.dev.api']` to a mock on localhost.
 - Badge cards (2026-11-26, Pilot Path + Flight Clearance): one anatomy - kind/category,

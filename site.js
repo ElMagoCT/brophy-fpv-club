@@ -189,7 +189,10 @@
     if (!t) return;
     if (t.hasAttribute('data-s')) {
       var s = t.getAttribute('data-s'), e = window.Roster && Roster.find(s);
-      return set(e ? { name: e.name, slug: e.slug } : { name: t.textContent, slug: s });
+      /* a page that reloads on site:pilot (Flight Clearance) asks after the reload */
+      try { sessionStorage.setItem(ASK, (e && e.slug) || s); } catch (x) {}
+      set(e ? { name: e.name, slug: e.slug } : { name: t.textContent, slug: s });
+      return askConfirm(get(), true);
     }
     var act = t.getAttribute('data-act');
     if (act === 'switch') { picking = true; drawPanel(); }
@@ -244,5 +247,39 @@
     foot.appendChild(sp);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', footLinks); else footLinks();
-  window.SiteNav = { pilot: get, set: set, open: function () { picking = false; open(); window.scrollTo({ top: 0, behavior: 'smooth' }); }, row: row, slug: slug };
+  /* 2026-11-27: "Is this you?" (auth.js FPVAuth.confirm) after somebody picks a
+     profile here or on Join, and once per browser session on page load for a
+     picked profile this device holds no token for. Only when login is on; the
+     panel has already read the config by the time anyone picks, and the load
+     check costs one GET /api/auth/config per session at most. Never from set()
+     itself, so the roster spelling sync, a sign-in result and other tabs don't ask. */
+  var ASK = 'fpv.confirm.ask.v1', SEEN = 'fpv.confirm.seen.v2', HOLD = 12 * 3600000;
+  function unask() { try { sessionStorage.removeItem(ASK); } catch (e) {} }
+  function askConfirm(p, pick) {
+    if (!p || !p.slug || !window.FPV || !FPV.authCfg || !FPV.ui) { unask(); return; }
+    FPV.authCfg().then(function (c) {
+      if (!c || c.mode === 'off') { unask(); return; }
+      FPV.ui().then(function (A) {
+        if (!A || !A.confirm) { unask(); return; }
+        A.confirm(p, { pick: !!pick }).then(unask, unask);
+      }, unask);
+    }, unask);
+  }
+  /* page load: a pick that a reload interrupted asks now; otherwise at most once
+     every 12 hours per profile on this device (localStorage, so tabs agree) */
+  function loadCheck() {
+    var p = get();
+    if (!p || !p.slug || page === 'join' || !window.FPV || !FPV.auth) return;
+    var asked = ''; try { asked = sessionStorage.getItem(ASK) || ''; } catch (e) {}
+    if (asked) { unask(); if (asked === p.slug) setTimeout(function () { askConfirm(get(), true); }, 600); return; }
+    var a = FPV.auth(); if (a && a.pilot && a.pilot.slug === p.slug) return;
+    try {
+      var v = JSON.parse(localStorage.getItem(SEEN) || '{}') || {};
+      if (Date.now() - (+v[p.slug] || 0) < HOLD) return;
+      v[p.slug] = Date.now(); localStorage.setItem(SEEN, JSON.stringify(v));
+    } catch (e) { return; }
+    setTimeout(function () { askConfirm(get(), false); }, 1200);
+  }
+  if (document.readyState === 'complete') loadCheck(); else window.addEventListener('load', loadCheck);
+  window.SiteNav = { pilot: get, set: set, confirm: askConfirm, open: function () { picking = false; open(); window.scrollTo({ top: 0, behavior: 'smooth' }); }, row: row, slug: slug };
 })();
