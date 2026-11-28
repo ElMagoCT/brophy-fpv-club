@@ -257,6 +257,9 @@
     F.authCfg().then(function (cfg) {
       if (who) {
         notNow.hidden = cfg.mode === 'required';
+        var how = cfg.google && cfg.email ? 'Sign in with your school Google account, or get a code at your school email.'
+          : cfg.email ? 'Get a code at your school email.' : 'Sign in with your school Google account.';
+        if (lede.lastChild && lede.lastChild.nodeType === 3) lede.lastChild.textContent = (/\.$/.test(who.name) ? ' ' : '. ') + how;
         if (cfg.email) { mailBox.hidden = false; emailCode(mailBox, who.slug, function () { return cb.checked; }, finish); }
         if (!cfg.google && !cfg.email) { showPin(); return; }
         if (!cfg.google) return;
